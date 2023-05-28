@@ -1,6 +1,11 @@
 import React from 'react';
+import { BrowserRouter as Router, Switch, Route }  from "react-router-dom";
+
 import './App.css';
 import Header from './components/Header';
+import Home from './routes/Home';
+import Settings from './routes/Settings';
+
 /*
 <div className="App">
       <header className="App-header">
@@ -21,7 +26,17 @@ import Header from './components/Header';
 */
 function App() {
   return (
-    <Header />
+    <Router>
+      <Header />
+      <Switch>
+        <Route path="/">
+          <Home/>
+        </Route>
+        <Route path ="/settings">
+          <Settings/>
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 
