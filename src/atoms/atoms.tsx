@@ -9,6 +9,8 @@ export interface Project{
 export const myProject = atom<Project[]>({
     key:"myProject",
     default : [
-        { projectId:1 , projectName:"MyProject1"}
+        { projectId:1 , projectName:"MyProject1"},
+        { projectId:2 , projectName:"MyProject2"},
+        { projectId:3 , projectName:"MyProject3"},
     ]
 });

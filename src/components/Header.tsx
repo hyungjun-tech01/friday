@@ -14,6 +14,7 @@ const Row = styled.div`
     align-items: center;
     position: fixed;    
     background-color: black;
+    color : white;
 `;
 const Col = styled.div`
     display : flex;
