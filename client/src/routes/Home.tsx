@@ -1,0 +1,70 @@
+import React, {useState} from "react";
+import styled from "styled-components";
+import { useQuery } from "react-query";
+import {useRecoilState} from "recoil";
+
+import {apiGetProjects} from "../api/project";
+import {atomMyProject, IProject} from '../atoms/atoms';
+import NewProject from '../components/NewProject';
+import { FOCUSABLE_SELECTOR } from "@testing-library/user-event/dist/utils";
+
+const SWrapper = styled.div`
+    display : flex;
+    flex-wrap: wrap;
+    width : 100%;
+    align-items: center;
+    position : relative;
+    top:50px;
+ `;
+ const SBox = styled.div`
+    background-color : #041f03;
+    height: 150px;
+    width : 250px;
+    border-radius: 10px;
+    margin-left : 10px;
+    margin-right : 10px;
+    margin-top : 10px;
+    margin-bottom : 10px;
+`;
+const SLastBox = styled.div`
+    background-color : white;
+    height: 150px;
+    width : 250px;
+    border-radius: 10px;
+    margin-left : 10px;
+    margin-right : 10px;
+    margin-top : 10px;
+    margin-bottom : 10px;
+    color : black;
+    align-items: center;
+`;
+const SInfo = styled.div`
+    font-size : 20px;
+    padding : 20px;
+    width : 100%;
+    position : relative;
+    bottom : -80px;
+`
+function Home(){
+    // recoil에서 atom에서 Project 데이터를 가지고 옴 -> 일차로 이것부터 구현해 본다.
+    const [project, setProject] = useRecoilState<IProject[]>(atomMyProject); // atom에서 data 가지고 옴 .
+    // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
+    const {isLoading, data, isSuccess} = useQuery<IProject[]>("allMyProjects", apiGetProjects,{
+        onSuccess: data => {
+           setProject(data);   // use Query 에서 atom에 set 
+           console.log("success", data);  // 가지고온 데이터 확인 
+        }
+      }
+    );
+    //New Project 화면 보여주기
+    const [showNewProject, setShowNewProject] = useState(false);
+     return (
+        <SWrapper>
+             { isSuccess && project.map(proj => ( <SBox key={proj.projectId}><SInfo>{proj.projectName}</SInfo></SBox>) )}
+            <SLastBox onClick={()=>{setShowNewProject(true)}}><SInfo>프로젝트생성</SInfo></SLastBox>
+            {showNewProject && <NewProject setshowNewProject={setShowNewProject}/>}
+        </SWrapper>
+    );
+}
+
+export default Home;
