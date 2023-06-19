@@ -18,17 +18,19 @@ export const apiGetProjects = async () => {
     //);
 };
 
-export async function  apiPostProjects(project:INewProject):Promise<INewProject> {
+export async function  apiPostProjects(project:INewProject) {
     console.log("post project", project);
     try{
-   /*     const response = await fetch('http://localhost:8000/project',{
+        const response = await fetch('http://localhost:7000/project',{
             method: "POST", 
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify(project)
-           });  */
-           console.log('success');
+           }); 
+
+           console.log('success', response);
+           return(response);
     }catch(err){
         console.error(err);
+        return(err);
     }
-    return project;
-}
+ }

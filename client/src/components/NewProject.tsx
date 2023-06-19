@@ -1,6 +1,5 @@
 import {useState} from "react";
 import {INewProject} from "../atoms/atoms";
-import { useMutation } from "react-query";
 import { apiPostProjects } from "../api/project";
 
 function NewProject({setshowNewProject}:any) {
@@ -8,7 +7,7 @@ function NewProject({setshowNewProject}:any) {
         {
           projectId: ""  ,  // : ''  // cookies.Email,
           projectName : "" , // editMode ? task.title : "",
-          userId : "971031260635857921",
+          userId : "967860418955445249",
           date: new Date()
         });
     
@@ -19,21 +18,16 @@ function NewProject({setshowNewProject}:any) {
         projectName : value
       }))
     };    
-    const PostData = (e : React.MouseEvent<HTMLElement>) => {
+    const postData = (e : React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
         console.log("postData");
-        useMutation("NewProject",
-            async params => {apiPostProjects(data)} ,
-            {
-                onError: () => {
-                    console.log("error");
-                },
-                onSuccess: () => {
-                    console.log("success");
-                },
-            }
-        );
         //console.log(mutation);
+        try{
+          const response = apiPostProjects(data);
+          console.log(response);
+        }catch(err){
+          console.error(err);
+        }
     };    
     return (
         <div className= "overlay">
@@ -51,7 +45,7 @@ function NewProject({setshowNewProject}:any) {
             value = {data.projectName}
             onChange={handleChange}/>
           <br/>
-          <input type="submit" onClick={PostData}/>
+          <input type="submit" onClick={postData}/>
         </form>
         </div>
     </div>
