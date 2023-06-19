@@ -14,13 +14,15 @@ app.get('/', (req, res)=>{
 });
 
 // get all projects by user 
-app.get('/projects', async(req, res)=>{
+app.get('/projects/:userId', async(req, res)=>{
+    const userId = req.params.userId;
+    console.log(userId);
     try{
             const projects = await pool.query(`
             select p.id as "projectId", p.name as "projectName"
-            from project p, project_manager pm, user_account ua
+            from project p, project_manager pm
             where p.id = pm.project_id 
-            and pm.user_id = ua.id`);
+            and pm.user_id = $1`, [userId]);
             res.json(projects.rows);
             console.log(projects.rows);
     }catch(err){

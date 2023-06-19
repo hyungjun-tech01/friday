@@ -3,10 +3,10 @@ import {Axios} from "axios";
 
 const BASE_PATH = "http://localhost:7000"; 
 
-export const apiGetProjects = async () => {
+export const apiGetProjects = async (userId:string) => {
     console.log("getprojects", BASE_PATH);
     try{
-        const response = await fetch(`${BASE_PATH}/projects`);  // backtik 
+        const response = await fetch(`${BASE_PATH}/projects/${userId}`);  // backtik 
         const json = await response.json()
         return json;
     }catch(err){
