@@ -42,9 +42,7 @@ app.post('/project', async(req, res) => {
         // 성공하면 get max project by user id 
         const project = await pool.query(`SELECT MAX(id) projectId from project where name = $1`,
         [projectName]);
-        console.log(project.rows);
-        const {projectid} = project.rows[0];
-        console.log(projectid);
+        const {projectid} = project.rows[0];   // project id를 못가지고 와서 한 참 헤맴.
         // insert project_manager 
         const response = await pool.query(`INSERT INTO project_manager(project_id, user_id,created_at ) 
                                             values($1, $2, now())`,

@@ -27,7 +27,6 @@ export async function  apiPostProjects(project:INewProject) {
             body:JSON.stringify(project)
            }); 
 
-           console.log('success', response);
            return(response);
     }catch(err){
         console.error(err);

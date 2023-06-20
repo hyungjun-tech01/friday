@@ -18,13 +18,16 @@ function NewProject({setshowNewProject}:any) {
         projectName : value
       }))
     };    
-    const postData = (e : React.MouseEvent<HTMLElement>) => {
+    const postData = async (e : React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
         console.log("postData");
         //console.log(mutation);
         try{
-          const response = apiPostProjects(data);
-          console.log(response);
+          const response:any = await apiPostProjects(data);
+          console.log("response", response.status);
+          if(response.status === 200){
+            setshowNewProject(false);
+          }
         }catch(err){
           console.error(err);
         }

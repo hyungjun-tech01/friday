@@ -48,18 +48,19 @@ const SInfo = styled.div`
 function Home(){
     // recoil에서 atom에서 Project 데이터를 가지고 옴 -> 일차로 이것부터 구현해 본다.
     const [project, setProject] = useRecoilState<IProject[]>(atomMyProject); // atom에서 data 가지고 옴 .
+    //New Project 화면 보여주기
+    const [showNewProject, setShowNewProject] = useState(false);
     const userId = "967860418955445249";
     // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
     // useQuery(['todos', todoId], () => fetchTodoById(todoId))
     const {isLoading, data, isSuccess} = useQuery<IProject[]>(["allMyProjects", userId], ()=>apiGetProjects(userId),{
         onSuccess: data => {
            setProject(data);   // use Query 에서 atom에 set 
-           console.log("success", data);  // 가지고온 데이터 확인 
-        }
+        },
+        enabled : !showNewProject
       }
     );
-    //New Project 화면 보여주기
-    const [showNewProject, setShowNewProject] = useState(false);
+
      return (
         <SWrapper>
              { isSuccess && project.map(proj => ( <SBox key={proj.projectId}><SInfo>{proj.projectName}</SInfo></SBox>) )}
