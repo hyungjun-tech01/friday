@@ -22,11 +22,13 @@ import Settings from './routes/Settings';
         </a>
       </header>
     </div>
+
+      <Header />
+
 */
 function Root() {
   return (
     <Router>
-      <Header />
       <Switch>
         <Route path="/">
           <Core/>

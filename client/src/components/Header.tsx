@@ -1,11 +1,20 @@
 import React from "react";
 import styled from "styled-components";
 import {Link} from "react-router-dom";
-import search from './search.svg';
-import adduser from './adduser.svg';
-import settings from './settings.svg';
+import Paths from '../constants/Paths';
+import styles from './Header.module.scss';
 
 
+function Header(){
+    return(
+        <div className={styles.wrapper}>
+            <Link to={Paths.ROOT} className={classNames(styles.logo, styles.title)}>
+            Planka
+          </Link>
+        </div>
+    );
+}
+/*
 const Row = styled.div`
     display : flex;
     width : 100%;
@@ -61,4 +70,5 @@ function Header(){
         </Row>
     );
 }
+*/
 export default Header;
