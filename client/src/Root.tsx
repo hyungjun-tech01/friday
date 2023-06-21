@@ -1,9 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route }  from "react-router-dom";
 
-import './App.css';
 import Header from './components/Header';
-import Home from './routes/Home';
+import Core from './routes/Core';
 import Settings from './routes/Settings';
 
 /*
@@ -24,13 +23,13 @@ import Settings from './routes/Settings';
       </header>
     </div>
 */
-function App() {
+function Root() {
   return (
     <Router>
       <Header />
       <Switch>
         <Route path="/">
-          <Home/>
+          <Core/>
         </Route>
         <Route path ="/settings">
           <Settings/>
@@ -40,4 +39,4 @@ function App() {
   );
 }
 
-export default App;
+export default Root;

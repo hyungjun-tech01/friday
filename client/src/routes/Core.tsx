@@ -7,6 +7,11 @@ import {apiGetProjects} from "../api/project";
 import {atomMyProject, IProject} from '../atoms/atoms';
 import NewProject from '../components/NewProject';
 import { FOCUSABLE_SELECTOR } from "@testing-library/user-event/dist/utils";
+import Fix from "../components/Fix";
+import Static from "../components/Static";
+import UsersModal from "../components/UsersModal";
+import UserSettingModal from "../components/UserSettingModal";
+import ProjectAddModal from "../components/ProjectAddModal";
 
 const SWrapper = styled.div`
     display : flex;
@@ -45,7 +50,20 @@ const SInfo = styled.div`
     position : relative;
     bottom : -80px;
 `
-function Home(){
+function Core(){
+    const [currentModal, setCurrentModal] = useState(null);
+return (
+    <>
+    <Fix />
+    <Static />
+    {currentModal === "USERS" && <UsersModal/>}
+    {currentModal === "USER_SETTING" && <UserSettingModal/>}
+    {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}
+    </>
+);
+
+
+ /*    핵심 내용 기록해 놓을 것. 
     // recoil에서 atom에서 Project 데이터를 가지고 옴 -> 일차로 이것부터 구현해 본다.
     const [project, setProject] = useRecoilState<IProject[]>(atomMyProject); // atom에서 data 가지고 옴 .
     //New Project 화면 보여주기
@@ -68,6 +86,7 @@ function Home(){
             {showNewProject && <NewProject setshowNewProject={setShowNewProject}/>}
         </SWrapper>
     );
+*/ 
 }
 
-export default Home;
+export default Core;

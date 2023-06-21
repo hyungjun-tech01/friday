@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RecoilRoot } from "recoil";
 import './index.css';
-import App from './App';
+import Root from './Root';
 import reportWebVitals from './reportWebVitals';
 import {QueryClient, QueryClientProvider} from "react-query";
 const client = new QueryClient();
@@ -16,7 +16,7 @@ root.render(
   <React.StrictMode>
     <RecoilRoot>    
       <QueryClientProvider client = {client}>
-        <App />
+        <Root />
       </QueryClientProvider>
     </RecoilRoot>
   </React.StrictMode>
