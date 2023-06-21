@@ -1,14 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 import {Link} from "react-router-dom";
-import Paths from '../constants/Paths';
-import styles from './Header.module.scss';
+import Paths from "../constants/Paths";
+import styles from "./Header.module.css";
 
 
 function Header(){
+    console.log(Paths.ROOT);
     return(
         <div className={styles.wrapper}>
-            <Link to={Paths.ROOT} className={classNames(styles.logo, styles.title)}>
+            <Link to={Paths.ROOT} className={(styles.title,  styles.logo)}>
             Planka
           </Link>
         </div>
