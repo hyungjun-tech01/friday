@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RecoilRoot } from "recoil";
-import './index.css';
 import Root from './Root';
 import reportWebVitals from './reportWebVitals';
 import {QueryClient, QueryClientProvider} from "react-query";
+import 'semantic-ui-css/semantic.min.css'
+
 const client = new QueryClient();
 
 
