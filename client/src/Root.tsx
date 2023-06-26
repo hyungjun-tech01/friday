@@ -1,10 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route }  from "react-router-dom";
 
-import Header from './components/Header';
 import Core from './routes/Core';
-import Settings from './routes/Settings';
-
+import Login from './routes/Login';
+import Path from './constants/Paths';
 /*
 <div className="App">
       <header className="App-header">
@@ -30,11 +29,11 @@ function Root() {
   return (
     <Router>
       <Switch>
-        <Route path="/">
-          <Core/>
+        <Route path = {Path.LOGIN}>
+          <Login/>
         </Route>
-        <Route path ="/settings">
-          <Settings/>
+        <Route path= {Path.ROOT}>
+          <Core/>
         </Route>
       </Switch>
     </Router>

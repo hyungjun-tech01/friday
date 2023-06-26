@@ -15,9 +15,31 @@ function Header(){
             <Link to={Paths.ROOT} className={`${styles.logo} ${styles.title}`}>
                 Planka
             </Link>
+            <Menu inverted size="large" className={styles.menu}>
+                <Menu.Menu position="left">
+                </Menu.Menu>    
+                <Menu.Menu position="right">
+                    <Menu.Item
+                        className={`${styles.item} ${styles.itemHoverable}`}>
+                    <Icon fitted name= "users" />
+                    </Menu.Item>
+                    <Menu.Item className={`${styles.item}  ${styles.itemHoverable}`}>
+                    <Icon fitted name="bell" />
+                    <span className={styles.notification}>3</span>  {/*nofification 있으면 갯수를 표시 */}
+                    </Menu.Item>
+                    <Menu.Item className={`${styles.item}, ${styles.itemHoverable}`}>
+                    {"Demo Demo"}   {/* 로그인 하면 사용자 정보 표시  -> 로그아웃, 사용자 정보 메뉴화면 나옴. */}
+                    </Menu.Item>
+                </Menu.Menu>
+           </Menu>
+        </div>
+    );
+}
+/*
+
           <Menu inverted size="large" className={styles.menu}>
-            {/* Project가 선택되어 있을 경우 나오는 메뉴 */}
-            <Menu.Menu position="left"> 
+             
+             <Menu.Menu position="left"> 
                 <Menu.Item
                     as={Link}
                     to={Paths.ROOT}
@@ -31,19 +53,11 @@ function Header(){
                     ${styles.title}`
                     }  >
                 Test
-              </Menu.Item>
-            </Menu.Menu>    
-            <Menu.Menu position="right">
-                <Menu.Item
-                    className={`${styles.item} ${styles.itemHoverable}`}>
-                <Icon fitted name= "users" />
-              </Menu.Item>
-            </Menu.Menu>
-           </Menu>
-        </div>
-    );
-}
-/*
+              </Menu.Item> 
+           </Menu.Menu>      
+
+
+
 const Row = styled.div`
     display : flex;
     width : 100%;
