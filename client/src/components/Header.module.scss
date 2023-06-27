@@ -3,25 +3,23 @@
       cursor: auto;
       user-select: auto;
   
-/*      &:before {
+      &:before {
         background: none;
-      } */
+      } 
   
- /*     &:active{
+*     &:active{
         background:  rgba(255, 255, 255, 1.0);
-      }  */
+      }  
      
-     /* &:hover {  */
-     /*   background:  rgba(255, 255, 255, 1.0); */
-     /*   color: rgba(50, 50, 50); */
-     /* } */
+      &:hover {  
+        background:  rgba(255, 255, 255, 1.0); 
+        color: rgba(50, 50, 50); 
+      } 
     }
   
     .itemHoverable:hover {
-     /* cursor: pointer; */
-      background: rgba(44, 201, 39); 
-      color :rgba(212, 37, 37, 0.9);
-      font-size : 22px;
+      cursor: pointer; 
+      background-color:rgba(0, 0, 0, 0.7)!important; 
     }
   
     .logo {
