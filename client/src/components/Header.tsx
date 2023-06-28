@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 import {Link} from "react-router-dom";
 import { Icon, Menu, Dropdown } from "semantic-ui-react";
@@ -6,10 +6,12 @@ import { Icon, Menu, Dropdown } from "semantic-ui-react";
 
 import Paths from "../constants/Paths";
 import styles from "./Header.module.scss";
+import NotiModal from "./NotiModal";
 
 
 function Header(){
     console.log(Paths.ROOT);
+    const [showNotif, setShowNoti] = useState(false);
     const onSettings = ()=> {
         console.log('setting');
     };
@@ -18,6 +20,7 @@ function Header(){
     };
 
     return(
+        <>
         <div className={styles.wrapper}>
             <Link to={Paths.ROOT} className={`${styles.logo} ${styles.title}`}>
                 Planka
@@ -30,9 +33,9 @@ function Header(){
                         className={`${styles.item} ${styles.itemHoverable}`}>
                     <Icon fitted name= "users" />
                     </Menu.Item>
-                    <Menu.Item className={`${styles.item}  ${styles.itemHoverable}`}>
-                    <Icon fitted name="bell" />
-                    <span className={styles.notification}>3</span>  {/*nofification 있으면 갯수를 표시 */}
+                    <Menu.Item onClick={()=>{setShowNoti(!showNotif)}} className={`${styles.item}  ${styles.itemHoverable}`}>
+                        <Icon fitted name="bell" />
+                        <span className={styles.notification}>3</span>  {/*nofification 있으면 갯수를 표시 */}
                     </Menu.Item>
                     <Menu.Item className={`${styles.item}, ${styles.itemHoverable}`}>
                     {"Demo Demo"}   {/* 로그인 하면 사용자 정보 표시  -> 로그아웃, 사용자 정보 메뉴화면 나옴. */}
@@ -46,9 +49,10 @@ function Header(){
                 </Menu.Menu>
             </Menu>
             <Menu>
-            
            </Menu>
         </div>
+        {showNotif && <NotiModal setShowNoti={setShowNoti}/>}
+        </>
     );
 }
 /*
