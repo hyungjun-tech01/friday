@@ -1,6 +1,9 @@
+import Projects from "./Projects";
 function Static(){
     return(
-        <div> Static </div>
+        <div >
+            <Projects />
+        </div>
     )
 }
 export default Static;
