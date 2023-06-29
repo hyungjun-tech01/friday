@@ -52,10 +52,11 @@ const SInfo = styled.div`
 `
 function Core(){
     const [currentModal, setCurrentModal] = useState(null);
+    const [projectId, setProjectId] = useState(0);
 return (
     <>
     <Fix />
-    <Static />
+    <Static projectId={projectId}/>
     {currentModal === "USERS" && <UsersModal/>}
     {currentModal === "USER_SETTING" && <UserSettingModal/>}
     {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}
