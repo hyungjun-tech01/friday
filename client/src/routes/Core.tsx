@@ -62,10 +62,11 @@ return (
         <Static projectId={projectId}/>
         {currentModal === "USERS" && <UsersModal/>}
         {currentModal === "USER_SETTING" && <UserSettingModal/>}
-        {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}
+      
     </div>
 );
 
+//  {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}
 
  /*    핵심 내용 기록해 놓을 것. 
     // recoil에서 atom에서 Project 데이터를 가지고 옴 -> 일차로 이것부터 구현해 본다.

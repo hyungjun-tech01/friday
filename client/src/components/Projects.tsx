@@ -2,15 +2,18 @@
 import { useRecoilState } from "recoil";
 import {useQuery} from "react-query";
 import { Container, Grid } from 'semantic-ui-react';
+import {useState} from "react";
 
 import {atomMyProject,IProject} from "../atoms/atoms";
 import {apiGetProjects} from "../api/project";
 import styles from "./Projects.module.scss";
 import { ReactComponent as PlusIcon } from '../image/plusicon.svg';
+import ProjectAddModal from "./ProjectAddModal";
 
 function Projects(){
     // atom에서 data 가지고 옴 .   
     const [projects, setProjects] = useRecoilState<IProject[]>(atomMyProject); 
+    const [showProjectAddModal, setShowProjectAddModal] = useState(false);
     // login 하면 가지고 있을 것.  const [user, setUser] = useRecoilState<IUser>(atomUser); 
     const userId = "967860418955445249";
     // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
@@ -24,6 +27,7 @@ function Projects(){
     );
     const onAdd = ()=>{
         console.log("add project");
+        setShowProjectAddModal(true);
     }
     return(
         <div className={styles.projects}>
@@ -50,6 +54,7 @@ function Projects(){
                   </Grid.Column>
                 </Grid>
             </Container>    
+            {showProjectAddModal&&<ProjectAddModal setShowProjectAddModal={setShowProjectAddModal}/>}
         </div>
     )
 }
