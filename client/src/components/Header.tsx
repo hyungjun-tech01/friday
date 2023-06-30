@@ -26,9 +26,10 @@ function Header(){
                 Planka
             </Link>
             <Menu inverted size="large" className={styles.menu}>
-                <Menu.Menu position="left">
+                <Menu.Menu className={styles.menu_left} position="left">
+                    <Menu.Item  className={`${styles.item} ${styles.itemHoverable}`} ></Menu.Item>
                 </Menu.Menu>    
-                <Menu.Menu position="right">
+                <Menu.Menu className={styles.menu_right} position="right">
                     <Menu.Item
                         className={`${styles.item} ${styles.itemHoverable}`}>
                     <Icon fitted name= "users" />

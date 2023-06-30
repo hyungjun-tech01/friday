@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "easymde": "^2.18.0",
+    "photoswipe": "^5.3.7",
+    "react-datepicker": "^4.14.1"
+  }
+}

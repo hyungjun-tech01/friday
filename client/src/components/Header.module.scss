@@ -19,7 +19,7 @@
   
     .itemHoverable:hover {
       cursor: pointer; 
-      background-color:rgba(0, 0, 0, 0.7)!important; 
+      background-color:#22252a!important; 
     }
   
     .logo {
@@ -39,17 +39,27 @@
     }
   
     .menu {
-      background: transparent;
+      background: rgba(0, 0, 0) ;
       border: none;
       border-radius: 0;
       box-shadow: none;
       color: #fff;
-      flex: 1 1 auto;
+      flex: 1 1 auto; 
       height: 50px; 
       margin: 0;
       width: 100%;
     }
   
+    .menu_left{
+      width: 75%;
+      background: rgba(0, 0, 0) ;
+    }
+
+    .menu_right{
+      width: 25%;
+      background: rgba(0, 0, 0) ;
+    }
+
     .notification {
       background: #eb5a46;
       border-radius: 8px;
@@ -72,7 +82,7 @@
     }
   
     .wrapper {
-      background: rgba(0, 0, 0, 0.9);
+      background-color: rgba(0, 0, 0) ;
       display: flex;
       flex: 0 0 auto;
     }

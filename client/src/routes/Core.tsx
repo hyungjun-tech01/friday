@@ -13,6 +13,8 @@ import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
 import ProjectAddModal from "../components/ProjectAddModal";
 
+import styles from "./Core.module.scss";
+
 const SWrapper = styled.div`
     display : flex;
     flex-wrap: wrap;
@@ -49,18 +51,19 @@ const SInfo = styled.div`
     width : 100%;
     position : relative;
     bottom : -80px;
-`
+`;
+
 function Core(){
     const [currentModal, setCurrentModal] = useState(null);
     const [projectId, setProjectId] = useState(0);
 return (
-    <>
-    <Fix />
-    <Static projectId={projectId}/>
-    {currentModal === "USERS" && <UsersModal/>}
-    {currentModal === "USER_SETTING" && <UserSettingModal/>}
-    {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}
-    </>
+    <div className={styles.core}>
+        <Fix />
+        <Static projectId={projectId}/>
+        {currentModal === "USERS" && <UsersModal/>}
+        {currentModal === "USER_SETTING" && <UserSettingModal/>}
+        {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}
+    </div>
 );
 
 

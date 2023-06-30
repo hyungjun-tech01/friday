@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom/client';
 import { RecoilRoot } from "recoil";
 import Root from './Root';
 import {QueryClient, QueryClientProvider} from "react-query";
-import 'semantic-ui-css/semantic.min.css'
+import 'semantic-ui-css/semantic.min.css';
+import './index.css';
 
 const client = new QueryClient();
-
 
 
 const root = ReactDOM.createRoot(

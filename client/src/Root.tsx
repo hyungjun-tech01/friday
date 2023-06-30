@@ -4,6 +4,11 @@ import { BrowserRouter as Router, Switch, Route }  from "react-router-dom";
 import Core from './routes/Core';
 import Login from './routes/Login';
 import Path from './constants/Paths';
+
+import 'react-datepicker/dist/react-datepicker.css';
+import 'photoswipe/dist/photoswipe.css';
+import 'easymde/dist/easymde.min.css';
+
 /*
 <div className="App">
       <header className="App-header">

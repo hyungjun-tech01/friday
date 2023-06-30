@@ -6,6 +6,7 @@ import { Container, Grid } from 'semantic-ui-react';
 import {atomMyProject,IProject} from "../atoms/atoms";
 import {apiGetProjects} from "../api/project";
 import styles from "./Projects.module.scss";
+import { ReactComponent as PlusIcon } from '../image/plusicon.svg';
 
 function Projects(){
     // atom에서 data 가지고 옴 .   
@@ -21,17 +22,32 @@ function Projects(){
        /* enabled : !showNewProject */
       }
     );
+    const onAdd = ()=>{
+        console.log("add project");
+    }
     return(
-        <div >
+        <div className={styles.projects}>
             Project
             <Container className={styles.cardsWrapper}>
                 <Grid className={styles.gridFix}>
                     {projects.map( (item) => (
                         <Grid.Column key={item.projectId} mobile={8} computer={4}>
-                            <div className={styles.openTitle}>{item.projectName}</div>
+                            <div className={`${styles.open} ${styles.card}`}>
+                                <div className={styles.openTitle}>{item.projectName}</div>
+                            </div>
                         </Grid.Column>
                     )
                     )}
+                    <Grid.Column mobile={8} computer={4}>
+                        <button type="button" className={`${styles.card}, ${styles.add}`} onClick={onAdd}>
+                          <div className={styles.addTitleWrapper}>
+                            <div className={styles.addTitle}>
+                              <PlusIcon className={styles.addGridIcon} />
+                              프로젝트 생성
+                            </div>
+                          </div>
+                        </button>
+                  </Grid.Column>
                 </Grid>
             </Container>    
         </div>
