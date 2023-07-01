@@ -31,6 +31,28 @@ app.get('/projects/:userId', async(req, res)=>{
     }
 );
 
+// get all boards by project id 
+app.get('/boards/:projectId', async(req, res)=>{
+    const projectId = req.params.projectId;
+    console.log(projectId);
+    try{
+            const boards = await pool.query(`
+            select b.id as "boardId", b.name as "boardName", 
+			b.project_id as "projectId", b.created_at as "createdAt",
+			bm.user_id as "userId", bm.role as "role",
+			bm.can_comment as "canComment"
+            from board b, board_membership bm
+            where b.id = bm.board_id 
+			and b.project_id = $1`, [projectId]);
+            res.json(boards.rows);
+            console.log(boards.rows);
+    }catch(err){
+        console.log(err);
+    }
+    }
+);
+
+
 // create project 
 app.post('/project', async(req, res) => {
     const {projectName, userId} = req.body;
@@ -42,7 +64,7 @@ app.post('/project', async(req, res) => {
         // 성공하면 get max project by user id 
         const project = await pool.query(`SELECT MAX(id) projectId from project where name = $1`,
         [projectName]);
-        const {projectid} = project.rows[0];   // project id를 못가지고 와서 한 참 헤맴.
+        const {projectid} = project.rows[0];   // project id를 못가지고 와서 한 참 헤맴. 원래 대로 하면 project_manager를 먼저 넣고, 그 다음에 project를 생성해야 할 듯 한다. 
         // insert project_manager 
         const response = await pool.query(`INSERT INTO project_manager(project_id, user_id,created_at ) 
                                             values($1, $2, now())`,
@@ -53,6 +75,9 @@ app.post('/project', async(req, res) => {
         console.error(err);
     }
 });
+
+
+
 /*
 , pm.created_at, pm.updated_at, 
             ua.email, ua.name user_name, 

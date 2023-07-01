@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route }  from "react-router-dom";
 
 import Core from './routes/Core';
 import Login from './routes/Login';
+import Test from "./components/Test";
 import Path from './constants/Paths';
 
 import 'react-datepicker/dist/react-datepicker.css';
@@ -36,6 +37,9 @@ function Root() {
       <Switch>
         <Route path = {Path.LOGIN}>
           <Login/>
+        </Route>
+        <Route path = {Path.PROJECTS}>
+          <Core/>
         </Route>
         <Route path= {Path.ROOT}>
           <Core/>

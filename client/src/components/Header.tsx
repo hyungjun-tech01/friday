@@ -5,7 +5,7 @@ import { Icon, Menu, Dropdown } from "semantic-ui-react";
 
 
 import Paths from "../constants/Paths";
-import styles from "./Header.module.scss";
+import styles from "../scss/Header.module.scss";
 import NotiModal from "./NotiModal";
 
 

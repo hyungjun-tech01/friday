@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import {useRecoilState} from "recoil";
+import {useParams} from "react-router";
 
 import {apiGetProjects} from "../api/project";
 import {atomMyProject, IProject} from '../atoms/atoms';
@@ -12,8 +13,7 @@ import Static from "../components/Static";
 import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
 import ProjectAddModal from "../components/ProjectAddModal";
-
-import styles from "./Core.module.scss";
+import { metaProperty } from "@babel/types";
 
 const SWrapper = styled.div`
     display : flex;
@@ -53,17 +53,26 @@ const SInfo = styled.div`
     bottom : -80px;
 `;
 
+const SCore = styled.div`
+    width: 100%;
+    height: 100%;
+    background: #22252a;  /*index의 background 하고 색상을 맞추어야 함.*/
+`;
+interface ICoreParams {
+    id : string;
+}
 function Core(){
+    const {id} = useParams<ICoreParams>();
     const [currentModal, setCurrentModal] = useState(null);
-    const [projectId, setProjectId] = useState(0);
-return (
-    <div className={styles.core}>
+    console.log("core", id);
+    return (
+    <SCore>
         <Fix />
-        <Static projectId={projectId}/>
+        <Static projectId={id}/>
         {currentModal === "USERS" && <UsersModal/>}
         {currentModal === "USER_SETTING" && <UserSettingModal/>}
       
-    </div>
+    </SCore>
 );
 
 //  {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}

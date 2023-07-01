@@ -1,4 +1,4 @@
-import styles from "./NotiModal.module.scss";
+import styles from "../scss/NotiModal.module.scss";
 
 // notimodal props interface 정의 
 interface INotiModalProps{

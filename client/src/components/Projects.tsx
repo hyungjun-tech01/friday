@@ -3,12 +3,14 @@ import { useRecoilState } from "recoil";
 import {useQuery} from "react-query";
 import { Container, Grid } from 'semantic-ui-react';
 import {useState} from "react";
+import {Link} from "react-router-dom";
 
 import {atomMyProject,IProject} from "../atoms/atoms";
 import {apiGetProjects} from "../api/project";
-import styles from "./Projects.module.scss";
+import styles from "../scss/Projects.module.scss";
 import { ReactComponent as PlusIcon } from '../image/plusicon.svg';
 import ProjectAddModal from "./ProjectAddModal";
+import Paths from "../constants/Paths";
 
 function Projects(){
     // atom에서 data 가지고 옴 .   
@@ -22,7 +24,7 @@ function Projects(){
         onSuccess: data => {
            setProjects(data);   // use Query 에서 atom에 set 
         },
-       /* enabled : !showNewProject */
+        enabled : !showProjectAddModal
       }
     );
     const onAdd = ()=>{
@@ -36,9 +38,11 @@ function Projects(){
                 <Grid className={styles.gridFix}>
                     {projects.map( (item) => (
                         <Grid.Column key={item.projectId} mobile={8} computer={4}>
+                            <Link to={ Paths.PROJECTS.replace(':id', item.projectId) }>
                             <div className={`${styles.open} ${styles.card}`}>
                                 <div className={styles.openTitle}>{item.projectName}</div>
                             </div>
+                            </Link>
                         </Grid.Column>
                     )
                     )}

@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {INewProject} from "../atoms/atoms";
 import { apiPostProjects } from "../api/project";
+import styles from "../scss/ProjectAddModal.module.scss";
 
 // project add modal  props interface 정의 
 interface IProjectAddModalProps{
@@ -37,26 +38,26 @@ function ProjectAddModal({setShowProjectAddModal}:IProjectAddModalProps){
         }
     };            
    return(
-        <div className= "overlay">
-            <div className="modal">
-                <div className="form-title-container"> 
-                    <h3>your new project</h3>
-                        <button onClick={()=>setShowProjectAddModal(false)}>X</button>
-                </div>
+    <div className= {styles.overlay}>
+        <div className={styles.modal}>
+            <div className={styles.title}> 
+                <h3>your new project</h3>
+                    <button className={styles.button} onClick={()=>setShowProjectAddModal(false)}>X</button>
+            </div>
             <form>
                 <input 
                     required 
-                    maxLength = {50}
+                    maxLength = {70}
                     placeholder = "Your project goes here"
                     name = "projectName"
                     value = {data.projectName}
                     onChange={handleChange}/>
-              <br/>
-          <input type="submit" onClick={postData}/>
-        </form>
+            <br/>
+            <input type="submit" onClick={postData}/>
+            </form>
         </div>
     </div>
-    )
+    );
 }
 
 export default ProjectAddModal;
