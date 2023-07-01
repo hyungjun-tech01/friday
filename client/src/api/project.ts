@@ -1,7 +1,7 @@
-import {INewProject} from "../atoms/atoms";
-import {Axios} from "axios";
+import {INewProject} from "../atoms/atomsProject";
+import Paths from "../constants/Paths";
 
-const BASE_PATH = "http://localhost:7000"; 
+const BASE_PATH = Paths.BASE_PATH; 
 
 export const apiGetProjects = async (userId:string) => {
     console.log("getprojects", BASE_PATH);

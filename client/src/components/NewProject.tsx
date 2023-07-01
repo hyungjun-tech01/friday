@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {INewProject} from "../atoms/atoms";
+import {INewProject} from "../atoms/atomsProject";
 import { apiPostProjects } from "../api/project";
 
 function NewProject({setshowNewProject}:any) {

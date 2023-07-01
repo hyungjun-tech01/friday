@@ -38,11 +38,13 @@ app.get('/boards/:projectId', async(req, res)=>{
     try{
             const boards = await pool.query(`
             select b.id as "boardId", b.name as "boardName", 
-			b.project_id as "projectId", b.created_at as "createdAt",
+			b.project_id as "projectId", p.projectId as "projectName", 
+            b.created_at as "createdAt",
 			bm.user_id as "userId", bm.role as "role",
 			bm.can_comment as "canComment"
-            from board b, board_membership bm
+            from board b, board_membership bm, project p
             where b.id = bm.board_id 
+            and b.project_id = p.id
 			and b.project_id = $1`, [projectId]);
             res.json(boards.rows);
             console.log(boards.rows);

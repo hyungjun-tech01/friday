@@ -5,7 +5,7 @@ import { Container, Grid } from 'semantic-ui-react';
 import {useState} from "react";
 import {Link} from "react-router-dom";
 
-import {atomMyProject,IProject} from "../atoms/atoms";
+import {atomMyProject,IProject} from "../atoms/atomsProject";
 import {apiGetProjects} from "../api/project";
 import styles from "../scss/Projects.module.scss";
 import { ReactComponent as PlusIcon } from '../image/plusicon.svg';

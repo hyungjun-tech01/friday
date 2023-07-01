@@ -5,7 +5,7 @@ import {useRecoilState} from "recoil";
 import {useParams} from "react-router";
 
 import {apiGetProjects} from "../api/project";
-import {atomMyProject, IProject} from '../atoms/atoms';
+import {atomMyProject, IProject} from '../atoms/atomsProject';
 import NewProject from '../components/NewProject';
 import { FOCUSABLE_SELECTOR } from "@testing-library/user-event/dist/utils";
 import Fix from "../components/Fix";
