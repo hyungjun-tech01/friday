@@ -30,7 +30,6 @@ function Board({projectId}:IBoardProps){
     };
     return(
         <div className={styles.wrapper}>
-            Board : ProjectId = {projectId}
             <div className={styles.tabsWrapper}>
                 <div className={styles.tab}>
                     {boards.map( (item) => (item.boardName)

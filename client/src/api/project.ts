@@ -18,6 +18,22 @@ export const apiGetProjects = async (userId:string) => {
     //);
 };
 
+export const apiGetProjectbyId = async (projectId:string) => {
+    console.log("getprojectby project id", BASE_PATH);
+    try{
+        const response = await fetch(`${BASE_PATH}/project/${projectId}`);  // backtik 
+        const json = await response.json()
+        return json;
+    }catch(err){
+        console.error(err);
+    }
+
+    //return fetch(`${BASE_PATH}/projects`).then(
+    //    (response) => response.json()
+    //);
+};
+
+
 export async function  apiPostProjects(project:INewProject) {
     console.log("post project", project);
     try{

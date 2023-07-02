@@ -17,6 +17,13 @@ export interface INewProject{
 export const atomMyProject = atom<IProject[]>({
     key:"myProject",
     default : [
-        { projectId:"3" , projectName:"MyProject3"},
+        { projectId:"" , projectName:""},
+    ]
+});
+
+export const atomCurrentProject = atom<IProject[]>({
+    key:"currentProject",
+    default : [
+        { projectId:"" , projectName:""},
     ]
 });

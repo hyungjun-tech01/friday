@@ -4,8 +4,8 @@ import { useQuery } from "react-query";
 import {useRecoilState} from "recoil";
 import {useParams} from "react-router";
 
-import {apiGetProjects} from "../api/project";
-import {atomMyProject, IProject} from '../atoms/atomsProject';
+import {apiGetProjectbyId} from "../api/project";
+import {atomCurrentProject, IProject} from '../atoms/atomsProject';
 import NewProject from '../components/NewProject';
 import { FOCUSABLE_SELECTOR } from "@testing-library/user-event/dist/utils";
 import Fix from "../components/Fix";
@@ -13,7 +13,7 @@ import Static from "../components/Static";
 import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
 import ProjectAddModal from "../components/ProjectAddModal";
-import { metaProperty } from "@babel/types";
+
 
 const SWrapper = styled.div`
     display : flex;
@@ -63,8 +63,27 @@ interface ICoreParams {
 }
 function Core(){
     const {id} = useParams<ICoreParams>();
+
+  //project id로 project 쿼리할 것.
+  const [project, setProject] = useRecoilState<IProject[]>(atomCurrentProject); 
+  // login 하면 가지고 있을 것.  const [user, setUser] = useRecoilState<IUser>(atomUser); 
+  const userId = "967860418955445249";
+  // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
+  // useQuery(['todos', todoId], () => fetchTodoById(todoId))
+
+  const queryProjectById = id==='undefined' ?  false:true;
+  const {isLoading, data, isSuccess} = useQuery<IProject[]>(["projectById", id], ()=>apiGetProjectbyId(id),{
+      onSuccess: data => {
+        setProject(data);   // use Query 에서 atom에 set 
+          console.log("core", project);
+        },
+         //enabled : !queryProjectById
+        }   
+        ); 
+      
+
     const [currentModal, setCurrentModal] = useState(null);
-    console.log("core", id);
+    console.log("cccccccccccccore", id);
     return (
     <SCore>
         <Fix />
