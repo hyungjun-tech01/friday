@@ -17,7 +17,7 @@ function Board({projectId}:IBoardProps){
     const userId = "967860418955445249";
     // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
     // useQuery(['todos', todoId], () => fetchTodoById(todoId))
-    const {isLoading, data, isSuccess} = useQuery<IBoard[]>(["allMyBoards", userId], ()=>apiGetBoards(userId),{
+    const {isLoading, data, isSuccess} = useQuery<IBoard[]>(["allMyBoards", projectId], ()=>apiGetBoards(projectId),{
         onSuccess: data => {
             setBoards(data);   // use Query 에서 atom에 set 
             console.log(boards);

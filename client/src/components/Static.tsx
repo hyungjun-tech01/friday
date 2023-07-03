@@ -6,11 +6,12 @@ interface IStaticProps{
     projectId:string;
 }
 function Static({projectId}:IStaticProps){
-    console.log("projectId"+projectId);
+    const queryProjectById = projectId ===undefined ?  false:true;
+    console.log("projectId", projectId, queryProjectById);
     return(
         <div >
-            {!projectId && <Projects />}
-            {projectId &&<Board projectId={projectId}/> }
+            {!queryProjectById && <Projects />}
+            {queryProjectById &&<Board projectId={projectId}/> }
         </div>
     )
 }

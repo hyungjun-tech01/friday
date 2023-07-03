@@ -71,13 +71,14 @@ function Core(){
   // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
   // useQuery(['todos', todoId], () => fetchTodoById(todoId))
 
-  const queryProjectById = id==='undefined' ?  false:true;
+  const queryProjectById = id===undefined ?  false:true;
+
   const {isLoading, data, isSuccess} = useQuery<IProject[]>(["projectById", id], ()=>apiGetProjectbyId(id),{
       onSuccess: data => {
         setProject(data);   // use Query 에서 atom에 set 
           console.log("core", project);
         },
-         //enabled : !queryProjectById
+         enabled : queryProjectById
         }   
         ); 
       

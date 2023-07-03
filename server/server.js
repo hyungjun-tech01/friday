@@ -31,6 +31,24 @@ app.get('/projects/:userId', async(req, res)=>{
     }
 );
 
+// sigle projects by projectId
+app.get('/project/:projectId', async(req, res)=>{
+    const projectId = req.params.projectId;
+    console.log("sigle projects by projectId", projectId);
+    try{
+            const project = await pool.query(`
+            select p.id as "projectId", p.name as "projectName"
+            from project p, project_manager pm
+            where p.id = pm.project_id 
+            and pm.project_id = $1`, [projectId]);
+            res.json(project.rows);
+            console.log(project.rows);
+    }catch(err){
+        console.log(err);
+    }
+    }
+);
+
 // get all boards by project id 
 app.get('/boards/:projectId', async(req, res)=>{
     const projectId = req.params.projectId;
@@ -38,7 +56,7 @@ app.get('/boards/:projectId', async(req, res)=>{
     try{
             const boards = await pool.query(`
             select b.id as "boardId", b.name as "boardName", 
-			b.project_id as "projectId", p.projectId as "projectName", 
+			b.project_id as "projectId", p.name as "projectName", 
             b.created_at as "createdAt",
 			bm.user_id as "userId", bm.role as "role",
 			bm.can_comment as "canComment"
