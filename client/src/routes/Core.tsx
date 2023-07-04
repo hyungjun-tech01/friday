@@ -7,6 +7,8 @@ import { useLocation } from "react-router-dom";
 
 import {apiGetProjectbyId} from "../api/project";
 import {atomCurrentProject, IProject} from '../atoms/atomsProject';
+
+import {atomCurrentMyBoard, ICurrent} from '../atoms/atomsBoard';
 import NewProject from '../components/NewProject';
 import { FOCUSABLE_SELECTOR } from "@testing-library/user-event/dist/utils";
 import Fix from "../components/Fix";
@@ -70,8 +72,15 @@ function Core(){
 
     const {id} = useParams<ICoreParams>();
 
+    const [current, setCurrent] = useRecoilState<ICurrent>(atomCurrentMyBoard);
+
+    if(IsMaster) 
+        setCurrent({projectId:id, boardId:current.boardId});
+    if(IsDetail) 
+        setCurrent({projectId:current.projectId, boardId:id});    
+
   //project id로 project 쿼리할 것.
-  const [project, setProject] = useRecoilState<IProject[]>(atomCurrentProject); 
+//  const [project, setProject] = useRecoilState<IProject[]>(atomCurrentProject); 
   // login 하면 가지고 있을 것.  const [user, setUser] = useRecoilState<IUser>(atomUser); 
   const userId = "967860418955445249";
   // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
@@ -86,15 +95,15 @@ function Core(){
 //        },
 //         enabled : queryProjectById
 //        }   
-//        ); 
+//    ); 
 //      
 
     const [currentModal, setCurrentModal] = useState(null);
-    console.log("cccccccccccccore", id);
+    console.log("cccccccccccccore", current);
     return (
     <SCore>
         <Fix />
-        <Static projectId={IsMaster ? id:""} boardId={IsDetail ? id:""}/>
+        <Static projectId={current.projectId} boardId={current.boardId}/>
         {currentModal === "USERS" && <UsersModal/>}
         {currentModal === "USER_SETTING" && <UserSettingModal/>}
       

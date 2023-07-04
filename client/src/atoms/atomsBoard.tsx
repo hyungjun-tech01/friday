@@ -10,6 +10,15 @@ export interface IBoard{
     userId : string;
 }
 
+export interface ICurrent{
+    boardId : string;
+    projectId : string;
+}
+export const atomCurrentMyBoard = atom<ICurrent>({
+    key : "currentBoard",
+    default : { boardId:"" , projectId:""}
+});
+
 // default value 1, MyProject 1
 export const atomMyBoard = atom<IBoard[]>({
     key:"myBoard",
