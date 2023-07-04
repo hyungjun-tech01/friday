@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useQuery } from "react-query";
 import {useRecoilState} from "recoil";
 import {useParams} from "react-router";
+import { useLocation } from "react-router-dom";
 
 import {apiGetProjectbyId} from "../api/project";
 import {atomCurrentProject, IProject} from '../atoms/atomsProject';
@@ -62,6 +63,11 @@ interface ICoreParams {
     id : string;
 }
 function Core(){
+    const {pathname} = useLocation();
+    const IsDetail = pathname.includes('board');
+    const IsMaster = pathname.includes('project');
+    console.log("location", pathname);
+
     const {id} = useParams<ICoreParams>();
 
   //project id로 project 쿼리할 것.
@@ -71,24 +77,24 @@ function Core(){
   // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
   // useQuery(['todos', todoId], () => fetchTodoById(todoId))
 
-  const queryProjectById = id===undefined ?  false:true;
+//  const queryProjectById = id===undefined ?  false:true;
 
-  const {isLoading, data, isSuccess} = useQuery<IProject[]>(["projectById", id], ()=>apiGetProjectbyId(id),{
-      onSuccess: data => {
-        setProject(data);   // use Query 에서 atom에 set 
-          console.log("core", project);
-        },
-         enabled : queryProjectById
-        }   
-        ); 
-      
+//  const {isLoading, data, isSuccess} = useQuery<IProject[]>(["projectById", id], ()=>apiGetProjectbyId(id),{
+//      onSuccess: data => {
+//        setProject(data);   // use Query 에서 atom에 set 
+//          console.log("core", project);
+//        },
+//         enabled : queryProjectById
+//        }   
+//        ); 
+//      
 
     const [currentModal, setCurrentModal] = useState(null);
     console.log("cccccccccccccore", id);
     return (
     <SCore>
         <Fix />
-        <Static projectId={id}/>
+        <Static projectId={IsMaster ? id:""} boardId={IsDetail ? id:""}/>
         {currentModal === "USERS" && <UsersModal/>}
         {currentModal === "USER_SETTING" && <UserSettingModal/>}
       

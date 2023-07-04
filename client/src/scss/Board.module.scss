@@ -9,6 +9,24 @@
     }
   }
 
+  .tabActive {
+    background: rgba(0, 0, 0, 0.24);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.32);
+    }
+
+    .link {
+      color: #fff;
+      font-weight: bold;
+    }
+  }
+
+  .tabWrapper {
+    display: flex;
+    flex: 0 0 auto;
+  }
+
   .tab {
     border-radius: 3px 3px 0 0;
     min-width: 100px;
@@ -48,7 +66,12 @@
       border-radius: 3px;
     }
   }
-
+  .tabs {
+    display: flex;
+    height: 38px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
 
 .wrapper {
     border-bottom: 1px solid rgba(0, 0, 0, 0.24);
@@ -56,5 +79,15 @@
     flex: 1 1 auto;
     flex-direction: column;
     height: 38px;
+    overflow: hidden;
+  }
+  .link {
+    color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+    display: block;
+    line-height: 20px;
+    padding: 10px 34px 6px 14px;
+    text-overflow: ellipsis;
+    max-width: 400px;
     overflow: hidden;
   }

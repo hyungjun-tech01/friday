@@ -2,9 +2,11 @@ import {useRecoilState} from "recoil";
 import {IBoard, atomMyBoard} from "../atoms/atomsBoard";
 import {useQuery} from "react-query";
 import { Button, Icon } from 'semantic-ui-react';
+import {Link} from "react-router-dom";
 
 import {apiGetBoards} from "../api/board";
 import styles from "../scss/Board.module.scss";
+import Paths from "../constants/Paths";
 
 interface IBoardProps{
     projectId:string;
@@ -31,9 +33,22 @@ function Board({projectId}:IBoardProps){
     return(
         <div className={styles.wrapper}>
             <div className={styles.tabsWrapper}>
-                <div className={styles.tab}>
-                    {boards.map( (item) => (item.boardName)
-                    )}
+                <div className={styles.tabs}>
+                    <div className={styles.tabWrapper} >
+                    
+                        {boards.map( (item) => (
+                            <div className={styles.tab} >
+                                <Link
+                                    to={Paths.BOARDS.replace(':id', item.boardId)}
+                                    title={item.boardId}
+                                    className={styles.link}
+                                >
+                                {item.boardName}
+                                </Link>
+
+                            </div>
+                            ))}
+                    </div>
 
                     <div onClick={onCreate}>
                         <Button icon="plus" className={styles.addButton} />
