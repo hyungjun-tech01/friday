@@ -1,4 +1,5 @@
 import {atom} from "recoil";
+import {selector} from "recoil";
 
 export interface IProject{
     projectId : string;
@@ -23,7 +24,21 @@ export const atomMyProject = atom<IProject[]>({
 
 export const atomCurrentProject = atom<IProject[]>({
     key:"currentProject",
-    default : [
-        { projectId:"" , projectName:""},
-    ]
+    default : 
+        [{ projectId:"" , projectName:""}],
+    
+});
+
+export const atomCurrent = atom<string>({
+    key:"currentId",
+    default : 
+        "11111",
+    
+});
+
+export const getCurrentProject = selector({
+    key: 'getCurrentProject',
+    get: ({ get }) => {
+        return get(atomCurrent);
+    },
 });

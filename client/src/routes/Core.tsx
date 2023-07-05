@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import styled from "styled-components";
 import { useQuery } from "react-query";
-import {useRecoilState} from "recoil";
+import {useRecoilState, useRecoilValue} from "recoil";
 import {useParams} from "react-router";
 import { useLocation } from "react-router-dom";
 
 import {apiGetProjectbyId} from "../api/project";
-import {atomCurrentProject, IProject} from '../atoms/atomsProject';
+import {atomCurrentProject, IProject, getCurrentProject} from '../atoms/atomsProject';
 
 import {atomCurrentMyBoard, ICurrent} from '../atoms/atomsBoard';
 import NewProject from '../components/NewProject';
@@ -67,17 +67,20 @@ interface ICoreParams {
 function Core(){
     const {pathname} = useLocation();
     const IsDetail = pathname.includes('board');
-    const IsMaster = pathname.includes('project');
+    const IsMaster = pathname.includes('projects');
     console.log("location", pathname);
 
     const {id} = useParams<ICoreParams>();
 
-    const [current, setCurrent] = useRecoilState<ICurrent>(atomCurrentMyBoard);
+    const [currentProject, setCurrentProject] = useRecoilState<IProject[]>(atomCurrentProject);
+    const [current, setCurrent] = useState(false);
+    console.log("cccccccccccccore id", id);
 
-    if(IsMaster) 
-        setCurrent({projectId:id, boardId:current.boardId});
-    if(IsDetail) 
-        setCurrent({projectId:current.projectId, boardId:id});    
+
+//    if(IsMaster) 
+//       setCurrent({projectId:id, boardId:current.boardId});
+//    if(IsDetail) 
+//        setCurrent({projectId:current.projectId, boardId:id});    
 
   //project id로 project 쿼리할 것.
 //  const [project, setProject] = useRecoilState<IProject[]>(atomCurrentProject); 
@@ -86,24 +89,24 @@ function Core(){
   // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
   // useQuery(['todos', todoId], () => fetchTodoById(todoId))
 
-//  const queryProjectById = id===undefined ?  false:true;
+  //const queryProjectById = id===undefined ?  false:true;
 
-//  const {isLoading, data, isSuccess} = useQuery<IProject[]>(["projectById", id], ()=>apiGetProjectbyId(id),{
-//      onSuccess: data => {
-//        setProject(data);   // use Query 에서 atom에 set 
-//          console.log("core", project);
-//        },
-//         enabled : queryProjectById
-//        }   
-//    ); 
-//      
-
+  const {isLoading, data, isSuccess} = useQuery<IProject[]>(["projectById", id], ()=>apiGetProjectbyId(id),{
+    onSuccess: data => {
+        setCurrentProject(data);   // use Query 에서 atom에 set 
+        console.log("cccccccccccccore", currentProject);
+        setCurrent(true);
+       },
+         enabled : IsMaster
+        }   
+    ); 
     const [currentModal, setCurrentModal] = useState(null);
-    console.log("cccccccccccccore", current);
+   
     return (
     <SCore>
         <Fix />
-        <Static projectId={current.projectId} boardId={current.boardId}/>
+        {!current ? <Static projectId="" boardId=""/> :
+        <Static projectId={currentProject[0].projectId} boardId={IsDetail? id:""}/>}
         {currentModal === "USERS" && <UsersModal/>}
         {currentModal === "USER_SETTING" && <UserSettingModal/>}
       
