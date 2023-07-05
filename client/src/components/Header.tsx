@@ -9,7 +9,7 @@ import styles from "../scss/Header.module.scss";
 import NotiModal from "./NotiModal";
 
 
-function Header(){
+function Header({setCurrent, projectName}:any){
     console.log(Paths.ROOT);
     const [showNotif, setShowNoti] = useState(false);
     const onSettings = ()=> {
@@ -22,12 +22,14 @@ function Header(){
     return(
         <>
         <div className={styles.wrapper}>
-            <Link to={Paths.ROOT} className={`${styles.logo} ${styles.title}`}>
+            <Link to={Paths.ROOT} onClick={()=>{setCurrent(false); projectName="";}} className={`${styles.logo} ${styles.title}`}>
                 Planka
             </Link>
             <Menu inverted size="large" className={styles.menu}>
                 <Menu.Menu className={styles.menu_left} position="left">
-                    <Menu.Item  className={`${styles.item} ${styles.itemHoverable}`} ></Menu.Item>
+                    <Menu.Item  className={`${styles.item} ${styles.itemHoverable}`} >
+                        {projectName}
+                    </Menu.Item>
                 </Menu.Menu>    
                 <Menu.Menu className={styles.menu_right} position="right">
                     <Menu.Item

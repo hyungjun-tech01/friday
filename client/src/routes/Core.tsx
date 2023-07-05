@@ -75,8 +75,7 @@ function Core(){
     const [currentProject, setCurrentProject] = useRecoilState<IProject[]>(atomCurrentProject);
     const [current, setCurrent] = useState(false);
     console.log("cccccccccccccore id", id);
-
-
+    
 //    if(IsMaster) 
 //       setCurrent({projectId:id, boardId:current.boardId});
 //    if(IsDetail) 
@@ -104,7 +103,7 @@ function Core(){
    
     return (
     <SCore>
-        <Fix />
+        <Fix setCurrent={setCurrent} projectName={current ? currentProject[0].projectName:""} />
         {!current ? <Static projectId="" boardId=""/> :
         <Static projectId={currentProject[0].projectId} boardId={IsDetail? id:""}/>}
         {currentModal === "USERS" && <UsersModal/>}

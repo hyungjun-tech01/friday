@@ -1,8 +1,8 @@
 import Header from "./Header";
-function Fix(){
+function Fix({setCurrent, projectName}:any){
     return(
         <div>
-            <Header />
+            <Header setCurrent={setCurrent} projectName={projectName}/>
         </div>
     )
 }
