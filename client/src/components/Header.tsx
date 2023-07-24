@@ -16,7 +16,7 @@ function Header({setCurrent, projectName}:any){
     const history = useHistory();
     if(user.userId === ""){
         history.push(Path.LOGIN);
-        console.log("useHistory");
+        console.log("useHistory");  
     }
 
 
