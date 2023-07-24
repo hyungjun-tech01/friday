@@ -17,45 +17,6 @@ import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
 import ProjectAddModal from "../components/ProjectAddModal";
 
-
-const SWrapper = styled.div`
-    display : flex;
-    flex-wrap: wrap;
-    width : 100%;
-    align-items: center;
-    position : relative;
-    top:50px;
- `;
- const SBox = styled.div`
-    background-color : #041f03;
-    height: 150px;
-    width : 250px;
-    border-radius: 10px;
-    margin-left : 10px;
-    margin-right : 10px;
-    margin-top : 10px;
-    margin-bottom : 10px;
-`;
-const SLastBox = styled.div`
-    background-color : white;
-    height: 150px;
-    width : 250px;
-    border-radius: 10px;
-    margin-left : 10px;
-    margin-right : 10px;
-    margin-top : 10px;
-    margin-bottom : 10px;
-    color : black;
-    align-items: center;
-`;
-const SInfo = styled.div`
-    font-size : 20px;
-    padding : 20px;
-    width : 100%;
-    position : relative;
-    bottom : -80px;
-`;
-
 const SCore = styled.div`
     width: 100%;
     height: 100%;

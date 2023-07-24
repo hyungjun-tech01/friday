@@ -1,15 +1,25 @@
 import React, {useState} from "react";
-import styled from "styled-components";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
+import {useRecoilState} from "recoil";
 import { Icon, Menu, Dropdown } from "semantic-ui-react";
 
 
 import Paths from "../constants/Paths";
 import styles from "../scss/Header.module.scss";
 import NotiModal from "./NotiModal";
-
+import {IUser, atomMyUser} from "../atoms/atomsUser";
+import Path from '../constants/Paths';
 
 function Header({setCurrent, projectName}:any){
+    //project id로 보드를 쿼리할 것.
+    const [user, setUser] = useRecoilState<IUser>(atomMyUser); 
+    const history = useHistory();
+    if(user.userId === ""){
+        history.push(Path.LOGIN);
+        console.log("useHistory");
+    }
+
+
     console.log(Paths.ROOT);
     const [showNotif, setShowNoti] = useState(false);
     const onSettings = ()=> {
@@ -17,13 +27,20 @@ function Header({setCurrent, projectName}:any){
     };
     const onLogout = ()=> {
         console.log('logout');
+        setUser(
+            user => ({
+                ...user, 
+                userId : "" ,
+                userName : "",
+              })
+        )
     };
 
     return(
         <>
         <div className={styles.wrapper}>
             <Link to={Paths.ROOT} onClick={()=>{setCurrent(false); projectName="";}} className={`${styles.logo} ${styles.title}`}>
-                Planka
+                Friday
             </Link>
             <Menu inverted size="large" className={styles.menu}>
                 <Menu.Menu className={styles.menu_left} position="left">
@@ -41,7 +58,7 @@ function Header({setCurrent, projectName}:any){
                         <span className={styles.notification}>3</span>  {/*nofification 있으면 갯수를 표시 */}
                     </Menu.Item>
                     <Menu.Item className={`${styles.item}, ${styles.itemHoverable}`}>
-                    {"Demo Demo"}   {/* 로그인 하면 사용자 정보 표시  -> 로그아웃, 사용자 정보 메뉴화면 나옴. */}
+                    {user.userName}   {/* 로그인 하면 사용자 정보 표시  -> 로그아웃, 사용자 정보 메뉴화면 나옴. */}
                         <Dropdown item icon='caret down' simple>
                         <Dropdown.Menu >
                             <Dropdown.Item onClick={onSettings}>설정</Dropdown.Item>
