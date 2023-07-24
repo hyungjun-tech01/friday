@@ -76,10 +76,6 @@ function Core(){
     const [current, setCurrent] = useState(false);
     console.log("cccccccccccccore id", id);
     
-//    if(IsMaster) 
-//       setCurrent({projectId:id, boardId:current.boardId});
-//    if(IsDetail) 
-//        setCurrent({projectId:current.projectId, boardId:id});    
 
   //project id로 project 쿼리할 것.
 //  const [project, setProject] = useRecoilState<IProject[]>(atomCurrentProject); 
