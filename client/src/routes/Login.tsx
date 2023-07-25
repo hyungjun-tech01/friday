@@ -2,6 +2,8 @@ import React, {useState, useMemo} from "react";
 import styles from "../scss/Login.module.scss";
 import { Form, Grid, Header, Message } from 'semantic-ui-react';
 import {useForm} from "react-hook-form";
+import {useCookies} from "react-cookie";
+
 
 
 const createMessage = (error:IError) => {
@@ -48,11 +50,33 @@ interface IForm{
 }
 
 function Login(){
+    const [cookies, setCookie, removeCookie] = useCookies(null);
+    const [error, setError] = useState(null);
+
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const {register, handleSubmit, formState:{errors}} = useForm<IForm>();
 
-    const onValid = (data:IForm) => {
+    const onValid = async (data:IForm) => {
       console.log("handdleSubmtt" ,data);
+      const response = await fetch(`http://localhost:8000/login`,{
+          method : 'POST',
+          headers:{'Content-Type':'application/json'},
+          body : JSON.stringify(data)
+        });
+      const returnMessage = await response.json();
+
+      if(returnMessage.detail){
+        setError(returnMessage.detail);
+        console.log("error", error  );
+      }else{
+        setCookie('Email', returnMessage.email);
+        setCookie('AuthToken', returnMessage.token);
+        
+        window.location.reload(); // 현재 URL(window.location)을 새로 고침 하는 기능 , 이게 없으면 에러가 난다.. 왜일까??
+      }
+
+
     }
     const onMessageDismiss = () => {
       console.log("message dismiss");

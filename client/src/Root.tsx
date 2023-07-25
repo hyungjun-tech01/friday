@@ -6,9 +6,9 @@ import Login from './routes/Login';
 import Test from "./components/Test";
 import Path from './constants/Paths';
 
-import 'react-datepicker/dist/react-datepicker.css';
-import 'photoswipe/dist/photoswipe.css';
-import 'easymde/dist/easymde.min.css';
+// import 'react-datepicker/dist/react-datepicker.css';
+// import 'photoswipe/dist/photoswipe.css';
+// import 'easymde/dist/easymde.min.css';
 
 /*
 <div className="App">
