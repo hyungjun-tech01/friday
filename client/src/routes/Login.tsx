@@ -1,9 +1,64 @@
-import React from "react";
-import styles from "../scss/Board.module.scss";
+import React, {useState, useMemo} from "react";
+import styles from "../scss/Login.module.scss";
 import { Form, Grid, Header, Message } from 'semantic-ui-react';
+import {useForm} from "react-hook-form";
 
+
+const createMessage = (error:IError) => {
+  if (!error) {
+    return error;
+  }
+
+  switch (error.message) {
+    case 'Invalid email or username':
+      return {
+        type: 'error',
+        content: 'common.invalidEmailOrUsername',
+      };
+    case 'Invalid password':
+      return {
+        type: 'error',
+        content: 'common.invalidPassword',
+      };
+    case 'Failed to fetch':
+      return {
+        type: 'warning',
+        content: 'common.noInternetConnection',
+      };
+    case 'Network request failed':
+      return {
+        type: 'warning',
+        content: 'common.serverConnectionFailed',
+      };
+    default:
+      return {
+        type: 'warning',
+        content: 'common.unknownError',
+      };
+  }
+};
+interface IError {
+  message:string;
+  type:string;
+  content:string;
+}
+interface IForm{
+  email:string,
+  password:string,
+}
 
 function Login(){
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const {register, handleSubmit, formState:{errors}} = useForm<IForm>();
+
+    const onValid = (data:IForm) => {
+      console.log("handdleSubmtt" ,data);
+    }
+    const onMessageDismiss = () => {
+      console.log("message dismiss");
+    };
+    let error:IError = {message:"", type:"", content:""};
+    const message = useMemo(() => createMessage(error), [error]);
     return (
         <div className={`${styles.wrapper} ${styles.fullHeight}`}>
           <Grid verticalAlign="middle" className={styles.fullHeightPaddingFix}>
@@ -18,40 +73,34 @@ function Login(){
                       className={styles.formTitle}
                     />
                     <div>
-                      {message && (
+                      {error.message==="" ? "" : (
                         <Message
                           // eslint-disable-next-line react/jsx-props-no-spreading
                           {...{
                             [message.type]: true,
                           }}
                           visible
-                          content={t(message.content)}
+                          content={message.content}
                           onDismiss={onMessageDismiss}
                         />
                       )}
-                      <Form size="large" onSubmit={handleSubmit}>
+                      <Form size="large" onSubmit={handleSubmit(onValid)}>
                         <div className={styles.inputWrapper}>
-                          <div className={styles.inputLabel}>{t('common.emailOrUsername')}</div>
-                          <Input
-                            fluid
-                            ref={emailOrUsernameField}
+                          <div className={styles.inputLabel}>{`EMail or UserName`}</div>
+                          <input
+                            {...register("email")} 
+                            placeholder = "Email or UserName"
                             name="emailOrUsername"
-                            value={data.emailOrUsername}
                             readOnly={isSubmitting}
                             className={styles.input}
-                            onChange={handleFieldChange}
                           />
                         </div>
                         <div className={styles.inputWrapper}>
-                          <div className={styles.inputLabel}>{t('common.password')}</div>
-                          <Input.Password
-                            fluid
-                            ref={passwordField}
-                            name="password"
-                            value={data.password}
+                          <div className={styles.inputLabel}>{`Password`}</div>
+                          <input
+                             {...register("password")} 
                             readOnly={isSubmitting}
                             className={styles.input}
-                            onChange={handleFieldChange}
                           />
                         </div>
                         <div className={styles.buttonWrapper}>
@@ -60,7 +109,7 @@ function Login(){
                             size="large"
                             icon="right arrow"
                             labelPosition="right"
-                            content={t('action.logIn')}
+                            content={`action.logIn`}
                             floated="right"
                             loading={isSubmitting}
                             disabled={isSubmitting}
@@ -77,7 +126,7 @@ function Login(){
               largeScreen={11}
               computer={10}
               only="computer"
-              className={classNames(styles.cover, styles.fullHeight)}
+              className={`${styles.cover} ${styles.fullHeight}`}
             >
               <div className={styles.descriptionWrapperOverlay} />
               <div className={styles.descriptionWrapper}>
@@ -85,7 +134,7 @@ function Login(){
                 <Header
                   inverted
                   as="h2"
-                  content={t('common.projectManagement')}
+                  content={`common.projectManagement`}
                   className={styles.descriptionSubtitle}
                 />
               </div>
