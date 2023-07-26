@@ -1,21 +1,18 @@
 import React, {useState} from "react";
 import styled from "styled-components";
 import { useQuery } from "react-query";
-import {useRecoilState, useRecoilValue} from "recoil";
+import {useRecoilState} from "recoil";
 import {useParams} from "react-router";
 import { useLocation } from "react-router-dom";
 
 import {apiGetProjectbyId} from "../api/project";
-import {atomCurrentProject, IProject, getCurrentProject} from '../atoms/atomsProject';
+import {atomCurrentProject, IProject } from '../atoms/atomsProject';
 
-import {atomCurrentMyBoard, ICurrent} from '../atoms/atomsBoard';
-import NewProject from '../components/NewProject';
-import { FOCUSABLE_SELECTOR } from "@testing-library/user-event/dist/utils";
 import Fix from "../components/Fix";
 import Static from "../components/Static";
 import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
-import ProjectAddModal from "../components/ProjectAddModal";
+
 
 const SCore = styled.div`
     width: 100%;

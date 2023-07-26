@@ -4,11 +4,10 @@ import { Form, Grid, Header, Message } from 'semantic-ui-react';
 import {useForm} from "react-hook-form";
 import {useCookies} from "react-cookie";
 import {apiLoginValidate} from "../api/user";
-import {atomMyUser, IValidateUser, IUser} from "../atoms/atomsUser";
+import { IValidateUser} from "../atoms/atomsUser";
 import Path from '../constants/Paths';
 import {useHistory} from "react-router-dom";
-import {useRecoilState} from "recoil";
-import {apiGetUser} from "../api/user";
+
 const createMessage = (error:IError) => {
   if (!error) {
     return error;
