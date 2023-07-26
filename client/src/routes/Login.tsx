@@ -3,9 +3,11 @@ import styles from "../scss/Login.module.scss";
 import { Form, Grid, Header, Message } from 'semantic-ui-react';
 import {useForm} from "react-hook-form";
 import {useCookies} from "react-cookie";
-
-
-
+import {apiLoginValidate} from "../api/user";
+import {IValidateUser} from "../atoms/atomsUser";
+import Path from '../constants/Paths';
+import {useHistory} from "react-router-dom";
+import {useRecoilState} from "recoil";
 const createMessage = (error:IError) => {
   if (!error) {
     return error;
@@ -44,40 +46,36 @@ interface IError {
   type:string;
   content:string;
 }
-interface IForm{
-  email:string,
-  password:string,
-}
-
 function Login(){
-    const [cookies, setCookie, removeCookie] = useCookies(null);
-    const [error, setError] = useState(null);
-
+    const [cookies, setCookie, removeCookie] = useCookies(['UserId', 'AuthToken']);
+    const [loginError, setLoginError] = useState(null);
+    const history = useHistory();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const {register, handleSubmit, formState:{errors}} = useForm<IForm>();
-
-    const onValid = async (data:IForm) => {
+    const {register, handleSubmit, formState} = useForm<IValidateUser>();
+    
+    const onValid = async (data:any) => {
       console.log("handdleSubmtt" ,data);
-      const response = await fetch(`http://localhost:8000/login`,{
-          method : 'POST',
-          headers:{'Content-Type':'application/json'},
-          body : JSON.stringify(data)
-        });
-      const returnMessage = await response.json();
-
-      if(returnMessage.detail){
-        setError(returnMessage.detail);
-        console.log("error", error  );
+      const response = await apiLoginValidate(data);
+      
+      if(response.detail){
+        setLoginError(response.detail);
+        console.log("error", loginError  );
+        removeCookie('UserId');
+        removeCookie('AuthToken');
       }else{
-        setCookie('Email', returnMessage.email);
-        setCookie('AuthToken', returnMessage.token);
-        
-        window.location.reload(); // 현재 URL(window.location)을 새로 고침 하는 기능 , 이게 없으면 에러가 난다.. 왜일까??
+        removeCookie('UserId');
+        removeCookie('AuthToken');        
+        setCookie('UserId', response.email);
+        setCookie('AuthToken', response.token);
+
+        console.log(cookies);
+        // useQuery
+        history.push(Path.ROOT);
       }
-
-
     }
+
+
     const onMessageDismiss = () => {
       console.log("message dismiss");
     };
@@ -111,17 +109,16 @@ function Login(){
                       <Form size="large" onSubmit={handleSubmit(onValid)}>
                         <div className={styles.inputWrapper}>
                           <div className={styles.inputLabel}>{`EMail or UserName`}</div>
-                          <input
-                            {...register("email")} 
-                            placeholder = "Email or UserName"
-                            name="emailOrUsername"
+                          <input type="text"
+                             {...register("email")} 
+                             placeholder = "enter your e-mail"
                             readOnly={isSubmitting}
                             className={styles.input}
                           />
                         </div>
                         <div className={styles.inputWrapper}>
                           <div className={styles.inputLabel}>{`Password`}</div>
-                          <input
+                          <input type="password"
                              {...register("password")} 
                             readOnly={isSubmitting}
                             className={styles.input}

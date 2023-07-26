@@ -35,7 +35,6 @@ function Core(){
 
     const [currentProject, setCurrentProject] = useRecoilState<IProject[]>(atomCurrentProject);
     const [current, setCurrent] = useState(false);
-    console.log("cccccccccccccore id", id);
     
 
   //project id로 project 쿼리할 것.

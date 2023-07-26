@@ -2,7 +2,9 @@ import React, {useState} from "react";
 import {Link, useHistory} from "react-router-dom";
 import {useRecoilState} from "recoil";
 import { Icon, Menu, Dropdown } from "semantic-ui-react";
-
+import {useCookies} from "react-cookie";
+import {useQuery} from "react-query";
+import {apiGetUser} from "../api/user";
 
 import Paths from "../constants/Paths";
 import styles from "../scss/Header.module.scss";
@@ -12,13 +14,23 @@ import Path from '../constants/Paths';
 
 function Header({setCurrent, projectName}:any){
     //project id로 보드를 쿼리할 것.
-    const [user, setUser] = useRecoilState<IUser>(atomMyUser); 
+    const [user, setUser] = useState<IUser>(); 
+    const [cookies, setCookie, removeCookie] = useCookies(['UserId', 'AuthToken']);
     const history = useHistory();
-    if(user.userId === ""){
-        history.push(Path.LOGIN);
-        console.log("useHistory");  
+    const onValid = async () => {
+        const response = await apiGetUser(cookies.UserId);
+        if(response.detail !== "User Session is finished.") 
+            setUser(response);
+        console.log("user", user);
     }
 
+
+    if(cookies.AuthToken === undefined){
+        history.push(Path.LOGIN);
+    }else
+    {
+        onValid();
+    }
 
     console.log(Paths.ROOT);
     const [showNotif, setShowNoti] = useState(false);
@@ -27,13 +39,9 @@ function Header({setCurrent, projectName}:any){
     };
     const onLogout = ()=> {
         console.log('logout');
-        setUser(
-            user => ({
-                ...user, 
-                userId : "" ,
-                userName : "",
-              })
-        )
+        removeCookie('AuthToken');
+        removeCookie('UserId');
+        console.log(cookies);
     };
 
     return(
@@ -58,7 +66,7 @@ function Header({setCurrent, projectName}:any){
                         <span className={styles.notification}>3</span>  {/*nofification 있으면 갯수를 표시 */}
                     </Menu.Item>
                     <Menu.Item className={`${styles.item}, ${styles.itemHoverable}`}>
-                    {user.userName}   {/* 로그인 하면 사용자 정보 표시  -> 로그아웃, 사용자 정보 메뉴화면 나옴. */}
+                    {user?.userName}   {/* 로그인 하면 사용자 정보 표시  -> 로그아웃, 사용자 정보 메뉴화면 나옴. */}
                         <Dropdown item icon='caret down' simple>
                         <Dropdown.Menu >
                             <Dropdown.Item onClick={onSettings}>설정</Dropdown.Item>
@@ -73,6 +81,7 @@ function Header({setCurrent, projectName}:any){
         </div>
         {showNotif && <NotiModal setShowNoti={setShowNoti}/>}
         </>
+
     );
 }
 /*

@@ -2,6 +2,11 @@ const express = require('express');
 const app = express();
 const pool = require('./db');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+
+
 const PORT =  process.env.MYPORT ? process.env.MYPORT:8000;
 
 app.use(cors());
@@ -96,13 +101,51 @@ app.post('/project', async(req, res) => {
     }
 });
 
+//login
+app.post('/login', async(req, res) => {
+    const {email, password} = req.body;
+    try{
+        console.log(email, password);
+        const users = await pool.query('SELECT * FROM user_account WHERE email = $1', [email]);
+        if(!users.rows.length) return res.json({detail:'User does not exist'});
 
+        console.log(users.rows[0]);
+        const success = await bcrypt.compare(password, users.rows[0].password);
+        const token = jwt.sign({email}, 'secret', {expiresIn:'1hr'});
+        if(success){
+            console.log("success");
+            res.json({'email' : users.rows[0].id, token});
+        }else{
+            console.log("fail");
+            res.json({detail:"Login failed"});
+        }
+    }catch(err){
+        console.error(err);
+    }
+});
 
-/*
-, pm.created_at, pm.updated_at, 
-            ua.email, ua.name user_name, 
-            pm.user_id
-            */
+//login
+app.post('/getuser', async(req, res) => {
+    console.log("getuser", req);
+    const {userId} = req.body;
+    try{
+        console.log("getuser", userId);
+        const users = await pool.query(`
+        SELECT t.id as "userId", t.email as "email", t.is_admin as "isAdmin", 
+        t.username as "userName", t.phone as "phone", t.organization  as "organization",
+        t.subscribe_to_own_cards  as "subscribeToOwnCards", t.created_at as "createdAt" 
+        FROM user_account t WHERE t.id = $1`, [userId]);
+        if(!users.rows.length) return res.json({detail:'User does not exist'});
+
+        console.log(users.rows[0]);
+
+        res.json(users); // 결과 리턴을 해 줌 .
+
+    }catch(err){
+        console.error(err);
+    }
+});
+
 app.listen(PORT, ()=> {
     console.log(`Server running on PORT ${PORT}`);
 });

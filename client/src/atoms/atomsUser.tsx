@@ -8,7 +8,7 @@ export interface IUser{
     isAdmin : boolean; 
     password : string; 
     phone : string; 
-    organizaition : string; 
+    organization : string; 
     subscribeToOwnCards : boolean;
     createdAt : string;
     updatedAt : string;
@@ -16,14 +16,23 @@ export interface IUser{
     language : string;
     passwordChangeAt :string;
     avatar : string;
+    detail : string;
+}
+
+export interface IValidateUser{
+    todo : string;
+    email: string;
+    password: string;
+    password2: string;
+    password3: string;
 }
 
 // default 로그인 하면 세팅, 로그 아웃 하면 "" 로 세팅 
 export const atomMyUser = atom<IUser>({
     key:"myUser",
     default : 
-        { userId:"967860418955445249" , userName:"Demo", name:"", email:"", isAdmin:false, password:"", phone:"", 
-        organizaition:"", subscribeToOwnCards:false, createdAt:"", updatedAt:"", deletedAt:"",language:"",
-        passwordChangeAt:"", avatar:""},
+        { userId:"" , userName:"", name:"", email:"", isAdmin:false, password:"", phone:"", 
+        organization:"", subscribeToOwnCards:false, createdAt:"", updatedAt:"", deletedAt:"",language:"",
+        passwordChangeAt:"", avatar:"", detail:""},
 });
 
