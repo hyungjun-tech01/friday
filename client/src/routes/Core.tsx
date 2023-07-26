@@ -29,7 +29,6 @@ function Core(){
     const {pathname} = useLocation();
     const IsDetail = pathname.includes('board');
     const IsMaster = pathname.includes('projects');
-    console.log("location", pathname);
 
     const {id} = useParams<ICoreParams>();
 

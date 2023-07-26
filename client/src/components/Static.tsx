@@ -1,6 +1,3 @@
-import {useRecoilValue} from "recoil";
-import {IProject, getCurrentProject, atomCurrentProject} from "../atoms/atomsProject"
-
 import Projects from "./Projects";
 import Board from "./Board";
 import List from "./List";
@@ -12,12 +9,8 @@ interface IStaticProps{
 }
 function Static({projectId, boardId}:IStaticProps){
 
-    const currentProject = useRecoilValue<IProject[]>(atomCurrentProject);
-
     const queryProjectById = projectId ==="" ?  false:true;
     const queryBoardById = boardId ==="" ?  false:true;
-    console.log("static project Name", currentProject[0].projectId);
-
 
     // projectId가 넘어오면 projectId만 넘기고  => atom에 currentProjetId를 셋한다.(Core에서 이미 한듯.)
     // boardId가 넘어오면 projectId와 boardId를 같이 넘긴다. 

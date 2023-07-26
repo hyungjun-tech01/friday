@@ -4,10 +4,11 @@ import { Form, Grid, Header, Message } from 'semantic-ui-react';
 import {useForm} from "react-hook-form";
 import {useCookies} from "react-cookie";
 import {apiLoginValidate} from "../api/user";
-import {IValidateUser} from "../atoms/atomsUser";
+import {atomMyUser, IValidateUser, IUser} from "../atoms/atomsUser";
 import Path from '../constants/Paths';
 import {useHistory} from "react-router-dom";
 import {useRecoilState} from "recoil";
+import {apiGetUser} from "../api/user";
 const createMessage = (error:IError) => {
   if (!error) {
     return error;
@@ -47,7 +48,7 @@ interface IError {
   content:string;
 }
 function Login(){
-    const [cookies, setCookie, removeCookie] = useCookies(['UserId', 'AuthToken']);
+    const [cookies, setCookie, removeCookie] = useCookies(['UserId', 'UserName','AuthToken']);
     const [loginError, setLoginError] = useState(null);
     const history = useHistory();
 
@@ -59,19 +60,17 @@ function Login(){
       const response = await apiLoginValidate(data);
       
       if(response.detail){
+        console.log("response detail",response );
         setLoginError(response.detail);
-        console.log("error", loginError  );
         removeCookie('UserId');
         removeCookie('AuthToken');
       }else{
-        removeCookie('UserId');
-        removeCookie('AuthToken');        
+        console.log("response",response );
         setCookie('UserId', response.email);
+        setCookie('UserName', response.userName);
         setCookie('AuthToken', response.token);
 
-        console.log(cookies);
-        // useQuery
-        history.push(Path.ROOT);
+        history.push(Path.ROOT);  
       }
     }
 

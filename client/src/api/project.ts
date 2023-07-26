@@ -5,7 +5,6 @@ import Paths from "../constants/Paths";
 const BASE_PATH = Paths.BASE_PATH; 
 
 export const apiGetProjects = async (userId:string) => {
-    console.log("getprojects", BASE_PATH);
     try{
         const response = await fetch(`${BASE_PATH}/projects/${userId}`);  // backtik 
         const json = await response.json()
