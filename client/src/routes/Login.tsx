@@ -12,30 +12,29 @@ const createMessage = (error:IError) => {
   if (!error) {
     return error;
   }
-
+  console.log("createMessage", error.message);
   switch (error.message) {
-    case 'Invalid email or username':
+    case 'Invalid email or password':
       return {
+        ...error,        
         type: 'error',
         content: 'common.invalidEmailOrUsername',
       };
-    case 'Invalid password':
-      return {
-        type: 'error',
-        content: 'common.invalidPassword',
-      };
     case 'Failed to fetch':
       return {
+        ...error,
         type: 'warning',
         content: 'common.noInternetConnection',
       };
     case 'Network request failed':
       return {
+        ...error,    
         type: 'warning',
         content: 'common.serverConnectionFailed',
       };
     default:
       return {
+        ...error,
         type: 'warning',
         content: 'common.unknownError',
       };
@@ -48,20 +47,29 @@ interface IError {
 }
 function Login(){
     const [cookies, setCookie, removeCookie] = useCookies(['UserId', 'UserName','AuthToken']);
-    const [loginError, setLoginError] = useState(null);
+
     const history = useHistory();
+    const initErrorContent:IError =  {message:"", type:"", content:""};
+
+    const [loginError, setLoginError] = useState<IError>(initErrorContent);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const {register, handleSubmit, formState} = useForm<IValidateUser>();
+    const {register, handleSubmit, reset} = useForm<IValidateUser>();
     
+    const onMessageDismiss = () => {
+      setLoginError(initErrorContent);
+      reset();
+    }
     const onValid = async (data:any) => {
       console.log("handdleSubmtt" ,data);
       const response = await apiLoginValidate(data);
       
-      if(response.detail){
-        console.log("response detail",response );
-        setLoginError(response.detail);
+      if(response.message){
+        // errorContent = createMessage(response);
+
+        setLoginError(createMessage(response));          
         removeCookie('UserId');
+        removeCookie('UserName');
         removeCookie('AuthToken');
       }else{
         console.log("response",response );
@@ -73,12 +81,6 @@ function Login(){
       }
     }
 
-
-    const onMessageDismiss = () => {
-      console.log("message dismiss");
-    };
-    let error:IError = {message:"", type:"", content:""};
-    const message = useMemo(() => createMessage(error), [error]);
     return (
         <div className={`${styles.wrapper} ${styles.fullHeight}`}>
           <Grid verticalAlign="middle" className={styles.fullHeightPaddingFix}>
@@ -93,14 +95,13 @@ function Login(){
                       className={styles.formTitle}
                     />
                     <div>
-                      {error.message==="" ? "" : (
+                      {loginError.message==="" ? "" : (
                         <Message
-                          // eslint-disable-next-line react/jsx-props-no-spreading
-                          {...{
-                            [message.type]: true,
-                          }}
+                        {...{
+                          [loginError.type]: true,
+                        }}
                           visible
-                          content={message.content}
+                          content={loginError.content}
                           onDismiss={onMessageDismiss}
                         />
                       )}
@@ -149,7 +150,7 @@ function Login(){
             >
               <div className={styles.descriptionWrapperOverlay} />
               <div className={styles.descriptionWrapper}>
-                <Header inverted as="h1" content="Planka" className={styles.descriptionTitle} />
+                <Header inverted as="h1" content={`common.productName`} className={styles.descriptionTitle} />
                 <Header
                   inverted
                   as="h2"

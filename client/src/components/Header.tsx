@@ -51,7 +51,7 @@ function Header({setCurrent, projectName}:any){
                         <span className={styles.notification}>3</span>  {/*nofification 있으면 갯수를 표시 */}
                     </Menu.Item>
                     <Menu.Item className={`${styles.item}, ${styles.itemHoverable}`}>
-                    {cookies.UserName}   {/* 로그인 하면 사용자 정보 표시  -> 로그아웃, 사용자 정보 메뉴화면 나옴. */}
+                    {cookies?.UserName}   {/* 로그인 하면 사용자 정보 표시  -> 로그아웃, 사용자 정보 메뉴화면 나옴. */}
                         <Dropdown item icon='caret down' simple>
                         <Dropdown.Menu >
                             <Dropdown.Item onClick={onSettings}>설정</Dropdown.Item>
