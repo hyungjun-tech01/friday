@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Switch, Route }  from "react-router-dom";
 
 import Core from './routes/Core';
 import Login from './routes/Login';
-import Test from "./components/Test";
 import Path from './constants/Paths';
+
+import styled from "styled-components";
 
 // import 'react-datepicker/dist/react-datepicker.css';
 // import 'photoswipe/dist/photoswipe.css';

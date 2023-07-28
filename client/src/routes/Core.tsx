@@ -13,12 +13,8 @@ import Static from "../components/Static";
 import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
 
+import styles from "../scss/Core.module.scss";
 
-const SCore = styled.div`
-    width: 100%;
-    height: 100%;
-    background: #22252a;  /*index의 background 하고 색상을 맞추어야 함.*/
-`;
 interface ICoreParams {
     id : string;
 }
@@ -54,14 +50,14 @@ function Core(){
     const [currentModal, setCurrentModal] = useState(null);
    
     return (
-    <SCore>
+    <>
         <Fix setCurrent={setCurrent} projectName={current ? currentProject[0].projectName:""} />
         {!current ? <Static projectId="" boardId=""/> :
         <Static projectId={currentProject[0].projectId} boardId={IsDetail? id:""}/>}
         {currentModal === "USERS" && <UsersModal/>}
         {currentModal === "USER_SETTING" && <UserSettingModal/>}
       
-    </SCore>
+    </>
 );
 
 //  {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}

@@ -7,6 +7,7 @@ import {apiLoginValidate} from "../api/user";
 import { IValidateUser} from "../atoms/atomsUser";
 import Path from '../constants/Paths';
 import {useHistory} from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const createMessage = (error:IError) => {
   if (!error) {
@@ -46,6 +47,7 @@ interface IError {
   content:string;
 }
 function Login(){
+  const { t, i18n } = useTranslation();
     const [cookies, setCookie, removeCookie] = useCookies(['UserId', 'UserName','AuthToken']);
 
     const history = useHistory();
@@ -91,7 +93,8 @@ function Login(){
                     <Header
                       as="h1"
                       textAlign="center"
-                      content={`Login`}
+                      content={t('common.Login')}
+                      color='grey'
                       className={styles.formTitle}
                     />
                     <div>
@@ -107,7 +110,7 @@ function Login(){
                       )}
                       <Form size="large" onSubmit={handleSubmit(onValid)}>
                         <div className={styles.inputWrapper}>
-                          <div className={styles.inputLabel}>{`EMail or UserName`}</div>
+                          <div className={styles.inputLabel}>{t('common.EMailOrUserName')}</div>
                           <input type="text"
                              {...register("email")} 
                              placeholder = "enter your e-mail"
@@ -116,9 +119,10 @@ function Login(){
                           />
                         </div>
                         <div className={styles.inputWrapper}>
-                          <div className={styles.inputLabel}>{`Password`}</div>
+                          <div className={styles.inputLabel}>{t('common.Password')}</div>
                           <input type="password"
                              {...register("password")} 
+                            placeholder = "password"
                             readOnly={isSubmitting}
                             className={styles.input}
                           />
@@ -129,7 +133,7 @@ function Login(){
                             size="large"
                             icon="right arrow"
                             labelPosition="right"
-                            content={`action.logIn`}
+                            content={t('action.Login')}
                             floated="right"
                             loading={isSubmitting}
                             disabled={isSubmitting}
@@ -150,11 +154,11 @@ function Login(){
             >
               <div className={styles.descriptionWrapperOverlay} />
               <div className={styles.descriptionWrapper}>
-                <Header inverted as="h1" content={`common.productName`} className={styles.descriptionTitle} />
+                <Header inverted as="h1" content={t('common.productName')} className={styles.descriptionTitle} />
                 <Header
                   inverted
                   as="h2"
-                  content={`common.projectManagement`}
+                  content={t('common.projectManagement')}
                   className={styles.descriptionSubtitle}
                 />
               </div>

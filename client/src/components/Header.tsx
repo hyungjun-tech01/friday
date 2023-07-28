@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {Link, useHistory} from "react-router-dom";
 import { Icon, Menu, Dropdown } from "semantic-ui-react";
 import {useCookies} from "react-cookie";
+import { useTranslation } from 'react-i18next'
 
 import Paths from "../constants/Paths";
 import styles from "../scss/Header.module.scss";
@@ -9,7 +10,9 @@ import NotiModal from "./NotiModal";
 
 import Path from '../constants/Paths';
 
+
 function Header({setCurrent, projectName}:any){
+    const { t, i18n } = useTranslation();
     //project id로 보드를 쿼리할 것.
     const [cookies, setCookie, removeCookie] = useCookies(['UserId','UserName', 'AuthToken']);
     const history = useHistory();
@@ -33,7 +36,7 @@ function Header({setCurrent, projectName}:any){
         <>
         <div className={styles.wrapper}>
             <Link to={Paths.ROOT} onClick={()=>{setCurrent(false); projectName="";}} className={`${styles.logo} ${styles.title}`}>
-                Friday
+                {t('common.productName')}
             </Link>
             <Menu inverted size="large" className={styles.menu}>
                 <Menu.Menu className={styles.menu_left} position="left">

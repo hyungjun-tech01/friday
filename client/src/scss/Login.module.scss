@@ -4,13 +4,15 @@
     }
   
     .descriptionSubtitle {
-      font-size: 24px;
+      font-size: 50;
       font-weight: normal;
+      color : white;
       margin-top: 8px;
     }
   
     .descriptionTitle {
       font-size: 52px;
+      color : white;
       margin-bottom: 8px;
     }
   
@@ -33,20 +35,23 @@
     .formTitle {
       font-size: 36px;
       font-weight: normal;
+      color : white;
       margin-bottom: 32px;
     }
   
     .fullHeight {
-      height: 100%;
+      min-height: 600px;
+      height: 100vh;
     }
   
     .fullHeightPaddingFix {
       height: calc(100% + 1rem);
-    }
+    } 
   
     .inputLabel {
       font-size: 16px;
       font-weight: bold;
+      color : white;
       line-height: 20px;
       margin-bottom: 4px;
     }
@@ -64,18 +69,17 @@
     }
   
     .loginWrapper {
+      color : white;
       margin: 0 auto;
       max-width: 440px;
       padding: 0 20px;
     }
-  
+    .h1{
+      color : white;
+    }
     .wrapper {
-      background: #fff;
+      background: #22252a;
     }
 
-    .body
-{
-  background-color: orange;
-}
   /* } */
   
