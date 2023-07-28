@@ -1,6 +1,7 @@
 /*Modal*/
 .overlay{
     position:absolute;
+    z-index:9999;
     left : 40%;
     top : 30%;
     width : 300px;

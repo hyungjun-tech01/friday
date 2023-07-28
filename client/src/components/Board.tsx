@@ -3,10 +3,12 @@ import {IBoard, atomMyBoard} from "../atoms/atomsBoard";
 import {useQuery} from "react-query";
 import { Button, Icon } from 'semantic-ui-react';
 import {Link} from "react-router-dom";
+import {useState} from "react";
 
 import {apiGetBoards} from "../api/board";
 import styles from "../scss/Board.module.scss";
 import Paths from "../constants/Paths";
+import AddBoardModal from "./AddBoardModal";
 
 interface IBoardProps{
     projectId:string;
@@ -27,35 +29,40 @@ function Board({projectId}:IBoardProps){
        // enabled : !showProjectAddModal
       }
     );    
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const onCreate = ()=> {
         console.log("create board");
+        setShowCreateModal(true);
     };
     return(
-        <div className={styles.wrapper}>
-            <div className={styles.tabsWrapper}>
-                <div className={styles.tabs}>
-                    <div className={styles.tabWrapper} >
-                    
-                        {boards.map( (item) => (
-                            <div className={styles.tab} >
-                                <Link
-                                    to={Paths.BOARDS.replace(':id', item.boardId)}
-                                    title={item.boardId}
-                                    className={styles.link}
-                                >
-                                {item.boardName}
-                                </Link>
+        <>
+            <div className={styles.wrapper}>
+                <div className={styles.tabsWrapper}>
+                    <div className={styles.tabs}>
+                        <div className={styles.tabWrapper} >
+                        
+                            {boards.map( (item) => (
+                                <div className={styles.tab} >
+                                    <Link
+                                        to={Paths.BOARDS.replace(':id', item.boardId)}
+                                        title={item.boardId}
+                                        className={styles.link}
+                                    >
+                                    {item.boardName}
+                                    </Link>
 
-                            </div>
-                            ))}
-                    </div>
+                                </div>
+                                ))}
+                        </div>
 
-                    <div onClick={onCreate}>
-                        <Button icon="plus" className={styles.addButton} />
+                        <div onClick={onCreate}>
+                            <Button icon="plus" className={styles.addButton} />
+                        </div>
                     </div>
                 </div>
-             </div>
-        </div>
+            </div>
+            {showCreateModal && <AddBoardModal setShowCreateModal={setShowCreateModal} />}                    
+        </>
     )
 }
 export default Board;

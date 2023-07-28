@@ -1,11 +1,23 @@
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Icon } from 'semantic-ui-react';
-import Popup from '../lib/custom-ui/Popup'
+import Popup from '../lib/custom-ui/Popup';
+import styles from "../scss/AddBoardModal.module.scss";
 
-function AddBoardModal(){
+// notimodal props interface 정의 
+interface IAddBoardModalProp{
+  setShowCreateModal:(value:boolean) => void;
+} 
+
+function AddBoardModal({setShowCreateModal}:IAddBoardModalProp){
     const [t] = useTranslation();
+    const handleSubmit = ()=>{
+      console.log('AddboardModal submit');
+    }
+    const handleFieldChange = ()=>{
+      console.log('AddboardModal submit');
+    }
     return(
-        <>
+        <div className={styles.controls}>
         <Popup.Header>
           {t('common.createBoard', {
             context: 'title',
@@ -15,23 +27,16 @@ function AddBoardModal(){
           <Form onSubmit={handleSubmit}>
             <input
               name="name"
-              value={data.name}
+              value={`board.name`}
               className={styles.field}
               onChange={handleFieldChange}
             />
             <div className={styles.controls}>
               <Button positive content={t('action.createBoard')} className={styles.createButton} />
-              <Button type="button" className={styles.importButton} onClick={handleImportClick}>
-                <Icon
-                  name={data.import ? data.import.type : 'arrow down'}
-                  className={styles.importButtonIcon}
-                />
-                {data.import ? data.import.file.name : t('action.import')}
-              </Button>
             </div>
           </Form>
         </Popup.Content>
-      </>
+      </div>
     );
 }
 

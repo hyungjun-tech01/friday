@@ -10,10 +10,12 @@ const resources = {
             EMailOrUserName:'이메일 주소',
             Password:'패스워드',
             Login:'로그인',
-            projectManagement:'프로젝트 매니지먼트'
+            projectManagement:'프로젝트 매니지먼트',
+            createBoard:'새보드',
         },
         action:{
             Login:'로그인',
+            createBoard:'보드생성',
         }
       }
     },
