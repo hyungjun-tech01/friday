@@ -2,40 +2,54 @@ import { useTranslation } from 'react-i18next';
 import { Button, Form, Icon } from 'semantic-ui-react';
 import Popup from '../lib/custom-ui/Popup';
 import styles from "../scss/AddBoardModal.module.scss";
-
+import {useForm} from "react-hook-form";
+import {ICreateBoard} from "../atoms/atomsBoard";
+import {apiCreateBoard} from "../api/board";
+import {useCookies} from "react-cookie";
+import {useState} from "react";
 // notimodal props interface 정의 
 interface IAddBoardModalProp{
+  projectId:string;
   setShowCreateModal:(value:boolean) => void;
 } 
 
-function AddBoardModal({setShowCreateModal}:IAddBoardModalProp){
+function AddBoardModal({projectId, setShowCreateModal}:IAddBoardModalProp){
     const [t] = useTranslation();
-    const handleSubmit = ()=>{
-      console.log('AddboardModal submit');
-    }
-    const handleFieldChange = ()=>{
-      console.log('AddboardModal submit');
-    }
+    const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
+    const {register, handleSubmit,formState:{errors}} = useForm();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const onValid = async (data:any) =>{
+      const board : ICreateBoard= {...data, projectId:projectId, userId:cookies.UserId};
+      console.log('create board', data);
+      const response = await apiCreateBoard(board);
+      if(response.message){
+        setShowCreateModal(false);
+      }else{
+        setShowCreateModal(true);
+      }
+
+    } 
     return(
-        <div className={styles.controls}>
-        <Popup.Header>
-          {t('common.createBoard', {
-            context: 'title',
-          })}
-        </Popup.Header>
-        <Popup.Content>
-          <Form onSubmit={handleSubmit}>
-            <input
-              name="name"
-              value={`board.name`}
+        <div className = {`${styles.overlay} ${styles.modal}`}>
+        <div className={styles.title}>
+          {t('common.createBoard_title')}
+        </div>
+        <div>
+          <Form onSubmit={handleSubmit(onValid)}>
+            <input 
+              {...register("boardName", {
+                required:"board name is required."
+              }) }
+              type="text"
+              name="boardName"
               className={styles.field}
-              onChange={handleFieldChange}
+              readOnly={isSubmitting}
             />
             <div className={styles.controls}>
-              <Button positive content={t('action.createBoard')} className={styles.createButton} />
+              <Form.Button positive content={t('action.createBoard')} className={styles.createButton} />
             </div>
           </Form>
-        </Popup.Content>
+        </div>
       </div>
     );
 }

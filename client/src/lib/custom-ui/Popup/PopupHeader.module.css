@@ -15,17 +15,17 @@
   font-size: 14px;
   font-weight: normal;
   left: 0;
-  line-height: 20px;
+  line-height: 12px;
   margin: 0 12px;
-  padding: 12px 28px 8px;
+  padding: 0px 28px 8px;
   position: absolute;
   right: 0;
   top: 0;
 }
 
 .wrapper {
-  height: 40px;
-  margin: 0 -12px 8px !important;
+  height: 30px;
+  margin: 0 -12px 0px !important;
   position: relative;
   text-align: center;
 }

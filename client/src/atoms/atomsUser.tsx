@@ -20,11 +20,8 @@ export interface IUser{
 }
 
 export interface IValidateUser{
-    todo : string;
     email: string;
     password: string;
-    password2: string;
-    password3: string;
 }
 
 // default 로그인 하면 세팅, 로그 아웃 하면 "" 로 세팅 

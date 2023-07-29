@@ -31,8 +31,8 @@ function Board({projectId}:IBoardProps){
     );    
     const [showCreateModal, setShowCreateModal] = useState(false);
     const onCreate = ()=> {
-        console.log("create board");
-        setShowCreateModal(true);
+       // console.log("create board");
+        setShowCreateModal((showCreateModal)=>(!showCreateModal));
     };
     return(
         <>
@@ -54,14 +54,14 @@ function Board({projectId}:IBoardProps){
                                 </div>
                                 ))}
                         </div>
-
-                        <div onClick={onCreate}>
-                            <Button icon="plus" className={styles.addButton} />
+                        <div>
+                            <Button icon="plus" onClick={onCreate} className={styles.addButton} />
+                            {showCreateModal && <AddBoardModal setShowCreateModal={setShowCreateModal} projectId={projectId} />}             
                         </div>
+                        
                     </div>
                 </div>
-            </div>
-            {showCreateModal && <AddBoardModal setShowCreateModal={setShowCreateModal} />}                    
+            </div>      
         </>
     )
 }

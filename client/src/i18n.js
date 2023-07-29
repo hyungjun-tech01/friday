@@ -11,7 +11,7 @@ const resources = {
             Password:'패스워드',
             Login:'로그인',
             projectManagement:'프로젝트 매니지먼트',
-            createBoard:'새보드',
+            createBoard_title:'보드 명칭을 입력하세요',
         },
         action:{
             Login:'로그인',

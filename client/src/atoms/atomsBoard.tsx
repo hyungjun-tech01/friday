@@ -14,6 +14,13 @@ export interface ICurrent{
     boardId : string;
     projectId : string;
 }
+
+export interface ICreateBoard{
+    projectId : string;
+    userId : string;
+    boardName : string;
+}
+
 export const atomCurrentMyBoard = atom<ICurrent>({
     key : "currentBoard",
     default : { boardId:"" , projectId:""}

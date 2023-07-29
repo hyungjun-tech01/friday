@@ -1,8 +1,33 @@
 /* :global(#app) { */
+  .overlay{
+    position:absolute;
+    z-index:9999;
+    width : 300px;
+    height : 150px;
+    display:flex;
+  /*  justify-content: center; */
+}
+.modal{
+  background-color: rgb(255,255,255);
+  padding :10px;
+  box-shadow : rgba(0,0,0,0.05) 0 6px 24px 0,rgba(0,0,0,0.08) 0 0 0 1px ;
+  display:flex;
+  flex-direction: column
+}
+.title{
+  font-size : 20px;
+  font-weight: bold;
+  display:flex;
+  flex-flow : row nowrap;
+  align-items : center; 
+  justify-content: space-between;
+}
     .controls {
+      position : absolute;
+      margin-top : 10px;
       display: flex;
       max-width: 280px;
-  
+      margin-bottom: 10px;
       @media only screen and (max-width: 767px) {
         max-width: 226px;
       }
@@ -13,7 +38,8 @@
     }
   
     .field {
-      margin-bottom: 8px;
+      margin-top : -10px;
+      margin-bottom: 10px;
     }
   
     .importButton {

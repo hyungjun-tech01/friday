@@ -1,4 +1,4 @@
-import { atomMyBoard } from "../atoms/atomsBoard";
+import { atomMyBoard, ICreateBoard } from "../atoms/atomsBoard";
 import Paths from "../constants/Paths";
 
 const BASE_PATH = Paths.BASE_PATH; 
@@ -17,3 +17,17 @@ export const apiGetBoards = async (projectId:string) => {
     //    (response) => response.json()
     //);
 };
+export const apiCreateBoard = async(board:ICreateBoard) => {
+    console.log('create Board api');
+    try{
+        const response = await fetch('http://localhost:7000/board',{
+            method: "POST", 
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(board)
+           }); 
+           const responseMessage = await response.json();
+           return(responseMessage);
+    }catch(err){
+        console.error(err);
+    }
+}

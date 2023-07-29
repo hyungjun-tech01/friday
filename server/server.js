@@ -101,6 +101,22 @@ app.post('/project', async(req, res) => {
     }
 });
 
+// create project 
+app.post('/board', async(req, res) => {
+    const {projectId, userId, boardName} = req.body;
+    try{
+        console.log('create new board');
+        // insert project 
+        const response = await pool.query(`call p_insert_board($1, $2, $3)`,
+        [userId,projectId,boardName]);
+       
+        res.json({boardName:boardName}); // 결과 리턴을 해 줌 .  
+    }catch(err){
+        console.error(err);
+        res.json({message:err});
+    }
+});
+
 //login
 app.post('/login', async(req, res) => {
     const {email, password} = req.body;
