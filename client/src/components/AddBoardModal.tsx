@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Icon } from 'semantic-ui-react';
-import Popup from '../lib/custom-ui/Popup';
 import styles from "../scss/AddBoardModal.module.scss";
 import {useForm} from "react-hook-form";
 import {ICreateBoard} from "../atoms/atomsBoard";

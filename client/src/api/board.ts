@@ -1,4 +1,4 @@
-import { atomMyBoard, ICreateBoard } from "../atoms/atomsBoard";
+import { ICreateBoard } from "../atoms/atomsBoard";
 import Paths from "../constants/Paths";
 
 const BASE_PATH = Paths.BASE_PATH; 

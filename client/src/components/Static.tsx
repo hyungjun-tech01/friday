@@ -1,7 +1,7 @@
 import Projects from "./Projects";
 import Boards from "./Boards";
 import Board from "./Board";
-import List from "./List";
+import BoardAction from "./BoardAction";
 // project 가 선택되어 지면 board 를 표시 
 // project 가 선택이 안되었으면 모든 프로젝트를 표시 
 interface IStaticProps{
@@ -19,9 +19,9 @@ function Static({projectId, boardId}:IStaticProps){
         <div >
             {!queryProjectById && <Projects />}
             {queryProjectById &&<Boards projectId={projectId}/> }
+            {queryBoardById &&<BoardAction boardId={boardId}/> }
             {queryBoardById &&<Board boardId={boardId}/> }
-            {queryBoardById &&<List boardId={boardId}/> }
-        </div>
+         </div>
     )
 }
 export default Static;

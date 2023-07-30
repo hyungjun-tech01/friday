@@ -1,14 +1,13 @@
-
 interface IListProps{
-    boardId:string;
+    key:string;
+    id:string;
+    index:number;
+    name : string;
 }
 
-function List({boardId}:IListProps){
+function List({key, id, index, name}:IListProps){
     return(
-        <div>
-            List : {boardId}
-        </div>
-    )
+        <div>list Name : {name} </div>
+    );
 }
-
-export default List;
+export default List ;
