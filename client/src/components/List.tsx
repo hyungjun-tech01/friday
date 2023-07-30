@@ -10,4 +10,4 @@ function List({key, id, index, name}:IListProps){
         <div>list Name : {name} </div>
     );
 }
-export default List ;
+export default List ; 
