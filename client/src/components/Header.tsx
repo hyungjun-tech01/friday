@@ -39,12 +39,12 @@ function Header({setCurrent, projectName}:any){
                 {t('common.productName')}
             </Link>
             <Menu inverted size="large" className={styles.menu}>
-                <Menu.Menu className={styles.menu_left} position="left">
+                <Menu.Menu position="left">
                     <Menu.Item  className={`${styles.item} ${styles.itemHoverable}`} >
                         {projectName}
                     </Menu.Item>
                 </Menu.Menu>    
-                <Menu.Menu className={styles.menu_right} position="right">
+                <Menu.Menu position="right">
                     <Menu.Item
                         className={`${styles.item} ${styles.itemHoverable}`}>
                     <Icon fitted name= "users" />

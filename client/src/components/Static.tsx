@@ -1,4 +1,5 @@
 import Projects from "./Projects";
+import Boards from "./Boards";
 import Board from "./Board";
 import List from "./List";
 // project 가 선택되어 지면 board 를 표시 
@@ -16,9 +17,9 @@ function Static({projectId, boardId}:IStaticProps){
     // boardId가 넘어오면 projectId와 boardId를 같이 넘긴다. 
     return(
         <div >
-            
             {!queryProjectById && <Projects />}
-            {queryProjectById &&<Board projectId={projectId}/> }
+            {queryProjectById &&<Boards projectId={projectId}/> }
+            {queryBoardById &&<Board boardId={boardId}/> }
             {queryBoardById &&<List boardId={boardId}/> }
         </div>
     )

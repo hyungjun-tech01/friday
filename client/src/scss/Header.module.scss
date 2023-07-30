@@ -39,7 +39,7 @@
     }
   
     .menu {
-      background: rgba(0, 0, 0) ;
+      background: transparent; 
       border: none;
       border-radius: 0;
       box-shadow: none;
@@ -82,7 +82,7 @@
     }
   
     .wrapper {
-      background-color: rgba(0, 0, 0) ;
+      background: rgba(0, 0, 0, 0.24);
       display: flex;
       flex: 0 0 auto;
     }

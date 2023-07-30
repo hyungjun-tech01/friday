@@ -1,7 +1,19 @@
-/*:global(#app) { */
-   .projects {
-       background: #22252a;
-   }
+/* :global(#app) { */
+  .projects {
+    background: #22252a;
+    flex: 1 1 auto;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .wrapper {
+    display: flex;
+    flex: 1 1 auto;
+    height: 100%;
+  }
+
   .cardsWrapper {
     flex: 1 1 auto;
     max-height: 100%;
@@ -12,7 +24,7 @@
   }  
 
   .open {
-    background: #555;
+    background: rgb(59,59,59,);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1), 0 6px 12px rgba(0, 0, 0, 0.1);
     color: #fff;
     position: relative;
@@ -31,6 +43,22 @@
     transition: all 200ms ease;
   }
 
+  .add {
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 3px 6px, rgba(0, 0, 0, 0.1) 0 6px 12px;
+    color: #333;
+    cursor: pointer;
+    fill: #333;
+    text-align: center;
+    width: 100%;
+
+    &:hover {
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1), 0 32px 64px rgba(0, 0, 0, 0.1);
+      transform: translate(0, -2px);
+    }
+  }
+
+
   .openTitle {
     bottom: 0;
     font-size: 24px;
@@ -44,7 +72,7 @@
   .addGridIcon {
     display: block;
     margin: 0 auto 12px;
-    width: 36px;
+    width: 36px; 
   }
 
    .addTitle {
@@ -60,4 +88,6 @@
     padding: 35px 21px;
     width: 100%;
   } 
-/*} */
+
+ 
+/* } */

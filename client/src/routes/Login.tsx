@@ -104,7 +104,7 @@ function Login(){
                           [loginError.type]: true,
                         }}
                           visible
-                          content={loginError.content}
+                          content={t(`${loginError.content}`)}
                           onDismiss={onMessageDismiss}
                         />
                       )}

@@ -12,6 +12,7 @@ const resources = {
             Login:'로그인',
             projectManagement:'프로젝트 매니지먼트',
             createBoard_title:'보드 명칭을 입력하세요',
+            invalidEmailOrUsername:'이메일주소나 비밀번호가 오류입니다'
         },
         action:{
             Login:'로그인',

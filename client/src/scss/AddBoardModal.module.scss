@@ -1,26 +1,40 @@
-/* :global(#app) { */
-  .overlay{
+ /* :global(#app) { */
+  .overlay_left{
     position:absolute;
+    right:3%;
     z-index:9999;
-    width : 300px;
-    height : 150px;
+    width : 100%;
+    max-width:300px;
+    height : 150px; 
     display:flex;
   /*  justify-content: center; */
 }
+
+.overlay{
+  position:absolute;
+  z-index:9999;
+  width : 100%;
+  max-width:300px; 
+  height : 150px; 
+  display:flex;
+/*  justify-content: center; */
+}
 .modal{
   background-color: rgb(255,255,255);
+  width : 300px;
   padding :10px;
   box-shadow : rgba(0,0,0,0.05) 0 6px 24px 0,rgba(0,0,0,0.08) 0 0 0 1px ;
   display:flex;
   flex-direction: column
 }
 .title{
-  font-size : 20px;
+  font-size : 14px;
   font-weight: bold;
   display:flex;
   flex-flow : row nowrap;
   align-items : center; 
-  justify-content: space-between;
+  justify-content: center;
+  margin-bottom: 10px;
 }
     .controls {
       position : absolute;
@@ -65,5 +79,5 @@
     .importButtonIcon {
       text-decoration: none;
     }
-/*  } */
+  /* } */
   

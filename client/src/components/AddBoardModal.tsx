@@ -11,9 +11,10 @@ import {useState} from "react";
 interface IAddBoardModalProp{
   projectId:string;
   setShowCreateModal:(value:boolean) => void;
+  endXPosition: boolean;
 } 
 
-function AddBoardModal({projectId, setShowCreateModal}:IAddBoardModalProp){
+function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardModalProp){
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const {register, handleSubmit,formState:{errors}} = useForm();
@@ -23,14 +24,17 @@ function AddBoardModal({projectId, setShowCreateModal}:IAddBoardModalProp){
       console.log('create board', data);
       const response = await apiCreateBoard(board);
       if(response.message){
-        setShowCreateModal(false);
-      }else{
         setShowCreateModal(true);
+      }else{
+        setShowCreateModal(false);
       }
 
     } 
+console.log('endXPosition', endXPosition);
+if (endXPosition) {
     return(
-        <div className = {`${styles.overlay} ${styles.modal}`}>
+      <div className = {styles.overlay_left} > 
+        <div className = {styles.modal}>
         <div className={styles.title}>
           {t('common.createBoard_title')}
         </div>
@@ -51,7 +55,35 @@ function AddBoardModal({projectId, setShowCreateModal}:IAddBoardModalProp){
           </Form>
         </div>
       </div>
+      </div>
     );
+  }else{
+    return(
+      <div className = {styles.overlay} > 
+        <div className = {styles.modal}>
+        <div className={styles.title}>
+          {t('common.createBoard_title')}
+        </div>
+        <div>
+          <Form onSubmit={handleSubmit(onValid)}>
+            <input 
+              {...register("boardName", {
+                required:"board name is required."
+              }) }
+              type="text"
+              name="boardName"
+              className={styles.field}
+              readOnly={isSubmitting}
+            />
+            <div className={styles.controls}>
+              <Form.Button positive content={t('action.createBoard')} className={styles.createButton} />
+            </div>
+          </Form>
+        </div>
+      </div>
+      </div>
+    );    
+  }
 }
 
 export default AddBoardModal;
