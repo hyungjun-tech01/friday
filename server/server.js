@@ -77,6 +77,23 @@ app.get('/boards/:projectId', async(req, res)=>{
     }
 );
 
+// get my lists by board id 
+app.get('/lists/:boardId', async(req, res)=>{
+    const boardId = req.params.boardId;
+    console.log(boardId);
+    try{
+            const lists = await pool.query(`
+            select id as "listId", board_id as "boardId", name as "listName", 
+            position as "position", created_at as "createdAt", 
+            updated_at as "updatedAt" from list 
+            where board_id = $1`, [boardId]);
+            res.json(lists.rows);
+            console.log(lists.rows);
+    }catch(err){
+        console.log(err);
+    }
+    }
+);
 
 // create project 
 app.post('/project', async(req, res) => {
