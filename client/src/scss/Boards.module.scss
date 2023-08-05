@@ -1,0 +1,93 @@
+.addButton {
+    background: transparent;
+    color: #fff;
+    margin-right: 0;
+    vertical-align: top;
+
+    &:hover {
+      background: rgba(34, 36, 38, 0.3);
+    }
+  }
+
+  .tabActive {
+    background: rgba(0, 0, 0, 0.24);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.32);
+    }
+
+    .link {
+      color: #fff;
+      font-weight: bold;
+    }
+  }
+
+  .tabWrapper {
+    display: flex;
+    flex: 0 0 auto;
+  }
+
+  .tab {
+    border-radius: 3px 3px 0 0;
+    min-width: 100px;
+    position: relative;
+    transition: all 0.1s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.24);
+
+      .target {
+        opacity: 1;
+      }
+    }
+  }
+   
+.tabsWrapper {
+    display: flex;
+    flex: 0 0 auto;
+    height: 56px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+
+    &:hover {
+      height: 38px;
+    }
+
+    &::-webkit-scrollbar {
+      height: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+    }
+  }
+  .tabs {
+    display: flex;
+    height: 38px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+.wrapper {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.24);
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    height: 38px;
+    overflow: hidden;
+  }
+  .link {
+    color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+    display: block;
+    line-height: 20px;
+    padding: 10px 34px 6px 14px;
+    text-overflow: ellipsis;
+    max-width: 400px;
+    overflow: hidden;
+  }

@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from "react";
+import React, {useState} from "react";
 import styles from "../scss/Login.module.scss";
 import { Form, Grid, Header, Message } from 'semantic-ui-react';
 import {useForm} from "react-hook-form";
@@ -64,6 +64,7 @@ function Login(){
     }
     const onValid = async (data:any) => {
       console.log("handdleSubmtt" ,data);
+      setIsSubmitting(true);
       const response = await apiLoginValidate(data);
       
       if(response.message){
@@ -81,6 +82,7 @@ function Login(){
 
         history.push(Path.ROOT);  
       }
+      setIsSubmitting(false);
     }
 
     return (

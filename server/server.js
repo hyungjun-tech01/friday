@@ -118,7 +118,7 @@ app.post('/project', async(req, res) => {
     }
 });
 
-// create project 
+// create board 
 app.post('/board', async(req, res) => {
     const {projectId, userId, boardName} = req.body;
     try{

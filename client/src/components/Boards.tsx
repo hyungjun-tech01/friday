@@ -6,7 +6,7 @@ import {Link} from "react-router-dom";
 import {useState} from "react";
 
 import {apiGetBoards} from "../api/board";
-import styles from "../scss/Board.module.scss";
+import styles from "../scss/Boards.module.scss";
 import Paths from "../constants/Paths";
 import AddBoardModal from "./AddBoardModal";
 

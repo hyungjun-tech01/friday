@@ -5,6 +5,8 @@ import {useRecoilState} from "recoil";
 import {useQuery} from "react-query";
 import {apiGetLists} from "../api/list";
 import List from "./List";
+import styles from "../scss/Board.module.scss";
+
 interface IListProps{
     boardId:string;
 }
@@ -22,7 +24,7 @@ function Board({boardId}:IListProps){
       }
     );        
     return(
-        <div>
+        <div className={styles.lists}>
             {lists.map((list, index) => (
                       <List key={list.listId} id={list.listId} index={index} name={list.listName}/>
                     ))}
