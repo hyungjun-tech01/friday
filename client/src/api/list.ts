@@ -1,4 +1,5 @@
 import Paths from "../constants/Paths";
+import {ICreateList} from "../atoms/atomsList";
 
 const BASE_PATH = Paths.BASE_PATH; 
 
@@ -15,4 +16,20 @@ export const apiGetLists = async (boardId:string) => {
     //return fetch(`${BASE_PATH}/projects`).then(
     //    (response) => response.json()
     //);
+};
+
+export const apiCreateList = async (list:ICreateList) => {
+    console.log("createlist", BASE_PATH);
+    
+    try{
+        const response = await fetch('http://localhost:7000/list',{
+            method: "POST", 
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(list)
+           }); 
+           const responseMessage = await response.json();
+           return(responseMessage);
+    }catch(err){
+        console.error(err);
+    }
 };

@@ -6,6 +6,7 @@ import {ICreateBoard} from "../atoms/atomsBoard";
 import {apiCreateBoard} from "../api/board";
 import {useCookies} from "react-cookie";
 import {useState} from "react";
+
 // notimodal props interface 정의 
 interface IAddBoardModalProp{
   projectId:string;

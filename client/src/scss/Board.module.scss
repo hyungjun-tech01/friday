@@ -61,5 +61,23 @@
     .wrapper {
       margin: 0 20px;
     }
+    .wrapperFlex {
+      display: flex;
+      flex: 0 0 auto;
+    }
+    .tabsWrapper {
+      display: flex;
+      flex: 0 0 auto;
+      overflow-x: auto;
+      overflow-y: hidden;
+
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+   }
+    /* ( 크롬, 사파리, 오페라, 엣지 ) 동작 */
+  .scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
 /*   }  */
   

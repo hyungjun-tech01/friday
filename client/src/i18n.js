@@ -12,11 +12,14 @@ const resources = {
             Login:'로그인',
             projectManagement:'프로젝트 매니지먼트',
             createBoard_title:'보드 명칭을 입력하세요',
-            invalidEmailOrUsername:'이메일주소나 비밀번호가 오류입니다'
+            invalidEmailOrUsername:'이메일주소나 비밀번호가 오류입니다',
+            enterListTitle : '리스트 명을 입력',
         },
         action:{
             Login:'로그인',
             createBoard:'보드생성',
+            addAnotherList :'다른 리스트 추가',
+            addList : '리스트 추가',
         }
       }
     },

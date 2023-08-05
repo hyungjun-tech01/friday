@@ -9,6 +9,12 @@ export interface IList{
     updatedAt:string;
 }
 
+export interface ICreateList{
+    boardId : string;
+    userId : string;
+    listName : string;
+}
+
 // myLists 
 export const atomMyList = atom<IList[]>({
     key:"myBoardLists",

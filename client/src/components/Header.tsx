@@ -17,7 +17,7 @@ function Header({setCurrent, projectName}:any){
     const [cookies, setCookie, removeCookie] = useCookies(['UserId','UserName', 'AuthToken']);
     const history = useHistory();
 
-    if(cookies.AuthToken === undefined){
+    if(cookies.AuthToken === undefined || cookies.AuthToken === ""){
         history.push(Path.LOGIN);
     }
     
@@ -28,8 +28,9 @@ function Header({setCurrent, projectName}:any){
     const onLogout = ()=> {
         console.log('logout');
         removeCookie('AuthToken');
+        removeCookie('UserName');
         removeCookie('UserId');
-        console.log(cookies);
+    //    console.log(cookies);
     };
 
     return(
