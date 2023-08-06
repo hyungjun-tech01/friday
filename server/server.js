@@ -138,9 +138,9 @@ app.post('/board', async(req, res) => {
 app.post('/list', async(req, res) => {
     const {boardId, userId, listName} = req.body;
     try{
-        console.log('create new board');
+        console.log('create new list');
         // insert project 
-        const response = await pool.query(`call p_insert_list($1, $2, $3)`,
+        const response = await pool.query(`call p_create_list($1, $2, $3)`,
         [userId,boardId,listName]);
        
         res.json({listName:listName}); // 결과 리턴을 해 줌 .  

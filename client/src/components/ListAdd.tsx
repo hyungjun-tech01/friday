@@ -9,9 +9,10 @@ import {apiCreateList} from "../api/list";
 interface IListAddProp{
     boardId : string;
     setShowList : (value:boolean) => void;
+    setIsListAddOpened : (value:boolean) => void;
 
 }
-function ListAdd({setShowList, boardId}:IListAddProp){
+function ListAdd({setShowList, boardId, setIsListAddOpened}:IListAddProp){
     const {register, handleSubmit,formState:{errors}} = useForm();
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
@@ -24,6 +25,7 @@ function ListAdd({setShowList, boardId}:IListAddProp){
             setShowList(true);
         }else{
             setShowList(false);
+            setIsListAddOpened(false);
         }
     }
     return(

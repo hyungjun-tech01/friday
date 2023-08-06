@@ -22,8 +22,8 @@ function Board({boardId}:IListProps){
     const {isLoading, data, isSuccess} = useQuery<IList[]>(["myBoardLists", boardId], ()=>apiGetLists(boardId),{
         onSuccess: data => {
             setLists(data);   // use Query 에서 atom에 set 
-            console.log(showList);
-            //setShowList((showList)=>(!showList));
+            console.log('showList', showList);
+            setShowList((showList)=>(!showList));
         },
         enabled : !showList
       }
@@ -34,6 +34,7 @@ function Board({boardId}:IListProps){
         console.log('hasEditMembership for board function');
         setIsListAddOpened((prev)=>(!prev));
     }
+    console.log("list", lists);
     return(
         <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`}>
             <div className={`${styles.lists} ${styles.wrapperFlex}`}>
@@ -43,7 +44,7 @@ function Board({boardId}:IListProps){
 
                 <div data-drag-scroller className={styles.list}>
                 {isListAddOpened ? (
-                <ListAdd boardId={boardId} setShowList={setShowList} />
+                <ListAdd boardId={boardId} setShowList={setShowList} setIsListAddOpened={setIsListAddOpened} />
                 ) : (
                 <button
                     type="button"
