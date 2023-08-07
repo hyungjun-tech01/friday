@@ -1,5 +1,6 @@
 
-import {useState} from "react";
+import {useEffect, useState, useRef} from "react";
+
 import {IList, atomMyList} from "../atoms/atomsList";
 import {useRecoilState} from "recoil";
 import {useTranslation} from "react-i18next";
@@ -16,6 +17,7 @@ interface IListProps{
 function Board({boardId}:IListProps){
     const [showList, setShowList] = useState(false);
     const [t] = useTranslation();
+
     //project id로 보드를 쿼리할 것.
     const [lists, setLists] = useRecoilState<IList[]>(atomMyList); 
 
@@ -34,7 +36,23 @@ function Board({boardId}:IListProps){
         console.log('hasEditMembership for board function');
         setIsListAddOpened((prev)=>(!prev));
     }
-    console.log("list", lists);
+    console.log("list", showList, lists);
+    // useEffect(() => {
+    //     const handleOutsideClose = (e: {target: any}) => {
+    //         // useRef current에 담긴 엘리먼트 바깥을 클릭 시 드롭메뉴 닫힘
+    //       if(isListAddOpened && (!addListElement.current.contains(e.target)))
+    //         console.log('inside effect', isListAddOpened);
+    //            setIsListAddOpened(false);
+    //            console.log('inside effect', isListAddOpened);
+    //     };
+
+    //     document.addEventListener('click', handleOutsideClose);
+        
+    //     return () => document.removeEventListener('click', handleOutsideClose);
+    //   }, [isListAddOpened]);
+    
+    useEffect(()=>setShowList(false), [boardId]);
+
     return(
         <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`}>
             <div className={`${styles.lists} ${styles.wrapperFlex}`}>
@@ -44,7 +62,7 @@ function Board({boardId}:IListProps){
 
                 <div data-drag-scroller className={styles.list}>
                 {isListAddOpened ? (
-                <ListAdd boardId={boardId} setShowList={setShowList} setIsListAddOpened={setIsListAddOpened} />
+                <ListAdd  boardId={boardId} setShowList={setShowList} setIsListAddOpened={setIsListAddOpened} />
                 ) : (
                 <button
                     type="button"

@@ -1,10 +1,10 @@
 import {useRecoilState} from "recoil";
-import {IBoard, atomMyBoard} from "../atoms/atomsBoard";
+import {IBoard, IQueryBoard, atomMyBoard} from "../atoms/atomsBoard";
 import {useQuery} from "react-query";
 import { Button, Icon } from 'semantic-ui-react';
 import {Link} from "react-router-dom";
 import {useState} from "react";
-
+import {useCookies} from "react-cookie";
 import {apiGetBoards} from "../api/board";
 import styles from "../scss/Boards.module.scss";
 import Paths from "../constants/Paths";
@@ -15,6 +15,7 @@ interface IBoardProps{
 }
 
 function Boards({projectId}:IBoardProps){
+    const [cookies, setCookie, removeCookie] = useCookies(['UserId','UserName', 'AuthToken']);
     //project id로 보드를 쿼리할 것.
     const [boards, setBoards] = useRecoilState<IBoard[]>(atomMyBoard); 
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -22,7 +23,8 @@ function Boards({projectId}:IBoardProps){
 
     // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
     // useQuery(['todos', todoId], () => fetchTodoById(todoId))
-    const {isLoading, data, isSuccess} = useQuery<IBoard[]>(["allMyBoards", projectId], ()=>apiGetBoards(projectId),{
+    const queryCond:IQueryBoard = {"userId":cookies.UserId, "projectId":projectId};
+    const {isLoading, data, isSuccess} = useQuery<IBoard[]>(["allMyBoards", queryCond], ()=>apiGetBoards(queryCond),{
         onSuccess: data => {
             setBoards(data);   // use Query 에서 atom에 set 
             console.log(boards);

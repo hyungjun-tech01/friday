@@ -1,12 +1,16 @@
-import { ICreateBoard } from "../atoms/atomsBoard";
+import { ICreateBoard, IQueryBoard } from "../atoms/atomsBoard";
 import Paths from "../constants/Paths";
 
 const BASE_PATH = Paths.BASE_PATH; 
 
-export const apiGetBoards = async (projectId:string) => {
+export const apiGetBoards = async (project:IQueryBoard) => {
     console.log("getboard", BASE_PATH);
     try{
-        const response = await fetch(`${BASE_PATH}/boards/${projectId}`);  // backtik 
+        const response = await fetch(`${BASE_PATH}/boards`,{
+            method: "POST", 
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(project)
+           }); 
         const json = await response.json()
         return json;
     }catch(err){

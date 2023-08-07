@@ -20,6 +20,10 @@ export interface ICreateBoard{
     userId : string;
     boardName : string;
 }
+export interface IQueryBoard{
+    projectId : string;
+    userId : string;
+}
 
 export const atomCurrentMyBoard = atom<ICurrent>({
     key : "currentBoard",

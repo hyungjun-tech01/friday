@@ -54,9 +54,9 @@ app.get('/project/:projectId', async(req, res)=>{
     }
 );
 
-// get all boards by project id 
-app.get('/boards/:projectId', async(req, res)=>{
-    const projectId = req.params.projectId;
+// get all boards by project id , by user id 
+app.post('/boards', async(req, res)=>{
+    const {projectId, userId} = req.body;
     console.log(projectId);
     try{
             const boards = await pool.query(`
@@ -68,7 +68,8 @@ app.get('/boards/:projectId', async(req, res)=>{
             from board b, board_membership bm, project p
             where b.id = bm.board_id 
             and b.project_id = p.id
-			and b.project_id = $1`, [projectId]);
+            and bm.user_id = $1
+			and b.project_id = $2`, [userId, projectId]);
             res.json(boards.rows);
             console.log(boards.rows);
     }catch(err){
