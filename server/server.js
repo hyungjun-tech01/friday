@@ -94,19 +94,19 @@ app.get('/lists/:boardId', async(req, res)=>{
 
 // get all my card by board id 
 app.get('/cards/:boardId', async(req, res)=>{
-    const boardId = "1016265084713829473"; // req.params.boardId;
+    const boardId = req.params.boardId;
     console.log("card query", boardId);
-    try{
+    try{    
             const result = await pool.query(`
             select id as "listId", board_id as "boardId", name as "listName", 
             position as "position", created_at as "createdAt", 
             updated_at as "updatedAt" from list 
             where board_id = $1`, [boardId]);
-            console.log("results rows", result.rows);
+            //console.log("results rows", result.rows);
             let cards ;
             if(result.rows.length > 0 ) {
                 const lists = result.rows;
-                console.log("lists", lists);
+                //console.log("lists", lists);
 
                 for (const list of lists) {
                     const cardResult = await pool.query(`
@@ -116,9 +116,8 @@ app.get('/cards/:boardId', async(req, res)=>{
                     updated_at as "updatedAt" from card 
                     where list_id = $1`, [list.listId]);
 
-                    console.log("cardResult", cardResult);
-
                     if( cardResult.rows.length > 0 ) {
+                    //    console.log("cardResult", cardResult);
                         cards = cardResult.rows;
                         for(const card of cards){
                             const labelResult = await pool.query(`
@@ -126,9 +125,24 @@ app.get('/cards/:boardId', async(req, res)=>{
                             from card_label cl, label l
                             where cl.label_id = l.id
                             and cl.card_id = $1`
-                            , card.cardId);
-                            cards.labels = labelResult.rows;
+                            , [card.cardId]);
+                            if( labelResult.rows.length > 0 ) {
+                            //    console.log('label results', labelResult.rows);
+                                card.labels = labelResult.rows;
+                            }
                         }
+                    }
+                } cards = cardResult.rows;
+                for(const card of cards){
+                    const labelResult = await pool.query(`
+                    select l.id as "labelId", l.name as "labelName", l.color as "color"
+                    from card_label cl, label l
+                    where cl.label_id = l.id
+                    and cl.card_id = $1`
+                    , [card.cardId]);
+                    if( labelResult.rows.length > 0 ) {
+                        console.log('label results', labelResult.rows);
+                        cards.labels = labelResult.rows;
                     }
                 }
             }
