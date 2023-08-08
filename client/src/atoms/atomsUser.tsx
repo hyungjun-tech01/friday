@@ -24,6 +24,12 @@ export interface IValidateUser{
     password: string;
 }
 
+export const defaultUser:IUser = {
+    userId:"" , userName:"", name:"", email:"", isAdmin:false, password:"", phone:"", 
+        organization:"", subscribeToOwnCards:false, createdAt:"", updatedAt:"", deletedAt:"",language:"",
+        passwordChangeAt:"", avatar:"", detail:""
+}
+
 // default 로그인 하면 세팅, 로그 아웃 하면 "" 로 세팅 
 export const atomMyUser = atom<IUser>({
     key:"myUser",
