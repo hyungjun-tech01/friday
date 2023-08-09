@@ -92,6 +92,40 @@ app.get('/lists/:boardId', async(req, res)=>{
     }
 );
 
+// get cards by list id 
+app.get('/cards/:listId', async(req, res)=>{
+    const listId = req.params.listId;
+    console.log(listId);
+    try{
+            const cardResult =   await pool.query(`
+            select id as "cardId", board_id as "boardId", list_id as "listId", 
+            cover_attachment_id as "coverUrl", name as "cardName", description as "description",
+            created_at as "createdAt", 
+            updated_at as "updatedAt" from card 
+            where list_id = $1`, [listId]);
+
+            if( cardResult.rows.length > 0 ) {
+                const cards = cardResult.rows;
+                for(const card of cards){
+                    console.log('card', card.cardId);
+                    const labelResult = await pool.query(`
+                    select l.id as "labelId", l.name as "labelName", l.color as "color"
+                    from card_label cl, label l
+                    where cl.label_id = l.id
+                    and cl.card_id = $1`
+                    , [card.cardId]);
+                    if( labelResult.rows.length > 0 ) 
+                        card.labels = labelResult.rows;
+                }
+                res.json(cards);
+                console.log("queryed card", cards);
+            }
+           
+    }catch(err){
+        console.log(err);
+    }
+    }
+);
 // get all my card by board id 
 app.get('/cards/:boardId', async(req, res)=>{
     const boardId = req.params.boardId;

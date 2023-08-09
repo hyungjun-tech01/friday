@@ -10,11 +10,11 @@ import List from "./List";
 import styles from "../scss/Board.module.scss";
 import ListAdd from "./ListAdd";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
-import {ICard, atomMyCards} from "../atoms/atomCard";
-import {apiGetCards} from "../api/card";
+//import {ICard, atomMyCards} from "../atoms/atomCard";
+//import {apiGetCards} from "../api/card";
 
-import {cardSelector} from "../atoms/atomCard";
-import {useRecoilValue} from "recoil";
+//import {cardSelector} from "../atoms/atomCard";
+//import {useRecoilValue} from "recoil";
 
 interface IListProps{
     boardId:string;
@@ -37,18 +37,18 @@ function Board({boardId}:IListProps){
     );
     // board id 로 카드를 모두 쿼리 . atom에 보관 후 -> 리스트 id로 selector를 통해서 가지고 올것. 
     // 만약 이렇게 한다면, 카드를 변경해도 atom을 갱신해야 함.
-    const [cards, setCards] = useRecoilState<ICard[]>(atomMyCards);
-    const [isCardLoading, setIsCardLoading] = useState(true);
-    const cardData = useQuery<ICard[]>(["allMyCards", boardId], ()=>apiGetCards(boardId),{
-        onSuccess: data => {
-            setCards(data);   // use Query 에서 atom에 set 
-            console.log('showList', showList);
-            setIsCardLoading(false);
-        },
-        enabled : !showList
-      }
-    );
-
+//    const [cards, setCards] = useRecoilState<ICard[]>(atomMyCards);
+//    const [isCardLoading, setIsCardLoading] = useState(true);
+//    const cardData = useQuery<ICard[]>(["allMyCards", boardId], ()=>apiGetCards(boardId),{
+//        onSuccess: data => {
+//            setCards(data);   // use Query 에서 atom에 set 
+//            console.log('showList', showList);
+//            setIsCardLoading(false);
+//        },
+//        enabled : !showList
+//      }
+//    );
+//
 
 
     const [isListAddOpened, setIsListAddOpened] = useState(false);
@@ -72,20 +72,20 @@ function Board({boardId}:IListProps){
     //     return () => document.removeEventListener('click', handleOutsideClose);
     //   }, [isListAddOpened]);
     
-    const selectCards = useRecoilValue(cardSelector); // 호출 가능한 함수를 가져옴
-    console.log('isCardLoading',cards);
-    let selectedCards:ICard[] = [];
-    if(!isCardLoading) {
-        selectedCards = selectCards("1016265575850050659");
-        console.log('1016265575850050659', selectedCards);
-    }
+ //   const selectCards = useRecoilValue(cardSelector); // 호출 가능한 함수를 가져옴
+ //   console.log('isCardLoading',cards);
+ //   let selectedCards:ICard[] = [];
+ //   if(!isCardLoading) {
+ //       selectedCards = selectCards("1016265575850050659");
+ //       console.log('1016265575850050659', selectedCards);
+ //   }
 
     useEffect(()=>setShowList(false), [boardId]);
     return(
         <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`}>
             <div className={`${styles.lists} ${styles.wrapperFlex}`}>
-                {!isLoading &&!isCardLoading&& lists.map((list, index) => (
-                        <List key={list.listId} id={list.listId} index={index} name={list.listName} isCardLoading={isCardLoading}/>
+                {!isLoading && lists.map((list, index) => (
+                        <List key={list.listId} id={list.listId} index={index} name={list.listName} />
                         ))}
 
                 <div data-drag-scroller className={styles.list}>

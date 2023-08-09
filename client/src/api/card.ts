@@ -16,3 +16,18 @@ export const apiGetCards = async (boardId:string) => {
     //    (response) => response.json()
     //);
 };
+
+export const apiGetCardsbyListId = async (listId:string) => {
+    console.log("getcardbyList", BASE_PATH);
+    try{
+        const response = await fetch(`${BASE_PATH}/cards/${listId}`);  // backtik 
+        const json = await response.json()
+        return json;
+    }catch(err){
+        console.error(err);
+    }
+
+    //return fetch(`${BASE_PATH}/projects`).then(
+    //    (response) => response.json()
+    //);
+};

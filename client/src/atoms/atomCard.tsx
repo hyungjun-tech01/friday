@@ -18,6 +18,10 @@ export interface ICard{
     tasks: ITask[];
 }
 
+export const defaultCard:ICard = {
+    cardId:"" , cardName:"", dueDate:"", stopwatch:"",  coverUrl:"", boardId:"", 
+    listId:"", projectId:"", description:"", users:[], labels:[],tasks:[]
+}
 
 // allMmyCards  : 보드에 포함된 리스트에 포함된 모든 카드 
 export const atomMyCards = atom<ICard[]>({
