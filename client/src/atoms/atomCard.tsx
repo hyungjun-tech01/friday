@@ -1,4 +1,4 @@
-import {atom} from "recoil";
+import {atom, selector} from "recoil";
 import {IUser, defaultUser} from "./atomsUser";
 import {ITask, defaultTask} from "./atomTask";
 import {ILabel, defaultLabel} from "./atomLabel";
@@ -32,3 +32,13 @@ export const atomMyCards = atom<ICard[]>({
     ]
 });
 
+// 특정 listId를 가진 card만을 selecting 
+export const cardSelector = selector({
+    key:"SelectedCards",
+    get:( {get}) => {
+        return (InlistId:string) => {
+            const cards = get(atomMyCards); 
+            return cards.filter((card)=> card.listId === InlistId);
+        };
+    },
+});
