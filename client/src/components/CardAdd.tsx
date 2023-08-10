@@ -31,14 +31,10 @@ function CardAdd({setIsCardAddOpened}:ICardAddProps){
             ref={nameField}
             as={TextareaAutosize}
             name="name"
-            value={data.name}
             placeholder={t('common.enterCardTitle')}
             minRows={3}
             spellCheck={false}
             className={styles.field}
-            onKeyDown={handleFieldKeyDown}
-            onChange={handleFieldChange}
-            onBlur={handleFieldBlur}
             />
       </div>
       <div className={styles.controls}>
