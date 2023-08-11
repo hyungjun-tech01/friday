@@ -167,7 +167,6 @@ app.get('/cards/:boardId', async(req, res)=>{
                 } 
             }
             res.json(cardsResults);
-            console.log("queryed card", cardsResults);
     }catch(err){
         console.log(err);
     }
@@ -223,6 +222,26 @@ app.post('/list', async(req, res) => {
         [userId,boardId,listName]);
        
         res.json({listName:listName}); // 결과 리턴을 해 줌 .  
+    }catch(err){
+        console.error(err);
+        res.json({message:err});
+    }
+});
+
+//create card 
+// create list 
+app.post('/card', async(req, res) => {
+    const {listId, userId, cardName} = req.body;
+    try{
+        console.log('create new card', cardName);
+        // insert project 
+        const response = await pool.query(`
+        insert into card(id, board_id, list_id, creator_user_id,name, created_at)
+        select next_id(), board_id, $1, $2, $3, now()
+        from list where id=$1`,
+        [listId,userId,cardName]);
+       
+        res.json({cardName:cardName}); // 결과 리턴을 해 줌 .  
     }catch(err){
         console.error(err);
         res.json({message:err});
