@@ -22,6 +22,8 @@ function List({id, index, name}:IListProps){
     
     const [isCardLoading, setIsCardLoading] = useState(true);
     const [cards, setCards] = useState<ICard[]>();
+    const [isCardAddOpened, setIsCardAddOpened] = useState(false);
+    
     const onQueryCards = async (id:string) => {
         const response = await apiGetCardsbyListId(id);    
         if(!response.message){
@@ -32,21 +34,25 @@ function List({id, index, name}:IListProps){
         }
     }
     useEffect(
-        () => { onQueryCards(id); } ,[id]
+        () => { onQueryCards(id); } ,[id, isCardAddOpened]
     );
     const handleAddCardClick = () => {
         console.log('addcard');
+        setIsCardAddOpened(true);
     }
-    const [isCardAddOpened, setIsCardAddOpened] = useState(false);
     return(
         <div className={styles.innerWrapper}>
         <div className={styles.outerWrapper}>
             <div className={styles.header}>
                 <div className={styles.headerName}>{name}</div>
+            </div>
+            <div className={`${styles.cardsInnerWrapper} ${styles.cardsInnerWrapperFull}`}>
+            <div className={styles.cardsOuterWrapper}>
                 <div className={styles.cards}>
                     {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} card={card}/>))}
-                    {isCardAddOpened&&<CardAdd setIsCardAddOpened={setIsCardAddOpened}/>}
-                    <button
+                    {isCardAddOpened&&<CardAdd listId={id} setIsCardAddOpened={setIsCardAddOpened}/>}
+                    {!isCardAddOpened&&(
+                        <button
                         type="button"
                         className={styles.addCardButton}
                         onClick={handleAddCardClick}
@@ -56,8 +62,9 @@ function List({id, index, name}:IListProps){
                             {cards  && ( t('action.addAnotherCard') )} 
                             {!cards && ( t('action.addCard'))}
                         </span>
-                    </button>
+                    </button>)}
                 </div>
+            </div>
             </div>
         </div>
         </div>

@@ -20,6 +20,12 @@ export const defaultCard:ICard = {
     listId:"",  description:"",  labels:[], createdAt:"", updatedAt:"" ,
 }
 
+export interface ICreateCard{
+    listId:string;
+    userId:string;
+    cardName:string;
+}
+
 // allMmyCards  : 보드에 포함된 리스트에 포함된 모든 카드 
 export const atomMyCards = atom<ICard[]>({
     key:"allMyCards",
