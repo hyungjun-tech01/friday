@@ -24,9 +24,11 @@ function List({id, index, name}:IListProps){
     const [cards, setCards] = useState<ICard[]>();
     const [isCardAddOpened, setIsCardAddOpened] = useState(false);
     
-    const onQueryCards = async (id:string) => {
+    const onQueryCards = async () => {
         const response = await apiGetCardsbyListId(id);    
-        if(!response.message){
+        if(response.message){
+            setIsCardLoading(true);
+        }else{
             console.log('카드조회', response);  
             setCards(response);
             setIsCardLoading(false);
@@ -34,7 +36,7 @@ function List({id, index, name}:IListProps){
         }
     }
     useEffect(
-        () => { onQueryCards(id); } ,[id, isCardAddOpened]
+        () => { onQueryCards(); } ,[id, isCardAddOpened]
     );
     const handleAddCardClick = () => {
         console.log('addcard');

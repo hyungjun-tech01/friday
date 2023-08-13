@@ -107,7 +107,7 @@ app.get('/cards/:listId', async(req, res)=>{
             if( cardResult.rows.length > 0 ) {
                 const cards = cardResult.rows;
                 for(const card of cards){
-                    console.log('card', card.cardId);
+                    //console.log('card', card.cardId);
                     const labelResult = await pool.query(`
                     select l.id as "labelId", l.name as "labelName", l.color as "color"
                     from card_label cl, label l
@@ -118,11 +118,12 @@ app.get('/cards/:listId', async(req, res)=>{
                         card.labels = labelResult.rows;
                 }
                 res.json(cards);
-                console.log("queryed card", cards);
+                //console.log("queryed card", cards);
             }
            
     }catch(err){
         console.log(err);
+        res.json({message:err});
     }
     }
 );
@@ -141,7 +142,7 @@ app.get('/cards/:boardId', async(req, res)=>{
             if(result.rows.length > 0 ) {
                 const lists = result.rows;
                 for (const list of lists) {
-                    console.log('list', list.listId);
+                    //console.log('list', list.listId);
                     const cardResult = await pool.query(`
                     select id as "cardId", board_id as "boardId", list_id as "listId", 
                     cover_attachment_id as "coverUrl", name as "cardName", description as "description",
@@ -152,7 +153,7 @@ app.get('/cards/:boardId', async(req, res)=>{
                     if( cardResult.rows.length > 0 ) {
                         const cards = cardResult.rows;
                         for(const card of cards){
-                            console.log('card', card.cardId);
+                            //console.log('card', card.cardId);
                             const labelResult = await pool.query(`
                             select l.id as "labelId", l.name as "labelName", l.color as "color"
                             from card_label cl, label l
@@ -169,10 +170,47 @@ app.get('/cards/:boardId', async(req, res)=>{
             res.json(cardsResults);
     }catch(err){
         console.log(err);
+        res.json({message:err});
     }
     }
 );
 
+app.post('/boardAuth', async(req, res) => {
+    const {boardId, userId} = req.body;
+    console.log('boardAuth', boardId, userId);
+    try{
+        const result = await pool.query(`
+        select b.id as "boardId" , bm.role as "canEdit"
+        from board b, board_membership bm, user_account u
+        where b.id = bm.board_id  
+        and bm.user_id = u.id
+        and b.id = $1
+        and u.id = $2
+        LIMIT 1`, [boardId, userId]);
+
+        let boards;
+        if(result.rows.length > 0 ) {
+            boards = result.rows;
+            console.log('boards', boards);
+            for (const board of boards) {
+                console.log('board', board.boardId);
+                const boardMemebers = await pool.query(`
+                select u.id as "userId", u.name as "userName", u.avatar as "avatarUrl"
+                from board b, board_membership bm, user_account u
+                where b.id = bm.board_id  
+                and bm.user_id = u.id
+                and b.id = $1`, [board.boardId]);
+                if(boardMemebers.rows.length > 0)
+                    board.users = boardMemebers.rows;
+            }
+        }
+        res.json(boards);
+        console.log("res boards", boards);
+    }catch(err){
+        console.error(err);
+        res.json({message:err});
+    }
+});
 // create project 
 app.post('/project', async(req, res) => {
     const {projectName, userId} = req.body;

@@ -1,4 +1,4 @@
-import { ICreateBoard, IQueryBoard } from "../atoms/atomsBoard";
+import { ICreateBoard, IQueryBoard, ICheckBoardEditAuth } from "../atoms/atomsBoard";
 import Paths from "../constants/Paths";
 
 const BASE_PATH = Paths.BASE_PATH; 
@@ -24,10 +24,25 @@ export const apiGetBoards = async (project:IQueryBoard) => {
 export const apiCreateBoard = async(board:ICreateBoard) => {
     console.log('create Board api');
     try{
-        const response = await fetch('http://localhost:7000/board',{
+        const response = await fetch(`${BASE_PATH}/board`,{
             method: "POST", 
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify(board)
+           }); 
+           const responseMessage = await response.json();
+           return(responseMessage);
+    }catch(err){
+        console.error(err);
+    }
+}
+
+export const apiCheckEditBoard = async(checkAuth:ICheckBoardEditAuth) =>{
+    console.log('check board edit auth');
+    try{
+        const response = await fetch(`${BASE_PATH}/boardAuth`,{
+            method: "POST", 
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(checkAuth)
            }); 
            const responseMessage = await response.json();
            return(responseMessage);

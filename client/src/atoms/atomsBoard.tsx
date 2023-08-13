@@ -24,6 +24,20 @@ export interface IQueryBoard{
     projectId : string;
     userId : string;
 }
+export interface ICheckBoardEditAuth{
+    boardId: string;
+    userId: string;
+}
+interface IBoardUser{
+    userId:string;
+    userName:string;
+    avatarUrl:string;
+}
+export interface IBoardMember{
+    boardId : string;
+    canEdit : string; 
+    users : IBoardUser[];
+}
 
 export const atomCurrentMyBoard = atom<ICurrent>({
     key : "currentBoard",
