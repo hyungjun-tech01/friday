@@ -27,17 +27,16 @@ function User({userName,avatarUrl}:IUserProps){
     const contentNode = (
         <span
           title={userName}
-          className={`${styles.wrapper} ${styles.wrapperHoverable} ${styles.wrapperSmall}`}
-            
+          className={`${styles.wrapper} ${styles.wrapperHoverable} ${styles.wrapperSmall} ${styles.backgroundEmerald}` }
           style={{
-            background: `url("${avatarUrl}") center / cover`,
-          }}
+            background: avatarUrl && `url("${avatarUrl}") center / cover`,
+          }} 
         >
           {!avatarUrl && <span className={styles.initials}>{initials(userName)}</span>}
         </span>
       );    
     return(
-        <div>{contentNode}</div>
+        contentNode
     );
 }
 

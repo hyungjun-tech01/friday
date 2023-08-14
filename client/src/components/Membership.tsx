@@ -11,13 +11,14 @@ function Membership({members}:MembershipProps){
     if (members) {
         console.log('members', members[0].boardId);
         return(
-            <div>{members[0].users.map((user)=>(
-                <span key={user.userId} className={styles.user}>
-                    <BoardMemberActionPopup userId={user.userId} />
-                    <User userName={user.userName} avatarUrl={user.avatarUrl}/>
-                </span> 
+            <span className={styles.users}>
+                {members[0].users.map((user)=>(
+                    <span key={user.userId} className={styles.user}>
+                        <BoardMemberActionPopup userId={user.userId} /> 
+                        <User userName={user.userName} avatarUrl={user.avatarUrl}/>
+                    </span> 
                 ))}
-            </div>
+            </span>
         );
     }
     return null; // or some other fallback UI

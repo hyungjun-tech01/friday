@@ -3,7 +3,7 @@ interface BoardMemberActionPopupProps{
 }
 function BoardMemberActionPopup({userId}:BoardMemberActionPopupProps){
     return (
-        <div></div>
+        null
     );
 }
 
