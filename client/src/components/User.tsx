@@ -1,5 +1,7 @@
 import styles from "../scss/User.module.scss";
 import initials from 'initials';
+import upperFirst from 'lodash/upperFirst';
+import camelCase from 'lodash/camelCase';
 
 interface IUserProps{
     userName:string;
@@ -23,11 +25,19 @@ const SIZES = {
     'midnight-blue',
   ];
 
+  const getColor = (name:any) => {
+    let sum = 0;
+    for (let i = 0; i < name.length; i += 1) {
+      sum += name.charCodeAt(i);
+    }
+  
+    return COLORS[sum % COLORS.length];
+  };
 function User({userName,avatarUrl}:IUserProps){
     const contentNode = (
         <span
           title={userName}
-          className={`${styles.wrapper} ${styles.wrapperHoverable} ${styles.wrapperSmall} ${styles.backgroundEmerald}` }
+          className={`${styles.wrapper} ${styles.wrapperHoverable} ${styles.wrapperLarge} ${styles[`background${upperFirst(camelCase(getColor(userName)))}`]}` }
           style={{
             background: avatarUrl && `url("${avatarUrl}") center / cover`,
           }} 

@@ -1,5 +1,5 @@
 /* :global(#app) { */
-    .addUser {
+  .addUser{
       background: rgba(0, 0, 0, 0.24);
       border-radius: 50%;
       box-shadow: none;
@@ -9,7 +9,7 @@
       padding: 0;
       transition: all 0.1s ease 0s;
       align-items: center;
-      /* vertical-align: top; */
+      vertical-align: top;
       width: 36px;
   
       &:hover {
@@ -19,7 +19,7 @@
   
     .user {
       /* display: inline-block; */
-      margin: 0 -4px 0 0;
+      margin: 0 0px 0px -15px;
       display: flex;
       align-items: center;
       vertical-align: top; 
