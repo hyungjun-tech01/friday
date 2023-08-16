@@ -32,11 +32,13 @@ interface IBoardUser{
     userId:string;
     userName:string;
     avatarUrl:string;
+    canEdit:string;
 }
 export interface IBoardMember{
     boardId : string;
     canEdit : string; 
     users : IBoardUser[];
+    boardmMemberAllUsers : IBoardUser[];
 }
 
 export const atomCurrentMyBoard = atom<ICurrent>({

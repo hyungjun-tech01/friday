@@ -24,6 +24,7 @@ function Membership({members}:MembershipProps){
                     <span key={user.userId} className={styles.user}>
                         <BoardMemberActionPopup userId={user.userId} /> 
                         <User userName={user.userName} avatarUrl={user.avatarUrl}/>
+                        {user.userName}
                     </span> 
                 ))}
 

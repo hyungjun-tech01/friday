@@ -27,8 +27,10 @@ function BoardMemeberAdd({setOnAddPopup}:IBoardmemberAddProps){
     return(
         <div ref={wrapperRef}>
             <div className={styles.title}> 
-            {t('acommon.boardmemberadd_title')}
-            </div>BoardMemeberAdd
+            {t('common.boardmemberadd_title')}
+            </div>
+            <div className={styles.content}></div>
+            BoardMemeberAdd
         </div>
     );
 }
