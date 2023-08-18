@@ -14,7 +14,9 @@ const resources = {
             createBoard_title:'보드 명칭을 입력하세요',
             invalidEmailOrUsername:'이메일주소나 비밀번호가 오류입니다',
             enterListTitle : '리스트 명을 입력',
-            enterCardTitle : '항목카드명을 입력하세요..'
+            enterCardTitle : '항목카드명을 입력하세요..',
+            boardmemberadd_title : '멤버 추가',
+            searchUsers : '아이디로 검색하세요',
         },
         action:{
             Login:'로그인',

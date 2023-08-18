@@ -28,7 +28,7 @@ export interface ICheckBoardEditAuth{
     boardId: string;
     userId: string;
 }
-interface IBoardUser{
+export interface IBoardUser{
     userId:string;
     userName:string;
     avatarUrl:string;

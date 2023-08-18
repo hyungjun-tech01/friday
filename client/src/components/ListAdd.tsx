@@ -20,7 +20,7 @@ function ListAdd({setShowList, boardId, setIsListAddOpened}:IListAddProp){
 
     const onValid = async(data:any) => {
         const list : ICreateList= {...data, boardId:boardId, userId:cookies.UserId};
-        console.log('create board', data);
+        console.log('create list', data);
         const response = await apiCreateList(list);
         if(response.message){
             setShowList(true);

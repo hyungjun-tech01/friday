@@ -1,13 +1,32 @@
-import {useRef, useEffect} from "react";
+import {useRef, useMemo, useEffect, useState} from "react";
 import { useTranslation } from 'react-i18next';
 import styles from '../scss//BoardMemberAdd.module.scss';
+import {IBoardMember} from "../atoms/atomsBoard";
+import {Input} from "semantic-ui-react";
+import UserItem from "./UserItem";
 
 interface IBoardmemberAddProps{
+    members?: IBoardMember[];
     setOnAddPopup:(value:boolean) => void;
 }
-function BoardMemeberAdd({setOnAddPopup}:IBoardmemberAddProps){
+function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
     const [t] = useTranslation();
     let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
+    const users = members !== undefined ? members[0].boardmMemberAllUsers:null;
+    const [search, handleSearchChange] = useState('');
+    const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
+    const searchField = useRef(null);
+
+    /* 필터 구현 search 를 받아서 이놈이 userName중에 포함된 놈이 있으며 이놈을 리턴  */
+    const filteredUsers = useMemo(
+      () =>
+        users?.filter(
+          (user) =>
+            user.userName.includes(cleanSearch) ,
+        ),
+      [users, cleanSearch],
+    );
+
     useEffect(()=>{
       document.addEventListener('mousedown', handleClickOutside);
       return()=>{
@@ -23,15 +42,33 @@ function BoardMemeberAdd({setOnAddPopup}:IBoardmemberAddProps){
         setOnAddPopup(false);
       }
     }     
-
+    const handleUserSelect = (id:string, canEdit:string) => {
+      if(canEdit === null){
+        console.log('add user');
+      }
+    }
     return(
-        <div ref={wrapperRef}>
-            <div className={styles.title}> 
-            {t('common.boardmemberadd_title')}
+      <div className={styles.modal} >
+          <div ref={wrapperRef} className={styles.wrapper}>
+
+            <div className={styles.content}>
+              {t('common.boardmemberadd_title')}
+              <Input
+              ref={searchField}
+              value={search}
+              placeholder={t('common.searchUsers')}
+              icon="search"
+              onChange={()=>handleSearchChange} />
+            {filteredUsers&&(
+              <div className={styles.users}>
+                {filteredUsers.map((user)=>(
+                  <UserItem key={user.userId} userId={user.userId} userName={user.userName} avatarUrl={user.avatarUrl} canEdit={user.canEdit} onSelect={() => handleUserSelect(user.userId, user.canEdit)}/>
+                ))}
+              </div>
+            )}
             </div>
-            <div className={styles.content}></div>
-            BoardMemeberAdd
         </div>
+      </div>  
     );
 }
 export default BoardMemeberAdd;

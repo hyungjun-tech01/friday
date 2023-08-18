@@ -37,7 +37,7 @@ function Core(){
   // useQuery(['todos', todoId], () => fetchTodoById(todoId))
 
   //const queryProjectById = id===undefined ?  false:true;
-
+  console.log('isnmater', IsMaster);
   const {isLoading, data, isSuccess} = useQuery<IProject[]>(["projectById", id], ()=>apiGetProjectbyId(id),{
     onSuccess: data => {
         setCurrentProject(data);   // use Query 에서 atom에 set 
