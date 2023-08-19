@@ -17,6 +17,7 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
     const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
     const searchField = useRef(null);
 
+    console.log('board member add', users);
     /* 필터 구현 search 를 받아서 이놈이 userName중에 포함된 놈이 있으며 이놈을 리턴  */
     const filteredUsers = useMemo(
       () =>

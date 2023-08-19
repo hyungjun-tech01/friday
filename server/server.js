@@ -209,7 +209,7 @@ app.post('/boardAuth', async(req, res) => {
                     (select role 
                         from board_membership t 
                     where t.board_id = $1 
-                        and t.user_id = u.id LIMIT 1) as "role" 
+                        and t.user_id = u.id LIMIT 1) as "canEdit" 
                 from user_account u`, [board.boardId]);
                 if(allBoardMemebers.rows.length > 0)
                     board.boardmMemberAllUsers = allBoardMemebers.rows;
