@@ -6,16 +6,23 @@ import User from "./User";
 import BoardMemeberAdd from "./BoardMemeberAdd";
 import {useState} from "react";
 
-interface MembershipProps {
+interface IMembershipProps {
     members?: IBoardMember[];
   }
-  
-function Membership({members}:MembershipProps){
+interface IboardMemberActionUserId{
+    userId:string;
+    positionX:number;
+    positionY:number;
+}
+function Membership({members}:IMembershipProps){
     const onAddMemberPopup = ()=>{
         console.log('onAddMemberPopup');
         setOnAddPopup(true);
     }
     const [onAddPopup, setOnAddPopup] = useState(false);
+    // userId 와 현재 클릭한 포지션 획득 
+    const [boardMemberActionUserId, setBoardMemberActionUserId] = useState<IboardMemberActionUserId>({userId:"", positionX:-1, positionY:-1 });
+    console.log('postion', boardMemberActionUserId.positionX, boardMemberActionUserId.positionY);
     if (members) {
         console.log('members', members[0].canEdit);
         return(
@@ -23,11 +30,16 @@ function Membership({members}:MembershipProps){
                 {/* 보드에 접근 가능한 사용자 */}
                 {members[0].users.map((user)=>(
                     <span key={user.userId} className={styles.user}>
-                        <BoardMemberActionPopup userId={user.userId} /> 
-                        <User userName={user.userName} avatarUrl={user.avatarUrl}/>
+                        <User userId={user.userId} onClick={true} size={"Small"} showAnotherPopup={setBoardMemberActionUserId} userName={user.userName} avatarUrl={user.avatarUrl}/>
                         {user.userName}
                     </span> 
                 ))}
+                {/*사용자 확인 및 권한 변경 및 보드에서 사용자 삭제 기능 */}
+                { boardMemberActionUserId.userId !== "" && (
+                    <div style = {{top:`${boardMemberActionUserId.positionY}px`, left:`${boardMemberActionUserId.positionX}px` , position:'absolute'}}>
+                        <BoardMemberActionPopup userName={boardMemberActionUserId.userId} userEmail={""} avatarUrl = {""} showPopUp = {setBoardMemberActionUserId} userId={boardMemberActionUserId.userId} /> 
+                    </div> )
+                }
                 {/* Add Borad Member 기능  */}
                 {members[0].canEdit==="editor" && 
                 <Button icon="add user" onClick={onAddMemberPopup} style={{backgroundColor:'rgba(0, 0, 0, 0.24)',
