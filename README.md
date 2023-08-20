@@ -18,3 +18,14 @@ localhost:3003 로 접근
 planka 에 stored procedure 생성   
 pgAdmin >   
 database -> planka 선택 -> Tool -> Query Tool  
+
+CREATE OR REPLACE PROCEDURE p_create_list(i_user_id in bigint, i_board_id in bigint, i_list_name in text)  
+LANGUAGE plpgsql  
+AS $$  
+DECLARE   
+   v_id bigint;  
+BEGIN  
+insert into list(id, board_id, name, position, created_at)  
+values(next_id(), i_board_id, i_list_name, 1, now());  
+END;  
+$$;  
