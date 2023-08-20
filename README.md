@@ -29,3 +29,21 @@ insert into list(id, board_id, name, position, created_at)
 values(next_id(), i_board_id, i_list_name, 1, now());  
 END;  
 $$;  
+
+CREATE OR REPLACE PROCEDURE  p_insert_board(i_user_id in bigint, i_project_id in bigint, i_board_name in text)  
+LANGUAGE plpgsql  
+AS $$  
+DECLARE  
+    a bigint;  
+	b bigint;  
+BEGIN  
+    SELECT next_id() INTO a;  
+    INSERT INTO board (id, project_id, position, name, created_at)  
+    VALUES (a, i_project_id, 1, i_board_name, now());  
+	select next_id() into b;  
+	-- 처음 만드는 사람은 edit 권한 가짐.  
+	insert into board_membership(id, board_id, user_id, role, created_at)  
+	values(b, a, i_user_id, 'editor', now());  
+END;  
+$$;  
+
