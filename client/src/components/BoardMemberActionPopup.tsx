@@ -4,18 +4,20 @@ import User from "./User";
 import classNames from "classnames";
 import {Button} from "semantic-ui-react";
 import {useTranslation} from "react-i18next";
+import EditPermissions from "./EditPermissions";
 
 interface IBoardMemberActionPopupProps{
-  boardId : string;
+    boardId : string;
     currentUserCanEdit : string;
     currentUserId : string;
     userId: string;
     userName : string;
     userEmail : string;
+    canEdit : string;
     avatarUrl : string;
-    showPopUp:(value:{userId:string, userName:string,  userEmail:string, avatarUrl:string, positionX:number, positionY:number}) =>  void;
+    showPopUp:(value:{userId:string, userName:string,  userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) =>  void;
 }
-function BoardMemberActionPopup({currentUserCanEdit, currentUserId, userId, userEmail, userName, avatarUrl, showPopUp}:IBoardMemberActionPopupProps){
+function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, userId, userEmail, userName, avatarUrl, canEdit, showPopUp}:IBoardMemberActionPopupProps){
     let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
     useEffect(()=>{
         document.addEventListener('mousedown', handleClickOutside);
@@ -29,16 +31,20 @@ function BoardMemberActionPopup({currentUserCanEdit, currentUserId, userId, user
             wrapperRef.current &&
             !wrapperRef.current.contains(event.target)) {
           console.log('close modal');
-          showPopUp({userId:"", userName:"", userEmail:"", avatarUrl:"", positionX:-1, positionY:-1 });
+          showPopUp({userId:"", userName:"", userEmail:"", avatarUrl:"", canEdit:"", positionX:-1, positionY:-1 });
         }
       }     
     
     const [t] = useTranslation();
     const [dummyState, setDummyState]= useState({userId:"",userName:"", userEmail:"", avatarUrl:"", positionX:-1, positionY:-1});
-    console.log('boardMemberActionPopup', userName, userEmail);
-    const handleEditPermissionsClick = () => {
+    console.log('boardMemberActionPopup', boardId, userName, userEmail);
+    const [editPermissions, setEditPermissions] = useState(false);
+    const [positions, setPositions] = useState({positionX:-1, positionY:-1});
+    const handleEditPermissionsClick = (event:React.MouseEvent<HTMLButtonElement>)=>{
+      setPositions({positionX:event.pageX,  positionY:event.pageY});
       // 권한 설정하는 Modal 띄움. EditPermissionModal 
       console.log('handleEditPermissionsClick');
+      setEditPermissions(true);
     }
     const handleDeleteClick = () => { 
       // 보드에서 멤버를 제거하는 Modal 띄움 DeleteBoardMemberModal
@@ -59,7 +65,7 @@ function BoardMemberActionPopup({currentUserCanEdit, currentUserId, userId, user
             <div className={styles.modal} ref={wrapperRef} >
               <span>
               <span className={styles.user}>
-                <User userId={userId} onClick = {false} size={"Large"} showAnotherPopup={setDummyState} userName={userName} avatarUrl={avatarUrl} userEmail={userEmail} />
+                <User userId={userId} onClick = {false} size={"Large"} showAnotherPopup={setDummyState} userName={userName} canEdit={canEdit} avatarUrl={avatarUrl} userEmail={userEmail} />
               </span>
               <span className={styles.content}>
                 <div className={styles.name}>{userName}</div>
@@ -127,7 +133,11 @@ function BoardMemberActionPopup({currentUserCanEdit, currentUserId, userId, user
                 onClick={handleDeleteClick}
               />
           ) }
-        
+        {editPermissions&&
+        <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
+        <EditPermissions boardId={boardId} userId={userId} canEdit={canEdit}/>
+        </div>
+        }
         </div>
         </div>
     );

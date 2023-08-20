@@ -9,9 +9,10 @@ interface IUserProps{
     userName:string;
     userEmail:string;
     avatarUrl : string;
+    canEdit: string;
     size : string;
     onClick : boolean;
-    showAnotherPopup : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, positionX:number, positionY:number}) => void;
+    showAnotherPopup : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) => void;
 }
 const SIZES = {
     TINY: 'tiny',
@@ -39,7 +40,7 @@ const SIZES = {
   
     return COLORS[sum % COLORS.length];
   };
-function User({userId, userName, userEmail, avatarUrl, size, onClick, showAnotherPopup}:IUserProps){
+function User({userId, userName, userEmail, avatarUrl, canEdit, size, onClick, showAnotherPopup}:IUserProps){
     const contentNode = (
         <span
           title={userName}
@@ -58,7 +59,7 @@ function User({userId, userName, userEmail, avatarUrl, size, onClick, showAnothe
       console.log("another popup");
     };
     const onCreate = (event:React.MouseEvent<HTMLButtonElement>)=> {
-       showAnotherPopup({userId:userId, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl, positionX:event.pageX, positionY:event.pageY});
+       showAnotherPopup({userId:userId, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl, canEdit:canEdit, positionX:event.pageX, positionY:event.pageY});
     };
     return onClick ? (
       <button type="button" disabled={isDisabled} className={styles.button} onClick={onCreate}>
