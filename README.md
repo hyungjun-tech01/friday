@@ -1,4 +1,5 @@
 # friday
+-- Node.js v18.16.0  
 -- friday : 가지고 오기 
 
 git clone https://github.com/hyungjun-tech01/friday.git  
