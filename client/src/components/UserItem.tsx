@@ -11,13 +11,13 @@ interface IUserItemProp{
 }
 function UserItem({userName, userId, avatarUrl, canEdit, onSelect}:IUserItemProp){
     const isActive = canEdit === null ? false:true;
-    const [dummyState, setDummyState]= useState({userId:"", positionX:-1, positionY:-1});
+    const [dummyState, setDummyState]= useState({userId:"", userName:"", userEmail:"", avatarUrl:"", positionX:-1, positionY:-1});
 
     console.log("user Item", userId, userName, canEdit, avatarUrl, isActive);
     return(
     <button type="button" disabled={isActive} className={styles.menuItem} onClick={()=> onSelect({userId:userId, canEdit:canEdit})}>
     <span className={styles.user}>
-      <User userId={userId} onClick = {false} size={"Large"}showAnotherPopup={setDummyState} userName={userName} avatarUrl={avatarUrl} />
+      <User userId={userId} onClick = {false} size={"Large"}showAnotherPopup={setDummyState} userName={userName} avatarUrl={avatarUrl} userEmail={""}/>
     </span>
     <div className={classNames(styles.menuItemText, isActive && styles.menuItemTextActive)}>
       {userName}  

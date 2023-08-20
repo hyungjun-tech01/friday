@@ -30,7 +30,7 @@ function BoardAction({boardId}:IBoardActionProp){
         <div className={styles.wrapper}>
             <div className={styles.actions}>
                 <div className={styles.action}>
-                    {members !== undefined &&<Membership members={members}/>}
+                    {members !== undefined &&<Membership members={members} boardId={boardId}/>}
             {/*<Filters />*/}
                 </div>
             </div>

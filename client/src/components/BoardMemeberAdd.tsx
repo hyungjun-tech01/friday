@@ -49,11 +49,13 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
       }
     }
     return(
+      <div className = {styles.overlay}>
       <div className={styles.modal} >
-          <div ref={wrapperRef} className={styles.wrapper}>
-
+          <div ref={wrapperRef} >
             <div className={styles.content}>
+              <div className={styles.title} >
               {t('common.boardmemberadd_title')}
+              </div>
               <Input
               ref={searchField}
               value={search}
@@ -70,6 +72,7 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
             </div>
         </div>
       </div>  
+      </div>
     );
 }
 export default BoardMemeberAdd;

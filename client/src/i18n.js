@@ -25,6 +25,10 @@ const resources = {
             addList : '리스트 추가',
             addAnotherCard: '다른 항목카드 추가',
             addCard: '항목카드 추가',
+            editPermissions : '권한 설정',
+            deleteButtonContent:'보드에서 제거',
+            leaveButtonContent : '보드에서 나가기', 
+
         }
       }
     },

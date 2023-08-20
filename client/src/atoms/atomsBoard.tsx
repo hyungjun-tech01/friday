@@ -32,6 +32,7 @@ export interface IBoardUser{
     userId:string;
     userName:string;
     avatarUrl:string;
+    userEmail:string;
     canEdit:string;
 }
 export interface IBoardMember{

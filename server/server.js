@@ -194,7 +194,7 @@ app.post('/boardAuth', async(req, res) => {
             for (const board of boards) {
                 console.log('board', board.boardId);
                 const boardMemebers = await pool.query(`
-                select u.id as "userId", u.name as "userName", u.avatar as "avatarUrl", bm.role as "canEdit"
+                select u.id as "userId", u.name as "userName", email as "userEmail", u.avatar as "avatarUrl", bm.role as "canEdit"
                 from board b, board_membership bm, user_account u
                 where b.id = bm.board_id  
                 and bm.user_id = u.id
@@ -205,7 +205,7 @@ app.post('/boardAuth', async(req, res) => {
             for (const board of boards) {
                 console.log('all user', board.boardId);
                 const allBoardMemebers = await pool.query(`
-                select u.id as "userId", u.name as "userName", 
+                select u.id as "userId", u.name as "userName", email as "userEmail", avatar as "avatarUrl",
                     (select role 
                         from board_membership t 
                     where t.board_id = $1 
