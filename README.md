@@ -14,3 +14,7 @@ client > npm start
 server > npm start   
 2개를 실행하고   
 localhost:3003 로 접근   
+
+planka 에 stored procedure 생성   
+pgAdmin >   
+database -> planka 선택 -> Tool -> Query Tool  
