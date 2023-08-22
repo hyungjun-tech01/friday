@@ -175,6 +175,29 @@ app.get('/cards/:boardId', async(req, res)=>{
     }
 );
 
+// get all my card by board id 
+app.get('/cardbyId/:cardId', async(req, res)=>{
+    const cardId = req.params.cardId;
+    console.log("card query by cardId", cardId);
+    let cardsResults ;
+    try{    
+            const result = await pool.query(`
+            select    id as "cardId", board_id as "boardId", list_id as "listId", 
+            creator_user_id as "creatorUserId", cover_attachment_id as "converAttachmentId",
+            position as "position", name as "cardName", description as "description" , 
+            due_date as "dueDate", stopwatch as "stopwatch", created_at as "createdAt",
+            updated_at as updatedAt from card where id = $1`, [cardId]);
+
+          
+            res.json(cardsResults);
+    }catch(err){
+        console.log(err);
+        res.json({message:err});
+    }
+    }
+);
+
+
 app.post('/boardAuth', async(req, res) => {
     const {boardId, userId} = req.body;
     console.log('boardAuth', boardId, userId);
