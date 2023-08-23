@@ -201,6 +201,17 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     and card_id = $1`, [card.cardId]);
                     if( cardMembership.rows.length > 0 ) 
                         card.cardMembership = cardMembership.rows;
+
+                    const cardLabel = await pool.query(`
+                    select a.id as "cardLabelId", a.label_id as "lableId" , card_id as "cardId", 
+                      b.name as "labelName", b.color as "color", a.created_at as "createdAt",
+                      a.updated_at as "updatedAt" 
+                    from card_label a, label b
+                    where a.label_id = b.id
+                    and a.card_id = $1`,[card.cardId]);    
+                    if(cardLabel.rows.length > 0 )
+                        card.cardLabel = cardLabel.rows;
+
                 }
                 console.log(cards);
                 
