@@ -242,6 +242,18 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     if(cardComment.rows.length > 0 )
                         card.cardComment = cardComment.rows;
 
+                    const cardAction = await pool.query(`
+                    select a.id as "actionId", a.card_id as "cardId", 
+                       a.user_id as "userId", b.name as "userName", a.type as "type" , a.data as "data", 
+                       a.created_at as "createdAt", a.updated_at as "updatedAt"
+                    from action a, user_account b
+                    where a.user_id = b.id
+                    and a.card_id = $1
+                    order by a.created_at`, [card.cardId]);
+        
+                    if(cardAction.rows.length > 0 )
+                        card.cardAction = cardAction.rows;    
+
                 }
                 console.log(cards);
             }    
