@@ -220,9 +220,30 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     if(cardTask.rows.length > 0 )
                         card.cardTask = cardTask.rows;
 
+                    const cardAttachment = await pool.query(`
+                    select a.id as "cardAttachementId", a.card_id as "cardId", a.creator_user_id as "creatorUserId", b.name as "creatorUserName",
+                       a.dirname as "dirName", a.filename as "fileName", a.name as "cardAttachmentName", 
+                       a.created_at as "createdAt", a.updated_at as "updatedAt", a.image as "image"
+                    from attachment a, user_account b
+                    where a.creator_user_id = b.id 
+                    and a.card_id = $1`, [card.cardId]);
+
+                    if(cardAttachment.rows.length > 0 )
+                        card.cardAttachment = cardAttachment.rows;
+                    
+                    const cardComment = await pool.query(`
+                    select a.id as "commentId" , a.card_id as "cardId", 
+                        a.user_id as "userId", b.name as "userName", a.text as "text", 
+                        a.created_at as "createdAt", a.updated_at as "updatedAt"
+                    from comment a , user_account b
+                    where a.user_id = b.id
+                    and a.card_id = $1`, [card.cardId]);
+    
+                    if(cardComment.rows.length > 0 )
+                        card.cardComment = cardComment.rows;
+
                 }
                 console.log(cards);
-                
             }    
             res.json(cards);
             console.log('result', res);
