@@ -68,3 +68,23 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.comment  
     OWNER to postgres;  
+
+-- Table: public.status  
+
+-- DROP TABLE IF EXISTS public.status;  
+
+CREATE TABLE IF NOT EXISTS public.status  
+(  
+    id bigint,  
+    name text COLLATE pg_catalog."default",  
+    color text COLLATE pg_catalog."default",  
+    board_id bigint,  
+    "position" double precision,  
+    created_at timestamp without time zone,  
+    updated_at timestamp without time zone  
+)  
+
+TABLESPACE pg_default;  
+
+ALTER TABLE IF EXISTS public.status  
+    OWNER to postgres;      
