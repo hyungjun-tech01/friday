@@ -212,6 +212,14 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     if(cardLabel.rows.length > 0 )
                         card.cardLabel = cardLabel.rows;
 
+                    const cardTask = await pool.query(`
+                    select id as "taskId", card_id as "cardId", name as "taskName", is_completed as "isCompleted" ,
+                       created_at as "createdAt", updated_at as "updatedAt", position as "position" 
+                    from task
+                    where card_id = $1`, [card.cardId]);    
+                    if(cardTask.rows.length > 0 )
+                        card.cardTask = cardTask.rows;
+
                 }
                 console.log(cards);
                 
