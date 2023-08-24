@@ -48,3 +48,23 @@ BEGIN
 END;  
 $$;  
 
+-- table 추가  
+-- Table: public.comment  
+
+-- DROP TABLE IF EXISTS public.comment;  
+
+CREATE TABLE IF NOT EXISTS public.comment  
+(  
+    id bigint NOT NULL,  
+    card_id bigint NOT NULL,  
+    user_id bigint NOT NULL,  
+    text text COLLATE pg_catalog."default" NOT NULL,  
+    created_at timestamp without time zone,  
+    updated_at timestamp without time zone,  
+    CONSTRAINT comment_pkey PRIMARY KEY (id)  
+)  
+
+TABLESPACE pg_default;  
+
+ALTER TABLE IF EXISTS public.comment  
+    OWNER to postgres;  
