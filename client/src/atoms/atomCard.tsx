@@ -34,13 +34,31 @@ export const atomMyCards = atom<ICard[]>({
     ]
 });
 
+export const atomCurrentCardId = atom<string>({
+    key:"currentCardId",
+    default : "",
+});
+
+export const atomCurrentCard = atom<ICard>({
+    key:"currentCard",
+    default: defaultCard,
+});
+
 // 특정 listId를 가진 card만을 selecting 
 export const cardSelector = selector({
     key:"SelectedCards",
-    get:( {get}) => {
+    get:({get}) => {
         return (InlistId:string) => {
             const cards = get(atomMyCards); 
             return cards.filter((card)=> card.listId === InlistId);
         };
     },
 });
+
+export const cardById = selector({
+    key:"SeletedCardById",
+    get:({get}) => {
+        const cards = get(atomMyCards);
+        return cards.filter((card) => card.cardId === get(atomCurrentCardId));
+    },
+})

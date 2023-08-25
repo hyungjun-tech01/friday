@@ -22,7 +22,7 @@ function CardAdd({listId, setIsCardAddOpened}:ICardAddProps){
       return()=>{
         document.removeEventListener('mousedown', handleClickOutside);
       }
-    });
+    }, []);
 
     const handleClickOutside=(event:any)=>{
       if (wrapperRef && 

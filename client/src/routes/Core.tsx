@@ -1,8 +1,8 @@
-import React, {useState} from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { useQuery } from "react-query";
-import {useRecoilState} from "recoil";
-import {useParams} from "react-router";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import {apiGetProjectbyId} from "../api/project";
@@ -14,20 +14,21 @@ import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
 
 import styles from "../scss/Core.module.scss";
+import { atomCurrentCardId } from "../atoms/atomCard";
 
 interface ICoreParams {
     id : string;
 }
 function Core(){
-    const {pathname} = useLocation();
-    const IsDetail = pathname.includes('board');
-    const IsMaster = pathname.includes('projects');
+  const {pathname} = useLocation();
+  const IsDetail = pathname.includes('board');
+  const IsMaster = pathname.includes('projects');
+  const IsCard = pathname.includes('card');
+  
+  const {id} = useParams<ICoreParams>();
 
-    const {id} = useParams<ICoreParams>();
-
-    const [currentProject, setCurrentProject] = useRecoilState<IProject[]>(atomCurrentProject);
-    const [current, setCurrent] = useState(false);
-    
+  const [currentProject, setCurrentProject] = useRecoilState<IProject[]>(atomCurrentProject);
+  const [current, setCurrent] = useState(false);
 
   //project id로 project 쿼리할 것.
 //  const [project, setProject] = useRecoilState<IProject[]>(atomCurrentProject); 
@@ -37,28 +38,48 @@ function Core(){
   // useQuery(['todos', todoId], () => fetchTodoById(todoId))
 
   //const queryProjectById = id===undefined ?  false:true;
-  console.log('isnmater', IsMaster);
-  const {isLoading, data, isSuccess} = useQuery<IProject[]>(["projectById", id], ()=>apiGetProjectbyId(id),{
-    onSuccess: data => {
+  if(IsMaster) console.log('This is master');
+  if(IsDetail) console.log('This is detail');
+  if(IsCard) console.log('This is card');
+  console.log("Its ID is ", id);
+
+  const {isLoading, data, isSuccess} = useQuery<IProject[]>(
+    ["projectById", id],
+    ()=>apiGetProjectbyId(id),
+    {
+      onSuccess: data => {
         setCurrentProject(data);   // use Query 에서 atom에 set 
         console.log("cccccccccccccore", currentProject);
         setCurrent(true);
-       },
-         enabled : IsMaster
-        }   
-    ); 
-    const [currentModal, setCurrentModal] = useState(null);
-   
-    return (
+      },
+      enabled : IsMaster,
+    }
+  );
+
+  const [currentBoardId, setCurrentBoardId] = useState("");
+  if(IsDetail && currentBoardId !== id) {
+    setCurrentBoardId(id);
+  };
+
+  const setCurrentCardId = useSetRecoilState<string>(atomCurrentCardId);
+  if(IsCard && id) {
+    setCurrentCardId(id);
+  }
+  else {
+    setCurrentCardId("");
+  }
+
+  const [currentModal, setCurrentModal] = useState(null);
+
+  return (
     <>
         <Fix setCurrent={setCurrent} projectName={current ? currentProject[0].projectName:""} />
         {!current ? <Static projectId="" boardId=""/> :
-        <Static projectId={currentProject[0].projectId} boardId={IsDetail? id:""}/>}
+        <Static projectId={currentProject[0].projectId} boardId={currentBoardId}/>}
         {currentModal === "USERS" && <UsersModal/>}
         {currentModal === "USER_SETTING" && <UserSettingModal/>}
-      
     </>
-);
+  );
 
 //  {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}
 
@@ -86,6 +107,6 @@ function Core(){
         </SWrapper>
     );
 */ 
-}
+};
 
 export default Core;

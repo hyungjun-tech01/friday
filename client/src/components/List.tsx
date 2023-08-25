@@ -34,14 +34,14 @@ function List({id, index, name}:IListProps){
             setIsCardLoading(false);
             console.log(cards);
         }
-    }
+    };
     useEffect(
         () => { onQueryCards(); } ,[id, isCardAddOpened]
     );
     const handleAddCardClick = () => {
         console.log('addcard');
         setIsCardAddOpened(true);
-    }
+    };
     return(
         <div className={styles.innerWrapper}>
         <div className={styles.outerWrapper}>

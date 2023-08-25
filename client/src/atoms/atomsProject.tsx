@@ -26,19 +26,17 @@ export const atomCurrentProject = atom<IProject[]>({
     key:"currentProject",
     default : 
         [{ projectId:"" , projectName:""}],
-    
 });
 
-export const atomCurrent = atom<string>({
+export const atomCurrentProjectId = atom<string>({
     key:"currentId",
     default : 
-        "11111",
-    
+        "11111", 
 });
 
 export const getCurrentProject = selector({
     key: 'getCurrentProject',
     get: ({ get }) => {
-        return get(atomCurrent);
+        return get(atomCurrentProjectId);
     },
 });

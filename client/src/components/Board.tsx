@@ -1,8 +1,8 @@
 
-import {useEffect, useState, useRef} from "react";
+import {useEffect, useState, useRef, useCallback} from "react";
 
 import {IList, atomMyList} from "../atoms/atomsList";
-import {useRecoilState} from "recoil";
+import {useRecoilState, useRecoilValue} from "recoil";
 import {useTranslation} from "react-i18next";
 import {useQuery} from "react-query";
 import {apiGetLists} from "../api/list";
@@ -10,11 +10,12 @@ import List from "./List";
 import styles from "../scss/Board.module.scss";
 import ListAdd from "./ListAdd";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
-//import {ICard, atomMyCards} from "../atoms/atomCard";
+import { atomCurrentCardId } from "../atoms/atomCard";
 //import {apiGetCards} from "../api/card";
 
 //import {cardSelector} from "../atoms/atomCard";
 //import {useRecoilValue} from "recoil";
+import CardModal from "./CardModal";
 
 interface IListProps{
     boardId:string;
@@ -35,6 +36,9 @@ function Board({boardId}:IListProps){
         enabled : !showList
       }
     );
+    const cardId = useRecoilValue<string>(atomCurrentCardId);
+    console.log("Selected Card Id is ", cardId);
+
     // board id 로 카드를 모두 쿼리 . atom에 보관 후 -> 리스트 id로 selector를 통해서 가지고 올것. 
     // 만약 이렇게 한다면, 카드를 변경해도 atom을 갱신해야 함.
 //    const [cards, setCards] = useRecoilState<ICard[]>(atomMyCards);
@@ -50,14 +54,13 @@ function Board({boardId}:IListProps){
 //    );
 //
 
-
     const [isListAddOpened, setIsListAddOpened] = useState(false);
-    const hasEditMembershipforBoard = () => {
+    const hasEditMembershipforBoard = useCallback(() => {
         // useRecoilValue 
         console.log('hasEditMembership for board function');
         setIsListAddOpened((prev)=>(!prev));
-    }
-    console.log("list", showList, lists);
+    }, []);
+    console.log("List Info", showList, lists);
     // useEffect(() => {
     //     const handleOutsideClose = (e: {target: any}) => {
     //         // useRef current에 담긴 엘리먼트 바깥을 클릭 시 드롭메뉴 닫힘
@@ -81,32 +84,36 @@ function Board({boardId}:IListProps){
  //   }
 
     useEffect(()=>setShowList(false), [boardId]);
-    return(
-        <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`}>
-            <div className={`${styles.lists} ${styles.wrapperFlex}`}>
-                {!isLoading && lists.map((list, index) => (
-                        <List key={list.listId} id={list.listId} index={index} name={list.listName} />
-                        ))}
 
-                <div data-drag-scroller className={styles.list}>
-                {isListAddOpened ? (
-                <ListAdd  boardId={boardId} setShowList={setShowList} setIsListAddOpened={setIsListAddOpened} />
-                ) : (
-                <button
-                    type="button"
-                    className={styles.addListButton}
-                    onClick={hasEditMembershipforBoard}
-                >
-                    <PlusMathIcon className={styles.addListButtonIcon} />
-                    <span className={styles.addListButtonText}>
-                    {lists.length > 0
-                        ? t('action.addAnotherList')
-                        : t('action.addList')}
-                    </span>
-                </button>
-                )}
+    return(
+        <div>
+            <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`}>
+                <div className={`${styles.lists} ${styles.wrapperFlex}`}>
+                    {!isLoading && lists.map((list, index) => (
+                            <List key={list.listId} id={list.listId} index={index} name={list.listName} />
+                            ))}
+
+                    <div data-drag-scroller className={styles.list}>
+                    {isListAddOpened ? (
+                    <ListAdd  boardId={boardId} setShowList={setShowList} setIsListAddOpened={setIsListAddOpened} />
+                    ) : (
+                    <button
+                        type="button"
+                        className={styles.addListButton}
+                        onClick={hasEditMembershipforBoard}
+                    >
+                        <PlusMathIcon className={styles.addListButtonIcon} />
+                        <span className={styles.addListButtonText}>
+                        {lists.length > 0
+                            ? t('action.addAnotherList')
+                            : t('action.addList')}
+                        </span>
+                    </button>
+                    )}
+                    </div>
                 </div>
             </div>
+            { !!cardId && <CardModal id={cardId} canEdit={true}/>}
       </div>
     )
 }
