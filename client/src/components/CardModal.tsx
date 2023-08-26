@@ -15,23 +15,23 @@ interface ICardModalProps{
     // stopwatch: string;
     // tasks: any[];
     // description: string;
-    isOpened: boolean;
 }
 
-const CardModal = ({card, canEdit, isOpened}:ICardModalProps) => {
+const CardModal = ({card, canEdit}:ICardModalProps) => {
   const [t] = useTranslation();
   const [isDetailsVisible, setIsDetailVisible] = useState(false);
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
 
   let wrapperRef = useRef<any>(null);
 
-  const handleClickOutside = useCallback((event:any) => {
+  const handleClickOutside = (event:any) => {
     if(wrapperRef
       && wrapperRef.current
       && !wrapperRef.current.contains(event.target)) {
-      setCurrentCard(defaultCard);
+        console.log("close CardModal");
+        setCurrentCard(defaultCard);
     };
-  }, []);
+  };
 
   useEffect(()=>{
     document.addEventListener('mousedown', handleClickOutside);
@@ -121,7 +121,7 @@ const CardModal = ({card, canEdit, isOpened}:ICardModalProps) => {
   
   return (
     <div ref={wrapperRef}>
-      <Modal open={isOpened} closeIcon centered={false}>
+      <Modal open closeIcon centered={false}>
         {contentNode}
       </Modal>
     </div>

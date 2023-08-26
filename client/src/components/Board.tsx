@@ -74,8 +74,8 @@ function Board({boardId}:IListProps){
                     )}
                     </div>
                 </div>
-            </div>
-            <CardModal card={currentCard} canEdit={true} isOpened={currentCard.cardId !== ""}/>
+            </div>[]
+            {(currentCard.cardId !== "") && <CardModal card={currentCard} canEdit={true}/>}
       </div>
     )
 }
