@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRecoilState } from 'recoil';
 import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
-import { ICard, atomCurrentCard } from '../atoms/atomCard';
+import { ICard, atomCurrentCard, defaultCard } from '../atoms/atomCard';
 import styles from "../scss/CardModal.module.scss";
 import Activities from "./Activities";
+import { useSetRecoilState } from 'recoil';
 
 interface ICardModalProps{
-    id: string;
+    card: ICard;
     canEdit: boolean;
     // users: any[];
     // labels: any[];
@@ -15,13 +15,30 @@ interface ICardModalProps{
     // stopwatch: string;
     // tasks: any[];
     // description: string;
+    isOpened: boolean;
 }
 
-const CardModal = ({id, canEdit}:ICardModalProps) =>{
-  console.log("Enter into CardModal");
+const CardModal = ({card, canEdit, isOpened}:ICardModalProps) => {
   const [t] = useTranslation();
   const [isDetailsVisible, setIsDetailVisible] = useState(false);
-  const [currentCard, setCurrentCard] = useRecoilState<ICard>(atomCurrentCard);
+  const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
+
+  let wrapperRef = useRef<any>(null);
+
+  const handleClickOutside = useCallback((event:any) => {
+    if(wrapperRef
+      && wrapperRef.current
+      && !wrapperRef.current.contains(event.target)) {
+      setCurrentCard(defaultCard);
+    };
+  }, []);
+
+  useEffect(()=>{
+    document.addEventListener('mousedown', handleClickOutside);
+    return()=>{
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  });
 
   const contentNode = (
     <Grid className={styles.grid}>
@@ -30,7 +47,7 @@ const CardModal = ({id, canEdit}:ICardModalProps) =>{
           <div className={styles.headerWrapper}>
             <Icon name="list alternate outline" className={styles.moduleIcon} />
             <div className={styles.headerTitleWrapper}>
-                <div className={styles.headerTitle}>{currentCard.cardName}</div>
+                <div className={styles.headerTitle}>{card.cardName}</div>
             </div>
           </div>
         </Grid.Column>
@@ -101,11 +118,13 @@ const CardModal = ({id, canEdit}:ICardModalProps) =>{
       </Grid.Row>
     </Grid>
   );
-  console.log("Reached right before returning Modal");
+  
   return (
-      <Modal open closeIcon centered={false}>
-          {contentNode}
+    <div ref={wrapperRef}>
+      <Modal open={isOpened} closeIcon centered={false}>
+        {contentNode}
       </Modal>
+    </div>
   );
 };
 

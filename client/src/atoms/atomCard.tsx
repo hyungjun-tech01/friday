@@ -34,11 +34,7 @@ export const atomMyCards = atom<ICard[]>({
     ]
 });
 
-export const atomCurrentCardId = atom<string>({
-    key:"currentCardId",
-    default : "",
-});
-
+// currentCard : List에서 선택(click)한 카드
 export const atomCurrentCard = atom<ICard>({
     key:"currentCard",
     default: defaultCard,
@@ -54,11 +50,3 @@ export const cardSelector = selector({
         };
     },
 });
-
-export const cardById = selector({
-    key:"SeletedCardById",
-    get:({get}) => {
-        const cards = get(atomMyCards);
-        return cards.filter((card) => card.cardId === get(atomCurrentCardId));
-    },
-})

@@ -1,7 +1,6 @@
 import { useCallback } from "react";
-import { Link } from 'react-router-dom';
-import {ICard} from "../atoms/atomCard";
-import Paths from '../constants/Paths';
+import { useSetRecoilState } from "recoil";
+import { ICard, atomCurrentCard } from "../atoms/atomCard";
 import styles from "../scss/Card.module.scss";
 
 interface ICardProps{
@@ -9,18 +8,20 @@ interface ICardProps{
 };
 
 function Card({card}:ICardProps){
+    const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
     const handleCardClick = useCallback(() => {
         console.log('Card is clicked : ', card.cardId);
-        if (document.activeElement) {
-            (document.activeElement as HTMLElement).blur();;
-        };
-    }, [card.cardId]);
+        // if (document.activeElement) {
+        //     (document.activeElement as HTMLElement).blur();;
+        // };
+        if(card) setCurrentCard(card);
+    }, []);
 
     return (
         <div className={styles.wrapper}>
             <div className = {styles.card}>
                 <div className = {styles.content} >
-                    <Link to={Paths.CARDS.replace(':id', card.cardId)}
+                    <div 
                         title={card.cardId}
                         className={styles.name}
                         onClick={handleCardClick}
@@ -28,7 +29,7 @@ function Card({card}:ICardProps){
                         <div className={styles.details}>
                             {card.cardName}
                         </div>
-                    </Link>
+                    </div>
                 </div>
             </div>
         </div>

@@ -10,19 +10,16 @@ import List from "./List";
 import styles from "../scss/Board.module.scss";
 import ListAdd from "./ListAdd";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
-import { atomCurrentCardId } from "../atoms/atomCard";
-//import {apiGetCards} from "../api/card";
-
-//import {cardSelector} from "../atoms/atomCard";
-//import {useRecoilValue} from "recoil";
+import { ICard, atomCurrentCard } from "../atoms/atomCard";
 import CardModal from "./CardModal";
 
 interface IListProps{
     boardId:string;
 }
 function Board({boardId}:IListProps){
-    const [showList, setShowList] = useState(false);
     const [t] = useTranslation();
+
+    const [showList, setShowList] = useState(false);
 
     //board id로 리스트를 쿼리할 것.
     const [lists, setLists] = useRecoilState<IList[]>(atomMyList); 
@@ -36,23 +33,6 @@ function Board({boardId}:IListProps){
         enabled : !showList
       }
     );
-    const cardId = useRecoilValue<string>(atomCurrentCardId);
-    console.log("Selected Card Id is ", cardId);
-
-    // board id 로 카드를 모두 쿼리 . atom에 보관 후 -> 리스트 id로 selector를 통해서 가지고 올것. 
-    // 만약 이렇게 한다면, 카드를 변경해도 atom을 갱신해야 함.
-//    const [cards, setCards] = useRecoilState<ICard[]>(atomMyCards);
-//    const [isCardLoading, setIsCardLoading] = useState(true);
-//    const cardData = useQuery<ICard[]>(["allMyCards", boardId], ()=>apiGetCards(boardId),{
-//        onSuccess: data => {
-//            setCards(data);   // use Query 에서 atom에 set 
-//            console.log('showList', showList);
-//            setIsCardLoading(false);
-//        },
-//        enabled : !showList
-//      }
-//    );
-//
 
     const [isListAddOpened, setIsListAddOpened] = useState(false);
     const hasEditMembershipforBoard = useCallback(() => {
@@ -61,29 +41,11 @@ function Board({boardId}:IListProps){
         setIsListAddOpened((prev)=>(!prev));
     }, []);
     console.log("List Info", showList, lists);
-    // useEffect(() => {
-    //     const handleOutsideClose = (e: {target: any}) => {
-    //         // useRef current에 담긴 엘리먼트 바깥을 클릭 시 드롭메뉴 닫힘
-    //       if(isListAddOpened && (!addListElement.current.contains(e.target)))
-    //         console.log('inside effect', isListAddOpened);
-    //            setIsListAddOpened(false);
-    //            console.log('inside effect', isListAddOpened);
-    //     };
-
-    //     document.addEventListener('click', handleOutsideClose);
-        
-    //     return () => document.removeEventListener('click', handleOutsideClose);
-    //   }, [isListAddOpened]);
-    
- //   const selectCards = useRecoilValue(cardSelector); // 호출 가능한 함수를 가져옴
- //   console.log('isCardLoading',cards);
- //   let selectedCards:ICard[] = [];
- //   if(!isCardLoading) {
- //       selectedCards = selectCards("1016265575850050659");
- //       console.log('1016265575850050659', selectedCards);
- //   }
 
     useEffect(()=>setShowList(false), [boardId]);
+
+    // Card ------------------------
+    const currentCard = useRecoilValue<ICard>(atomCurrentCard);
 
     return(
         <div>
@@ -113,7 +75,7 @@ function Board({boardId}:IListProps){
                     </div>
                 </div>
             </div>
-            { !!cardId && <CardModal id={cardId} canEdit={true}/>}
+            <CardModal card={currentCard} canEdit={true} isOpened={currentCard.cardId !== ""}/>
       </div>
     )
 }
