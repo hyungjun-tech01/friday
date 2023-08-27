@@ -11,12 +11,17 @@ const resources = {
             Password:'패스워드',
             Login:'로그인',
             projectManagement:'프로젝트 매니지먼트',
-            createBoard_title:'보드 명칭을 입력하세요',
-            invalidEmailOrUsername:'이메일주소나 비밀번호가 오류입니다',
+            createBoard_title:'보드 명칭을 입력하세요.',
+            invalidEmailOrUsername:'이메일주소나 비밀번호가 오류입니다.',
             enterListTitle : '리스트 명을 입력',
-            enterCardTitle : '항목카드명을 입력하세요..',
+            enterCardTitle : '항목카드명을 입력하세요.',
+            enterDescription : '상세 설명을 입력하세요.',
             boardmemberadd_title : '멤버 추가',
             searchUsers : '아이디로 검색하세요',
+            actions : '활동',
+            description : '설명',
+            tasks : '태스크',
+            writeComment : '댓글 추가하기'
         },
         action:{
             Login:'로그인',
@@ -27,8 +32,10 @@ const resources = {
             addCard: '항목카드 추가',
             editPermissions : '권한 설정',
             deleteButtonContent:'보드에서 제거',
-            leaveButtonContent : '보드에서 나가기', 
-
+            leaveButtonContent : '보드에서 나가기',
+            save : '저장',
+            addMoreDetailedDescription: '자세한 설명 추가',
+            showDetails : '자세히 보기',
         }
       }
     },

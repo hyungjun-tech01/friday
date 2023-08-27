@@ -1,23 +1,23 @@
-import {atom, selector} from "recoil";
-import {IUser, defaultUser} from "./atomsUser";
-import {ITask, defaultTask} from "./atomTask";
-import {ILabel, defaultLabel} from "./atomLabel";
+import { atom, selector } from "recoil";
+import { IUser, defaultUser } from "./atomsUser";
+import { ITask, defaultTask } from "./atomTask";
+import { ILabel, defaultLabel } from "./atomLabel";
 
 export interface ICard{
-    cardId : string; 
-    boardId:string;
-    listId:string;
-    coverUrl:string;
+    cardId: string; 
+    boardId: string;
+    listId: string;
+    coverUrl: string;
     cardName: string;
-    description:string;
-    createdAt : string;
-    updatedAt : string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
     labels: ILabel[];
 }
 
 export const defaultCard:ICard = {
-    cardId:"" , cardName:"",  coverUrl:"", boardId:"", 
-    listId:"",  description:"",  labels:[], createdAt:"", updatedAt:"" ,
+    cardId:"" , cardName:"",  coverUrl:"", boardId:"", listId:"",
+    description:"",  labels:[], createdAt:"", updatedAt:"" ,
 }
 
 export interface ICreateCard{
