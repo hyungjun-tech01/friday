@@ -44,7 +44,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   }, [])
 
   const handleTaskUpdate = useCallback((id:string, data:any) => {
-    console.log("Udate task of card / id : ", id);
+    console.log("Update task of card / id : ", id);
   }, [])
 
   const handleTaskDelete = useCallback((id:string) => {
@@ -84,9 +84,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                           type="button"
                           className={classNames(styles.descriptionText, styles.cursorPointer)}
                         >
-                          <TextArea linkStopPropagation linkTarget="_blank">
-                            {card.description}
-                          </TextArea>
+                          <TextArea value={card.description}/>
                         </button>
                       ) : (
                         <button type="button" className={styles.descriptionButton}>
@@ -98,9 +96,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                     </DescriptionEdit>
                   ) : (
                     <div className={styles.descriptionText}>
-                      <TextArea linkStopPropagation linkTarget="_blank">
-                        {card.description}
-                      </TextArea>
+                      <TextArea value={card.description} />
                     </div>
                   )}
                 </div>
