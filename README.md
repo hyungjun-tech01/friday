@@ -95,3 +95,53 @@ ALTER TABLE card DROP COLUMN status_id;
 ALTER TABLE card ADD COLUMN status_id bigint;  
 
 DROP PROCEDURE p_modify_card;  
+
+CREATE OR REPLACE PROCEDURE p_modify_card(i_card_id in bigint,   
+i_user_id in bigint,   
+i_card_action_type in text,   
+i_description in text,  
+i_card_name in text,   
+i_due_date in text,   
+i_position in text,  
+i_card_membership_action_type in text,  
+i_card_membership_id in text,  
+i_card_membership_user_id in text,  
+i_card_label_action_type in text,  
+i_card_label_id in text,   
+i_label_id in text,  
+i_card_task_action_type in text,  
+i_card_task_id in text,  
+i_card_task_name in text,  
+i_card_task_is_completed in text,  
+i_card_task_position in text,   
+i_card_attachment_action_type in text,  
+i_card_attachment_id in text,  
+i_card_attachment_dirname in text,  
+i_card_attachment_filename in text,  
+ i_card_attachment_name in text,   
+i_card_attachment_image in text,  
+i_card_comment_action_type in text,    
+i_card_comment_id in text,   
+i_card_comment_text  in text,  
+i_card_status_action_type in text,  
+i_card_status_id in text  
+ )  
+LANGUAGE plpgsql  
+AS $$  
+DECLARE  
+v_card_name text;  
+v_description text;  
+v_due_date text;  
+v_position text;  
+v_card_membership_user_id text;  
+v_card_membership_id text;  
+v_label_id text;  
+v_card_label_id text;  
+v_card_task_name text;  
+v_card_task_is_completed text;  
+v_card_task_position text;  
+v_card_attatchment_dirname text;  
+v_card_attachment_filename text;  
+v_card_attachment_name text;  
+v_card_attachment_image text;  
+v_card_comment_text text;  
