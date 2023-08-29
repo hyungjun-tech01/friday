@@ -14,7 +14,6 @@ import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
 
 import styles from "../scss/Core.module.scss";
-import { atomCurrentCardId } from "../atoms/atomCard";
 
 interface ICoreParams {
     id : string;
@@ -23,7 +22,6 @@ function Core(){
   const {pathname} = useLocation();
   const IsDetail = pathname.includes('board');
   const IsMaster = pathname.includes('projects');
-  const IsCard = pathname.includes('card');
   
   const {id} = useParams<ICoreParams>();
 
@@ -40,8 +38,6 @@ function Core(){
   //const queryProjectById = id===undefined ?  false:true;
   if(IsMaster) console.log('This is master');
   if(IsDetail) console.log('This is detail');
-  if(IsCard) console.log('This is card');
-  console.log("Its ID is ", id);
 
   const {isLoading, data, isSuccess} = useQuery<IProject[]>(
     ["projectById", id],
@@ -60,14 +56,6 @@ function Core(){
   if(IsDetail && currentBoardId !== id) {
     setCurrentBoardId(id);
   };
-
-  const setCurrentCardId = useSetRecoilState<string>(atomCurrentCardId);
-  if(IsCard && id) {
-    setCurrentCardId(id);
-  }
-  else {
-    setCurrentCardId("");
-  }
 
   const [currentModal, setCurrentModal] = useState(null);
 

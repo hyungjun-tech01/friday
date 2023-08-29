@@ -1,23 +1,23 @@
-import {atom, selector} from "recoil";
-import {IUser, defaultUser} from "./atomsUser";
-import {ITask, defaultTask} from "./atomTask";
-import {ILabel, defaultLabel} from "./atomLabel";
+import { atom, selector } from "recoil";
+import { IUser, defaultUser } from "./atomsUser";
+import { ITask, defaultTask } from "./atomTask";
+import { ILabel, defaultLabel } from "./atomLabel";
 
 export interface ICard{
-    cardId : string; 
-    boardId:string;
-    listId:string;
-    coverUrl:string;
+    cardId: string; 
+    boardId: string;
+    listId: string;
+    coverUrl: string;
     cardName: string;
-    description:string;
-    createdAt : string;
-    updatedAt : string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
     labels: ILabel[];
 }
 
 export const defaultCard:ICard = {
-    cardId:"" , cardName:"",  coverUrl:"", boardId:"", 
-    listId:"",  description:"",  labels:[], createdAt:"", updatedAt:"" ,
+    cardId:"" , cardName:"",  coverUrl:"", boardId:"", listId:"",
+    description:"",  labels:[], createdAt:"", updatedAt:"" ,
 }
 
 export interface ICreateCard{
@@ -99,11 +99,7 @@ export const atomMyCards = atom<ICard[]>({
     ]
 });
 
-export const atomCurrentCardId = atom<string>({
-    key:"currentCardId",
-    default : "",
-});
-
+// currentCard : List에서 선택(click)한 카드
 export const atomCurrentCard = atom<ICard>({
     key:"currentCard",
     default: defaultCard,
@@ -119,11 +115,3 @@ export const cardSelector = selector({
         };
     },
 });
-
-export const cardById = selector({
-    key:"SeletedCardById",
-    get:({get}) => {
-        const cards = get(atomMyCards);
-        return cards.filter((card) => card.cardId === get(atomCurrentCardId));
-    },
-})

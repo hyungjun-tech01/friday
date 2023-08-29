@@ -46,9 +46,6 @@ function Root() {
         </Route>
         <Route path = {Path.BOARDS}>
           <Core/>
-        </Route>        
-        <Route path = {Path.CARDS}>
-          <Core/>
         </Route>
         <Route path = {Path.ROOT}>
           <Core/>

@@ -1,27 +1,65 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRecoilState } from 'recoil';
-import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
-import { ICard, atomCurrentCard } from '../atoms/atomCard';
+import { Button, Grid, Icon, Modal, TextArea } from 'semantic-ui-react';
+import { ICard, atomCurrentCard, defaultCard } from '../atoms/atomCard';
+import { ITask, atomCurrentTasks } from '../atoms/atomTask';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useQuery } from "react-query";
 import styles from "../scss/CardModal.module.scss";
+import classNames from 'classnames';
 import Activities from "./Activities";
+import DescriptionEdit from "./DescriptionEdit";
+import Tasks from "./Tasks"
+import { apiGetInfosByCardId } from "../api/card"
 
 interface ICardModalProps{
-    id: string;
+    card: ICard;
     canEdit: boolean;
     // users: any[];
     // labels: any[];
     // dueDate: string;
     // stopwatch: string;
     // tasks: any[];
-    // description: string;
 }
 
-const CardModal = ({id, canEdit}:ICardModalProps) =>{
-  console.log("Enter into CardModal");
+const CardModal = ({card, canEdit}:ICardModalProps) => {
+  // let wrapperRef = useRef<any>(null);
+
   const [t] = useTranslation();
   const [isDetailsVisible, setIsDetailVisible] = useState(false);
-  const [currentCard, setCurrentCard] = useRecoilState<ICard>(atomCurrentCard);
+  const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
+  
+  const [tasks, setTasks] = useRecoilState<ITask[]>(atomCurrentTasks);
+
+  const {isLoading, data, isSuccess} = useQuery<any>(
+    ["getInfoByCardId", card.cardId],
+    ()=>apiGetInfosByCardId(card.cardId),
+    {
+      onSuccess: data => {
+          console.log("Data : ", data);
+          if(data[0].cardTask) {
+            setTasks(data[0].cardTask);
+          };
+      },
+    //enabled : !showCreateModal
+    }
+  );
+
+  const handleOnCloseCardModel = useCallback(()=>{
+    setCurrentCard(defaultCard);
+  }, [])
+
+  const handleDescriptionUpdate = useCallback((data:string) => {
+    console.log("Udate description of card : ", data);
+  }, [])
+
+  const handleTaskUpdate = useCallback((id:string, data:any) => {
+    console.log("Update task of card / id : ", id);
+  }, [])
+
+  const handleTaskDelete = useCallback((id:string) => {
+    console.log("Delete task of card / id : ", id);
+  }, [])
 
   const contentNode = (
     <Grid className={styles.grid}>
@@ -30,13 +68,59 @@ const CardModal = ({id, canEdit}:ICardModalProps) =>{
           <div className={styles.headerWrapper}>
             <Icon name="list alternate outline" className={styles.moduleIcon} />
             <div className={styles.headerTitleWrapper}>
-                <div className={styles.headerTitle}>{currentCard.cardName}</div>
+                <div className={styles.headerTitle}>{card.cardName}</div>
             </div>
           </div>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row className={styles.modalPadding}>
         <Grid.Column width={16} className={styles.contentPadding}>
+          {(card.description || canEdit) && (
+              <div className={styles.contentModule}>
+                <div className={styles.moduleWrapper}>
+                  <Icon name="align justify" className={styles.moduleIcon} />
+                  <div className={styles.moduleHeader}>{t('common.description')}</div>
+                  {canEdit ? (
+                    <DescriptionEdit defaultValue={card.description} onUpdate={handleDescriptionUpdate}>
+                      {card.description ? (
+                        <button
+                          type="button"
+                          className={classNames(styles.descriptionText, styles.cursorPointer)}
+                        >
+                          <TextArea value={card.description}/>
+                        </button>
+                      ) : (
+                        <button type="button" className={styles.descriptionButton}>
+                          <span className={styles.descriptionButtonText}>
+                            {t('action.addMoreDetailedDescription')}
+                          </span>
+                        </button>
+                      )}
+                    </DescriptionEdit>
+                  ) : (
+                    <div className={styles.descriptionText}>
+                      <TextArea value={card.description} />
+                    </div>
+                  )}
+                </div>
+              </div>
+          )}
+          {(tasks.length > 0 || canEdit) && (
+              <div className={styles.contentModule}>
+                <div className={styles.moduleWrapper}>
+                  <Icon name="check square outline" className={styles.moduleIcon} />
+                  <div className={styles.moduleHeader}>{t('common.tasks')}</div>
+                  <Tasks
+                    items={tasks}
+                    canEdit={canEdit}
+                    //onCreate={onTaskCreate}
+                    onUpdate={handleTaskUpdate}
+                    //onMove={onTaskMove}
+                    onDelete={handleTaskDelete}
+                  />
+                </div>
+              </div>
+          )}
           <Activities isDetailsVisible={isDetailsVisible} canEdit={canEdit}/>
         </Grid.Column>
         {canEdit && (
@@ -50,27 +134,6 @@ const CardModal = ({id, canEdit}:ICardModalProps) =>{
                 <Icon name="paper plane outline" className={styles.actionIcon} />
                 {"Action 1"}
               </Button>
-              <Button
-                fluid
-                className={styles.actionButton}
-              >
-                <Icon name="paper plane outline" className={styles.actionIcon} />
-                {"Action 2"}
-              </Button>
-              <Button
-                fluid
-                className={styles.actionButton}
-              >
-                <Icon name="paper plane outline" className={styles.actionIcon} />
-                {"Action 3"}
-              </Button>
-              <Button
-                fluid
-                className={styles.actionButton}
-              >
-                <Icon name="paper plane outline" className={styles.actionIcon} />
-                {"Action 4"}
-              </Button>
             </div>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('common.actions')}</span>
@@ -79,21 +142,7 @@ const CardModal = ({id, canEdit}:ICardModalProps) =>{
                 className={styles.actionButton}
               >
                 <Icon name="paper plane outline" className={styles.actionIcon} />
-                {"Action 5"}
-              </Button>
-              <Button
-                fluid
-                className={styles.actionButton}
-              >
-                <Icon name="paper plane outline" className={styles.actionIcon} />
-                {"Action 6"}
-              </Button>
-              <Button
-                fluid
-                className={styles.actionButton}
-              >
-                <Icon name="paper plane outline" className={styles.actionIcon} />
-                {"Action 7"}
+                {"Action 2"}
               </Button>
             </div>
           </Grid.Column>
@@ -101,11 +150,11 @@ const CardModal = ({id, canEdit}:ICardModalProps) =>{
       </Grid.Row>
     </Grid>
   );
-  console.log("Reached right before returning Modal");
+  
   return (
-      <Modal open closeIcon centered={false}>
-          {contentNode}
-      </Modal>
+    <Modal open closeIcon centered={false} className={styles.wrapper} onClose={handleOnCloseCardModel}>
+      {contentNode}
+    </Modal>
   );
 };
 

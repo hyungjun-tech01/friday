@@ -48,7 +48,6 @@ export const apiCreateCard = async (card:ICreateCard) => {
         console.error(err);
     }
 };
-
 export const apiModifyCard = async (card:IModifyCard) => {
     console.log("modify card", BASE_PATH);
     
@@ -60,6 +59,20 @@ export const apiModifyCard = async (card:IModifyCard) => {
            }); 
            const responseMessage = await response.json();
            return(responseMessage);
+     }catch(err){
+        console.error(err);
+    }
+};
+
+export const apiGetInfosByCardId = async (cardId:string) => {
+    console.log("createcard", BASE_PATH);
+    
+    try{
+        const response = await fetch(`${BASE_PATH}/cardbyId/${cardId}`,{
+            method: "GET", 
+        }); 
+        const json = await response.json()
+        return json;
     }catch(err){
         console.error(err);
     }
