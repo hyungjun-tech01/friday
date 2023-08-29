@@ -64,11 +64,11 @@ export const apiModifyCard = async (card:IModifyCard) => {
     }
 };
 
-  ///// api 호출 sample code 
-  // import {IModifyCard, defaultModifyCard} from "../atoms/atomCard";
+ ///// api 호출 sample code 
+ // import {IModifyCard, defaultModifyCard} from "../atoms/atomCard";
  // cardId, userId는 반드시 들어가야 함. 
- // 필요에 따라 type 과 값들을 적절하게 세팅하여 호출 
-  // const cardModifySample = async() => {
+ // 필요에 따라 Actiontype 과 값들을 적절하게 세팅하여 호출 : 아래는 descriptipon 변경 방법
+ // const cardModifySample = async() => {
  //   const card : IModifyCard = {...defaultModifyCard, 
  //     cardId:'1057243275443832054', 
  //     userId:cookies.UserId,
@@ -79,7 +79,7 @@ export const apiModifyCard = async (card:IModifyCard) => {
  //   const response = await apiModifyCard(card);
  //   console.log('moddify response', response);
  // }
-  ///// sample code 
+ ///// sample code 
 
 export const apiGetInfosByCardId = async (cardId:string) => {
     console.log("createcard", BASE_PATH);
