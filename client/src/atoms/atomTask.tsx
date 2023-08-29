@@ -5,12 +5,12 @@ export interface ITask{
     taskName : string;
     cardId : string;
     isCompleted: boolean;
-    isPersisted: boolean;
+    // isPersisted: boolean; <-- planka에서는 'localID'가 아닌 경우에 true로 설정
 };
 
 export const defaultTask : ITask = {
     taskId: "", taskName: "", cardId: "",
-    isCompleted: false, isPersisted: false,
+    isCompleted: false //, isPersisted: false,
 };
 
 // currentTasks : card 선택으로 CardModal에서 불려진 Task들

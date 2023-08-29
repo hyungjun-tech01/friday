@@ -1,24 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { Button, Form, TextArea } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
-import { useRecoilValue } from 'recoil';
 import TextareaAutosize from 'react-textarea-autosize';
 import styles from '../scss/NameEdit.module.scss'
-import { IEditElement, atomCurrentEditElment } from '../atoms/atomEditState';
 
 interface INameEditProps{
     children: React.ReactNode
     defaultValue : string;
-    parentId: string;
     onUpdate : (data:string) => void;
 }
 
-const NameEdit = ({children, defaultValue, parentId, onUpdate}:INameEditProps) => {
+const NameEdit = forwardRef(({children, defaultValue, onUpdate}:INameEditProps, ref) => {
     const [t] = useTranslation();
     const field = useRef<TextArea>(null);
     const [isOpened, setIsOpened] = useState(false);
     const [value, setValue] = useState("");
-    const atomState = useRecoilValue<IEditElement>(atomCurrentEditElment);
 
     const open = useCallback(() => {
         setIsOpened(true);
@@ -29,18 +25,6 @@ const NameEdit = ({children, defaultValue, parentId, onUpdate}:INameEditProps) =
         setIsOpened(false);
         setValue("");
     }, [setValue]);
-
-    const changeState = useCallback(() => {
-        if(atomState.id === parentId
-            && atomState.name === "NameEdit"
-            && atomState.properties) {
-            if(atomState.properties.open) {
-                open();
-            } else {
-                close();
-            }
-        }
-    }, [atomState, open, close]);
 
     const submit = useCallback(() => {
         const cleanValue = value.trim();
@@ -70,13 +54,20 @@ const NameEdit = ({children, defaultValue, parentId, onUpdate}:INameEditProps) =
         setValue(event.target.value);
     }, [])
 
+    useImperativeHandle(
+        ref,
+        () => ({
+          open,
+          close,
+        }),
+        [open, close]
+    );
+
     useEffect(() => {
         if (isOpened && field.current) {
           field.current.focus();
         }
     }, [isOpened]);
-
-    changeState();
 
     return (
         <div>
@@ -101,6 +92,6 @@ const NameEdit = ({children, defaultValue, parentId, onUpdate}:INameEditProps) =
             }
         </div>
     );
-};
+});
 
 export default NameEdit;

@@ -25,10 +25,9 @@ function List({id, index, name}:IListProps){
     const [isCardAddOpened, setIsCardAddOpened] = useState(false);
     
     const onQueryCards = async () => {
-        const response = await apiGetCardsbyListId(id);    
-        if(response.message){
-            setIsCardLoading(true);
-        }else{
+        setIsCardLoading(true);
+        const response = await apiGetCardsbyListId(id);
+        if(response){
             console.log('카드조회', response);  
             setCards(response);
             setIsCardLoading(false);

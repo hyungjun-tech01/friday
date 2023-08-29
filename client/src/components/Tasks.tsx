@@ -76,7 +76,7 @@ const Tasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }:ITasksPr
                 index={index}
                 name={item.taskName}
                 isCompleted={item.isCompleted}
-                isPersisted={item.isPersisted}
+                //isPersisted={item.isPersisted}
                 canEdit={canEdit}
                 onUpdate={(data) => handleUpdate(item.taskId, data)}
                 onDelete={() => handleDelete(item.taskId)}
