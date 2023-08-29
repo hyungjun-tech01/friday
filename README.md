@@ -89,7 +89,7 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.status  
     OWNER to postgres;      
 
-ALTER TABLE card DROP COLUMN status_id;
-ALTER TABLE card ADD COLUMN status_id bigint;
+ALTER TABLE card DROP COLUMN status_id;  
+ALTER TABLE card ADD COLUMN status_id bigint;  
 
-DROP PROCEDURE p_modify_card;
+DROP PROCEDURE p_modify_card;  
