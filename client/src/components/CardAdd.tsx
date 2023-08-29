@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import {useForm} from "react-hook-form";
 import {ICreateCard} from "../atoms/atomCard";
 import {useCookies} from "react-cookie";
-import {apiCreateCard} from "../api/card";
+import {apiCreateCard, apiModifyCard} from "../api/card";
 
 interface ICardAddProps{
     listId:string;
@@ -34,6 +34,7 @@ function CardAdd({listId, setIsCardAddOpened}:ICardAddProps){
     }     
    
   const onValid = async(data:any) => {
+  
     const card : ICreateCard = {...data, "listId":listId, userId:cookies.UserId };
     console.log('create card', card);
     const response = await apiCreateCard(card);
@@ -43,7 +44,9 @@ function CardAdd({listId, setIsCardAddOpened}:ICardAddProps){
     }else{
       setIsCardAddOpened(false);
     }    
+
   }  
+
   const handleControlMouseOver = () => {
   }   
   const handleControlMouseOut = () => {

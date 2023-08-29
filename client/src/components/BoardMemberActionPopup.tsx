@@ -39,7 +39,9 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
     const [dummyState, setDummyState]= useState({userId:"",userName:"", userEmail:"", avatarUrl:"", positionX:-1, positionY:-1});
     console.log('boardMemberActionPopup', boardId, userName, userEmail);
     const [editPermissions, setEditPermissions] = useState(false);
+    //클릭한 마우스 위치 가지고 있을 수 있는 const 지정 
     const [positions, setPositions] = useState({positionX:-1, positionY:-1});
+    //현재 클릭한 곳의 position 을 가지고 와서 위의 const에 저장
     const handleEditPermissionsClick = (event:React.MouseEvent<HTMLButtonElement>)=>{
       setPositions({positionX:event.pageX,  positionY:event.pageY});
       // 권한 설정하는 Modal 띄움. EditPermissionModal 

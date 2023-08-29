@@ -27,40 +27,40 @@ export interface ICreateCard{
 }
 
 export interface IModifyCard{
-   cardId : number ;     // number 
-        userId : number;       // number 
-        cardActionType : 'ADD'|'UPDATE'|null;    // 나머지는 모두 string 
-        description : string |null ;
-        cardName :  string |null ;
-        dueDate :  string |null ;
-        position : string |null ;
-        cardMembershipActionType : 'ADD'|'DELETE'|null; 
-        cardMembershipId : string |null ;
-        cardMembershipUserId : string |null ;
-        cardLabelActionType : 'ADD'|'DELETE'|null; 
-        cardLabelId :  string |null ;
-        labelId : string |null ;
-        cardTaskActionType : 'ADD'|'UPDATE'|'DELETE'|null; 
-        cardTaskId : string |null ;
-        cardTaskName : string |null ;
-        cardTaskIsCompleted : string |null ;
-        cardTaskPosition :  string |null ;
-        cardAttachmentActionType : 'ADD'|'UPDATE'|'DELETE'|null; 
-        cardAttachmentId : string |null ;
-        cardAttachmentDirname : string |null ;
-        cardAttachmentFilename : string |null ;
-        cardAttachmentName :  string |null ;
-        cardAttachmentImage : string|null  ;
-        cardCommentActionType :   'ADD'|'UPDATE'|'DELETE'|null; 
-        cardCommentId :  string |null ;
-        cardCommentText  : string |null ;
-        cardStatusActionType : 'UPDATE'|null; 
-        cardStatusId : string |null  ;
+   cardId : string ;     // number 
+    userId : string;       // number 
+    cardActionType : 'ADD'|'UPDATE'|null;    // 나머지는 모두 string 
+    description : string |null ;
+    cardName :  string |null ;
+    dueDate :  string |null ;
+    position : string |null ;
+    cardMembershipActionType : 'ADD'|'DELETE'|null; 
+    cardMembershipId : string |null ;
+    cardMembershipUserId : string |null ;
+    cardLabelActionType : 'ADD'|'DELETE'|null; 
+    cardLabelId :  string |null ;
+    labelId : string |null ;
+    cardTaskActionType : 'ADD'|'UPDATE'|'DELETE'|null; 
+    cardTaskId : string |null ;
+    cardTaskName : string |null ;
+    cardTaskIsCompleted : string |null ;
+    cardTaskPosition :  string |null ;
+    cardAttachmentActionType : 'ADD'|'UPDATE'|'DELETE'|null; 
+    cardAttachmentId : string |null ;
+    cardAttachmentDirname : string |null ;
+    cardAttachmentFilename : string |null ;
+    cardAttachmentName :  string |null ;
+    cardAttachmentImage : string|null  ;
+    cardCommentActionType :   'ADD'|'UPDATE'|'DELETE'|null; 
+    cardCommentId :  string |null ;
+    cardCommentText  : string |null ;
+    cardStatusActionType : 'UPDATE'|null; 
+    cardStatusId : string |null  ;
 }
 
 export const defaultModifyCard:IModifyCard = {
-    cardId:0,     // number 
-    userId :0,       // number 
+    cardId:'0',     // number 
+    userId :'0',       // number 
     cardActionType :null,    // 나머지는 모두 string 
     description :null,
     cardName :null, 

@@ -52,7 +52,7 @@ export const apiModifyCard = async (card:IModifyCard) => {
     console.log("modify card", BASE_PATH);
     
     try{
-        const response = await fetch(`${BASE_PATH}/card`,{
+        const response = await fetch(`${BASE_PATH}/modifyCard`,{
             method: "POST", 
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify(card)
@@ -63,6 +63,23 @@ export const apiModifyCard = async (card:IModifyCard) => {
         console.error(err);
     }
 };
+
+  ///// api 호출 sample code 
+  // import {IModifyCard, defaultModifyCard} from "../atoms/atomCard";
+ // cardId, userId는 반드시 들어가야 함. 
+ // 필요에 따라 type 과 값들을 적절하게 세팅하여 호출 
+  // const cardModifySample = async() => {
+ //   const card : IModifyCard = {...defaultModifyCard, 
+ //     cardId:'1057243275443832054', 
+ //     userId:cookies.UserId,
+ //     cardActionType:'UPDATE',
+ //     description:'테스트입니다2',
+ //   };
+ //   console.log(card);
+ //   const response = await apiModifyCard(card);
+ //   console.log('moddify response', response);
+ // }
+  ///// sample code 
 
 export const apiGetInfosByCardId = async (cardId:string) => {
     console.log("createcard", BASE_PATH);
