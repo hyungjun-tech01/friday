@@ -1,14 +1,10 @@
 import { useCallback, useRef } from 'react';
-import ReactDOM from 'react-dom';
-import classNames from 'classnames';
-//import { Draggable } from 'react-beautiful-dnd';
 import { Button, Checkbox, Icon } from 'semantic-ui-react';
-//import { usePopup } from '../../../lib/popup';
-
-//import NameEdit from './NameEdit';
-//import ActionsStep from './ActionsStep';
-
+import { useRecoilState } from 'recoil';
+import classNames from 'classnames';
 import styles from '../scss/Item.module.scss';
+import { atomCurrentEditElment, IEditElement } from '../atoms/atomEditState';
+import NameEdit from './NameEdit';
 
 interface IItemProps {
     id: string;
@@ -22,38 +18,31 @@ interface IItemProps {
 };
 
 const Item = ({ id, index, name, isCompleted, isPersisted, canEdit, onUpdate, onDelete }:IItemProps) => {
-    //const nameEdit = useRef<any>(null);
 
-    // const handleClick = useCallback(() => {
-    //   if (isPersisted && canEdit) {
-    //     nameEdit.current.open();
-    //   }
-    // }, [isPersisted, canEdit]);
+  const nameEdit = useRef<any>(null);
+  const [element, setElement] = useRecoilState<IEditElement>(atomCurrentEditElment);
 
-    const handleClick = useCallback(() => {
-        console.log("Item is clicked.")
-      }, []);
+  const handleClick = useCallback(() => {
+    if (isPersisted && canEdit) {
+      setElement({id: id, name: "NameEdit", properties: {open : true}});
+    }
+  }, [isPersisted, canEdit, setElement]);
 
-    const handleNameUpdate = useCallback(
-    //   (newName) => {
-    //     onUpdate({
-    //       name: newName,
-    //     });
-    //   },
-    //   [onUpdate],
-        ()=> console.log("Item - update name"),
-        []
-    );
+  const handleNameUpdate = useCallback((newName:string) => {
+    onUpdate({
+      name: newName,
+    });
+  }, [onUpdate]);
 
-    // const handleToggleChange = useCallback(() => {
-    //   onUpdate({
-    //     isCompleted: !isCompleted,
-    //   });
-    // }, [isCompleted, onUpdate]);
+  const handleToggleChange = useCallback(() => {
+    onUpdate({
+      isCompleted: !isCompleted,
+    });
+  }, [isCompleted, onUpdate]);
 
-    // const handleNameEdit = useCallback(() => {
-    //   nameEdit.current.open();
-    // }, []);
+  const handleNameEdit = useCallback(() => {
+    setElement({id: id, name: "NameEdit", properties: {open : true}});
+  }, []);
 
     //const ActionsPopup = usePopup(ActionsStep);
 
@@ -68,10 +57,10 @@ const Item = ({ id, index, name, isCompleted, isPersisted, canEdit, onUpdate, on
                   checked={isCompleted}
                   disabled={!isPersisted || !canEdit}
                   className={styles.checkbox}
-                  //onChange={handleToggleChange}
+                  onChange={handleToggleChange}
                 />
               </span>
-              
+              <NameEdit defaultValue={name} parentId={id} onUpdate={handleNameUpdate}>
                 <div className={classNames(canEdit && styles.contentHoverable)}>
                   <span
                     className={classNames(styles.text, canEdit && styles.textEditable)}
@@ -81,15 +70,8 @@ const Item = ({ id, index, name, isCompleted, isPersisted, canEdit, onUpdate, on
                       {name}
                     </span>
                   </span>
-                  {/* {isPersisted && canEdit && (
-                    <ActionsPopup onNameEdit={handleNameEdit} onDelete={onDelete}>
-                      <Button className={classNames(styles.button, styles.target)}>
-                        <Icon fitted name="pencil" size="small" />
-                      </Button>
-                    </ActionsPopup>
-                  )} */}
                 </div>
-              
+              </NameEdit>
             </div>
           //);
 
@@ -97,7 +79,5 @@ const Item = ({ id, index, name, isCompleted, isPersisted, canEdit, onUpdate, on
         //}}
     );
 };
-
-
 
 export default Item;

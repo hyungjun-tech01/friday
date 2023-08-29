@@ -2,14 +2,15 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Grid, Icon, Modal, TextArea } from 'semantic-ui-react';
 import { ICard, atomCurrentCard, defaultCard } from '../atoms/atomCard';
-import { ITask } from '../atoms/atomTask';
-import { useSetRecoilState } from 'recoil';
+import { ITask, atomCurrentTasks } from '../atoms/atomTask';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useQuery } from "react-query";
 import styles from "../scss/CardModal.module.scss";
 import classNames from 'classnames';
 import Activities from "./Activities";
 import DescriptionEdit from "./DescriptionEdit";
 import Tasks from "./Tasks"
+import { apiGetInfosByCardId } from "../api/card"
 
 interface ICardModalProps{
     card: ICard;
@@ -22,22 +23,31 @@ interface ICardModalProps{
 }
 
 const CardModal = ({card, canEdit}:ICardModalProps) => {
+  // let wrapperRef = useRef<any>(null);
+
   const [t] = useTranslation();
   const [isDetailsVisible, setIsDetailVisible] = useState(false);
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
-
-  let wrapperRef = useRef<any>(null);
   
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useRecoilState<ITask[]>(atomCurrentTasks);
 
-  const handleClickOutside = useCallback((event:any) => {
-    if(wrapperRef
-      && wrapperRef.current
-      && !wrapperRef.current.contains(event.target)) {
-        console.log("close CardModal");
-        setCurrentCard(defaultCard);
-    };
-  }, []);
+  const {isLoading, data, isSuccess} = useQuery<any>(
+    ["getInfoByCardId", card.cardId],
+    ()=>apiGetInfosByCardId(card.cardId),
+    {
+      onSuccess: data => {
+          console.log("Data : ", data);
+          if(data[0].cardTask) {
+            setTasks(data[0].cardTask);
+          };
+      },
+    //enabled : !showCreateModal
+    }
+  );
+
+  const handleOnCloseCardModel = useCallback(()=>{
+    setCurrentCard(defaultCard);
+  }, [])
 
   const handleDescriptionUpdate = useCallback((data:string) => {
     console.log("Udate description of card : ", data);
@@ -50,13 +60,6 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   const handleTaskDelete = useCallback((id:string) => {
     console.log("Delete task of card / id : ", id);
   }, [])
-
-  useEffect(()=>{
-    document.addEventListener('mousedown', handleClickOutside);
-    return()=>{
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  });
 
   const contentNode = (
     <Grid className={styles.grid}>
@@ -149,11 +152,9 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   );
   
   return (
-    <div ref={wrapperRef}>
-      <Modal open closeIcon centered={false}>
-        {contentNode}
-      </Modal>
-    </div>
+    <Modal open closeIcon centered={false} className={styles.wrapper} onClose={handleOnCloseCardModel}>
+      {contentNode}
+    </Modal>
   );
 };
 

@@ -66,34 +66,34 @@ const Tasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }:ITasksPr
           className={styles.progress}
         />
       )}
-          {/*({ innerRef, droppableProps, placeholder }) => (
-            <div {...droppableProps} ref={innerRef}>*/
-            <div>
-              {items.map((item, index) => (
-                <Item
-                  key={item.taskId}
-                  id={item.taskId}
-                  index={index}
-                  name={item.taskName}
-                  isCompleted={item.isCompleted}
-                  isPersisted={item.isPersisted}
-                  canEdit={canEdit}
-                  onUpdate={(data) => handleUpdate(item.taskId, data)}
-                  onDelete={() => handleDelete(item.taskId)}
-                />
-              ))}
-                태스크 추가
-              {/* {canEdit && (
-                <Add onCreate={onCreate}>
-                  <button type="button" className={styles.taskButton}>
-                    <span className={styles.taskButtonText}>
-                      {items.length > 0 ? t('action.addAnotherTask') : t('action.addTask')}
-                    </span>
-                  </button>
-                </Add>
-              )} */}
-            </div>
-          /*)*/}
+        {/*({ innerRef, droppableProps, placeholder }) => (
+          <div {...droppableProps} ref={innerRef}>*/
+          <div>
+            {items.map((item, index) => (
+              <Item
+                key={item.taskId}
+                id={item.taskId}
+                index={index}
+                name={item.taskName}
+                isCompleted={item.isCompleted}
+                isPersisted={item.isPersisted}
+                canEdit={canEdit}
+                onUpdate={(data) => handleUpdate(item.taskId, data)}
+                onDelete={() => handleDelete(item.taskId)}
+              />
+            ))}
+              태스크 추가
+            {/* {canEdit && (
+              <Add onCreate={onCreate}>
+                <button type="button" className={styles.taskButton}>
+                  <span className={styles.taskButtonText}>
+                    {items.length > 0 ? t('action.addAnotherTask') : t('action.addTask')}
+                  </span>
+                </button>
+              </Add>
+            )} */}
+          </div>
+        /*)*/}
     </>
   );
 };

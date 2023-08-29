@@ -48,3 +48,18 @@ export const apiCreateCard = async (card:ICreateCard) => {
         console.error(err);
     }
 };
+
+
+export const apiGetInfosByCardId = async (cardId:string) => {
+    console.log("createcard", BASE_PATH);
+    
+    try{
+        const response = await fetch(`${BASE_PATH}/cardbyId/${cardId}`,{
+            method: "GET", 
+        }); 
+        const json = await response.json()
+        return json;
+    }catch(err){
+        console.error(err);
+    }
+};
