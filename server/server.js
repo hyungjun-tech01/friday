@@ -175,7 +175,7 @@ app.get('/cards/:boardId', async(req, res)=>{
     }
 );
 
-// get all my card by board id 
+// get all my card by card id 
 app.get('/cardbyId/:cardId', async(req, res)=>{
     const cardId = req.params.cardId;
     console.log("card query by cardId", cardId);
@@ -389,6 +389,78 @@ app.post('/card', async(req, res) => {
     }
 });
 
+
+// modify card 
+app.post('/modifyCard', async(req, res) => {
+    const {cardId,     // number 
+        userId ,       // number 
+        cardActionType ,    // 나머지는 모두 string 
+        description ,
+        cardName , 
+        dueDate , 
+        position ,
+        cardMembershipActionType ,
+        cardMembershipId ,
+        cardMembershipUserId ,
+        cardLabelActionType ,
+        cardLabelId , 
+        labelId ,
+        cardTaskActionType ,
+        cardTaskId ,
+        cardTaskName ,
+        cardTaskIsCompleted ,
+        cardTaskPosition , 
+        cardAttachmentActionType ,
+        cardAttachmentId ,
+        cardAttachmentDirname ,
+        cardAttachmentFilename ,
+        cardAttachmentName , 
+        cardAttachmentImage ,
+        cardCommentActionType ,  
+        cardCommentId , 
+        cardCommentText  ,
+        cardStatusActionType ,
+        cardStatusId } = req.body;
+    try{
+        console.log('create new board');
+        // insert project 
+        const response = await pool.query(`call p_insert_board($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29)`,
+        [cardId,     // number 
+        userId ,       // number 
+        cardActionType ,    // 나머지는 모두 string 
+        description ,
+        cardName , 
+        dueDate , 
+        position ,
+        cardMembershipActionType ,
+        cardMembershipId ,
+        cardMembershipUserId ,
+        cardLabelActionType ,
+        cardLabelId , 
+        labelId ,
+        cardTaskActionType ,
+        cardTaskId ,
+        cardTaskName ,
+        cardTaskIsCompleted ,
+        cardTaskPosition , 
+        cardAttachmentActionType ,
+        cardAttachmentId ,
+        cardAttachmentDirname ,
+        cardAttachmentFilename ,
+        cardAttachmentName , 
+        cardAttachmentImage ,
+        cardCommentActionType ,  
+        cardCommentId , 
+        cardCommentText  ,
+        cardStatusActionType ,
+        cardStatusId ]);
+       
+        res.json({cardId:cardId}); // 결과 리턴을 해 줌 .  
+    }catch(err){
+        console.error(err);
+        res.json({message:err});
+    }
+});
 
 //login
 app.post('/login', async(req, res) => {

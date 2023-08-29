@@ -30,6 +30,7 @@ export const apiCreateBoard = async(board:ICreateBoard) => {
             body:JSON.stringify(board)
            }); 
            const responseMessage = await response.json();
+           console.log(responseMessage);
            return(responseMessage);
     }catch(err){
         console.error(err);

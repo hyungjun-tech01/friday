@@ -1,5 +1,5 @@
 import Paths from "../constants/Paths";
-import {ICreateCard} from "../atoms/atomCard";
+import {ICreateCard, IModifyCard} from "../atoms/atomCard";
 const BASE_PATH = Paths.BASE_PATH; 
 
 // 보드에 속한 모든 카드를 가지고 온다..
@@ -35,6 +35,22 @@ export const apiGetCardsbyListId = async (listId:string) => {
 
 export const apiCreateCard = async (card:ICreateCard) => {
     console.log("createcard", BASE_PATH);
+    
+    try{
+        const response = await fetch(`${BASE_PATH}/card`,{
+            method: "POST", 
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(card)
+           }); 
+           const responseMessage = await response.json();
+           return(responseMessage);
+    }catch(err){
+        console.error(err);
+    }
+};
+
+export const apiModifyCard = async (card:IModifyCard) => {
+    console.log("modify card", BASE_PATH);
     
     try{
         const response = await fetch(`${BASE_PATH}/card`,{

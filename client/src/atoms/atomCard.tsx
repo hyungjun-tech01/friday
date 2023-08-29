@@ -26,6 +26,71 @@ export interface ICreateCard{
     cardName:string;
 }
 
+export interface IModifyCard{
+   cardId : number ;     // number 
+        userId : number;       // number 
+        cardActionType : 'ADD'|'UPDATE'|null;    // 나머지는 모두 string 
+        description : string |null ;
+        cardName :  string |null ;
+        dueDate :  string |null ;
+        position : string |null ;
+        cardMembershipActionType : 'ADD'|'DELETE'|null; 
+        cardMembershipId : string |null ;
+        cardMembershipUserId : string |null ;
+        cardLabelActionType : 'ADD'|'DELETE'|null; 
+        cardLabelId :  string |null ;
+        labelId : string |null ;
+        cardTaskActionType : 'ADD'|'UPDATE'|'DELETE'|null; 
+        cardTaskId : string |null ;
+        cardTaskName : string |null ;
+        cardTaskIsCompleted : string |null ;
+        cardTaskPosition :  string |null ;
+        cardAttachmentActionType : 'ADD'|'UPDATE'|'DELETE'|null; 
+        cardAttachmentId : string |null ;
+        cardAttachmentDirname : string |null ;
+        cardAttachmentFilename : string |null ;
+        cardAttachmentName :  string |null ;
+        cardAttachmentImage : string|null  ;
+        cardCommentActionType :   'ADD'|'UPDATE'|'DELETE'|null; 
+        cardCommentId :  string |null ;
+        cardCommentText  : string |null ;
+        cardStatusActionType : 'UPDATE'|null; 
+        cardStatusId : string |null  ;
+}
+
+export const defaultModifyCard:IModifyCard = {
+    cardId:0,     // number 
+    userId :0,       // number 
+    cardActionType :null,    // 나머지는 모두 string 
+    description :null,
+    cardName :null, 
+    dueDate :null, 
+    position :null,
+    cardMembershipActionType :null,
+    cardMembershipId :null,
+    cardMembershipUserId :null,
+    cardLabelActionType :null,
+    cardLabelId :null, 
+    labelId :null,
+    cardTaskActionType :null,
+    cardTaskId :null,
+    cardTaskName :null,
+    cardTaskIsCompleted :null,
+    cardTaskPosition :null, 
+    cardAttachmentActionType :null,
+    cardAttachmentId :null,
+    cardAttachmentDirname :null,
+    cardAttachmentFilename :null,
+    cardAttachmentName :null, 
+    cardAttachmentImage :null,
+    cardCommentActionType :null,  
+    cardCommentId :null, 
+    cardCommentText  :null,
+    cardStatusActionType :null,
+    cardStatusId : null,
+}
+
+
 // allMmyCards  : 보드에 포함된 리스트에 포함된 모든 카드 
 export const atomMyCards = atom<ICard[]>({
     key:"allMyCards",
