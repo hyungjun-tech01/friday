@@ -88,6 +88,8 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.status  
     OWNER to postgres;      
+    
+-- 2023.08.29 추가   
 
 ALTER TABLE card DROP COLUMN status_id;  
 ALTER TABLE card ADD COLUMN status_id bigint;  
