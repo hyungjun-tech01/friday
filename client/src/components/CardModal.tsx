@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import Activities from "./Activities";
 import DescriptionEdit from "./DescriptionEdit";
 import Tasks from "./Tasks"
+import Markdown from './Markdown';
 import { apiGetInfosByCardId } from "../api/card"
 
 interface ICardModalProps{
@@ -74,7 +75,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
         </Grid.Column>
       </Grid.Row>
       <Grid.Row className={styles.modalPadding}>
-        <Grid.Column width={16} className={styles.contentPadding}>
+        <Grid.Column width={canEdit? 12 : 16} className={styles.contentPadding}>
           {(card.description || canEdit) && (
               <div className={styles.contentModule}>
                 <div className={styles.moduleWrapper}>
@@ -87,7 +88,9 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                           type="button"
                           className={classNames(styles.descriptionText, styles.cursorPointer)}
                         >
-                          <TextArea value={card.description}/>
+                          <Markdown linkStopPropagation linkTarget="_blank">
+                            {card.description}
+                          </Markdown>
                         </button>
                       ) : (
                         <button type="button" className={styles.descriptionButton}>
@@ -99,7 +102,9 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                     </DescriptionEdit>
                   ) : (
                     <div className={styles.descriptionText}>
-                      <TextArea value={card.description} />
+                      <Markdown linkStopPropagation linkTarget="_blank">
+                        {card.description}
+                      </Markdown>
                     </div>
                   )}
                 </div>
@@ -127,23 +132,47 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
           <Grid.Column width={4} className={styles.sidebarPadding}>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('action.addToCard')}</span>
-              <Button
-                fluid
-                className={styles.actionButton}
-              >
-                <Icon name="paper plane outline" className={styles.actionIcon} />
-                {"Action 1"}
-              </Button>
+                  <Button fluid className={styles.actionButton}>
+                    <Icon name="user outline" className={styles.actionIcon} />
+                    {t('common.members')}
+                  </Button>
+                  <Button fluid className={styles.actionButton}>
+                    <Icon name="bookmark outline" className={styles.actionIcon} />
+                    {t('common.labels')}
+                  </Button>
+                  <Button fluid className={styles.actionButton}>
+                    <Icon name="calendar check outline" className={styles.actionIcon} />
+                    {t('common.dueDate', {
+                      context: 'title',
+                    })}
+                  </Button>
+                  <Button fluid className={styles.actionButton}>
+                    <Icon name="clock outline" className={styles.actionIcon} />
+                    {t('common.stopwatch')}
+                  </Button>
+                  <Button fluid className={styles.actionButton}>
+                    <Icon name="attach" className={styles.actionIcon} />
+                    {t('common.attachment')}
+                  </Button>
             </div>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('common.actions')}</span>
-              <Button
-                fluid
-                className={styles.actionButton}
-              >
-                <Icon name="paper plane outline" className={styles.actionIcon} />
-                {"Action 2"}
-              </Button>
+                <Button
+                  fluid
+                  className={styles.actionButton}
+                  //onClick={handleToggleSubscriptionClick}
+                >
+                  <Icon name="paper plane outline" className={styles.actionIcon} />
+                  {/*isSubscribed ? t('action.unsubscribe') : */t('action.subscribe')}
+                </Button>
+                <Button
+                    fluid
+                    className={styles.actionButton}
+                    //onClick={handleToggleSubscriptionClick}
+                  >
+                    <Icon name="share square outline" className={styles.actionIcon} />
+                    {t('action.move')}
+                  </Button>
             </div>
           </Grid.Column>
         )}

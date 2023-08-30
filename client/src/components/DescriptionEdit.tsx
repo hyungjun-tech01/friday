@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState, useMemo, useImperativeHandle, forwardRef, cloneElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Form } from 'semantic-ui-react';
 import SimpleMDE from 'react-simplemde-editor';
@@ -10,7 +10,7 @@ interface IDescriptionEditProps{
   onUpdate: (data:string) => void;
 };
 
-const DescriptionEdit = ({ children, defaultValue, onUpdate }:IDescriptionEditProps) => {
+const DescriptionEdit = forwardRef(({ children, defaultValue, onUpdate }:IDescriptionEditProps, ref) => {
   const [t] = useTranslation();
   const [isOpened, setIsOpened] = useState(false);
   const [value, setValue] = useState("");
@@ -31,14 +31,14 @@ const DescriptionEdit = ({ children, defaultValue, onUpdate }:IDescriptionEditPr
     setValue("");
   }, [defaultValue, onUpdate, value, setValue]);
 
-  // useImperativeHandle(
-  //   ref,
-  //   () => ({
-  //     open,
-  //     close,
-  //   }),
-  //   [open, close],
-  // );
+  useImperativeHandle(
+    ref,
+    () => ({
+      open,
+      close,
+    }),
+    [open, close],
+  );
 
   const handleChildrenClick = useCallback(() => {
     const gotSelection = getSelection();
@@ -59,36 +59,36 @@ const DescriptionEdit = ({ children, defaultValue, onUpdate }:IDescriptionEditPr
     close();
   }, [close]);
 
-  // const mdEditorOptions = useMemo(
-  //   () => ({
-  //     autofocus: true,
-  //     spellChecker: false,
-  //     status: false,
-  //     toolbar: [
-  //       'bold',
-  //       'italic',
-  //       'heading',
-  //       'strikethrough',
-  //       '|',
-  //       'quote',
-  //       'unordered-list',
-  //       'ordered-list',
-  //       'table',
-  //       '|',
-  //       'link',
-  //       'image',
-  //       '|',
-  //       'undo',
-  //       'redo',
-  //       '|',
-  //       'guide',
-  //     ],
-  //   }),
-  //   [],
-  // );
+  const mdEditorOptions = useMemo(
+    () => ({
+      autofocus: true,
+      spellChecker: false,
+      status: false,
+      toolbar: [
+        'bold',
+        'italic',
+        'heading',
+        'strikethrough',
+        '|',
+        'quote',
+        'unordered-list',
+        'ordered-list',
+        'table',
+        '|',
+        'link',
+        'image',
+        '|',
+        'undo',
+        'redo',
+        '|',
+        'guide',
+      ],
+    }),
+    [],
+  );
 
   if (!isOpened) {
-    return React.cloneElement(children, {
+    return cloneElement(children, {
       onClick: handleChildrenClick,
     });
   }
@@ -97,7 +97,7 @@ const DescriptionEdit = ({ children, defaultValue, onUpdate }:IDescriptionEditPr
     <Form onSubmit={handleSubmit}>
       <SimpleMDE
         value={value}
-        // options={mdEditorOptions}
+        options={mdEditorOptions}
         placeholder={t('common.enterDescription')}
         className={styles.field}
         onKeyDown={handleFieldKeyDown}
@@ -108,6 +108,6 @@ const DescriptionEdit = ({ children, defaultValue, onUpdate }:IDescriptionEditPr
       </div>
     </Form>
   );
-};
+});
 
 export default DescriptionEdit;
