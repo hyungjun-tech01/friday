@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Grid, Icon, Modal, TextArea } from 'semantic-ui-react';
+import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
 import { ICard, atomCurrentCard, defaultCard } from '../atoms/atomCard';
-import { ITask, atomCurrentTasks } from '../atoms/atomTask';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { ITask } from '../atoms/atomTask';
+import { useSetRecoilState } from 'recoil';
 import { useQuery } from "react-query";
 import styles from "../scss/CardModal.module.scss";
 import classNames from 'classnames';
@@ -12,6 +12,7 @@ import DescriptionEdit from "./DescriptionEdit";
 import Tasks from "./Tasks"
 import Markdown from './Markdown';
 import { apiGetInfosByCardId } from "../api/card"
+import { IAction } from "../atoms/atomAction"
 
 interface ICardModalProps{
     card: ICard;
@@ -29,18 +30,21 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   const [t] = useTranslation();
   const [isDetailsVisible, setIsDetailVisible] = useState(false);
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
-  
-  const [tasks, setTasks] = useRecoilState<ITask[]>(atomCurrentTasks);
+  const [tasks, setTasks] = useState<ITask[]>([]);
+  const [actions, setActions] = useState<IAction[]>([]);
 
   const {isLoading, data, isSuccess} = useQuery<any>(
     ["getInfoByCardId", card.cardId],
     ()=>apiGetInfosByCardId(card.cardId),
     {
       onSuccess: data => {
-          console.log("Data : ", data);
+          console.log("[CardModal] Called Card Info");
           if(data[0].cardTask) {
             setTasks(data[0].cardTask);
           };
+          if(data[0].cardAction) {
+            setActions(data[0].cardAction);
+          }
       },
     //enabled : !showCreateModal
     }
@@ -126,15 +130,15 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                 </div>
               </div>
           )}
-          <Activities isDetailsVisible={isDetailsVisible} canEdit={canEdit}/>
+          <Activities items={actions} isDetailsVisible={isDetailsVisible} canEdit={canEdit}/>
         </Grid.Column>
         {canEdit && (
           <Grid.Column width={4} className={styles.sidebarPadding}>
             <div className={styles.actions}>
-              <span className={styles.actionsTitle}>{t('action.addToCard')}</span>
+              <span className={styles.actionsTitle}>{t('action.addCard')}</span>
                   <Button fluid className={styles.actionButton}>
                     <Icon name="user outline" className={styles.actionIcon} />
-                    {t('common.members')}
+                    {t('common.membership')}
                   </Button>
                   <Button fluid className={styles.actionButton}>
                     <Icon name="bookmark outline" className={styles.actionIcon} />
@@ -172,6 +176,14 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                   >
                     <Icon name="share square outline" className={styles.actionIcon} />
                     {t('action.move')}
+                  </Button>
+                  <Button
+                    fluid
+                    className={styles.actionButton}
+                    //onClick={handleToggleSubscriptionClick}
+                  >
+                    <Icon name="share square outline" className={styles.actionIcon} />
+                    {t('action.delete')}
                   </Button>
             </div>
           </Grid.Column>

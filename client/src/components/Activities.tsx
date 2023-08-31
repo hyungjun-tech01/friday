@@ -1,16 +1,18 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Icon } from 'semantic-ui-react';
-import CommentAdd from './CommentAdd';
-
+import { Button, Comment, Icon } from 'semantic-ui-react';
 import styles from '../scss/Activities.module.scss';
+import { IAction } from '../atoms/atomAction';
+import CommentAdd from './CommentAdd';
+import Item from './Item'
 
 interface IActivityProps{
+  items: IAction[];
   isDetailsVisible: boolean;
   canEdit: boolean;
 };
 
-const Activities = ({isDetailsVisible, canEdit} : IActivityProps) => {
+const Activities = ({items, isDetailsVisible, canEdit} : IActivityProps) => {
   const [t] = useTranslation();
 
   const handleToggleDetailsClick = useCallback(() => {
@@ -40,7 +42,21 @@ const Activities = ({isDetailsVisible, canEdit} : IActivityProps) => {
         </div>
         {canEdit && <CommentAdd />}
         <div className={styles.wrapper}>
-        </div>
+            <Comment.Group>
+              {items.map((item) =>(
+                <Comment>
+                  <Comment.Author as='a'>{item.userName}</Comment.Author>
+                  <Comment.Metadata>
+                    <div>{item.updatedAt ? item.updatedAt : item.createdAt}</div>
+                  </Comment.Metadata>
+                  <Comment.Text>{item.data.text}</Comment.Text>
+                  <Comment.Actions>
+                    <Comment.Action>Reply</Comment.Action>
+                  </Comment.Actions>
+                </Comment>
+              ))}
+            </Comment.Group>
+          </div>
       </div>
     </div>
   );
