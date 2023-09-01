@@ -1,7 +1,8 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect,  } from 'react';
+import { useCookies } from 'react-cookie'
 import { useTranslation } from 'react-i18next';
 import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
-import { ICard, atomCurrentCard, defaultCard } from '../atoms/atomCard';
+import { ICard, atomCurrentCard, defaultCard, IModifyCard, defaultModifyCard } from '../atoms/atomCard';
 import { ITask } from '../atoms/atomTask';
 import { useSetRecoilState } from 'recoil';
 import { useQuery } from "react-query";
@@ -11,17 +12,17 @@ import Activities from "./Activities";
 import DescriptionEdit from "./DescriptionEdit";
 import Tasks from "./Tasks"
 import Markdown from './Markdown';
-import { apiGetInfosByCardId } from "../api/card"
+import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
 import { IAction } from "../atoms/atomAction"
 
 interface ICardModalProps{
-    card: ICard;
-    canEdit: boolean;
-    // users: any[];
-    // labels: any[];
-    // dueDate: string;
-    // stopwatch: string;
-    // tasks: any[];
+  card: ICard;
+  canEdit: boolean;
+  // users: any[];
+  // labels: any[];
+  // dueDate: string;
+  // stopwatch: string;
+  // tasks: any[];
 }
 
 const CardModal = ({card, canEdit}:ICardModalProps) => {
@@ -32,6 +33,8 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [actions, setActions] = useState<IAction[]>([]);
+  const [updating, setUpdating] = useState(false);
+  const [cookies] = useCookies(['UserId','UserName', 'AuthToken']);
 
   const {isLoading, data, isSuccess} = useQuery<any>(
     ["getInfoByCardId", card.cardId],
@@ -56,11 +59,57 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
 
   const handleDescriptionUpdate = useCallback((data:string) => {
     console.log("Udate description of card : ", data);
+    const modifiedCard : IModifyCard = {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      cardActionType: 'UPDATE',
+      description: data,
+    }
+    //setUpdating(true);
+    const response = apiModifyCard(modifiedCard);
+    if(response) {
+      console.log('Succeed to update description of card', response);
+      const updatedCard = {
+        ...card,
+        description : data
+      };
+      setCurrentCard(updatedCard);
+      //setUpdating(false);
+    }
   }, [])
 
   const handleTaskUpdate = useCallback((id:string, data:any) => {
-    console.log("Update task of card / id : ", id);
-  }, [])
+    
+    let modifiedCard : IModifyCard = {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      cardTaskId: id,
+      cardActionType: 'UPDATE',
+    }
+
+    if(data.hasOwnProperty('name')) {
+      console.log("Update task of card / name", data.name);
+      modifiedCard.cardTaskName = data.name;
+    }
+    else if(data.hasOwnProperty('isCompleted')) {
+      console.log("Update task of card / isCompleted", data.isCompleted);
+      modifiedCard.cardTaskIsCompleted = data.isCompleted ? "true" : "false";
+    }
+    
+    //setUpdating(true);
+    const response = apiModifyCard(modifiedCard);
+    if(response) {
+      console.log('Succeed to update task of card', response);
+      const updatedCard = {
+        ...card,
+        description : data
+      };
+      setCurrentCard(updatedCard);
+      //setUpdating(false);
+    }
+  }, []);
 
   const handleTaskDelete = useCallback((id:string) => {
     console.log("Delete task of card / id : ", id);

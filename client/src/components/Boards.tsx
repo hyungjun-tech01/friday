@@ -50,7 +50,6 @@ function Boards({projectId}:IBoardProps){
                 <div className={styles.tabsWrapper}>
                     <div className={styles.tabs}>
                         <div className={styles.tabWrapper} >
-                        
                             {boards.map( (item) => (
                                 <div className={styles.tab} >
                                     <Link

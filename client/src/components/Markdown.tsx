@@ -3,18 +3,8 @@ import ReactMarkdown from 'react-markdown';
 import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown'
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
-
 import '../scss/Markdown.module.scss'; // FIXME: import as styles?
 
-// interface NodeToProps<T> {
-//   node: T;
-//   children: T extends { children: any } ? ReactNode : never;
-// };
-
-
-// interface IMardownAdditionalProps {
-//   [key:string] : string;
-// }
 
 interface IMarkdownProps extends ReactMarkdownOptions {
   children: string;
