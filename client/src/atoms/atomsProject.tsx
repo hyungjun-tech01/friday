@@ -28,7 +28,7 @@ export const projectSelector = selector({
     get:( {get}) => {
         const project = get(atomMyProject); 
         return (InProjectId:string) => {
-            return (project.filter((project)=> project.projectId === "1006864811260118072")
+            return (project.filter((project)=> project.projectId === InProjectId)
                 );
         };
     },

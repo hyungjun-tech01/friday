@@ -12,7 +12,6 @@ import Static from "../components/Static";
 import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
 
-import styles from "../scss/Core.module.scss";
 
 interface ICoreParams {
     id : string;
@@ -24,44 +23,32 @@ function Core(){
   
   const {id} = useParams<ICoreParams>();
 
-  const projectId = IsMaster ? id:"";
- 
-  //const [currentProject, setCurrentProject] = useRecoilState<IProject[]>(atomCurrentProject);
   const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:""});
   const [current, setCurrent] = useState(false);
   const [currentBoardId, setCurrentBoardId] = useState("");
   const [currentProjectId, setCurrentProjectId] = useState("");
 
-  if(IsDetail && currentBoardId !== id) {
-    setCurrentBoardId(id);
-    console.log('currentBoardId',currentBoardId);
-  };
-  
   const selectProject  = useRecoilValue(projectSelector); 
-  const allProject = useRecoilValue(atomMyProject); 
 
   useEffect(() => {
     if(IsMaster){
-        OnCurrentProject();  
-        setCurrentProjectId(id);
-    }
-    if(IsDetail){
-      setCurrentBoardId(id);
-    }
-  },[id,IsMaster]);  
-
-  const OnCurrentProject = ()=>{
-      if(currentProjectId !== undefined || currentProjectId !== null)
+      setCurrentProjectId(id);      
+    
+      if(currentProjectId !== undefined )
       {
-        setCurrentProject(selectProject(currentProjectId)[0]);
+        setCurrentProject(selectProject(id)[0]);
+        console.log('currentProject', currentProjectId, currentProject);
         setCurrent(true);
       }else{
         setCurrent(false);
       }
-  };
+    }
+    if(IsDetail){
+      setCurrentBoardId(id);
+    }
+  },[id,IsMaster, IsDetail]);  
 
-
-  
+   
   const [currentModal, setCurrentModal] = useState(null);
 
   return (
