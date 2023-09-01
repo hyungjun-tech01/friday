@@ -32,23 +32,21 @@ function Core(){
   const [currentBoardId, setCurrentBoardId] = useState("");
   const [currentProjectId, setCurrentProjectId] = useState("");
 
-  const queryClient = useQueryClient();
-
   if(IsDetail && currentBoardId !== id) {
     setCurrentBoardId(id);
     console.log('currentBoardId',currentBoardId);
   };
-  if(IsMaster && currentProjectId !== id) {
-    setCurrentProjectId(id);
-    console.log('currentProjectId',currentProjectId);
-  };
-
+  
   const selectProject  = useRecoilValue(projectSelector); 
   const allProject = useRecoilValue(atomMyProject); 
 
   useEffect(() => {
     if(IsMaster){
         OnCurrentProject();  
+        setCurrentProjectId(id);
+    }
+    if(IsDetail){
+      setCurrentBoardId(id);
     }
   },[id,IsMaster]);  
 
@@ -68,7 +66,7 @@ function Core(){
 
   return (
     <>
-        <Fix setCurrent={setCurrent} projectName={current ? currentProject.projectName:""} />
+        <Fix setCurrent={setCurrent} projectName={current ? currentProject?.projectName:""} />
         {!current ? <Static projectId="" boardId=""/> :
         <Static projectId={currentProjectId} boardId={currentBoardId}/>}
         {currentModal === "USERS" && <UsersModal/>}
