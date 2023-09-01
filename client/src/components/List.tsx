@@ -18,7 +18,7 @@ function List({id, index, name}:IListProps){
 //    console.log('isCardLoading',isCardLoading);
 //    if(!isCardLoading) 
 //        selectedCards = selectCards(id);
-//    console.log(id, selectedCards);
+    console.log('listid',id);
     
     const [isCardLoading, setIsCardLoading] = useState(true);
     const [cards, setCards] = useState<ICard[]>();
@@ -34,6 +34,7 @@ function List({id, index, name}:IListProps){
             console.log(cards);
         }
     };
+
     useEffect(
         () => { onQueryCards(); } ,[id, isCardAddOpened]
     );

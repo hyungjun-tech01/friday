@@ -79,8 +79,8 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
             fluid
             content={t('action.editPermissions')}
             style = {{
-              background: 'transparent',
-              boxShadow: 'none', // CSS 속성명에 대시(-) 대신 카멜 케이스를 사용해야 합니다.
+              background: 'transparent',  // CSS 속성명에 대시(-) 대신 카멜 케이스를 사용해야 합니다.
+              boxShadow: 'none', 
               color: '#6b808c',
               fontWeight: 'normal',
               marginTop: '8px',

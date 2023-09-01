@@ -19,10 +19,15 @@ export const apiGetProjects = async (userId:string) => {
 };
 
 export const apiGetProjectbyId = async (projectId:string) => {
-    console.log("getprojectby project id", BASE_PATH);
+    console.log("getprojectby project id", BASE_PATH, projectId);
+    if(projectId == undefined){
+        return {message:'err'};
+    }
     try{
+
         const response = await fetch(`${BASE_PATH}/project/${projectId}`);  // backtik 
         const json = await response.json()
+        console.log('getprojectby json',json);
         return json;
     }catch(err){
         console.error(err);

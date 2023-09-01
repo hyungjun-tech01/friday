@@ -16,11 +16,24 @@ export interface INewProject{
 
 // default value 1, MyProject 1
 export const atomMyProject = atom<IProject[]>({
-    key:"myProject",
+    key:"atomMyProject",
     default : [
         { projectId:"" , projectName:""},
     ]
 });
+
+// 특정 projectId를 가진 project를 selecting 
+export const projectSelector = selector({
+    key:"projectSelector",
+    get:( {get}) => {
+        const project = get(atomMyProject); 
+        return (InProjectId:string) => {
+            return (project.filter((project)=> project.projectId === "1006864811260118072")
+                );
+        };
+    },
+});
+
 
 export const atomCurrentProject = atom<IProject[]>({
     key:"currentProject",
@@ -31,7 +44,7 @@ export const atomCurrentProject = atom<IProject[]>({
 export const atomCurrentProjectId = atom<string>({
     key:"currentId",
     default : 
-        "11111", 
+        "0", 
 });
 
 export const getCurrentProject = selector({
