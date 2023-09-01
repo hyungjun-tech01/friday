@@ -4,7 +4,7 @@ const LOGIN = `/login`;
 const PROJECTS = `/projects/:id`;
 const BOARDS = `/boards/:id`;
 const CARDS = `/cards/:id`;
-const BASE_PATH = `http://localhost:7000`;
+const BASE_PATH = `http://localhost:37000`;
 
 export default {
   ROOT,

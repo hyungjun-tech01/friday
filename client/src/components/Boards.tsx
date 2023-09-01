@@ -3,7 +3,7 @@ import {IBoard, IQueryBoard, atomMyBoard} from "../atoms/atomsBoard";
 import {useQuery} from "react-query";
 import { Button, Icon } from 'semantic-ui-react';
 import {Link} from "react-router-dom";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {useCookies} from "react-cookie";
 import {apiGetBoards} from "../api/board";
 import styles from "../scss/Boards.module.scss";
@@ -19,7 +19,14 @@ function Boards({projectId}:IBoardProps){
     //project id로 보드를 쿼리할 것.
     const [boards, setBoards] = useRecoilState<IBoard[]>(atomMyBoard); 
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [isBoardLoading, setIsBoardLoading] = useState(false);
     // login 하면 가지고 있을 것.  const [user, setUser] = useRecoilState<IUser>(atomUser); 
+
+    //board id가 바뀔때마다 showList 를 변경 
+    useEffect(() => {
+        setIsBoardLoading(true);
+        console.log('project --------');
+    }, [projectId]);
 
     // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
     // useQuery(['todos', todoId], () => fetchTodoById(todoId))
@@ -29,7 +36,7 @@ function Boards({projectId}:IBoardProps){
             setBoards(data);   // use Query 에서 atom에 set 
             console.log(boards);
         },
-        enabled : !showCreateModal
+        enabled : !showCreateModal||isBoardLoading
       }
     );    
     const [endXPosition, setEndXPostion] = useState(false);
@@ -53,6 +60,7 @@ function Boards({projectId}:IBoardProps){
                             {boards.map( (item) => (
                                 <div className={styles.tab} >
                                     <Link
+                                        key={item.boardId}
                                         to={Paths.BOARDS.replace(':id', item.boardId)}
                                         title={item.boardId}
                                         className={styles.link}

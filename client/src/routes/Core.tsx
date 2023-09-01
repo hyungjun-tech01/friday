@@ -1,19 +1,17 @@
-import { useState } from "react";
-import styled from "styled-components";
-import { useQuery } from "react-query";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useState, useEffect } from "react";
+import { useQuery , useQueryClient} from "react-query";
+import { useRecoilState , useRecoilValue} from "recoil";
 import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import {apiGetProjectbyId} from "../api/project";
-import {atomCurrentProject, IProject } from '../atoms/atomsProject';
+import {projectSelector, atomMyProject, IProject } from '../atoms/atomsProject';
 
 import Fix from "../components/Fix";
 import Static from "../components/Static";
 import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
 
-import styles from "../scss/Core.module.scss";
 
 interface ICoreParams {
     id : string;
@@ -21,54 +19,47 @@ interface ICoreParams {
 function Core(){
   const {pathname} = useLocation();
   const IsDetail = pathname.includes('board');
-  const IsMaster = pathname.includes('projects');
+  let IsMaster = pathname.includes('projects');
   
   const {id} = useParams<ICoreParams>();
 
-  const [currentProject, setCurrentProject] = useRecoilState<IProject[]>(atomCurrentProject);
+  const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:""});
   const [current, setCurrent] = useState(false);
-
-  //project id로 project 쿼리할 것.
-//  const [project, setProject] = useRecoilState<IProject[]>(atomCurrentProject); 
-  // login 하면 가지고 있을 것.  const [user, setUser] = useRecoilState<IUser>(atomUser); 
-  const userId = "967860418955445249";
-  // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
-  // useQuery(['todos', todoId], () => fetchTodoById(todoId))
-
-  //const queryProjectById = id===undefined ?  false:true;
-  if(IsMaster) console.log('This is master');
-  if(IsDetail) console.log('This is detail');
-
-  const {isLoading, data, isSuccess} = useQuery<IProject[]>(
-    ["projectById", id],
-    ()=>apiGetProjectbyId(id),
-    {
-      onSuccess: data => {
-        setCurrentProject(data);   // use Query 에서 atom에 set 
-        console.log("cccccccccccccore", currentProject);
-        setCurrent(true);
-      },
-      enabled : IsMaster,
-    }
-  );
-
   const [currentBoardId, setCurrentBoardId] = useState("");
-  if(IsDetail && currentBoardId !== id) {
-    setCurrentBoardId(id);
-  };
+  const [currentProjectId, setCurrentProjectId] = useState("");
 
+  const selectProject  = useRecoilValue(projectSelector); 
+
+  useEffect(() => {
+    if(IsMaster){
+      setCurrentProjectId(id);      
+    
+      if(currentProjectId !== undefined )
+      {
+        setCurrentProject(selectProject(id)[0]);
+        console.log('currentProject', currentProjectId, currentProject);
+        setCurrent(true);
+      }else{
+        setCurrent(false);
+      }
+    }
+    if(IsDetail){
+      setCurrentBoardId(id);
+    }
+  },[id,IsMaster, IsDetail]);  
+
+   
   const [currentModal, setCurrentModal] = useState(null);
 
   return (
     <>
-        <Fix setCurrent={setCurrent} projectName={current ? currentProject[0].projectName:""} />
+        <Fix setCurrent={setCurrent} projectName={current ? currentProject?.projectName:""} />
         {!current ? <Static projectId="" boardId=""/> :
-        <Static projectId={currentProject[0].projectId} boardId={currentBoardId}/>}
+        <Static projectId={currentProjectId} boardId={currentBoardId}/>}
         {currentModal === "USERS" && <UsersModal/>}
         {currentModal === "USER_SETTING" && <UserSettingModal/>}
     </>
   );
-
 //  {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}
 
  /*    핵심 내용 기록해 놓을 것. 

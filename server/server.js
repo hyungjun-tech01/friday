@@ -29,8 +29,11 @@ app.get('/projects/:userId', async(req, res)=>{
             where p.id = pm.project_id 
             and pm.user_id = $1`, [userId]);
             res.json(projects.rows);
+            res.end();
     }catch(err){
         console.log(err);
+        res.json({message:err});        
+        res.end();
     }
     }
 );
@@ -45,9 +48,13 @@ app.get('/project/:projectId', async(req, res)=>{
             from project p, project_manager pm
             where p.id = pm.project_id 
             and pm.project_id = $1`, [projectId]);
+            console.log('single project', project.rows);
             res.json(project.rows);
+            res.end();
     }catch(err){
         console.log(err);
+        res.json({message:err});        
+        res.end();
     }
     }
 );
@@ -55,7 +62,7 @@ app.get('/project/:projectId', async(req, res)=>{
 // get all boards by project id , by user id 
 app.post('/boards', async(req, res)=>{
     const {projectId, userId} = req.body;
-    console.log(projectId);
+   // console.log(projectId);
     try{
             const boards = await pool.query(`
             select b.id as "boardId", b.name as "boardName", 
@@ -69,8 +76,11 @@ app.post('/boards', async(req, res)=>{
             and bm.user_id = $1
 			and b.project_id = $2`, [userId, projectId]);
             res.json(boards.rows);
+            res.end();
     }catch(err){
         console.log(err);
+        res.json({message:err});        
+        res.end();
     }
     }
 );
@@ -78,7 +88,7 @@ app.post('/boards', async(req, res)=>{
 // get my lists by board id 
 app.get('/lists/:boardId', async(req, res)=>{
     const boardId = req.params.boardId;
-    console.log(boardId);
+  //  console.log(boardId);
     try{
             const lists = await pool.query(`
             select id as "listId", board_id as "boardId", name as "listName", 
@@ -86,8 +96,11 @@ app.get('/lists/:boardId', async(req, res)=>{
             updated_at as "updatedAt" from list 
             where board_id = $1`, [boardId]);
             res.json(lists.rows);
+            res.end();
     }catch(err){
         console.log(err);
+        res.json({message:err});        
+        res.end();
     }
     }
 );
@@ -95,7 +108,7 @@ app.get('/lists/:boardId', async(req, res)=>{
 // get cards by list id 
 app.get('/cards/:listId', async(req, res)=>{
     const listId = req.params.listId;
-    console.log(listId);
+    //console.log(listId);
     try{
             const cardResult =   await pool.query(`
             select id as "cardId", board_id as "boardId", list_id as "listId", 
@@ -118,12 +131,14 @@ app.get('/cards/:listId', async(req, res)=>{
                         card.labels = labelResult.rows;
                 }
                 res.json(cards);
+                res.end();
                 //console.log("queryed card", cards);
             }
            
     }catch(err){
         console.log(err);
         res.json({message:err});
+        res.end();
     }
     }
 );
@@ -168,9 +183,11 @@ app.get('/cards/:boardId', async(req, res)=>{
                 } 
             }
             res.json(cardsResults);
+            res.end();
     }catch(err){
         console.log(err);
         res.json({message:err});
+        res.end();
     }
     }
 );
@@ -258,10 +275,12 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                 console.log(cards);
             }    
             res.json(cards);
-            console.log('result', res);
+            res.end();
+         //   console.log('result', res);
     }catch(err){
         console.log(err);
         res.json({message:err});
+        res.end();
     }
     }
 );
@@ -308,10 +327,12 @@ app.post('/boardAuth', async(req, res) => {
             }            
         }
         res.json(boards);
-        console.log("res boards", boards);
+        res.end();
+    //    console.log("res boards", boards);
     }catch(err){
         console.error(err);
         res.json({message:err});
+        res.end();
     }
 });
 // create project 
@@ -332,8 +353,11 @@ app.post('/project', async(req, res) => {
         [projectid, userId]);
 
         res.json(response); // 결과 리턴을 해 줌 .
+        res.end();
     }catch(err){
         console.error(err);
+        res.json({message:err});        
+        res.end();
     }
 });
 
@@ -347,9 +371,11 @@ app.post('/board', async(req, res) => {
         [userId,projectId,boardName]);
        
         res.json({boardName:boardName}); // 결과 리턴을 해 줌 .  
+        res.end();
     }catch(err){
         console.error(err);
         res.json({message:err});
+        res.end();
     }
 });
 
@@ -363,9 +389,11 @@ app.post('/list', async(req, res) => {
         [userId,boardId,listName]);
        
         res.json({listName:listName}); // 결과 리턴을 해 줌 .  
+        res.end();
     }catch(err){
         console.error(err);
         res.json({message:err});
+        res.end();
     }
 });
 
@@ -383,9 +411,11 @@ app.post('/card', async(req, res) => {
         [listId,userId,cardName]);
        
         res.json({cardName:cardName}); // 결과 리턴을 해 줌 .  
+        res.end();
     }catch(err){
         console.error(err);
         res.json({message:err});
+        res.end();
     }
 });
 
@@ -456,9 +486,11 @@ app.post('/modifyCard', async(req, res) => {
         cardStatusId ]);
        
         res.json({cardId:cardId}); // 결과 리턴을 해 줌 .  
+        res.end();
     }catch(err){
         console.error(err);
         res.json({message:err});
+        res.end();
     }
 });
 
@@ -480,8 +512,11 @@ app.post('/login', async(req, res) => {
             console.log("fail");
             res.json({message:"Invalid email or password"});
         }
+        res.end();
     }catch(err){
         console.error(err);
+        res.json({message:err});        
+        res.end();
     }
 });
 
@@ -501,9 +536,12 @@ app.post('/getuser', async(req, res) => {
         console.log(users.rows[0]);
 
         res.json(users); // 결과 리턴을 해 줌 .
+        res.end();
 
     }catch(err){
         console.error(err);
+        res.json({message:err});        
+        res.end();
     }
 });
 

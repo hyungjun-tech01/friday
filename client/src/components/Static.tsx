@@ -14,6 +14,7 @@ function Static({projectId, boardId}:IStaticProps){
     const queryProjectById = projectId ==="" ?  false:true;
     const queryBoardById = boardId ==="" ?  false:true;
 
+    console.log('Static:queryProjectById', projectId, queryProjectById, queryBoardById);
     // projectId가 넘어오면 projectId만 넘기고  => atom에 currentProjetId를 셋한다.(Core에서 이미 한듯.)
     // boardId가 넘어오면 projectId와 boardId를 같이 넘긴다. 
     return(
