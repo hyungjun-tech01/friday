@@ -45,7 +45,7 @@ const Activities = ({items, isDetailsVisible, canEdit} : IActivityProps) => {
             <Comment.Group>
               {items.map((item) =>(
                 <CommentItem 
-                  key={item.id}
+                  key={item.actionId}
                   userName={item.userName}
                   createdAt={item.createdAt}
                   updatedAt={item.updatedAt}

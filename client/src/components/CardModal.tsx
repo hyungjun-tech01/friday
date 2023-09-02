@@ -1,10 +1,10 @@
 import { useState, useCallback, useRef, useEffect,  } from 'react';
 import { useCookies } from 'react-cookie'
 import { useTranslation } from 'react-i18next';
-import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
+import { Button, Grid, Icon, Item, Modal } from 'semantic-ui-react';
 import { ICard, atomCurrentCard, defaultCard, IModifyCard, defaultModifyCard } from '../atoms/atomCard';
 import { ITask } from '../atoms/atomTask';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useQuery } from "react-query";
 import styles from "../scss/CardModal.module.scss";
 import classNames from 'classnames';
@@ -14,6 +14,8 @@ import Tasks from "./Tasks"
 import Markdown from './Markdown';
 import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
 import { IAction } from "../atoms/atomAction"
+import { atomCurrentTasks } from "../atoms/atomTask"
+import { values } from 'lodash';
 
 interface ICardModalProps{
   card: ICard;
@@ -80,7 +82,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   }, [])
 
   const handleTaskUpdate = useCallback((id:string, data:any) => {
-    
+    let taskProp = "";
     let modifiedCard : IModifyCard = {
       ...defaultModifyCard,
       cardId: card.cardId,
@@ -91,10 +93,12 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
 
     if(data.hasOwnProperty('name')) {
       console.log("Update task of card / name", data.name);
+      taskProp="name";
       modifiedCard.cardTaskName = data.name;
     }
     else if(data.hasOwnProperty('isCompleted')) {
       console.log("Update task of card / isCompleted", data.isCompleted);
+      taskProp="isCompleted";
       modifiedCard.cardTaskIsCompleted = data.isCompleted ? "true" : "false";
     }
     
@@ -102,12 +106,22 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     const response = apiModifyCard(modifiedCard);
     if(response) {
       console.log('Succeed to update task of card', response);
-      const updatedCard = {
-        ...card,
-        description : data
-      };
-      setCurrentCard(updatedCard);
-      //setUpdating(false);
+      const index = tasks.findIndex(task => task.taskId === id);
+      console.log('found index : ', index);
+      let newTask = tasks[index];
+      console.log('found task : ', newTask);
+      if(taskProp === "name") {
+        newTask.taskName = data.name;
+      }
+      else if(taskProp === "isCompleted") {
+        newTask.isCompleted = data.isCompleted;
+      }
+
+      const newTasks = [
+        ...tasks.slice(0, index),
+        newTask,
+        ...tasks.slice(index+1) ];
+      setTasks(newTasks);
     }
   }, []);
 

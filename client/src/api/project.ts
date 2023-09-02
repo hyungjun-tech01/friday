@@ -20,7 +20,7 @@ export const apiGetProjects = async (userId:string) => {
 
 export const apiGetProjectbyId = async (projectId:string) => {
     console.log("getprojectby project id", BASE_PATH, projectId);
-    if(projectId == undefined){
+    if(projectId === undefined){
         return {message:'err'};
     }
     try{
