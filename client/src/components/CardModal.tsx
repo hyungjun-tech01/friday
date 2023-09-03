@@ -104,11 +104,11 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       cardTaskActionType: 'UPDATE',
     }
 
-    if(data.hasProperty('taskName')) {
+    if(data.hasOwnProperty('taskName')) {
       console.log("Update task of card / name", data.taskName);
       modifiedCard.cardTaskName = data.taskName;
     }
-    if(data.hasProperty('isCompleted')) {
+    if(data.hasOwnProperty('isCompleted')) {
       console.log("Update task of card / isCompleted", data.isCompleted);
       modifiedCard.cardTaskIsCompleted = data.isCompleted ? "true" : "false";
     }
@@ -125,11 +125,11 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       let newTask = tasks[index];
       console.log('found task : ', newTask);
 
-      if(data.hasProperty('taskName')) {
+      if(data.hasOwnProperty('taskName')) {
         console.log('update task name : ', data.taskName);
         newTask.taskName = data.taskName;
       }
-      if(data.hasProperty('isCompleted')) {
+      if(data.hasOwnProperty('isCompleted')) {
         console.log('update task\'s isCompleted : ', data.isComplated);
         newTask.isCompleted = data.isCompleted;
       };
