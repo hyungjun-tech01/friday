@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRecoilValue} from "recoil";
 import { useParams } from "react-router";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 
 import {projectSelector, IProject } from '../atoms/atomsProject';
 
@@ -9,6 +9,7 @@ import Fix from "../components/Fix";
 import Static from "../components/Static";
 import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
+import Path from "../constants/Paths";
 
 
 interface ICoreParams {
@@ -21,7 +22,7 @@ function Core(){
   
   const {id} = useParams<ICoreParams>();
 
-  const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:""});
+  const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:"", defaultBoardId:""});
   const [current, setCurrent] = useState(false);
   const [currentBoardId, setCurrentBoardId] = useState("");
   const [currentProjectId, setCurrentProjectId] = useState("");
@@ -35,29 +36,42 @@ function Core(){
       if(currentProjectId !== undefined )
       {
         setCurrentProject(selectProject(id)[0]);
-        setCurrentBoardId("");  // 첫번째 보드가 있으면 보드 번호를 넣어 주고 없으면 ""로 세팅 
+ 
+        setCurrentBoardId(""); 
         setCurrent(true);
+
       }else{
         setCurrent(false);
       }
     }
     if(IsDetail){
       setCurrentBoardId(id);
+      setCurrent(true);
     }
-  },[id,IsMaster, IsDetail]);  
+    
+  },[id,IsMaster, IsDetail,currentProjectId,selectProject]);  
 
-   
-  const [currentModal, setCurrentModal] = useState(null);
+  
+    const [currentModal, setCurrentModal] = useState(null);
 
-  return (
-    <>
-        <Fix setCurrent={setCurrent} projectName={current ? currentProject?.projectName:""} />
-        {!current ? <Static projectId="" boardId=""/> :
-        <Static projectId={currentProjectId} boardId={currentBoardId}/>}
-        {currentModal === "USERS" && <UsersModal/>}
-        {currentModal === "USER_SETTING" && <UserSettingModal/>}
-    </>
-  );
+  if(currentProject === undefined ){
+    return (
+      <>
+      <Fix setCurrent={setCurrent} projectName={""} />
+      <Static projectId="" boardId="" defaultBoardId=""/>
+      </>
+    );
+  }else{
+    return (
+      <>
+          <Fix setCurrent={setCurrent} projectName={current ? currentProject?.projectName:""} />
+          {(!current)? <Static projectId="" boardId="" defaultBoardId=""/> :
+            <Static projectId={currentProjectId} boardId={currentBoardId} defaultBoardId = {currentProject?.defaultBoardId} />}
+          {currentModal === "USERS" && <UsersModal/>}
+          {currentModal === "USER_SETTING" && <UserSettingModal/>}
+      </>
+    );
+  }
 //  {currentModal === "PROJECT_ADD" && <ProjectAddModal/>}
 
  /*    핵심 내용 기록해 놓을 것. 

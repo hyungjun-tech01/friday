@@ -4,6 +4,7 @@ import {selector} from "recoil";
 export interface IProject{
     projectId : string;
     projectName : string;
+    defaultBoardId : string;
 }
 
 export interface INewProject{
@@ -18,7 +19,7 @@ export interface INewProject{
 export const atomMyProject = atom<IProject[]>({
     key:"atomMyProject",
     default : [
-        { projectId:"" , projectName:""},
+        { projectId:"" , projectName:"", defaultBoardId:""},
     ]
 });
 
@@ -38,7 +39,7 @@ export const projectSelector = selector({
 export const atomCurrentProject = atom<IProject[]>({
     key:"currentProject",
     default : 
-        [{ projectId:"" , projectName:""}],
+        [{ projectId:"" , projectName:"", defaultBoardId:""}],
 });
 
 export const atomCurrentProjectId = atom<string>({

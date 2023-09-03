@@ -24,7 +24,11 @@ app.get('/projects/:userId', async(req, res)=>{
     console.log(userId);
     try{
             const projects = await pool.query(`
-            select p.id as "projectId", p.name as "projectName"
+            select p.id as "projectId", p.name as "projectName",
+            (select id from board b
+                where b.project_id = p.id
+                order by position 
+                limit 1) as "defaultBoardId"
             from project p, project_manager pm
             where p.id = pm.project_id 
             and pm.user_id = $1`, [userId]);
@@ -74,7 +78,8 @@ app.post('/boards', async(req, res)=>{
             where b.id = bm.board_id 
             and b.project_id = p.id
             and bm.user_id = $1
-			and b.project_id = $2`, [userId, projectId]);
+			and b.project_id = $2
+            order by position`, [userId, projectId]);
             res.json(boards.rows);
             res.end();
     }catch(err){
@@ -341,7 +346,7 @@ app.post('/project', async(req, res) => {
     try{
         console.log('create new project');
         // insert project 
-        const response = await pool.query(`call p_create_proeject($1, $2)`,
+        const response = await pool.query(`call p_create_project($1, $2)`,
         [userId,projectName]);
        
         res.json(response); // 결과 리턴을 해 줌 .  
