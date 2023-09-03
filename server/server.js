@@ -341,22 +341,14 @@ app.post('/project', async(req, res) => {
     try{
         console.log('create new project');
         // insert project 
-        const response1 = await pool.query(`INSERT INTO project(name) values($1)`,
-        [projectName]);
-        // 성공하면 get max project by user id 
-        const project = await pool.query(`SELECT MAX(id) projectId from project where name = $1`,
-        [projectName]);
-        const {projectid} = project.rows[0];   // project id를 못가지고 와서 한 참 헤맴. 원래 대로 하면 project_manager를 먼저 넣고, 그 다음에 project를 생성해야 할 듯 한다. 
-        // insert project_manager 
-        const response = await pool.query(`INSERT INTO project_manager(project_id, user_id,created_at ) 
-                                            values($1, $2, now())`,
-        [projectid, userId]);
-
-        res.json(response); // 결과 리턴을 해 줌 .
+        const response = await pool.query(`call p_create_proeject($1, $2)`,
+        [userId,projectName]);
+       
+        res.json(response); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){
         console.error(err);
-        res.json({message:err});        
+        res.json({message:err});
         res.end();
     }
 });

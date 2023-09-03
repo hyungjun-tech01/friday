@@ -22,7 +22,7 @@ export const apiCreateList = async (list:ICreateList) => {
     console.log("createlist", BASE_PATH);
     
     try{
-        const response = await fetch('http://localhost:7000/list',{
+        const response = await fetch(`${BASE_PATH}/list`,{
             method: "POST", 
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify(list)

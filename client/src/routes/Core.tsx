@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { useQuery , useQueryClient} from "react-query";
-import { useRecoilState , useRecoilValue} from "recoil";
+import { useRecoilValue} from "recoil";
 import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
-import {apiGetProjectbyId} from "../api/project";
-import {projectSelector, atomMyProject, IProject } from '../atoms/atomsProject';
+import {projectSelector, IProject } from '../atoms/atomsProject';
 
 import Fix from "../components/Fix";
 import Static from "../components/Static";
@@ -37,7 +35,7 @@ function Core(){
       if(currentProjectId !== undefined )
       {
         setCurrentProject(selectProject(id)[0]);
-        console.log('currentProject', currentProjectId, currentProject);
+        setCurrentBoardId("");  // 첫번째 보드가 있으면 보드 번호를 넣어 주고 없으면 ""로 세팅 
         setCurrent(true);
       }else{
         setCurrent(false);

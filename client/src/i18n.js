@@ -27,6 +27,8 @@ const resources = {
             dueDate: '기한',
             stopwatch: 'Stopwatch',
             attachment: '첨부파일',
+            createProject: '프로젝트 생성',
+            enterProjectTitle : '프로젝트 명칭을 입력하세요'
         },
         action:{
             Login: '로그인',
@@ -45,6 +47,7 @@ const resources = {
             unsubscribe : '구독 취소',
             move : '이동',
             delete: '삭제',
+            createProject:'프로젝트 생성'
         }
       }
     },

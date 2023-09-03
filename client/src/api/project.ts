@@ -20,7 +20,7 @@ export const apiGetProjects = async (userId:string) => {
 
 export const apiGetProjectbyId = async (projectId:string) => {
     console.log("getprojectby project id", BASE_PATH, projectId);
-    if(projectId == undefined){
+    if(projectId === undefined){
         return {message:'err'};
     }
     try{
@@ -42,7 +42,7 @@ export const apiGetProjectbyId = async (projectId:string) => {
 export async function  apiPostProjects(project:INewProject) {
     console.log("post project", project);
     try{
-        const response = await fetch('http://localhost:7000/project',{
+        const response = await fetch(`${BASE_PATH}/project`,{
             method: "POST", 
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify(project)
