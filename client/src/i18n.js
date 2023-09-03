@@ -28,7 +28,9 @@ const resources = {
             stopwatch: 'Stopwatch',
             attachment: '첨부파일',
             createProject: '프로젝트 생성',
-            enterProjectTitle : '프로젝트 명칭을 입력하세요'
+            enterProjectTitle : '프로젝트 명칭을 입력하세요',
+            openBoard:'보드 열기',
+            createNewOneOrSelectExistingOne:'새 항목을 만들거나 기존 항목을 선택하세요.'
         },
         action:{
             Login: '로그인',
