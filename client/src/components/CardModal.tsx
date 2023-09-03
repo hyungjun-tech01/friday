@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie'
 import { useTranslation } from 'react-i18next';
 import { Button, Grid, Icon, Item, Modal } from 'semantic-ui-react';
 import { ICard, atomCurrentCard, defaultCard, IModifyCard, defaultModifyCard } from '../atoms/atomCard';
-import { ITask } from '../atoms/atomTask';
+import { ITask, defaultTask } from '../atoms/atomTask';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useQuery } from "react-query";
 import styles from "../scss/CardModal.module.scss";
@@ -14,7 +14,6 @@ import Tasks from "./Tasks"
 import Markdown from './Markdown';
 import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
 import { IAction } from "../atoms/atomAction"
-import { atomCurrentTasks } from "../atoms/atomTask"
 import { values } from 'lodash';
 
 interface ICardModalProps{
@@ -57,7 +56,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
 
   const handleOnCloseCardModel = useCallback(()=>{
     setCurrentCard(defaultCard);
-  }, [])
+  }, []);
 
   const handleDescriptionUpdate = useCallback((data:string) => {
     console.log("Udate description of card : ", data);
@@ -79,26 +78,38 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       setCurrentCard(updatedCard);
       //setUpdating(false);
     }
-  }, [])
+  }, [card]);
+
+  const handleTaskCreate = useCallback((data: string) =>{
+    let modifiedCard : IModifyCard = {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      cardTaskName: data,
+      cardTaskActionType: 'ADD',
+    };
+    const response = apiModifyCard(modifiedCard);
+    if(response) {
+      console.log("Response at creating task", response)
+    }
+  }, []);
 
   const handleTaskUpdate = useCallback((id:string, data:any) => {
-    let taskProp = "";
+    console.log('handleTaskUpdate - ', data);
     let modifiedCard : IModifyCard = {
       ...defaultModifyCard,
       cardId: card.cardId,
       userId: cookies.UserId,
       cardTaskId: id,
-      cardActionType: 'UPDATE',
+      cardTaskActionType: 'UPDATE',
     }
 
-    if(data.hasOwnProperty('name')) {
-      console.log("Update task of card / name", data.name);
-      taskProp="name";
-      modifiedCard.cardTaskName = data.name;
+    if(data.hasProperty('taskName')) {
+      console.log("Update task of card / name", data.taskName);
+      modifiedCard.cardTaskName = data.taskName;
     }
-    else if(data.hasOwnProperty('isCompleted')) {
+    if(data.hasProperty('isCompleted')) {
       console.log("Update task of card / isCompleted", data.isCompleted);
-      taskProp="isCompleted";
       modifiedCard.cardTaskIsCompleted = data.isCompleted ? "true" : "false";
     }
     
@@ -107,15 +118,21 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     if(response) {
       console.log('Succeed to update task of card', response);
       const index = tasks.findIndex(task => task.taskId === id);
+
       console.log('found index : ', index);
+      if(index < 0) return;
+
       let newTask = tasks[index];
       console.log('found task : ', newTask);
-      if(taskProp === "name") {
-        newTask.taskName = data.name;
+
+      if(data.hasProperty('taskName')) {
+        console.log('update task name : ', data.taskName);
+        newTask.taskName = data.taskName;
       }
-      else if(taskProp === "isCompleted") {
+      if(data.hasProperty('isCompleted')) {
+        console.log('update task\'s isCompleted : ', data.isComplated);
         newTask.isCompleted = data.isCompleted;
-      }
+      };
 
       const newTasks = [
         ...tasks.slice(0, index),
@@ -123,11 +140,26 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
         ...tasks.slice(index+1) ];
       setTasks(newTasks);
     }
-  }, []);
+  }, [tasks]);
 
   const handleTaskDelete = useCallback((id:string) => {
     console.log("Delete task of card / id : ", id);
-  }, [])
+    let modifiedCard : IModifyCard = {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      cardTaskId: id,
+      cardTaskActionType: 'DELETE',
+    };
+    const response = apiModifyCard(modifiedCard);
+    if(response) {
+      console.log('Succeed to delete task of card', response);
+      const index = tasks.findIndex(task => task.taskId === id);
+      console.log('found index : ', index);
+      const newTasks = tasks.splice(index, 1);
+      setTasks(newTasks);
+    }
+  }, [tasks])
 
   const contentNode = (
     <Grid className={styles.grid}>
@@ -185,7 +217,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                   <Tasks
                     items={tasks}
                     canEdit={canEdit}
-                    //onCreate={onTaskCreate}
+                    onCreate={handleTaskCreate}
                     onUpdate={handleTaskUpdate}
                     //onMove={onTaskMove}
                     onDelete={handleTaskDelete}
