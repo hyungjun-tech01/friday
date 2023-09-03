@@ -1,5 +1,5 @@
 export interface IAction {
-    id: string;
+    actionId: string;
     cardId: string;
     userId: string;
     userName: string;

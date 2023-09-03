@@ -49,7 +49,7 @@ export const atomCurrentMyBoard = atom<ICurrent>({
 
 // default value 1, MyProject 1
 export const atomMyBoard = atom<IBoard[]>({
-    key:"myBoard",
+    key: "myBoard",
     default : [
         { boardId:"" , projectId:"", projectName:"", 
           boardName:"", createdAt:"", role:"", userId:""},

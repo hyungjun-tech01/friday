@@ -13,7 +13,7 @@ interface IDescriptionEditProps{
 const DescriptionEdit = forwardRef(({ children, defaultValue, onUpdate }:IDescriptionEditProps, ref) => {
   const [t] = useTranslation();
   const [isOpened, setIsOpened] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
 
   const open = useCallback(() => {
     setIsOpened(true);
@@ -21,12 +21,11 @@ const DescriptionEdit = forwardRef(({ children, defaultValue, onUpdate }:IDescri
   }, [defaultValue, setValue]);
 
   const close = useCallback(() => {
-    const cleanValue = value.trim() || "";
+    const cleanValue = value.trim() || null;
 
     if (cleanValue && (cleanValue !== defaultValue)) {
       onUpdate(cleanValue);
     }
-
     setIsOpened(false);
     setValue("");
   }, [defaultValue, onUpdate, value, setValue]);

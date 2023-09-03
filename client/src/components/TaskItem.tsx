@@ -1,10 +1,10 @@
 import { useCallback, useState, useRef } from 'react';
 import { Button, Checkbox, Icon } from 'semantic-ui-react';
 import classNames from 'classnames';
-import styles from '../scss/Item.module.scss';
+import styles from '../scss/TaskItem.module.scss';
 import NameEdit from './NameEdit';
 
-interface IItemProps {
+interface ITaskItemProps {
     id: string;
     index: number;
     name: string;
@@ -15,7 +15,7 @@ interface IItemProps {
     onDelete: () => void;
 };
 
-const Item = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUpdate, onDelete }:IItemProps) => {
+const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUpdate, onDelete }:ITaskItemProps) => {
   const nameEdit = useRef<any>(null);
 
   const handleClick = useCallback(() => {
@@ -40,6 +40,7 @@ const Item = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUpdate
 
   const handleNameEdit = useCallback(() => {
     console.log("handleNameEdit");
+    nameEdit.current.open();
   }, []);
 
     //const ActionsPopup = usePopup(ActionsStep);
@@ -78,4 +79,4 @@ const Item = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUpdate
     );
 };
 
-export default Item;
+export default TaskItem;

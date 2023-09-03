@@ -4,7 +4,7 @@ import { Button, Comment, Icon } from 'semantic-ui-react';
 import styles from '../scss/Activities.module.scss';
 import { IAction } from '../atoms/atomAction';
 import CommentAdd from './CommentAdd';
-import Item from './Item'
+import CommentItem from './CommentItem'
 
 interface IActivityProps{
   items: IAction[];
@@ -44,16 +44,13 @@ const Activities = ({items, isDetailsVisible, canEdit} : IActivityProps) => {
         <div className={styles.wrapper}>
             <Comment.Group>
               {items.map((item) =>(
-                <Comment>
-                  <Comment.Author as='a'>{item.userName}</Comment.Author>
-                  <Comment.Metadata>
-                    <div>{item.updatedAt ? item.updatedAt : item.createdAt}</div>
-                  </Comment.Metadata>
-                  <Comment.Text>{item.data.text}</Comment.Text>
-                  <Comment.Actions>
-                    <Comment.Action>Reply</Comment.Action>
-                  </Comment.Actions>
-                </Comment>
+                <CommentItem 
+                  key={item.actionId}
+                  userName={item.userName}
+                  createdAt={item.createdAt}
+                  updatedAt={item.updatedAt}
+                  data={item.data}
+                />
               ))}
             </Comment.Group>
           </div>

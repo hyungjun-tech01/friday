@@ -6,7 +6,7 @@ import { Progress } from 'semantic-ui-react';
 import { ITask } from "../atoms/atomTask";
 
 //import DroppableTypes from '../../../constants/DroppableTypes';
-import Item from './Item';
+import TaskItem from './TaskItem';
 //import Add from './Add';
 
 import styles from '../scss/Tasks.module.scss';
@@ -70,7 +70,7 @@ const Tasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }:ITasksPr
           <div {...droppableProps} ref={innerRef}>*/
           <div>
             {items.map((item, index) => (
-              <Item
+              <TaskItem
                 key={item.taskId}
                 id={item.taskId}
                 index={index}
