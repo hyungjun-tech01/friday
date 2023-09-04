@@ -99,3 +99,6 @@ server > p_modify_card.sql 카피해서 실행
 
 -- 2023.09.03 추가  
 server > p_create_project.sql 카피해서 실행
+
+-- 2023.09.04  
+server > p_modify_card.sql 카피해서 실행   
