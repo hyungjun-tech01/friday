@@ -1,3 +1,5 @@
+drop procedure p_modify_card;
+
 CREATE OR REPLACE PROCEDURE p_modify_card(i_card_id in text, 
 i_user_id in text, 
 i_card_action_type in text, 
@@ -27,7 +29,11 @@ i_card_comment_id in text,
 i_card_comment_text  in text,
 i_card_status_action_type in text,
 i_card_status_id in text,
-x_task_id out text
+x_card_membership_id out text,
+x_card_label_id out text,
+x_task_id out text,
+x_attachment_id out text,
+x_comment_id out text
  )
 LANGUAGE plpgsql
 AS $$
@@ -48,7 +54,11 @@ v_card_attachment_filename text;
 v_card_attachment_name text;
 v_card_attachment_image text;
 v_card_comment_text text;
-v_task_id bigint default null;
+vv_card_membership_id bigint default null;
+vv_card_label_id bigint default null;
+vv_task_id bigint default null;
+vv_attachment_id bigint default null;
+vv_comment_id bigint default null;
 BEGIN
 	if(i_card_action_type is not null) then
 	   if(i_card_action_type = 'UPDATE') then 
@@ -84,8 +94,9 @@ BEGIN
 	-- 삭제 : i_card_membership_action_type = 'DELETE' ,  i_card_membership_id, i_card_membership_user_id(option : action에 들어감 )
 	if(i_card_membership_action_type is not null) then
 		if(i_card_membership_action_type = 'ADD') then
+            select next_id() into vv_card_membership_id;
 			insert into card_membership(id, card_id, user_id, created_at, updated_at)
-			values(next_id(), i_card_id::bigint, i_card_membership_user_id::bigint, now(), now());
+			values(vv_card_membership_id, i_card_id::bigint, i_card_membership_user_id::bigint, now(), now());
 		elseif (i_card_membership_action_type = 'DELETE') then
 			delete from card_membership
 			where id = i_card_membership_id::bigint;
@@ -105,8 +116,9 @@ BEGIN
 	-- /삭제 : i_card_label_action_type = 'DELETE'  i_card_label_id,  i_label_id
 	if(i_card_label_action_type is not null) then
 		if(i_card_label_action_type = 'ADD') then
+            select next_id() into vv_card_label_id ;
 			insert into card_label(id, card_id, label_id, created_at, updated_at)
-			values(next_id(), i_card_id::bigint, i_label_id::bigint, now(), now());
+			values(vv_card_label_id , i_card_id::bigint, i_label_id::bigint, now(), now());
 		elseif (i_card_label_action_type = 'DELETE') then
 			delete from card_label
 			where id = i_card_label_id::bigint;
@@ -124,9 +136,9 @@ BEGIN
 	-- 카드 타스크 추가/변경/삭제
 	if(i_card_task_action_type is not null) then
 		if(i_card_task_action_type = 'ADD') then
-			select next_id() into v_task_id;
+			select next_id() into vv_task_id;
 			insert into task(id, card_id, name, is_completed, created_at, updated_at, position)
-			values(v_task_id, i_card_id::bigint, i_card_task_name, false, now(), now(), i_card_task_position::double precision);
+			values(vv_task_id, i_card_id::bigint, i_card_task_name, false, now(), now(), i_card_task_position::double precision);
 		elseif (i_card_task_action_type = 'UPDATE') then
 			update task 
 			set name = COALESCE(i_card_task_name, name), 
@@ -149,8 +161,9 @@ BEGIN
 	end if;
 	if(i_card_attachment_action_type is not null) then
 		if(i_card_attachment_action_type = 'ADD') then
+                       select next_id() into vv_attachment_id ;
 			insert  into attachment(id, card_id, creator_user_id, dirname, filename, name, created_at, updated_at, image)
-			values(next_id(), i_card_id::bigint, i_user_id::bigint, i_card_attachment_dirname, i_card_attachment_filename, i_card_attachment_name, now(), now(), i_card_attachment_image::text::json);
+			values(vv_attachment_id , i_card_id::bigint, i_user_id::bigint, i_card_attachment_dirname, i_card_attachment_filename, i_card_attachment_name, now(), now(), i_card_attachment_image::text::json);
 		elseif 	(i_card_attachment_action_type = 'UPDATE') then
 		   update attachment 
 		   set name = COALESCE(i_card_attachment_name, name)
@@ -171,8 +184,9 @@ BEGIN
 	-- 카드 댓글 추가/변경/ 삭제 
 	if(i_card_comment_action_type is not null) then
 		if(i_card_comment_action_type = 'ADD') then
+            select next_id() into vv_comment_id ;
 			insert into comment(id, card_id, user_id, text, created_at, updated_at)
-			values(next_id(), i_card_id::bigint, i_user_id::bigint, i_card_comment_text, now(), now());
+			values(vv_comment_id , i_card_id::bigint, i_user_id::bigint, i_card_comment_text, now(), now());
 		elseif (i_card_comment_action_type = 'UPDATE') then
 			update comment 
 			 set text = COALESCE(i_card_comment_text, text)
@@ -204,7 +218,12 @@ BEGIN
 		now(), now());  		
 	end if;
 
-	x_task_id = v_task_id::text;
+
+    x_card_membership_id = vv_card_membership_id::text;
+    x_card_label_id = vv_card_label_id::text;
+    x_task_id = vv_task_id::text;
+    x_attachment_id = vv_attachment_id::text;
+    x_comment_id = vv_comment_id::text;
 	
 END;
 $$;
