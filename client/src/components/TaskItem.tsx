@@ -28,7 +28,7 @@ const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUp
 
   const handleNameUpdate = useCallback((newName:string) => {
     onUpdate({
-      name: newName,
+      taskName: newName,
     });
   }, [onUpdate]);
 

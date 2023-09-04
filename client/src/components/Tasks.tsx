@@ -7,14 +7,14 @@ import { ITask } from "../atoms/atomTask";
 
 //import DroppableTypes from '../../../constants/DroppableTypes';
 import TaskItem from './TaskItem';
-//import Add from './Add';
+import TaskAdd from './TaskAdd';
 
 import styles from '../scss/Tasks.module.scss';
 
 interface ITasksProps{
     items: ITask[];
     canEdit: boolean;
-    onCreate?: () => void;
+    onCreate: (data: string) => void;
     onUpdate: (id: string, data: any) => void;
     onMove?: () => void;
     onDelete: (id: string) => void;
@@ -82,16 +82,15 @@ const Tasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }:ITasksPr
                 onDelete={() => handleDelete(item.taskId)}
               />
             ))}
-              태스크 추가
-            {/* {canEdit && (
-              <Add onCreate={onCreate}>
+            {canEdit && (
+              <TaskAdd onCreate={onCreate}>
                 <button type="button" className={styles.taskButton}>
                   <span className={styles.taskButtonText}>
                     {items.length > 0 ? t('action.addAnotherTask') : t('action.addTask')}
                   </span>
                 </button>
-              </Add>
-            )} */}
+              </TaskAdd>
+            )}
           </div>
         /*)*/}
     </>
