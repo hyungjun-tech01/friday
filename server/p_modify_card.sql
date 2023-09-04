@@ -26,7 +26,8 @@ i_card_comment_action_type in text,
 i_card_comment_id in text, 
 i_card_comment_text  in text,
 i_card_status_action_type in text,
-i_card_status_id in text
+i_card_status_id in text,
+x_task_id out text
  )
 LANGUAGE plpgsql
 AS $$
@@ -47,6 +48,7 @@ v_card_attachment_filename text;
 v_card_attachment_name text;
 v_card_attachment_image text;
 v_card_comment_text text;
+v_task_id bigint default null;
 BEGIN
 	if(i_card_action_type is not null) then
 	   if(i_card_action_type = 'UPDATE') then 
@@ -122,8 +124,9 @@ BEGIN
 	-- 카드 타스크 추가/변경/삭제
 	if(i_card_task_action_type is not null) then
 		if(i_card_task_action_type = 'ADD') then
+			select next_id() into v_task_id;
 			insert into task(id, card_id, name, is_completed, created_at, updated_at, position)
-			values(next_id(), i_card_id::bigint, i_card_task_name, false, now(), now(), i_card_task_position::double precision);
+			values(v_task_id, i_card_id::bigint, i_card_task_name, false, now(), now(), i_card_task_position::double precision);
 		elseif (i_card_task_action_type = 'UPDATE') then
 			update task 
 			set name = COALESCE(i_card_task_name, name), 
@@ -200,5 +203,8 @@ BEGIN
 				  ('{"card_id":"'||i_card_id||'", "card_status_id":"'||i_card_status_id|| '"}')::text::json,
 		now(), now());  		
 	end if;
+
+	x_task_id = v_task_id::text;
+	
 END;
 $$;

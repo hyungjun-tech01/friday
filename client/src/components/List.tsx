@@ -1,12 +1,13 @@
 import NameEdit from "./NameEdit";
 import styles from "../scss/List.module.scss";
-import {ICard, defaultCard} from "../atoms/atomCard";
+import {ICard} from "../atoms/atomCard";
 import {apiGetCardsbyListId} from "../api/card";
 import {useState, useEffect} from "react";
 import Card from "./Card";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
 import {useTranslation} from "react-i18next";
 import CardAdd from "./CardAdd";
+
 interface IListProps{
     id:string;
     index:number;
@@ -38,10 +39,12 @@ function List({id, index, name}:IListProps){
     useEffect(
         () => { onQueryCards(); } ,[id, isCardAddOpened]
     );
+
+    
     const handleAddCardClick = () => {
         console.log('addcard');
         setIsCardAddOpened(true);
-    };
+     };
     return(
         <div className={styles.innerWrapper}>
         <div className={styles.outerWrapper}>

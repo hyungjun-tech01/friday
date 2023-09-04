@@ -451,9 +451,9 @@ app.post('/modifyCard', async(req, res) => {
     try{
         console.log('create new board');
         // insert project 
-        const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29)`,
-        [cardId,     // number 
-        userId ,       // number 
+        const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34)`,
+        [cardId,     //  
+        userId ,       //  
         cardActionType ,    // 나머지는 모두 string 
         description ,
         cardName , 
@@ -480,9 +480,22 @@ app.post('/modifyCard', async(req, res) => {
         cardCommentId , 
         cardCommentText  ,
         cardStatusActionType ,
-        cardStatusId ]);
-       
-        res.json({cardId:cardId}); // 결과 리턴을 해 줌 .  
+        cardStatusId,
+        null,
+        null,
+        null,
+        null,
+        null,
+     ]);
+        // out 매개변수의 값을 확인합니다.
+        const outCardMembershipId = response.rows[0].x_card_membership_id;
+        const outCardLabelId = response.rows[0].x_card_label_id;
+        const outTaskId = response.rows[0].x_task_id;
+        const outAttachmentId = response.rows[0].x_attachment_id;
+        const outCommentId = response.rows[0].x_comment_id;
+        console.log('outTaskId', outTaskId);
+        res.json({ cardId:cardId, outCardMembershipId : outCardMembershipId, outCardLabelId:outCardLabelId,
+            outTaskId:outTaskId, outAttachmentId:outAttachmentId, outCommentId:outCommentId }); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){
         console.error(err);
