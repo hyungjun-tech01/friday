@@ -1,7 +1,7 @@
-import { useState, useCallback, useRef, useEffect,  } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useCookies } from 'react-cookie'
 import { useTranslation } from 'react-i18next';
-import { Button, Grid, Icon, Item, Modal } from 'semantic-ui-react';
+import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
 import { ICard, atomCurrentCard, defaultCard, IModifyCard, defaultModifyCard } from '../atoms/atomCard';
 import { ITask, defaultTask } from '../atoms/atomTask';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -12,18 +12,13 @@ import Activities from "./Activities";
 import DescriptionEdit from "./DescriptionEdit";
 import Tasks from "./Tasks"
 import Markdown from './Markdown';
+import NameField from './NameField';
 import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
 import { IAction } from "../atoms/atomAction"
-import { values } from 'lodash';
 
 interface ICardModalProps{
   card: ICard;
   canEdit: boolean;
-  // users: any[];
-  // labels: any[];
-  // dueDate: string;
-  // stopwatch: string;
-  // tasks: any[];
 }
 
 const CardModal = ({card, canEdit}:ICardModalProps) => {
@@ -58,6 +53,31 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     setCurrentCard(defaultCard);
   }, []);
 
+  const handleNameUpdate = useCallback((data:string) => {
+    console.log("Udate name of card : ", data);
+    const modifiedCard : IModifyCard = {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      cardName: data,
+      cardActionType: 'UPDATE',
+    }
+    
+    const response = apiModifyCard(modifiedCard);
+    response
+      .then((result)=>{
+        console.log('Succeed to update name of card', result);
+        const updatedCard = {
+          ...card,
+          cardName : data
+        };
+        setCurrentCard(updatedCard);
+      })
+      .catch((message)=>{
+        console.log('Fail to update name of card', message);
+      })
+  }, [card]);
+
   const handleDescriptionUpdate = useCallback((data:string) => {
     console.log("Udate description of card : ", data);
     const modifiedCard : IModifyCard = {
@@ -67,7 +87,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       cardActionType: 'UPDATE',
       description: data,
     }
-    //setUpdating(true);
+    
     const response = apiModifyCard(modifiedCard);
     response
       .then((result)=>{
@@ -197,7 +217,11 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
           <div className={styles.headerWrapper}>
             <Icon name="list alternate outline" className={styles.moduleIcon} />
             <div className={styles.headerTitleWrapper}>
+              {canEdit ? (
+                <NameField defaultValue={card.cardName} onUpdate={handleNameUpdate} />
+              ) : (
                 <div className={styles.headerTitle}>{card.cardName}</div>
+              )}
             </div>
           </div>
         </Grid.Column>

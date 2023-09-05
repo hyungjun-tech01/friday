@@ -98,12 +98,10 @@ const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUp
                     >
                       <div>
                         <Button icon="close" onClick={handleClosePopup} className={styles.popupCloseButton} />
-                        <Popup.Header>
-                          
-                            {t('common.taskActions', {
-                              context: 'title',
-                            })}
-
+                        <Popup.Header className={styles.popupHeader}>
+                          {t('common.taskActions', {
+                            context: 'title',
+                          })}
                         </Popup.Header>
                         <Popup.Content>
                           <Menu secondary vertical className={styles.menu}>
