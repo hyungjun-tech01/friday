@@ -1,5 +1,6 @@
-import { useCallback, useState, useRef } from 'react';
-import { Button, Checkbox, Icon } from 'semantic-ui-react';
+import { useCallback, useState, useRef, Children } from 'react';
+import { Button, Checkbox, Icon, Popup, Menu } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import styles from '../scss/TaskItem.module.scss';
 import NameEdit from './NameEdit';
@@ -17,6 +18,9 @@ interface ITaskItemProps {
 
 const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUpdate, onDelete }:ITaskItemProps) => {
   const nameEdit = useRef<any>(null);
+  const popupShow = useRef<any>(null);
+  const [t] = useTranslation();
+  const [isPopUpShowed, setIsPopupShowed] = useState(false);
 
   const handleClick = useCallback(() => {
     console.log("handleClick / Item");
@@ -41,6 +45,13 @@ const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUp
   const handleNameEdit = useCallback(() => {
     console.log("handleNameEdit");
     nameEdit.current.open();
+  }, []);
+
+  const handleClosePopup = useCallback(() => {
+    console.log("handleClosePopup");
+    if(popupShow.current) {
+      popupShow.current.click();
+    }
   }, []);
 
     //const ActionsPopup = usePopup(ActionsStep);
@@ -69,6 +80,42 @@ const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUp
                       {name}
                     </span>
                   </span>
+                  {canEdit && (
+                    //<Popup onNameEdit={handleNameEdit} onDelete={onDelete}>
+                    <Popup
+                      trigger = {
+                        <Button className={classNames(styles.button, styles.target)}>
+                          <Icon fitted name="pencil" size="small" />
+                        </Button>
+                      }
+                      on='click'
+                      position='bottom right'
+                      ref={popupShow}
+                    >
+                      <Popup.Header>
+                        <span>{t('common.taskActions', {
+                          context: 'title',
+                        })}</span>
+                        <span>
+                          <Button icon="close" onClick={handleClosePopup} className={styles.closeButton} />
+                        </span>
+                      </Popup.Header>
+                      <Popup.Content>
+                      <Menu secondary vertical className={styles.menu}>
+                        <Menu.Item className={styles.menuItem} onClick={handleNameEdit}>
+                          {t('action.editDescription', {
+                            context: 'title',
+                          })}
+                        </Menu.Item>
+                        <Menu.Item className={styles.menuItem} onClick={onDelete}>
+                          {t('action.deleteTask', {
+                            context: 'title',
+                          })}
+                        </Menu.Item>
+                      </Menu>
+                      </Popup.Content>
+                    </Popup>
+                  )}
                 </div>
               </NameEdit>
             </div>

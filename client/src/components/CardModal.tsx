@@ -69,30 +69,48 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     }
     //setUpdating(true);
     const response = apiModifyCard(modifiedCard);
-    if(response) {
-      console.log('Succeed to update description of card', response);
-      const updatedCard = {
-        ...card,
-        description : data
-      };
-      setCurrentCard(updatedCard);
-      //setUpdating(false);
-    }
+    response
+      .then((result)=>{
+        console.log('Succeed to update description of card', result);
+        const updatedCard = {
+          ...card,
+          description : data
+        };
+        setCurrentCard(updatedCard);
+      })
+      .catch((message)=>{
+        console.log('Fail to update description of card', message);
+      })
   }, [card]);
 
   const handleTaskCreate = useCallback((data: string) =>{
+    console.log("data of new task", data);
     let modifiedCard : IModifyCard = {
       ...defaultModifyCard,
       cardId: card.cardId,
       userId: cookies.UserId,
       cardTaskName: data,
+      cardTaskPosition: "100000",
       cardTaskActionType: 'ADD',
     };
     const response = apiModifyCard(modifiedCard);
-    if(response) {
-      console.log("Response at creating task", response)
-    }
-  }, []);
+    response
+      .then((result) =>{
+        console.log("Succeeded to get response", result);
+        if(result.outTaskId) {
+          const newTask = {
+            ...defaultTask,
+            taskId : result.outTaskId,
+            taskName : data,
+          }
+          const newTasks = tasks.concat(newTask);
+          setTasks(newTasks);
+        }
+      })
+      .catch((message)=>{
+        console.log("Failed to get response", message);
+      })
+  }, [tasks]);
 
   const handleTaskUpdate = useCallback((id:string, data:any) => {
     console.log('handleTaskUpdate - ', data);
@@ -115,31 +133,35 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     
     //setUpdating(true);
     const response = apiModifyCard(modifiedCard);
-    if(response) {
-      console.log('Succeed to update task of card', response);
-      const index = tasks.findIndex(task => task.taskId === id);
+    response
+      .then((result)=>{
+        console.log('Succeed to update task of card', result);
+        const index = tasks.findIndex(task => task.taskId === id);
 
-      console.log('found index : ', index);
-      if(index < 0) return;
+        console.log('found index : ', index);
+        if(index < 0) return;
 
-      let newTask = tasks[index];
-      console.log('found task : ', newTask);
+        let newTask = tasks[index];
+        console.log('found task : ', newTask);
 
-      if(data.hasOwnProperty('taskName')) {
-        console.log('update task name : ', data.taskName);
-        newTask.taskName = data.taskName;
-      }
-      if(data.hasOwnProperty('isCompleted')) {
-        console.log('update task\'s isCompleted : ', data.isComplated);
-        newTask.isCompleted = data.isCompleted;
-      };
+        if(data.hasOwnProperty('taskName')) {
+          console.log('update task name : ', data.taskName);
+          newTask.taskName = data.taskName;
+        }
+        if(data.hasOwnProperty('isCompleted')) {
+          console.log('update task\'s isCompleted : ', data.isComplated);
+          newTask.isCompleted = data.isCompleted;
+        };
 
-      const newTasks = [
-        ...tasks.slice(0, index),
-        newTask,
-        ...tasks.slice(index+1) ];
-      setTasks(newTasks);
-    }
+        const newTasks = [
+          ...tasks.slice(0, index),
+          newTask,
+          ...tasks.slice(index+1) ];
+        setTasks(newTasks);
+      })
+      .catch((message)=>{
+        console.log('Fail to update task of card', message);
+      })
   }, [tasks]);
 
   const handleTaskDelete = useCallback((id:string) => {
@@ -152,13 +174,20 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       cardTaskActionType: 'DELETE',
     };
     const response = apiModifyCard(modifiedCard);
-    if(response) {
-      console.log('Succeed to delete task of card', response);
-      const index = tasks.findIndex(task => task.taskId === id);
-      console.log('found index : ', index);
-      const newTasks = tasks.splice(index, 1);
-      setTasks(newTasks);
-    }
+    response
+      .then((result)=>{
+        console.log('Succeed to delete task of card', result);
+        const index = tasks.findIndex(task => task.taskId === id);
+        console.log('found index : ', index);
+        const newTasks = [
+          ...tasks.slice(0, index),
+          ...tasks.slice(index+1) ];
+        setTasks(newTasks);
+      })
+      .catch((message)=>{
+        console.log('Fail to delete task of card', message);
+      })
+      
   }, [tasks])
 
   const contentNode = (
