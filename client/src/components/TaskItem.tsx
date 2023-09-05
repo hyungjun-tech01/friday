@@ -47,12 +47,12 @@ const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUp
     nameEdit.current.open();
   }, []);
 
+  const handleOpenPopup = useCallback(() => {
+    setIsPopupShowed(true);
+  }, [setIsPopupShowed])
   const handleClosePopup = useCallback(() => {
-    console.log("handleClosePopup");
-    if(popupShow.current) {
-      popupShow.current.click();
-    }
-  }, []);
+    setIsPopupShowed(false);
+  }, [setIsPopupShowed]);
 
     //const ActionsPopup = usePopup(ActionsStep);
 
@@ -88,32 +88,38 @@ const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUp
                           <Icon fitted name="pencil" size="small" />
                         </Button>
                       }
+                      basic
                       on='click'
+                      open={isPopUpShowed}
                       position='bottom right'
                       ref={popupShow}
+                      className={classNames(styles.popupWrapper)}
+                      onOpen={handleOpenPopup}
                     >
-                      <Popup.Header>
-                        <span>{t('common.taskActions', {
-                          context: 'title',
-                        })}</span>
-                        <span>
-                          <Button icon="close" onClick={handleClosePopup} className={styles.closeButton} />
-                        </span>
-                      </Popup.Header>
-                      <Popup.Content>
-                      <Menu secondary vertical className={styles.menu}>
-                        <Menu.Item className={styles.menuItem} onClick={handleNameEdit}>
-                          {t('action.editDescription', {
-                            context: 'title',
-                          })}
-                        </Menu.Item>
-                        <Menu.Item className={styles.menuItem} onClick={onDelete}>
-                          {t('action.deleteTask', {
-                            context: 'title',
-                          })}
-                        </Menu.Item>
-                      </Menu>
-                      </Popup.Content>
+                      <div>
+                        <Button icon="close" onClick={handleClosePopup} className={styles.popupCloseButton} />
+                        <Popup.Header>
+                          
+                            {t('common.taskActions', {
+                              context: 'title',
+                            })}
+
+                        </Popup.Header>
+                        <Popup.Content>
+                          <Menu secondary vertical className={styles.menu}>
+                            <Menu.Item className={styles.menuItem} onClick={handleNameEdit}>
+                              {t('action.editDescription', {
+                                context: 'title',
+                              })}
+                            </Menu.Item>
+                            <Menu.Item className={styles.menuItem} onClick={onDelete}>
+                              {t('action.deleteTask', {
+                                context: 'title',
+                              })}
+                            </Menu.Item>
+                          </Menu>
+                        </Popup.Content>
+                      </div>
                     </Popup>
                   )}
                 </div>
