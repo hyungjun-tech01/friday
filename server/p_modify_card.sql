@@ -59,6 +59,7 @@ vv_card_label_id bigint default null;
 vv_task_id bigint default null;
 vv_attachment_id bigint default null;
 vv_comment_id bigint default null;
+v_task_count double precision default 0;
 BEGIN
 	if(i_card_action_type is not null) then
 	   if(i_card_action_type = 'UPDATE') then 
@@ -136,9 +137,17 @@ BEGIN
 	-- 카드 타스크 추가/변경/삭제
 	if(i_card_task_action_type is not null) then
 		if(i_card_task_action_type = 'ADD') then
+			
 			select next_id() into vv_task_id;
+
+			select count(*) 
+			  into v_task_count 
+			   from task 
+			   where card_id = i_card_id::bigint;
+			   
 			insert into task(id, card_id, name, is_completed, created_at, updated_at, position)
-			values(vv_task_id, i_card_id::bigint, i_card_task_name, false, now(), now(), i_card_task_position::double precision);
+			values(vv_task_id, i_card_id::bigint, i_card_task_name, false, now(), now(), v_task_count+1) ;
+			
 		elseif (i_card_task_action_type = 'UPDATE') then
 			update task 
 			set name = COALESCE(i_card_task_name, name), 

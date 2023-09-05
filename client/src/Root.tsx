@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route }  from "react-router-dom";
 
 import Core from './routes/Core';
 import Login from './routes/Login';
+import SampleTest from './routes/SampleTest';
 import Path from './constants/Paths';
 
 //import styled from "styled-components";
@@ -46,6 +47,9 @@ function Root() {
         </Route>
         <Route path = {Path.BOARDS}>
           <Core/>
+        </Route>
+        <Route path = {Path.SAMPLE}>
+          <SampleTest/>
         </Route>
         <Route path = {Path.ROOT}>
           <Core/>
