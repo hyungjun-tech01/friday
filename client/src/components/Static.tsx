@@ -13,7 +13,7 @@ interface IStaticProps{
 }
 function Static({projectId, boardId, defaultBoardId}:IStaticProps){
     console.log("defaultBoardId", defaultBoardId);
-    if(defaultBoardId === null ){
+    if(defaultBoardId === null ){  //project 를 선택했는데 보드가 해당 프로젝트에 보드가 없을 때 
         return (
             <div className={`${styles.wrapper}`}>
                 <Boards projectId={projectId}/> 
@@ -24,9 +24,6 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
         return(
             <div className={`${styles.wrapper}`}>
                 {projectId ==="" ?  <Projects /> : <Boards projectId={projectId}/> } 
-                {/* 보드가 아예 없다면(defaultBoardId == "" ) ,  <BoardFirstAdd/> 
-                    선택한 보드가 있다면 BoardAction + Board 
-                    선택한 보드가 없는데 디폴트보드가 있다면 BoardAction + Board <- defaultBoiardId */}
                 {defaultBoardId === "" ?  "": (
                 boardId === "" ?  <BoardAction boardId={defaultBoardId}/>  : <BoardAction boardId={boardId}/> 
                 )}    
