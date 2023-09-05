@@ -26,7 +26,7 @@ function Boards({projectId}:IBoardProps){
     useEffect(() => {
         setIsBoardLoading(true);
         console.log('project --------');
-    }, [projectId]);
+    }, [projectId, showCreateModal]);
 
     // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
     // useQuery(['todos', todoId], () => fetchTodoById(todoId))
@@ -34,7 +34,8 @@ function Boards({projectId}:IBoardProps){
     const {isLoading, data, isSuccess} = useQuery<IBoard[]>(["allMyBoards", queryCond], ()=>apiGetBoards(queryCond),{
         onSuccess: data => {
             setBoards(data);   // use Query 에서 atom에 set 
-            console.log(boards);
+            console.log('boards list', boards);
+            setIsBoardLoading(false);
         },
         enabled : !showCreateModal||isBoardLoading
       }

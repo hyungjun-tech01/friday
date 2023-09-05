@@ -15,7 +15,10 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
     console.log("defaultBoardId", defaultBoardId);
     if(defaultBoardId === null ){
         return (
-            <BoardFirstAdd />
+            <div className={`${styles.wrapper}`}>
+                <Boards projectId={projectId}/> 
+                <BoardFirstAdd />
+            </div>
         );
     }else{
         return(
