@@ -45,12 +45,15 @@ function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardMo
     const board : ICreateBoard= {...data, projectId:projectId, userId:cookies.UserId};
     
     const response = await apiCreateBoard(board);
-      if(response.message){
-        setShowCreateModal(true);
-      }else{
-        setShowCreateModal(false); // insert 성공  out변수 받아야 함. ㅠㅠ 
-        history.push(Paths.BOARDS.replace(':id', '1015064827942405155'));
-      }
+    console.log('response', response, response.status);
+    if(response.status === 200){
+      setShowCreateModal(false); // insert 성공  out변수 받아야 함. ㅠㅠ 
+      history.push(Paths.BOARDS.replace(':id', '1015064827942405155'));
+    }else if(response.message){
+        setShowCreateModal(true);  // 에러 메세지를 표현 해 주어야 하나??
+     }else{
+      setShowCreateModal(true);
+     }
   } 
 
 

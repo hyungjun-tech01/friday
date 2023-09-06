@@ -33,7 +33,9 @@ x_card_membership_id out text,
 x_card_label_id out text,
 x_task_id out text,
 x_attachment_id out text,
-x_comment_id out text
+x_comment_id out text,
+x_comment_created_at out text,
+x_comment_updated_at out text
  )
 LANGUAGE plpgsql
 AS $$
@@ -59,6 +61,8 @@ vv_card_label_id bigint default null;
 vv_task_id bigint default null;
 vv_attachment_id bigint default null;
 vv_comment_id bigint default null;
+vv_comment_created_at timestamp without time zone default null;
+vv_comment_updated_at timestamp without time zone  default null;
 v_task_count double precision default 0;
 BEGIN
 	if(i_card_action_type is not null) then
@@ -194,11 +198,13 @@ BEGIN
 	if(i_card_comment_action_type is not null) then
 		if(i_card_comment_action_type = 'ADD') then
             select next_id() into vv_comment_id ;
+			select now() into vv_comment_created_at;
 			insert into comment(id, card_id, user_id, text, created_at, updated_at)
-			values(vv_comment_id , i_card_id::bigint, i_user_id::bigint, i_card_comment_text, now(), now());
+			values(vv_comment_id , i_card_id::bigint, i_user_id::bigint, i_card_comment_text, vv_comment_created_at, vv_comment_created_at);
 		elseif (i_card_comment_action_type = 'UPDATE') then
+		    select now() into vv_comment_updated_at;
 			update comment 
-			 set text = COALESCE(i_card_comment_text, text)
+			 set text = COALESCE(i_card_comment_text, text), updated_at = vv_comment_updated_at
 			 where id = i_card_comment_id::bigint;
 		elseif (i_card_comment_action_type = 'DELETE') then
 			delete from comment 
@@ -233,6 +239,7 @@ BEGIN
     x_task_id = vv_task_id::text;
     x_attachment_id = vv_attachment_id::text;
     x_comment_id = vv_comment_id::text;
-	
+	x_comment_created_at = vv_comment_created_at::text;
+	x_comment_updated_at = vv_comment_updated_at::text;
 END;
 $$;

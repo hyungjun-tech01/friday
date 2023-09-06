@@ -5,13 +5,15 @@ import {useEffect} from 'react';
  import {apiModifyCard} from "../api/card";
  // cardId, userId는 반드시 들어가야 함. 
  // 필요에 따라 Actiontype 과 값들을 적절하게 세팅하여 호출 : 아래는 descriptipon 변경 방법
+
+ // Update comment Sample 
   const cardModifySample = async() => {
      const card : IModifyCard = {...defaultModifyCard, 
        cardId:'1057243275443832054', 
        userId:'967860418955445249',
-       cardTaskActionType:'ADD',
-       cardTaskName:'테스트입니다2',
-       cardTaskPosition:"1000",
+       cardCommentId:'1063644653271647478',
+       cardCommentActionType:'UPDATE',
+       cardCommentText:'테스트입니다3',
      };
      console.log(card);
      const response = await apiModifyCard(card);
