@@ -6,6 +6,8 @@ import {ICreateBoard} from "../atoms/atomsBoard";
 import {apiCreateBoard} from "../api/board";
 import {useCookies} from "react-cookie";
 import {useState, useRef, useEffect} from "react";
+import { useHistory } from "react-router-dom"; 
+import Paths from "../constants/Paths";
 
 
 // notimodal props interface 정의 
@@ -16,6 +18,7 @@ interface IAddBoardModalProp{
 } 
 
 function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardModalProp){
+  const history = useHistory();
   const [t] = useTranslation();
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
   const {register, handleSubmit,formState:{errors}} = useForm();
@@ -45,7 +48,8 @@ function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardMo
       if(response.message){
         setShowCreateModal(true);
       }else{
-        setShowCreateModal(false);
+        setShowCreateModal(false); // insert 성공  out변수 받아야 함. ㅠㅠ 
+        history.push(Paths.BOARDS.replace(':id', '1015064827942405155'));
       }
   } 
 
