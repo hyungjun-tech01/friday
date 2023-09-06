@@ -10,9 +10,12 @@ interface IActivityProps{
   items: IAction[];
   isDetailsVisible: boolean;
   canEdit: boolean;
+  onCreate: (data:string) => void;
+  onUpdate: (id:string, data:string) => void;
+  onDelete: (id:string) => void;
 };
 
-const Activities = ({items, isDetailsVisible, canEdit} : IActivityProps) => {
+const Activities = ({items, isDetailsVisible, canEdit, onCreate, onUpdate, onDelete} : IActivityProps) => {
   const [t] = useTranslation();
 
   const handleToggleDetailsClick = useCallback(() => {
@@ -20,13 +23,18 @@ const Activities = ({items, isDetailsVisible, canEdit} : IActivityProps) => {
     console.log("Toggle the detail of Activities : ", isDetailsVisible)
   }, [isDetailsVisible/*, onDetailsToggle*/]);
 
-  const handleCommentUpdate = useCallback(
-    (id:string, data:any) => {
-      // onCommentUpdate(id, data);
-      console.log("Update comment / id, data : ", id, data);
-    }, [/*onCommentUpdate*/]);
+  const handleActionCreate = useCallback((data:string) => {
+    onCreate(data);
+  }, [onCreate]);
 
-  const [comments, setComments] = useState([]);
+  const handleActionUpdate = useCallback((id:string, data:string) => {
+      console.log("Update comment / id, data : ", id, data);
+      onUpdate(id, data);
+    }, [onUpdate]);
+
+  const handleActionDelete = useCallback((id:string)=>{
+    onDelete(id);
+  }, [onDelete]);
 
   return (
     <div className={styles.contentModule}>
@@ -46,10 +54,14 @@ const Activities = ({items, isDetailsVisible, canEdit} : IActivityProps) => {
               {items.map((item) =>(
                 <CommentItem 
                   key={item.actionId}
+                  commentId = {item.actionId}
                   userName={item.userName}
                   createdAt={item.createdAt}
                   updatedAt={item.updatedAt}
                   data={item.data}
+                  canEdit={canEdit}
+                  onUpdate={handleActionUpdate}
+                  onDelete={handleActionDelete}
                 />
               ))}
             </Comment.Group>

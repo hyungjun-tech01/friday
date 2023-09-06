@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
 // 추후에 resource 파일을 분리하는 부분을 진행해야 할듯 .
 const resources = {
@@ -7,6 +8,7 @@ const resources = {
       translation: {
         common: {
             actions: '활동',
+            addComment: '댓글 추가',
             attachment: '첨부파일',
             boardmemberadd_title: '멤버 추가',
             createBoard_title: '보드 명칭을 입력하세요.',
@@ -48,6 +50,7 @@ const resources = {
             delete: '삭제',
             deleteButtonContent: '보드에서 제거',
             deleteTask: '태스크 삭제',
+            edit: '편집',
             editDescription: '상세설명 편집',
             editPermissions: '권한 설정',
             leaveButtonContent: '보드에서 나가기',
@@ -61,12 +64,15 @@ const resources = {
     },
   };
 
-i18n.use(initReactI18next).init({
-  resources,
-  lng:'ko',
-  interpolation: {
-    escapeValue: false
-  }
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng:'ko',
+    interpolation: {
+      escapeValue: false
+    },
 });
 
 export default i18n;

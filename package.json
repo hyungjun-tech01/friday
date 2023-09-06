@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "date-fns": "^2.30.0",
     "easymde": "^2.18.0",
+    "i18next-browser-languagedetector": "^7.1.0",
     "photoswipe": "^5.3.7",
     "react-datepicker": "^4.14.1",
     "semantic-ui-css": "^2.5.0"
