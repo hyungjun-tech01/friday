@@ -39,3 +39,13 @@ export const atomMyUser = atom<IUser>({
         passwordChangeAt:"", avatar:"", detail:""},
 });
 
+export interface IMembership {
+    membershipId: string;
+    cardId: string;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+    email: string;
+    userName: string;
+    avatarUrl: string;
+}

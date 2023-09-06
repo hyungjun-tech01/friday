@@ -105,6 +105,10 @@
     0 0 0 1px rgba(9, 45, 66, 0.08) !important;
   margin-top: 6px !important;
   max-height: calc(100% - 70px);
-  padding: 5px 12px 12px !important;
+  padding: 0px 12px 12px !important;
   width: 304px;
+}
+
+.popupHeader {
+  padding: 10px 12px 12px;
 }

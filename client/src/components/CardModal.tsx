@@ -1,29 +1,36 @@
-import { useState, useCallback, useRef, useEffect,  } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useCookies } from 'react-cookie'
 import { useTranslation } from 'react-i18next';
-import { Button, Grid, Icon, Item, Modal } from 'semantic-ui-react';
-import { ICard, atomCurrentCard, defaultCard, IModifyCard, defaultModifyCard } from '../atoms/atomCard';
-import { ITask, defaultTask } from '../atoms/atomTask';
+import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useQuery } from "react-query";
-import styles from "../scss/CardModal.module.scss";
-import classNames from 'classnames';
 import Activities from "./Activities";
 import DescriptionEdit from "./DescriptionEdit";
 import Tasks from "./Tasks"
 import Markdown from './Markdown';
+import NameField from './NameField';
+import User from './User'
 import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
 import { IAction } from "../atoms/atomAction"
-import { values } from 'lodash';
+import { ILabel } from '../atoms/atomLabel';
+import { ICard, atomCurrentCard, defaultCard, IModifyCard, defaultModifyCard } from '../atoms/atomCard';
+import { ITask, defaultTask } from '../atoms/atomTask';
+import { IMembership } from '../atoms/atomsUser';
 
+import classNames from 'classnames';
+import styles from "../scss/CardModal.module.scss";
+
+interface IStopWatch {
+  total: number;
+  startedAt: string;
+}
+
+const defaultStopWatch: IStopWatch = {
+  total: 0, startedAt: ""
+}
 interface ICardModalProps{
   card: ICard;
   canEdit: boolean;
-  // users: any[];
-  // labels: any[];
-  // dueDate: string;
-  // stopwatch: string;
-  // tasks: any[];
 }
 
 const CardModal = ({card, canEdit}:ICardModalProps) => {
@@ -32,8 +39,12 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   const [t] = useTranslation();
   const [isDetailsVisible, setIsDetailVisible] = useState(false);
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
+  const [memberships, setMemberships] = useState<IMembership[]>([]);
+  const [labels, setLabels] = useState<ILabel[]>([]);
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [actions, setActions] = useState<IAction[]>([]);
+  const [dueDate, setDueDate] = useState<string>('');
+  const [stopwatch, setStopwatch] = useState<IStopWatch>(defaultStopWatch);
   const [updating, setUpdating] = useState(false);
   const [cookies] = useCookies(['UserId','UserName', 'AuthToken']);
 
@@ -43,11 +54,20 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     {
       onSuccess: data => {
           console.log("[CardModal] Called Card Info");
+          if(data[0].cardMembership) {
+            setMemberships(data[0].cardMembership);
+          };
           if(data[0].cardTask) {
             setTasks(data[0].cardTask);
           };
           if(data[0].cardAction) {
             setActions(data[0].cardAction);
+          };
+          if(data[0].dueDate) {
+            setDueDate(data[0].dueDate);
+          };
+          if(data[0].stopwatch) {
+            setStopwatch(data[0].stopwatch);
           }
       },
     //enabled : !showCreateModal
@@ -58,6 +78,31 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     setCurrentCard(defaultCard);
   }, []);
 
+  const handleNameUpdate = useCallback((data:string) => {
+    console.log("Udate name of card : ", data);
+    const modifiedCard : IModifyCard = {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      cardName: data,
+      cardActionType: 'UPDATE',
+    }
+    
+    const response = apiModifyCard(modifiedCard);
+    response
+      .then((result)=>{
+        console.log('Succeed to update name of card', result);
+        const updatedCard = {
+          ...card,
+          cardName : data
+        };
+        setCurrentCard(updatedCard);
+      })
+      .catch((message)=>{
+        console.log('Fail to update name of card', message);
+      })
+  }, [card]);
+
   const handleDescriptionUpdate = useCallback((data:string) => {
     console.log("Udate description of card : ", data);
     const modifiedCard : IModifyCard = {
@@ -67,7 +112,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       cardActionType: 'UPDATE',
       description: data,
     }
-    //setUpdating(true);
+    
     const response = apiModifyCard(modifiedCard);
     response
       .then((result)=>{
@@ -197,13 +242,163 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
           <div className={styles.headerWrapper}>
             <Icon name="list alternate outline" className={styles.moduleIcon} />
             <div className={styles.headerTitleWrapper}>
+              {canEdit ? (
+                <NameField defaultValue={card.cardName} onUpdate={handleNameUpdate} />
+              ) : (
                 <div className={styles.headerTitle}>{card.cardName}</div>
+              )}
             </div>
           </div>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row className={styles.modalPadding}>
         <Grid.Column width={canEdit? 12 : 16} className={styles.contentPadding}>
+        {(memberships.length > 0 || labels.length > 0 || dueDate || stopwatch) && (
+              <div className={styles.moduleWrapper}>
+                {memberships.length > 0 && (
+                  <div className={styles.attachments}>
+                    <div className={styles.text}>
+                      {t('common.membership', {
+                        context: 'title',
+                      })}
+                    </div>
+                    {memberships.map((membership) => (
+                      <span key={membership.membershipId} className={styles.attachment}>
+                        {/* {canEdit ? (
+                          <BoardMembershipsPopup
+                            items={allBoardMemberships}
+                            currentUserIds={userIds}
+                            onUserSelect={onUserAdd}
+                            onUserDeselect={onUserRemove}
+                          >
+                            <User name={user.name} avatarUrl={user.avatarUrl} />
+                          </BoardMembershipsPopup>
+                        ) : (
+                          <User name={user.name} avatarUrl={user.avatarUrl} />
+                        )} */}
+                        <User userName={membership.userName} avatarUrl={membership.avatarUrl}/>
+                      </span>
+                    ))}
+                    {/* {canEdit && (
+                      <BoardMembershipsPopup
+                        items={allBoardMemberships}
+                        currentUserIds={userIds}
+                        onUserSelect={onUserAdd}
+                        onUserDeselect={onUserRemove}
+                      >
+                        <button
+                          type="button"
+                          className={classNames(styles.attachment, styles.dueDate)}
+                        >
+                          <Icon name="add" size="small" className={styles.addAttachment} />
+                        </button>
+                      </BoardMembershipsPopup>
+                    )} */}
+                  </div>
+                )}
+                {/* {labels.length > 0 && (
+                  <div className={styles.attachments}>
+                    <div className={styles.text}>
+                      {t('common.labels', {
+                        context: 'title',
+                      })}
+                    </div>
+                    {labels.map((label) => (
+                      <span key={label.id} className={styles.attachment}>
+                        {canEdit ? (
+                          <LabelsPopup
+                            key={label.id}
+                            items={allLabels}
+                            currentIds={labelIds}
+                            onSelect={onLabelAdd}
+                            onDeselect={onLabelRemove}
+                            onCreate={onLabelCreate}
+                            onUpdate={onLabelUpdate}
+                            onMove={onLabelMove}
+                            onDelete={onLabelDelete}
+                          >
+                            <Label name={label.name} color={label.color} />
+                          </LabelsPopup>
+                        ) : (
+                          <Label name={label.name} color={label.color} />
+                        )}
+                      </span>
+                    ))}
+                    {canEdit && (
+                      <LabelsPopup
+                        items={allLabels}
+                        currentIds={labelIds}
+                        onSelect={onLabelAdd}
+                        onDeselect={onLabelRemove}
+                        onCreate={onLabelCreate}
+                        onUpdate={onLabelUpdate}
+                        onMove={onLabelMove}
+                        onDelete={onLabelDelete}
+                      >
+                        <button
+                          type="button"
+                          className={classNames(styles.attachment, styles.dueDate)}
+                        >
+                          <Icon name="add" size="small" className={styles.addAttachment} />
+                        </button>
+                      </LabelsPopup>
+                    )}
+                  </div>
+                )}
+                {dueDate && (
+                  <div className={styles.attachments}>
+                    <div className={styles.text}>
+                      {t('common.dueDate', {
+                        context: 'title',
+                      })}
+                    </div>
+                    <span className={styles.attachment}>
+                      {canEdit ? (
+                        <DueDateEditPopup defaultValue={dueDate} onUpdate={handleDueDateUpdate}>
+                          <DueDate value={dueDate} />
+                        </DueDateEditPopup>
+                      ) : (
+                        <DueDate value={dueDate} />
+                      )}
+                    </span>
+                  </div>
+                )}
+                {stopwatch && (
+                  <div className={styles.attachments}>
+                    <div className={styles.text}>
+                      {t('common.stopwatch', {
+                        context: 'title',
+                      })}
+                    </div>
+                    <span className={styles.attachment}>
+                      {canEdit ? (
+                        <StopwatchEditPopup
+                          defaultValue={stopwatch}
+                          onUpdate={handleStopwatchUpdate}
+                        >
+                          <Stopwatch startedAt={stopwatch.startedAt} total={stopwatch.total} />
+                        </StopwatchEditPopup>
+                      ) : (
+                        <Stopwatch startedAt={stopwatch.startedAt} total={stopwatch.total} />
+                      )}
+                    </span>
+                    {canEdit && (
+                      <button
+                        onClick={handleToggleStopwatchClick}
+                        type="button"
+                        className={classNames(styles.attachment, styles.dueDate)}
+                      >
+                        <Icon
+                          name={stopwatch.startedAt ? 'pause' : 'play'}
+                          size="small"
+                          className={styles.addAttachment}
+                        />
+                      </button>
+                    )}
+                  </div>
+                )} */}
+              </div>
+            )}
           {(card.description || canEdit) && (
               <div className={styles.contentModule}>
                 <div className={styles.moduleWrapper}>
