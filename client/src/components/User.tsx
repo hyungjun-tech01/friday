@@ -5,14 +5,14 @@ import camelCase from 'lodash/camelCase';
 import classNames from "classnames";
 
 interface IUserProps{
-    userId:string;
+    userId?:string;
     userName:string;
-    userEmail:string;
-    avatarUrl : string;
-    canEdit: string;
-    size : string;
-    onClick : boolean;
-    showAnotherPopup : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) => void;
+    userEmail?:string;
+    avatarUrl : string | undefined;
+    canEdit?: string;
+    size ?: string;
+    onClick ?: boolean | undefined;
+    showAnotherPopup? : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) => void;
 }
 const SIZES = {
     TINY: 'tiny',
@@ -59,7 +59,9 @@ function User({userId, userName, userEmail, avatarUrl, canEdit, size, onClick, s
       console.log("another popup");
     };
     const onCreate = (event:React.MouseEvent<HTMLButtonElement>)=> {
+      if(userId && userEmail && avatarUrl && canEdit && showAnotherPopup) {
        showAnotherPopup({userId:userId, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl, canEdit:canEdit, positionX:event.pageX, positionY:event.pageY});
+      }
     };
     return onClick ? (
       <button type="button" disabled={isDisabled} className={styles.button} onClick={onCreate}>
