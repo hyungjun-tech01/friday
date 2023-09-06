@@ -4,31 +4,34 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { Button, Form, TextArea } from 'semantic-ui-react';
 import styles from '../scss/CommentAdd.module.scss';
 
-// interface ICommentAddProps{
-//     onCreate: object;
-// };
+interface ICommentAddProps{
+    onCreate: (data:string) => void;
+};
 
-const CommentAdd = () => {
+const CommentAdd = ({ onCreate }:ICommentAddProps) => {
   const [t] = useTranslation();
   const [isOpened, setIsOpened] = useState(false);
   const [isClosable, setIsClosable] = useState(true);
   const [text, setText] = useState("");
   
-  const textField = useRef(null);
+  const textField = useRef<any>(null);
 
   const close = useCallback(() => {
     setIsOpened(false);
   }, []);
 
   const submit = useCallback(() => {
+    console.log('submit / CommentAdd : ', text);
     if(!text
       && textField.current)
     {
-      // textField.current.select();
+      textField.current.focus();
       return;
     }
-    // need to send text to db
-  }, [text]);
+    onCreate(text);
+    setText('');
+    setIsOpened(false);
+  }, [text, onCreate]);
 
   const handleFieldFocus = useCallback(() => {
     setIsOpened(true);
@@ -50,10 +53,11 @@ const CommentAdd = () => {
   }, [isClosable, close]);
 
   const handleFieldChange = useCallback((e:any) => {
-    setText(e.target.data);
+    setText(e.target.value);
   }, []);
 
   const handleSubmit = useCallback(() => {
+    console.log('handleSubmit / CommentAdd');
     submit();
   }, [submit]);
 

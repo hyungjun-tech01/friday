@@ -48,7 +48,7 @@ const Activities = ({items, isDetailsVisible, canEdit, onCreate, onUpdate, onDel
             onClick={handleToggleDetailsClick}
           />
         </div>
-        {canEdit && <CommentAdd />}
+        {canEdit && <CommentAdd onCreate={handleActionCreate}/>}
         <div className={styles.wrapper}>
             <Comment.Group>
               {items.map((item) =>(

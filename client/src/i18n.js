@@ -42,6 +42,7 @@ const resources = {
             addAnotherList: '다른 리스트 추가',
             addAnotherTask: '다른 태스크 추가',
             addCard: '항목카드 추가',
+            addComment: '댓글 추가',
             addList: '리스트 추가',
             addTask:'태스크 추가',
             addMoreDetailedDescription: '자세한 설명 추가',
