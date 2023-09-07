@@ -264,17 +264,18 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     if(cardComment.rows.length > 0 )
                         card.cardComment = cardComment.rows;
 
-                    const cardAction = await pool.query(`
-                    select a.id as "actionId", a.card_id as "cardId", 
-                       a.user_id as "userId", b.name as "userName", a.type as "type" , a.data as "data", 
-                       a.created_at as "createdAt", a.updated_at as "updatedAt"
-                    from action a, user_account b
-                    where a.user_id = b.id
-                    and a.card_id = $1
-                    order by a.created_at`, [card.cardId]);
-        
-                    if(cardAction.rows.length > 0 )
-                        card.cardAction = cardAction.rows;    
+                    // card action은 우선 조회에서 제외    
+                    // const cardAction = await pool.query(`
+                    // select a.id as "actionId", a.card_id as "cardId", 
+                    //    a.user_id as "userId", b.name as "userName", a.type as "type" , a.data as "data", 
+                    //    a.created_at as "createdAt", a.updated_at as "updatedAt"
+                    // from action a, user_account b
+                    // where a.user_id = b.id
+                    // and a.card_id = $1
+                    // order by a.created_at`, [card.cardId]);
+                    
+                   // if(cardAction.rows.length > 0 )
+                   //     card.cardAction = cardAction.rows;    
 
                 }
                 console.log(cards);
@@ -360,14 +361,20 @@ app.post('/project', async(req, res) => {
 
 // create board 
 app.post('/board', async(req, res) => {
-    const {projectId, userId, boardName} = req.body;
+    const {boardActionType, userId, projectId, boardName, boardPosition,
+        boardId, boardMembershipActionType, boardMembershipId, boardMembershipUserId , boardMembershipRole,
+        boardMembershipCanComment } = req.body;
     try{
         console.log('create new board');
         // insert project 
-        const response = await pool.query(`call p_insert_board($1, $2, $3)`,
-        [userId,projectId,boardName]);
-       
-        res.json(response); // 결과 리턴을 해 줌 .  
+        const response = await pool.query(`call p_modify_board($1, $2, $3, $4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+        [boardActionType, userId, projectId, boardName, boardPosition,
+            boardId, boardMembershipActionType, boardMembershipId, boardMembershipUserId , boardMembershipRole,
+            boardMembershipCanComment, null]);
+        
+            const outBoardId = response.rows[0].x_board_id;
+
+        res.json({ outBoardId:outBoardId, boardId:boardId}); //insert 시에는 outBoardId not null, 나머지 트랜잭션은 boardId not null  
         res.end();
     }catch(err){
         console.error(err);

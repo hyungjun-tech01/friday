@@ -9,11 +9,11 @@ import {useEffect} from 'react';
  // Update comment Sample 
   const cardModifySample = async() => {
      const card : IModifyCard = {...defaultModifyCard, 
-       cardId:'1057243275443832054', 
+       cardId:'1061970265900057818', 
        userId:'967860418955445249',
-       cardCommentId:'1063644653271647478',
-       cardCommentActionType:'UPDATE',
-       cardCommentText:'테스트입니다3',
+       cardCommentId:'1064146980315333892',
+       cardCommentActionType:'DELETE',
+       cardCommentText:null,
      };
      console.log(card);
      const response = await apiModifyCard(card);

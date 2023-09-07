@@ -9,7 +9,32 @@ export interface IBoard{
     role : string;
     userId : string;
 }
-
+export interface IModfiyBoard{
+    boardActionType:'ADD'|'UPDATE'|'DELETE'|null;
+    userId : string;
+    projectId:string|null;
+    boardName : string|null;
+    boardPosition:string|null;
+    boardId:string|null;
+    boardMembershipActionType: 'ADD'|'UPDATE'|'DELETE'|null;
+    boardMembershipId : string|null;
+    boardMembershipUserId : string|null;
+    boardMembershipRole : 'editor'|'viewer'|null;
+    boardMembershipCanComment : 'true'|'false'|null;
+}
+export const defaultModifyBoard:IModfiyBoard = {
+    boardActionType:null,
+    userId : '0',
+    projectId: null,
+    boardName : null,
+    boardPosition:null,
+    boardId:null,
+    boardMembershipActionType: null,
+    boardMembershipId : null,
+    boardMembershipUserId : null,
+    boardMembershipRole : null,
+    boardMembershipCanComment : null,
+}
 export interface ICurrent{
     boardId : string;
     projectId : string;

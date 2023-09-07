@@ -16,6 +16,7 @@
     "dotenv": "^16.3.1",
     "easymde": "^2.18.0",
     "easymode": "^1.0.0",
+    "i18next-browser-languagedetector": "^7.1.0",
     "initials": "^3.1.2",
     "lodash": "^4.17.21",
     "react": "^18.2.0",

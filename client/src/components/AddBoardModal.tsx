@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Form, Icon } from 'semantic-ui-react';
 import styles from "../scss/AddBoardModal.module.scss";
 import {useForm} from "react-hook-form";
-import {ICreateBoard} from "../atoms/atomsBoard";
+import {IModfiyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
 import {apiCreateBoard} from "../api/board";
 import {useCookies} from "react-cookie";
 import {useState, useRef, useEffect} from "react";
@@ -42,18 +42,20 @@ function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardMo
     }     
 
   const onValid = async (data:any) =>{
-    const board : ICreateBoard= {...data, projectId:projectId, userId:cookies.UserId};
+    const board : IModfiyBoard= {...defaultModifyBoard, ...data, boardActionType:'ADD', projectId:projectId, userId:cookies.UserId};
     
     const response = await apiCreateBoard(board);
     console.log('response', response, response.status);
-    if(response.status === 200){
-      setShowCreateModal(false); // insert 성공  out변수 받아야 함. ㅠㅠ 
-      history.push(Paths.BOARDS.replace(':id', '1015064827942405155'));
-    }else if(response.message){
+    if(response){
+      if(response.outBoardId){
+        setShowCreateModal(false); // insert 성공  out변수 받아야 함. ㅠㅠ 
+        history.push(Paths.BOARDS.replace(':id', response.outBoardId));
+      }else if(response.message){
         setShowCreateModal(true);  // 에러 메세지를 표현 해 주어야 하나??
-     }else{
-      setShowCreateModal(true);
-     }
+      }else{
+        setShowCreateModal(true);
+      }
+    }
   } 
 
 
