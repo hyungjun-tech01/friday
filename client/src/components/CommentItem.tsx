@@ -48,7 +48,7 @@ const CommentItem = ({commentId, userName, createdAt, updatedAt, data, canEdit, 
           <div className={styles.title}>
             <span className={styles.author}>{userName}</span>
             <span className={styles.date}>
-            {formatDate(formatted_date, "M'월'd'일 ' HH:MM")}
+            {formatDate(formatted_date, " M'월'd'일 ' HH:MM")}
             </span>
           </div>
           <NameEdit ref={commentEdit} defaultValue={data} onUpdate={handleCommentUpdate}>
@@ -58,12 +58,12 @@ const CommentItem = ({commentId, userName, createdAt, updatedAt, data, canEdit, 
             {canEdit && (
                 <Comment.Actions>
                   <Comment.Action
-                    as="button"
+                    //as="button"
                     content={t('action.edit')}
                     onClick={handleEditClick}
                   />
                   <Comment.Action
-                    as="button"
+                    //as="button"
                     content={t('action.delete')}
                     onClick={handleDeleteClick}
                   />

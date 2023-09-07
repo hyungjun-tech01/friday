@@ -10,6 +10,8 @@ import Tasks from "./Tasks"
 import Markdown from './Markdown';
 import NameField from './NameField';
 import User from './User'
+import DueDate from './DueDate';
+import Stopwatch from './Stopwatch';
 import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
 import { IComment, defaultComment } from "../atoms/atomAction"
 import { ILabel } from '../atoms/atomLabel';
@@ -22,11 +24,11 @@ import styles from "../scss/CardModal.module.scss";
 
 interface IStopWatch {
   total: number;
-  startedAt: string;
+  startedAt: Date | undefined;
 }
 
 const defaultStopWatch: IStopWatch = {
-  total: 0, startedAt: ""
+  total: 0, startedAt: undefined
 }
 interface ICardModalProps{
   card: ICard;
@@ -64,7 +66,11 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
             setDueDate(data[0].dueDate);
           };
           if(data[0].stopwatch) {
-            setStopwatch(data[0].stopwatch);
+            const stopwatch_input:IStopWatch = {
+              total: data[0].stopwatch.total,
+              startedAt: new Date(data[0].stopwatch.startedAt),
+            }
+            setStopwatch(stopwatch_input);
           };
           if(data[0].cardComment) {
             setComments(data[0].cardComment);
@@ -384,6 +390,12 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                         </button>
                       </BoardMembershipsPopup>
                     )} */}
+                      <button
+                        type="button"
+                        className={classNames(styles.attachment, styles.dueDate)}
+                      >
+                        <Icon name="add" size="small" className={styles.addAttachment} />
+                      </button>
                   </div>
                 )}
                 {/* {labels.length > 0 && (
@@ -434,7 +446,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                       </LabelsPopup>
                     )}
                   </div>
-                )}
+                    )}*/}
                 {dueDate && (
                   <div className={styles.attachments}>
                     <div className={styles.text}>
@@ -443,13 +455,14 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                       })}
                     </div>
                     <span className={styles.attachment}>
-                      {canEdit ? (
+                      {/* {canEdit ? (
                         <DueDateEditPopup defaultValue={dueDate} onUpdate={handleDueDateUpdate}>
                           <DueDate value={dueDate} />
                         </DueDateEditPopup>
                       ) : (
                         <DueDate value={dueDate} />
-                      )}
+                      )} */}
+                      <DueDate value={dueDate} />
                     </span>
                   </div>
                 )}
@@ -461,7 +474,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                       })}
                     </div>
                     <span className={styles.attachment}>
-                      {canEdit ? (
+                      {/* {canEdit ? (
                         <StopwatchEditPopup
                           defaultValue={stopwatch}
                           onUpdate={handleStopwatchUpdate}
@@ -470,11 +483,12 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                         </StopwatchEditPopup>
                       ) : (
                         <Stopwatch startedAt={stopwatch.startedAt} total={stopwatch.total} />
-                      )}
+                      )} */}
+                      <Stopwatch startedAt={stopwatch.startedAt} total={stopwatch.total} />
                     </span>
                     {canEdit && (
                       <button
-                        onClick={handleToggleStopwatchClick}
+                        //onClick={handleToggleStopwatchClick}
                         type="button"
                         className={classNames(styles.attachment, styles.dueDate)}
                       >
@@ -486,7 +500,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                       </button>
                     )}
                   </div>
-                )} */}
+                )}
               </div>
             )}
           {(card.description || canEdit) && (
