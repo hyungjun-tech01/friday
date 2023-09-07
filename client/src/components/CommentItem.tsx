@@ -12,7 +12,7 @@ interface ICommentItemProps {
   userName: string;
   createdAt: string;
   updatedAt: string | null;
-  data: {text:string};
+  data: string;
   canEdit: boolean;
   onUpdate: (id:string, data:string) => void;
   onDelete: (id:string) => void;
@@ -51,9 +51,9 @@ const CommentItem = ({commentId, userName, createdAt, updatedAt, data, canEdit, 
             {formatDate(formatted_date, "M'월'd'일 ' HH:MM")}
             </span>
           </div>
-          <NameEdit ref={commentEdit} defaultValue={data.text} onUpdate={handleCommentUpdate}>
+          <NameEdit ref={commentEdit} defaultValue={data} onUpdate={handleCommentUpdate}>
             <div className={styles.text}>
-              {data.text}
+              {data}
             </div>
             {canEdit && (
                 <Comment.Actions>

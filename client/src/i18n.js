@@ -51,7 +51,7 @@ const resources = {
             delete: '삭제',
             deleteButtonContent: '보드에서 제거',
             deleteTask: '태스크 삭제',
-            edit: '편집',
+            edit: '수정',
             editDescription: '상세설명 편집',
             editPermissions: '권한 설정',
             leaveButtonContent: '보드에서 나가기',

@@ -11,7 +11,7 @@ import Markdown from './Markdown';
 import NameField from './NameField';
 import User from './User'
 import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
-import { IAction, defaultAction } from "../atoms/atomAction"
+import { IComment, defaultComment } from "../atoms/atomAction"
 import { ILabel } from '../atoms/atomLabel';
 import { ICard, atomCurrentCard, defaultCard, IModifyCard, defaultModifyCard } from '../atoms/atomCard';
 import { ITask, defaultTask } from '../atoms/atomTask';
@@ -42,10 +42,10 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   const [memberships, setMemberships] = useState<IMembership[]>([]);
   const [labels, setLabels] = useState<ILabel[]>([]);
   const [tasks, setTasks] = useState<ITask[]>([]);
-  const [actions, setActions] = useState<IAction[]>([]);
+  const [comments, setComments] = useState<IComment[]>([]);
+  // const [actions, setActions] = useState<IAction[]>([]);
   const [dueDate, setDueDate] = useState<string>('');
   const [stopwatch, setStopwatch] = useState<IStopWatch>(defaultStopWatch);
-  const [updating, setUpdating] = useState(false);
   const [cookies] = useCookies(['UserId','UserName', 'AuthToken']);
 
   const {isLoading, data, isSuccess} = useQuery<any>(
@@ -60,15 +60,18 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
           if(data[0].cardTask) {
             setTasks(data[0].cardTask);
           };
-          if(data[0].cardAction) {
-            setActions(data[0].cardAction);
-          };
           if(data[0].dueDate) {
             setDueDate(data[0].dueDate);
           };
           if(data[0].stopwatch) {
             setStopwatch(data[0].stopwatch);
-          }
+          };
+          if(data[0].cardComment) {
+            setComments(data[0].cardComment);
+          };
+          // if(data[0].cardAction) {
+          //   setActions(data[0].cardAction);
+          // };
       },
     //enabled : !showCreateModal
     }
@@ -126,7 +129,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       .catch((message)=>{
         console.log('Fail to update description of card', message);
       })
-  }, [card, cookies, setCurrentCard]);
+  }, [card, cookies.UserId, setCurrentCard]);
 
   const handleTaskCreate = useCallback((data: string) =>{
     console.log("data of new task", data);
@@ -155,7 +158,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       .catch((message)=>{
         console.log("Failed to get response", message);
       })
-  }, [tasks, cookies, card]);
+  }, [tasks, cookies.UserId, card.cardId]);
 
   const handleTaskUpdate = useCallback((id:string, data:any) => {
     console.log('handleTaskUpdate - ', data);
@@ -207,7 +210,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       .catch((message)=>{
         console.log('Fail to update task of card', message);
       })
-  }, [tasks, cookies, card]);
+  }, [tasks, cookies.UserId, card.cardId]);
 
   const handleTaskDelete = useCallback((id:string) => {
     console.log("Delete task of card / id : ", id);
@@ -233,79 +236,76 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
         console.log('Fail to delete task of card', message);
       })
       
-  }, [tasks, cookies, card]);
+  }, [tasks, cookies.UserId, card.cardId]);
 
-  const handleActionsCreate = useCallback((newText:string)=>{
-    console.log("data of new action", newText);
+  const handleCommentsCreate = useCallback((newText:string)=>{
+    console.log("data of new comment", newText);
     let modifiedCard : IModifyCard = {
       ...defaultModifyCard,
       cardId: card.cardId,
       userId: cookies.UserId,
-      cardCommentText: data,
+      cardCommentText: newText,
       cardCommentActionType: 'ADD',
     };
     const response = apiModifyCard(modifiedCard);
     response
       .then((result) =>{
         console.log("Succeeded to get response", result);
-        if(result.outActionId) {
-          const newAction = {
-            ...defaultAction,
-            actionId: result.outActionId,
+        if(result.outCommentId) {
+          const newComment = {
+            ...defaultComment,
+            commentId: result.outActionId,
             cardId: card.cardId,
             userId: cookies.UserId,
             userName: cookies.UserName,
-            type: 'commentCard',
-            data: { text: newText },
-            createdAt: result.outCreatedAt,
+            text: newText,
+            createdAt: result.outCommentCreatedAt,
           };
-          const newActions = actions.concat(newAction);
-          setActions(newActions);
+          const newComments = [newComment, ...comments];
+          setComments(newComments);
         }
       })
       .catch((message)=>{
         console.log("Failed to get response", message);
       })
-  }, [actions, cookies, card, setActions]);
+    }, [card.cardId, cookies, comments]);
 
-  const handleActionsUpdate = useCallback((id:string, data:string)=>{
-    console.log('handleActionUpdate - ', data);
+  const handleCommentsUpdate = useCallback((id:string, newText:string)=>{
+    console.log('handleActionUpdate - ', newText);
     let modifiedCard : IModifyCard = {
       ...defaultModifyCard,
       cardId: card.cardId,
       userId: cookies.UserId,
       cardCommentId: id,
-      cardCommentText: data,
-      cardTaskActionType: 'UPDATE',
+      cardCommentText: newText,
+      cardCommentActionType: 'UPDATE',
     }
 
     const response = apiModifyCard(modifiedCard);
     response
       .then((result)=>{
         console.log('Succeed to update comment of card', result);
-        const index = actions.findIndex(action => action.actionId === id);
+        const index = comments.findIndex(comment => comment.commentId === id);
 
-        console.log('found index : ', index);
         if(index < 0) return;
 
-        let newAction = actions[index];
-        console.log('found task : ', newAction);
+        let newComment = comments[index];
+        newComment.text = newText;
+        newComment.updatedAt = result.outCommentUpdatedAt;
 
-        newAction.data.text = data;
-
-        const newActions = [
-          ...actions.slice(0, index),
-          newAction,
-          ...actions.slice(index+1) ];
-        setActions(newActions);
+        const newComments = [
+          ...comments.slice(0, index),
+          newComment,
+          ...comments.slice(index+1) ];
+        setComments(newComments);
       })
       .catch((message)=>{
         console.log('Fail to update task of card', message);
       })
-  }, [actions]);
+    }, [card.cardId, cookies.UserId, comments]);
 
-  const handleActionsDelete = useCallback((id:string)=>{
-    console.log("Delete action - comment of card / id : ", id);
+  const handleCommentsDelete = useCallback((id:string)=>{
+    console.log("Delete Comment - comment of card / id : ", id);
     let modifiedCard : IModifyCard = {
       ...defaultModifyCard,
       cardId: card.cardId,
@@ -317,17 +317,13 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     response
       .then((result)=>{
         console.log('Succeed to delete comment of card', result);
-        const index = actions.findIndex(action => action.actionId === id);
-        console.log('found index : ', index);
-        const newActions = [
-          ...actions.slice(0, index),
-          ...actions.slice(index+1) ];
-        setActions(newActions);
+        const newComments = comments.filter(comment => comment.commentId !== id);
+        setComments(newComments);
       })
       .catch((message)=>{
         console.log('Fail to delete task of card', message);
       })
-  }, [actions]);
+  }, [card.cardId, cookies.UserId, comments]);
 
   const contentNode = (
     <Grid className={styles.grid}>
@@ -543,10 +539,10 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                 </div>
               </div>
           )}
-          <Activities items={actions} isDetailsVisible={isDetailsVisible} canEdit={canEdit}
-            onCreate={handleActionsCreate}
-            onUpdate={handleActionsUpdate}
-            onDelete={handleActionsDelete}
+          <Activities items={comments} isDetailsVisible={isDetailsVisible} canEdit={canEdit}
+            onCreate={handleCommentsCreate}
+            onUpdate={handleCommentsUpdate}
+            onDelete={handleCommentsDelete}
           />
         </Grid.Column>
         {canEdit && (
