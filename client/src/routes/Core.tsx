@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRecoilValue} from "recoil";
 import { useParams } from "react-router";
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import {projectSelector, IProject } from '../atoms/atomsProject';
 
@@ -9,7 +9,6 @@ import Fix from "../components/Fix";
 import Static from "../components/Static";
 import UsersModal from "../components/UsersModal";
 import UserSettingModal from "../components/UserSettingModal";
-import Path from "../constants/Paths";
 
 
 interface ICoreParams {

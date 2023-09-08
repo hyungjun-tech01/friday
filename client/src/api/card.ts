@@ -3,23 +3,22 @@ import {ICreateCard, IModifyCard} from "../atoms/atomCard";
 const BASE_PATH = Paths.BASE_PATH; 
 
 // 보드에 속한 모든 카드를 가지고 온다..
-export const apiGetCards = async (boardId:string) => {
-    console.log("getcard", BASE_PATH);
-    try{
-        const response = await fetch(`${BASE_PATH}/cards/${boardId}`);  // backtik 
-        const json = await response.json()
-        return json;
-    }catch(err){
-        console.error(err);
-    }
-
-    //return fetch(`${BASE_PATH}/projects`).then(
-    //    (response) => response.json()
-    //);
-};
+// export const apiGetCards = async (boardId:string) => {
+//     console.log("getcard", BASE_PATH);
+//     try{
+//         const response = await fetch(`${BASE_PATH}/cards/${boardId}`);  // backtik 
+//         const json = await response.json()
+//         return json;
+//     }catch(err){
+//         console.error(err);
+//     }
+// };
 
 export const apiGetCardsbyListId = async (listId:string) => {
     console.log("getcardbyList", listId);
+    if(listId === null || listId === ''){
+        return(null);
+    }
     try{
         const response = await fetch(`${BASE_PATH}/cards/${listId}`);  // backtik 
         const json = await response.json()
@@ -27,10 +26,6 @@ export const apiGetCardsbyListId = async (listId:string) => {
     }catch(err){
         console.error(err);
     }
-
-    //return fetch(`${BASE_PATH}/projects`).then(
-    //    (response) => response.json()
-    //);
 };
 
 export const apiCreateCard = async (card:ICreateCard) => {

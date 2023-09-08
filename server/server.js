@@ -21,7 +21,6 @@ app.get('/', (req, res)=>{
 // get all projects by user 
 app.get('/projects/:userId', async(req, res)=>{
     const userId = req.params.userId;
-    console.log(userId);
     try{
             const projects = await pool.query(`
             select p.id as "projectId", p.name as "projectName",
@@ -45,7 +44,6 @@ app.get('/projects/:userId', async(req, res)=>{
 // sigle projects by projectId
 app.get('/project/:projectId', async(req, res)=>{
     const projectId = req.params.projectId;
-    console.log("sigle projects by projectId", projectId);
     try{
             const project = await pool.query(`
             select p.id as "projectId", p.name as "projectName"
@@ -113,7 +111,6 @@ app.get('/lists/:boardId', async(req, res)=>{
 // get cards by list id 
 app.get('/cards/:listId', async(req, res)=>{
     const listId = req.params.listId;
-    //console.log(listId);
     try{
             const cardResult =   await pool.query(`
             select id as "cardId", board_id as "boardId", list_id as "listId", 
@@ -294,7 +291,6 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
 
 app.post('/boardAuth', async(req, res) => {
     const {boardId, userId} = req.body;
-    console.log('boardAuth', boardId, userId);
     try{
         const result = await pool.query(`
         select b.id as "boardId" , bm.role as "canEdit"
@@ -309,8 +305,7 @@ app.post('/boardAuth', async(req, res) => {
         if(result.rows.length > 0 ) {
             boards = result.rows;
             for (const board of boards) {
-                console.log('board', board.boardId);
-                const boardMemebers = await pool.query(`
+                 const boardMemebers = await pool.query(`
                 select u.id as "userId", u.name as "userName", email as "userEmail", u.avatar as "avatarUrl", bm.role as "canEdit"
                 from board b, board_membership bm, user_account u
                 where b.id = bm.board_id  
@@ -320,7 +315,6 @@ app.post('/boardAuth', async(req, res) => {
                     board.users = boardMemebers.rows;
             }
             for (const board of boards) {
-                console.log('all user', board.boardId);
                 const allBoardMemebers = await pool.query(`
                 select u.id as "userId", u.name as "userName", email as "userEmail", avatar as "avatarUrl",
                     (select role 
@@ -456,7 +450,7 @@ app.post('/modifyCard', async(req, res) => {
         cardStatusActionType ,
         cardStatusId } = req.body;
     try{
-        console.log('create new board');
+        console.log('modify board');
         // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
                                            $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36)`,
@@ -505,7 +499,6 @@ app.post('/modifyCard', async(req, res) => {
         const outCommentId = response.rows[0].x_comment_id;
         const outCommentCreatedAt = response.rows[0].x_comment_created_at;
         const outCommentUpdatedAt = response.rows[0].x_comment_updated_at;
-        console.log('outTaskId', outTaskId);
         res.json({ cardId:cardId, outCardMembershipId : outCardMembershipId, outCardLabelId:outCardLabelId,
             outTaskId:outTaskId, outAttachmentId:outAttachmentId, outCommentId:outCommentId, outCommentCreatedAt:outCommentCreatedAt,
             outCommentUpdatedAt:outCommentUpdatedAt
@@ -549,7 +542,6 @@ app.post('/getuser', async(req, res) => {
     console.log("getuser", req);
     const {userId} = req.body;
     try{
-        console.log("getuser", userId);
         const users = await pool.query(`
         SELECT t.id as "userId", t.email as "email", t.is_admin as "isAdmin", 
         t.username as "userName", t.phone as "phone", t.organization  as "organization",

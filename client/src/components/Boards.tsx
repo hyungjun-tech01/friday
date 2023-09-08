@@ -59,7 +59,7 @@ function Boards({projectId}:IBoardProps){
                     <div className={styles.tabs}>
                         <div className={styles.tabWrapper} >
                             {boards.map( (item) => (
-                                <div className={styles.tab} >
+                                <div key={item.boardId} className={styles.tab} >
                                     <Link
                                         key={item.boardId}
                                         to={Paths.BOARDS.replace(':id', item.boardId)}
