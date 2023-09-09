@@ -43,7 +43,7 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
         setOnAddPopup(false);
       }
     }     
-    const handleUserSelect = (id:string, canEdit:string) => {
+    const handleUserSelect = (userId:string, canEdit:string) => {
       if(canEdit === null){
         console.log('add user');
       }

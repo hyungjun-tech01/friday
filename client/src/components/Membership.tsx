@@ -32,9 +32,7 @@ function Membership({boardId, members}:IMembershipProps){
     const [onAddPopup, setOnAddPopup] = useState(false);
     // userId 와 현재 클릭한 포지션 획득 
     const [boardMemberActionUserId, setBoardMemberActionUserId] = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"", positionX:-1, positionY:-1 });
-    console.log('postion', boardMemberActionUserId.positionX, boardMemberActionUserId.positionY);
     if (members) {
-        console.log('members', members[0].users);
         return(
             <span className={styles.users}>
                 {/* 보드에 접근 가능한 사용자 */}

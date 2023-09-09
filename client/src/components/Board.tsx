@@ -20,20 +20,17 @@ function Board({boardId}:IListProps){
     const [t] = useTranslation();
 
     const [showList, setShowList] = useState(false);
-    console.log('board', boardId);
     //board id로 리스트를 쿼리할 것.
     const [lists, setLists] = useRecoilState<IList[]>(atomMyList); 
 
     //board id가 바뀔때마다 showList 를 변경 
     useEffect(() => {
         setShowList(true);
-        console.log('board--------');
     }, [boardId]);
 
     const {isLoading, data } = useQuery<IList[]>(["myBoardLists", boardId], ()=>apiGetLists(boardId),{
         onSuccess: data => {
             setLists(data);   // use Query 에서 atom에 set 
-            console.log('showList', showList);
         },
         enabled : showList
       }
@@ -45,7 +42,6 @@ function Board({boardId}:IListProps){
         console.log('hasEditMembership for board function');
         setIsListAddOpened((prev)=>(!prev));
     }, []);
-    console.log("List Info", showList, lists);
 
     // Card ------------------------
     const currentCard = useRecoilValue<ICard>(atomCurrentCard);

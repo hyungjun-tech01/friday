@@ -4,7 +4,6 @@ import {ICreateList} from "../atoms/atomsList";
 const BASE_PATH = Paths.BASE_PATH; 
 
 export const apiGetLists = async (boardId:string) => {
-    console.log("getboard List", BASE_PATH, boardId);
     try{
         const response = await fetch(`${BASE_PATH}/lists/${boardId}`);  // backtik 
         const json = await response.json()

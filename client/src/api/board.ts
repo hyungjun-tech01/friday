@@ -4,7 +4,6 @@ import Paths from "../constants/Paths";
 const BASE_PATH = Paths.BASE_PATH; 
 
 export const apiGetBoards = async (project:IQueryBoard) => {
-    console.log("getboard", BASE_PATH);
     try{
         const response = await fetch(`${BASE_PATH}/boards`,{
             method: "POST", 
@@ -38,7 +37,6 @@ export const apiCreateBoard = async(board:IModfiyBoard) => {
 }
 
 export const apiCheckEditBoard = async(checkAuth:ICheckBoardEditAuth) =>{
-    console.log('check board edit auth');
     try{
         const response = await fetch(`${BASE_PATH}/boardAuth`,{
             method: "POST", 

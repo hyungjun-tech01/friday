@@ -20,7 +20,6 @@ function BoardAction({boardId}:IBoardActionProp){
             setIsMemberLoading(true);
         }else{
             SetMembers(response);
-            console.log('members query',response, members);
             setIsMemberLoading(false);
         }
 

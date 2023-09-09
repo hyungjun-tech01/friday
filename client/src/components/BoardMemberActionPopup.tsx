@@ -63,7 +63,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
     };
     
     return (
-        <div className={classNames(styles.overlay )} > 
+        <div className={classNames(styles.overlay)} > 
             <div className={styles.modal} ref={wrapperRef} >
               <span>
               <span className={styles.user}>

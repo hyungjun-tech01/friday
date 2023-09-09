@@ -63,7 +63,6 @@ function Login(){
       reset();
     }
     const onValid = async (data:any) => {
-      console.log("handdleSubmtt" ,data);
       setIsSubmitting(true);
       const response = await apiLoginValidate(data);
       
@@ -75,7 +74,6 @@ function Login(){
         removeCookie('UserName');
         removeCookie('AuthToken');
       }else{
-        console.log("response",response );
         setCookie('UserId', response.email);
         setCookie('UserName', response.userName);
         setCookie('AuthToken', response.token);
