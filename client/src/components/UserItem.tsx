@@ -17,7 +17,7 @@ function UserItem({userName, userId, avatarUrl, canEdit, onSelect}:IUserItemProp
     return(
     <button type="button" disabled={isActive} className={styles.menuItem} onClick={()=> onSelect({userId:userId, canEdit:canEdit})}>
     <span className={styles.user}>
-      <User userId={userId} onClick = {false} size={"Large"}showAnotherPopup={setDummyState} userName={userName} canEdit={canEdit} avatarUrl={avatarUrl} userEmail={""}/>
+      <User userId={userId} onClick = {false} size="large" showAnotherPopup={setDummyState} userName={userName} canEdit={canEdit} avatarUrl={avatarUrl} userEmail={""}/>
     </span>
     <div className={classNames(styles.menuItemText, isActive && styles.menuItemTextActive)}>
       {userName}  
