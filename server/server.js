@@ -133,8 +133,9 @@ app.get('/cards/:listId', async(req, res)=>{
                         card.labels = labelResult.rows;
                 }
                 res.json(cards);
+                console.log("queryed card", cards);
                 res.end();
-                //console.log("queryed card", cards);
+                
             }
            
     }catch(err){

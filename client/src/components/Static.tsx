@@ -12,7 +12,6 @@ interface IStaticProps{
     defaultBoardId : string;
 }
 function Static({projectId, boardId, defaultBoardId}:IStaticProps){
-    console.log("defaultBoardId", defaultBoardId);
     if(defaultBoardId === null ){  //project 를 선택했는데 보드가 해당 프로젝트에 보드가 없을 때 
         return (
             <div className={`${styles.wrapper}`}>

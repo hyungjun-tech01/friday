@@ -15,7 +15,6 @@ const BASE_PATH = Paths.BASE_PATH;
 // };
 
 export const apiGetCardsbyListId = async (listId:string) => {
-    console.log("getcardbyList", listId);
     if(listId === null || listId === ''){
         return(null);
     }

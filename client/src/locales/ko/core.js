@@ -30,6 +30,8 @@ const core = {
       enterTaskDescription: '태스크 추가',
       invalidEmailOrUsername: '이메일주소나 비밀번호가 오류입니다.',
       labels: '라벨',
+      leaveBoardTitle:'보드탈퇴',
+      leaveBoardContent : '보드에서 나가겠습니까?', 
       Login: '로그인',
       members: '팀원',
       openBoard:'보드 열기',

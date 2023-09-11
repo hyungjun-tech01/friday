@@ -102,6 +102,8 @@ const core = {
       language: 'Language',
       leaveBoard_title: 'Leave Board',
       leaveProject_title: 'Leave Project',
+      leaveBoardTitle:'Leave Board',
+      leaveBoardContent : 'Do you want to leave board?',
       list: 'List',
       listActions_title: 'List Actions',
       managers: 'Managers',

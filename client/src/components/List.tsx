@@ -19,7 +19,6 @@ function List({id, index, name}:IListProps){
 //    console.log('isCardLoading',isCardLoading);
 //    if(!isCardLoading) 
 //        selectedCards = selectCards(id);
-    console.log('listid',id);
     
     const [isCardLoading, setIsCardLoading] = useState(true);
     const [cards, setCards] = useState<ICard[]>();
@@ -29,7 +28,7 @@ function List({id, index, name}:IListProps){
         setIsCardLoading(true);
         const response = await apiGetCardsbyListId(id);
         if(response){
-            console.log('카드조회', response);  
+        //    console.log('카드조회', response);  
             setCards(response);
             setIsCardLoading(false);
             console.log(cards);

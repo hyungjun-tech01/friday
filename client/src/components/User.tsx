@@ -54,7 +54,9 @@ function User({userId, userName, userEmail, avatarUrl=undefined, canEdit, size='
       console.log("another popup");
     };
     const onCreate = (event:React.MouseEvent<HTMLButtonElement>)=> {
-      if(userId && userEmail && avatarUrl && canEdit && showAnotherPopup) {
+      
+      if (avatarUrl === null) avatarUrl = '';
+      if(userId && userEmail && (avatarUrl==='' || avatarUrl)&& canEdit && showAnotherPopup) {
        showAnotherPopup({userId:userId, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl, canEdit:canEdit, positionX:event.pageX, positionY:event.pageY});
       }
     };

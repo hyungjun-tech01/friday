@@ -25,7 +25,6 @@ function Boards({projectId}:IBoardProps){
     //board id가 바뀔때마다 showList 를 변경 
     useEffect(() => {
         setIsBoardLoading(true);
-        console.log('project --------');
     }, [projectId, showCreateModal]);
 
     // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
@@ -34,7 +33,6 @@ function Boards({projectId}:IBoardProps){
     const {isLoading, data, isSuccess} = useQuery<IBoard[]>(["allMyBoards", queryCond], ()=>apiGetBoards(queryCond),{
         onSuccess: data => {
             setBoards(data);   // use Query 에서 atom에 set 
-            console.log('boards list', boards);
             setIsBoardLoading(false);
         },
         enabled : !showCreateModal||isBoardLoading
