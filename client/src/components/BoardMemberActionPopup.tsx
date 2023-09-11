@@ -5,6 +5,7 @@ import classNames from "classnames";
 import {Button} from "semantic-ui-react";
 import {useTranslation} from "react-i18next";
 import EditPermissions from "./EditPermissions";
+import DeleteStep from "./DeleteStep";
 
 interface IBoardMemberActionPopupProps{
     boardId : string;
@@ -48,8 +49,9 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
       console.log('handleEditPermissionsClick');
       setEditPermissions(true);
     }
+    const [deleteStep, setDeleteStep]  = useState(false);
     const handleDeleteClick = () => { 
-      // 보드에서 멤버를 제거하는 Modal 띄움 DeleteBoardMemberModal
+      // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
       console.log('handleDeleteClick');
     }
     const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -62,6 +64,12 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
       e.currentTarget.style.color = '#6b808c';
     };
     
+    const onConfirm = ()=>{
+
+    };
+    const onBack = () =>{
+
+    };
     return (
         <div className={classNames(styles.overlay)} > 
             <div className={styles.modal} ref={wrapperRef} >
@@ -138,6 +146,12 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
         {editPermissions&&
         <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
         <EditPermissions boardId={boardId} userId={userId} canEdit={canEdit}/>
+        </div>
+        }
+        {
+          deleteStep&&
+          <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
+          <DeleteStep title={t('common.leaveBoardTitle')} content={t('common.leaveBoardContent')} buttonContent={t('action.leaveBoardButton')} onConfirm={onConfirm}  onBack={onBack} />
         </div>
         }
         </div>

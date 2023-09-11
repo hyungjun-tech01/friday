@@ -35,6 +35,9 @@ const resources = {
             tasks: '태스크',
             taskActions: '태스크 편집',
             writeComment: '댓글 추가하기',
+            leaveBoardTitle:'보드탈퇴',
+            leaveBoardContent : '보드에서 나가겠습니까?', 
+
         },
         action:{
             Login: '로그인',
@@ -60,6 +63,7 @@ const resources = {
             showDetails: '자세히 보기',
             subscribe: '구독',
             unsubscribe: '구독 취소',
+            leaveBoardButton : '보드에서 나가기',
         }
       }
     },
