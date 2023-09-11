@@ -354,7 +354,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                 {memberships.length > 0 && (
                   <div className={styles.attachments}>
                     <div className={styles.text}>
-                      {t('common.membership', {
+                      {t('common.members', {
                         context: 'title',
                       })}
                     </div>
@@ -462,7 +462,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                       ) : (
                         <DueDate value={dueDate} />
                       )} */}
-                      <DueDate value={dueDate} />
+                      <DueDate value={new Date(dueDate)} size="small"/>
                     </span>
                   </div>
                 )}
@@ -565,7 +565,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
               <span className={styles.actionsTitle}>{t('action.addCard')}</span>
                   <Button fluid className={styles.actionButton}>
                     <Icon name="user outline" className={styles.actionIcon} />
-                    {t('common.membership')}
+                    {t('common.members')}
                   </Button>
                   <Button fluid className={styles.actionButton}>
                     <Icon name="bookmark outline" className={styles.actionIcon} />
