@@ -5,7 +5,7 @@ import classNames from "classnames";
 import {Button} from "semantic-ui-react";
 import {useTranslation} from "react-i18next";
 import EditPermissions from "./EditPermissions";
-import DeleteStep from "./DeleteStep";
+
 
 interface IBoardMemberActionPopupProps{
     boardId : string;
@@ -17,8 +17,9 @@ interface IBoardMemberActionPopupProps{
     canEdit : string;
     avatarUrl : string;
     showPopUp:(value:{userId:string, userName:string,  userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) =>  void;
+    handleDeleteClick : (value:boolean) => void;
 }
-function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, userId, userEmail, userName, avatarUrl, canEdit, showPopUp}:IBoardMemberActionPopupProps){
+function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, userId, userEmail, userName, avatarUrl, canEdit, showPopUp, handleDeleteClick}:IBoardMemberActionPopupProps){
     let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
     useEffect(()=>{
         document.addEventListener('mousedown', handleClickOutside);
@@ -38,7 +39,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
     
     const [t] = useTranslation();
     const [dummyState, setDummyState]= useState({userId:"",userName:"", userEmail:"", avatarUrl:"", positionX:-1, positionY:-1});
-    console.log('boardMemberActionPopup', boardId, userName, userEmail);
+    console.log('boardMemberActionPopup', boardId, userName, userEmail, currentUserCanEdit);
     const [editPermissions, setEditPermissions] = useState(false);
     //클릭한 마우스 위치 가지고 있을 수 있는 const 지정 
     const [positions, setPositions] = useState({positionX:-1, positionY:-1});
@@ -49,13 +50,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
       console.log('handleEditPermissionsClick');
       setEditPermissions(true);
     }
-    const [deleteStep, setDeleteStep]  = useState(false);
-    const handleDeleteClick = () => { 
-      // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
-      console.log('handleDeleteClick');
-      setDeleteStep(true);
-      
-    }
+
     const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.currentTarget.style.background = 'rgba(9, 30, 66, 0.08)';
       e.currentTarget.style.color = '#092d42';
@@ -66,12 +61,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
       e.currentTarget.style.color = '#6b808c';
     };
     
-    const onConfirm = ()=>{
 
-    };
-    const onBack = () =>{
-
-    };
     return (
         <div className={classNames(styles.overlay)} > 
             <div className={styles.modal} ref={wrapperRef} >
@@ -122,7 +112,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
                 }}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                onClick={handleDeleteClick}
+                onClick={()=> handleDeleteClick(true)}
               />
             )
           : currentUserCanEdit === "editor" && (
@@ -142,7 +132,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
                 }}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                onClick={handleDeleteClick}
+                onClick={()=>handleDeleteClick(true)}
               />
           ) }
         {editPermissions&&
@@ -150,12 +140,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
         <EditPermissions boardId={boardId} userId={userId} canEdit={canEdit}/>
         </div>
         }
-        {
-          deleteStep&&
-          <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
-          <DeleteStep title={t('common.leaveBoardTitle')} content={t('common.leaveBoardContent')} buttonContent={t('action.leaveBoardButton')} onConfirm={onConfirm}  onBack={onBack} />
-        </div>
-        }
+
         </div>
         </div>
     );

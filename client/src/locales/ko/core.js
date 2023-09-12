@@ -73,6 +73,7 @@ const core = {
       showDetails: '자세히 보기',
       subscribe: '구독',
       unsubscribe: '구독 취소',
+      leaveBoardButton: '보드에서 나가기',
     }
   },
 };
