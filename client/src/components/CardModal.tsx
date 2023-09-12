@@ -161,6 +161,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
           dueDate : date_string,
         };
         setCurrentCard(updatedCard);
+        setDueDate(date_string);
       })
       .catch((message)=>{
         console.log('Fail to update due date of card', message);

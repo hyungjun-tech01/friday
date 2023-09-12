@@ -7,8 +7,8 @@ const core = {
     date: 'yyyy/M/d',
     time: 'HH:mm',
     dateTime: '$t(format:date) $t(format:time)',
-    longDate: 'MMMMd일',
-    longDateTime: "MMMMd'일 ' HH:MM",
+    longDate: 'MM월dd일',
+    longDateTime: "MM'월'dd'일 ' HH:mm",
   },
 
   translation: {

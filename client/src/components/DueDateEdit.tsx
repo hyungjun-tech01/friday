@@ -130,8 +130,7 @@ const DueDateEdit = ({ children, defaultValue, onUpdate }:IDueDateEidtProps) => 
             on="click"
             open={isOpened}
             trigger={trigger}
-            position="bottom left"
-            wide >
+            position="bottom left" >
             <Popup.Header>
                 {t('common.editDueDate', {
                 context: 'title',

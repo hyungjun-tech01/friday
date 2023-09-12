@@ -10,7 +10,6 @@ import Path from './constants/Paths';
 import 'react-datepicker/dist/react-datepicker.css';
 import './styles.module.scss';
 
-// import 'react-datepicker/dist/react-datepicker.css';
 // import 'photoswipe/dist/photoswipe.css';
 // import 'easymde/dist/easymde.min.css';
 
