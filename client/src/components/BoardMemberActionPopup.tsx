@@ -54,7 +54,6 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
       // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
       console.log('handleDeleteClick');
       setDeleteStep(true);
-      
     }
     const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.currentTarget.style.background = 'rgba(9, 30, 66, 0.08)';
