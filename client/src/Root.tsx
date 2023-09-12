@@ -7,7 +7,7 @@ import SampleTest from './routes/SampleTest';
 import Path from './constants/Paths';
 
 //import styled from "styled-components";
-
+import 'react-datepicker/dist/react-datepicker.css';
 import './styles.module.scss';
 
 // import 'react-datepicker/dist/react-datepicker.css';
