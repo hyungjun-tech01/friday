@@ -7,8 +7,8 @@ const core = {
     date: 'yyyy/M/d',
     time: 'HH:mm',
     dateTime: '$t(format:date) $t(format:time)',
-    longDate: 'MMMMd일',
-    longDateTime: "MMMMd'일 ' HH:MM",
+    longDate: 'MM월dd일',
+    longDateTime: "MM'월'dd'일 ' HH:mm",
   },
 
   translation: {
@@ -20,9 +20,11 @@ const core = {
       createBoard_title: '보드 명칭을 입력하세요.',
       createNewOneOrSelectExistingOne:'새 항목을 만들거나 기존 항목을 선택하세요.',
       createProject: '프로젝트 생성',
+      date: '날짜',
       description: '설명',
       dueDate: '기한',
       EMailOrUserName: '이메일 주소',
+      editDueDate: '완료일 변경',
       enterCardTitle: '항목카드명을 입력하세요.',
       enterDescription: '상세 설명을 입력하세요.',
       enterListTitle: '리스트 명을 입력',
@@ -43,6 +45,7 @@ const core = {
       stopwatch: 'Stopwatch',
       tasks: '태스크',
       taskActions: '태스크 편집',
+      time: '시간',
       writeComment: '댓글 추가하기',
     },
     action:{
@@ -65,6 +68,7 @@ const core = {
       editPermissions: '권한 설정',
       leaveButtonContent: '보드에서 나가기',
       move: '이동',
+      remove: '삭제',
       save: '저장',
       showDetails: '자세히 보기',
       subscribe: '구독',

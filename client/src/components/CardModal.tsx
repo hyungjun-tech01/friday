@@ -11,6 +11,7 @@ import Markdown from './Markdown';
 import NameField from './NameField';
 import User from './User'
 import DueDate from './DueDate';
+import DueDateEdit from './DueDateEdit';
 import Stopwatch from './Stopwatch';
 import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
 import { IComment, defaultComment } from "../atoms/atomAction"
@@ -137,6 +138,38 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       })
   }, [card, cookies.UserId, setCurrentCard]);
 
+  //------------------Task Functions------------------
+  const handleDueDateUpdate = useCallback((date:Date | null)=>{
+    if(!date) {
+      console.log("DueDate is null");
+      return;
+    }
+
+    const date_string = date.toString();
+    const modifiedCard : IModifyCard= {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      dueDate: date_string,
+    };
+    const response = apiModifyCard(modifiedCard);
+    response
+      .then((result)=>{
+        console.log('Succeed to update due date of card', result);
+        const updatedCard = {
+          ...card,
+          dueDate : date_string,
+        };
+        setCurrentCard(updatedCard);
+        setDueDate(date_string);
+      })
+      .catch((message)=>{
+        console.log('Fail to update due date of card', message);
+      })
+
+  }, [card, cookies.UserId, setCurrentCard])
+
+  //------------------Task Functions------------------
   const handleTaskCreate = useCallback((data: string) =>{
     console.log("data of new task", data);
     let modifiedCard : IModifyCard = {
@@ -244,6 +277,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       
   }, [tasks, cookies.UserId, card.cardId]);
 
+  //------------------Comment Functions------------------
   const handleCommentsCreate = useCallback((newText:string)=>{
     console.log("data of new comment", newText);
     let modifiedCard : IModifyCard = {
@@ -455,14 +489,13 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                       })}
                     </div>
                     <span className={styles.attachment}>
-                      {/* {canEdit ? (
-                        <DueDateEditPopup defaultValue={dueDate} onUpdate={handleDueDateUpdate}>
-                          <DueDate value={dueDate} />
-                        </DueDateEditPopup>
+                      {canEdit ? (
+                        <DueDateEdit defaultValue={new Date(dueDate)} onUpdate={handleDueDateUpdate}>
+                          <DueDate value={new Date(dueDate)} />
+                        </DueDateEdit>
                       ) : (
-                        <DueDate value={dueDate} />
-                      )} */}
-                      <DueDate value={new Date(dueDate)} size="small"/>
+                        <DueDate value={new Date(dueDate)} />
+                      )}
                     </span>
                   </div>
                 )}

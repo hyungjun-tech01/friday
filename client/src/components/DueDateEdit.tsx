@@ -1,22 +1,24 @@
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef, cloneElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import DatePicker from 'react-datepicker';
 import { Button, Form, Popup, Input } from 'semantic-ui-react';
-import styles from './DueDateEditStep.module.scss';
+import styles from '../scss/DueDateEditPopup.module.scss';
+import { ReactElement } from 'react';
 
 interface IDueDateEidtProps {
+    children: ReactElement;
     defaultValue: Date;
     onUpdate: (date: Date | null) => void;
-    onBack: () => void;
-    onClose: () => void;
+    //onBack: () => void;
+    //onClose: () => void;
 }
-const DueDateEdit = ({ defaultValue, onUpdate, onBack, onClose }:IDueDateEidtProps) => {
+const DueDateEdit = ({ children, defaultValue, onUpdate }:IDueDateEidtProps) => {
     const [t] = useTranslation();
 
     const dateField = useRef<any>(null);
     const timeField = useRef<any>(null);
     const [data, setData] = useState(() => {
-        const date = defaultValue || new Date().setHours(12, 0, 0, 0);
+        const date = new Date(defaultValue) || new Date().setHours(12, 0, 0, 0);
         
         return {
             date: t('format:date', {
@@ -31,13 +33,6 @@ const DueDateEdit = ({ defaultValue, onUpdate, onBack, onClose }:IDueDateEidtPro
     });
 
     const [isOpened, setIsOpened] = useState(false);
-    const handleOpen = useCallback(() => {
-        setIsOpened(true);
-      }, []);
-
-    const handleClose = useCallback(() => {
-        setIsOpened(false);
-    }, []);
 
     const nullableDate = useMemo(() => {
         const date = t('format:date', {
@@ -62,39 +57,39 @@ const DueDateEdit = ({ defaultValue, onUpdate, onBack, onClose }:IDueDateEidtPro
             }),
         }));
         if(timeField.current) {
-            timeField.current.select();
+            timeField.current.focus();
         };
     }, [setData, t]);
 
     const handleSubmit = useCallback(() => {
         if (!nullableDate) {
-          dateField.current.select();
-          return;
+            dateField.current.focus();
+            return;
         }
         const value = new Date(t('format:dateTime', {
             postProcess: 'parseDate',
             value: `${data.date} ${data.time}`,
-          }));
+        }));
       
-          if (Number.isNaN(value.getTime())) {
-            timeField.current.select();
+        if (Number.isNaN(value.getTime())) {
+            timeField.current.focus();
             return;
-          };
-      
-          if (!defaultValue || value.getTime() !== defaultValue.getTime()) {
+        };
+    
+        if (!defaultValue || value.getTime() !== defaultValue.getTime()) {
             onUpdate(value);
-          }
+        }
       
-        onClose();
-    }, []);
+        setIsOpened(false);
+    }, [data]);
 
     const handleClearClick = useCallback(() => {
         if (defaultValue) {
             onUpdate(null);
         }
 
-        onClose();
-    }, [defaultValue, onUpdate, onClose]);
+        setIsOpened(false);
+    }, [defaultValue, onUpdate]);
 
     const handleFieldChange = useCallback((event:any) =>{
         if(event.target === timeField.current) {
@@ -113,47 +108,62 @@ const DueDateEdit = ({ defaultValue, onUpdate, onBack, onClose }:IDueDateEidtPro
                     value: event.target.value,
                 }),
         }))};
+    }, [t]);
+
+    const handleTriggerClick = useCallback(()=>{
+        console.log('handleTriggerClick');
+        setIsOpened(true);
     }, []);
 
+    const trigger = cloneElement(children as ReactElement<any>, {
+        onClick : handleTriggerClick
+    });
+
     useEffect(() => {
-        dateField.current.select();
+        if(dateField.current){
+            dateField.current.focus();
+        }
     }, []);
 
     return (
-        <div>
-        <Popup.Header onBack={onBack}>
-            {t('common.editDueDate', {
-            context: 'title',
-            })}
-        </Popup.Header>
-        <Popup.Content>
-            <Form onSubmit={handleSubmit}>
-            <div className={styles.fieldWrapper}>
-                <div className={styles.fieldBox}>
-                <div className={styles.text}>{t('common.date')}</div>
-                <Input ref={dateField} name="date" value={data.date} onChange={handleFieldChange} />
-                </div>
-                <div className={styles.fieldBox}>
-                <div className={styles.text}>{t('common.time')}</div>
-                <Input ref={timeField} name="time" value={data.time} onChange={handleFieldChange} />
-                </div>
-            </div>
-            <DatePicker
-                inline
-                disabledKeyboardNavigation
-                selected={nullableDate}
-                onChange={handleDatePickerChange}
-            />
-            <Button positive content={t('action.save')} />
-            </Form>
-            <Button
-            negative
-            content={t('action.remove')}
-            className={styles.deleteButton}
-            onClick={handleClearClick}
-            />
-        </Popup.Content>
-      </div>
+        <Popup
+            on="click"
+            open={isOpened}
+            trigger={trigger}
+            position="bottom left" >
+            <Popup.Header>
+                {t('common.editDueDate', {
+                context: 'title',
+                })}
+            </Popup.Header>
+            <Popup.Content>
+                <Form onSubmit={handleSubmit}>
+                    <div className={styles.fieldWrapper}>
+                        <div className={styles.fieldBox}>
+                            <div className={styles.text}>{t('common.date')}</div>
+                            <Input ref={dateField} name="date" value={data.date} onChange={handleFieldChange} />
+                        </div>
+                        <div className={styles.fieldBox}>
+                            <div className={styles.text}>{t('common.time')}</div>
+                            <Input ref={timeField} name="time" value={data.time} onChange={handleFieldChange} />
+                        </div>
+                    </div>
+                    <DatePicker
+                        inline
+                        disabledKeyboardNavigation
+                        selected={nullableDate}
+                        onChange={handleDatePickerChange}
+                    />
+                    <Button positive content={t('action.save')} />
+                </Form>
+                <Button
+                    negative
+                    content={t('action.remove')}
+                    className={styles.deleteButton}
+                    onClick={handleClearClick}
+                />
+            </Popup.Content>
+        </Popup>
     );
 }
 

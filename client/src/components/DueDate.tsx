@@ -1,6 +1,5 @@
 import upperFirst from 'lodash/upperFirst';
 import classNames from 'classnames';
-import formatDate from 'date-fns/format';
 import { useTranslation } from 'react-i18next';
 
 import styles from '../scss/DueDate.module.scss';
@@ -22,6 +21,7 @@ interface IDueDateProps {
 
 const DueDate = ({ value, size="medium", isDisabled=false, onClick=undefined }:IDueDateProps) => {
   const [t] = useTranslation();
+  console.log("DueDate - Value : ", value);
 
   const contentNode = (
     <span
