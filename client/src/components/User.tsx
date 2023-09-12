@@ -10,37 +10,32 @@ interface IUserProps{
     userEmail?:string;
     avatarUrl : string | undefined;
     canEdit?: string;
-    size ?: string;
+    size ?: UserSize;
     onClick ?: boolean | undefined;
     showAnotherPopup? : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) => void;
 }
-const SIZES = {
-    TINY: 'tiny',
-    SMALL: 'small',
-    MEDIUM: 'medium',
-    LARGE: 'large',
-    MASSIVE: 'massive',
-  };
-  
-  const COLORS = [
-    'emerald',
-    'peter-river',
-    'wisteria',
-    'carrot',
-    'alizarin',
-    'turquoise',
-    'midnight-blue',
-  ];
 
-  const getColor = (name:any) => {
-    let sum = 0;
-    for (let i = 0; i < name.length; i += 1) {
-      sum += name.charCodeAt(i);
-    }
+type UserSize = "tiny" | 'small' | 'medium' | 'large' | 'massive';
   
-    return COLORS[sum % COLORS.length];
-  };
-function User({userId, userName, userEmail, avatarUrl, canEdit, size, onClick, showAnotherPopup}:IUserProps){
+const COLORS = [
+  'emerald',
+  'peter-river',
+  'wisteria',
+  'carrot',
+  'alizarin',
+  'turquoise',
+  'midnight-blue',
+];
+
+const getColor = (name:any) => {
+  let sum = 0;
+  for (let i = 0; i < name.length; i += 1) {
+    sum += name.charCodeAt(i);
+  }
+
+  return COLORS[sum % COLORS.length];
+};
+function User({userId, userName, userEmail, avatarUrl=undefined, canEdit, size='medium', onClick=undefined, showAnotherPopup}:IUserProps){
     const contentNode = (
         <span
           title={userName}

@@ -5,11 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import styles from '../scss/DueDate.module.scss';
 
-const SIZES = {
-  TINY: 'tiny',
-  SMALL: 'small',
-  MEDIUM: 'medium',
-};
+type DueDateSize = 'tiny' | 'small' | 'medium';
 
 const FORMATS = {
   tiny: 'longDate',
@@ -18,13 +14,13 @@ const FORMATS = {
 };
 
 interface IDueDateProps {
-  value : string;
-  size?: string;
+  value: Date;
+  size?: DueDateSize;
   isDisabled?: boolean;
   onClick?: () => void;
 }
 
-const DueDate = ({ value, size=SIZES.MEDIUM, isDisabled=false, onClick=undefined }:IDueDateProps) => {
+const DueDate = ({ value, size="medium", isDisabled=false, onClick=undefined }:IDueDateProps) => {
   const [t] = useTranslation();
 
   const contentNode = (
@@ -35,11 +31,10 @@ const DueDate = ({ value, size=SIZES.MEDIUM, isDisabled=false, onClick=undefined
         onClick && styles.wrapperHoverable,
       )}
     >
-      {/*t(`format:${FORMATS[size]}`, {
+      {t(`format:${FORMATS[size]}`, {
         value,
         postProcess: 'formatDate',
-      })*/
-      formatDate(new Date(value), " M'월'd'일 ' HH:MM")}
+      })}
     </span>
   );
 

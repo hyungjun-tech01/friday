@@ -5,22 +5,18 @@ import { formatStopwatch } from '../utils/stopwatch';
 
 import styles from '../scss/Stopwatch.module.scss';
 
-const SIZES = {
-  TINY: 'tiny',
-  SMALL: 'small',
-  MEDIUM: 'medium',
-};
+type StopWatchSize = "tiny" | "small" | "medium";
 
 interface IStopwatchProps {
   as?: ElementType;
   startedAt?: Date;
   total: number;
-  size?: string;
+  size?: StopWatchSize;
   isDisabled?: boolean;
   onClick?: () => void;
 }
 
-const Stopwatch = ({ as='button', startedAt=undefined, total, size=SIZES.MEDIUM
+const Stopwatch = ({ as='button', startedAt=undefined, total, size="medium"
   , isDisabled=false, onClick=undefined }:IStopwatchProps) => {
   const [prevStartedAt, setPrevStartedAt] = useState(startedAt);
   const [doUpdate, setDoUpdate] = useState(false);
@@ -28,7 +24,7 @@ const Stopwatch = ({ as='button', startedAt=undefined, total, size=SIZES.MEDIUM
   const forceUpdate = useCallback(()=>{
     setDoUpdate(!doUpdate);
   }, [doUpdate]);
-  
+
   const interval = useRef<any>(null);
 
   const start = useCallback(() => {

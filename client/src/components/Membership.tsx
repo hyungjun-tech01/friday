@@ -38,7 +38,7 @@ function Membership({boardId, members}:IMembershipProps){
                 {/* 보드에 접근 가능한 사용자 */}
                 {members[0].users.map((user)=>(
                     <span key={user.userId} className={styles.user}>
-                        <User userId={user.userId} onClick={true} size={"Small"} 
+                        <User userId={user.userId} onClick={true} size="small"
                             showAnotherPopup={setBoardMemberActionUserId} 
                             userName={user.userName} 
                             userEmail={user.userEmail}
