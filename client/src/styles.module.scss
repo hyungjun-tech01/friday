@@ -1,5 +1,5 @@
 :global {
-    #app {
+    #root {
       background: #22252a;
   
       .react-datepicker {
@@ -141,7 +141,7 @@
     }
   }
   
-  :global(#app) {
+  :global(#root) {
     /* Backgrounds */
   
     .backgroundBerryRed {

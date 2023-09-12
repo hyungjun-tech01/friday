@@ -138,7 +138,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       })
   }, [card, cookies.UserId, setCurrentCard]);
 
-  //------------------Task Functions------------------
+  //------------------DueDate Functions------------------
   const handleDueDateUpdate = useCallback((date:Date | null)=>{
     if(!date) {
       console.log("DueDate is null");

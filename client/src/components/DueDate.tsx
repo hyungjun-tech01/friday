@@ -21,7 +21,6 @@ interface IDueDateProps {
 
 const DueDate = ({ value, size="medium", isDisabled=false, onClick=undefined }:IDueDateProps) => {
   const [t] = useTranslation();
-  console.log("DueDate - Value : ", value);
 
   const contentNode = (
     <span

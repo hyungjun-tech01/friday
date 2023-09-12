@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState, useRef, cloneElement } from 
 import { useTranslation } from 'react-i18next';
 import DatePicker from 'react-datepicker';
 import { Button, Form, Popup, Input } from 'semantic-ui-react';
-import styles from '../scss/DueDateEditPopup.module.scss';
+import styles from '../scss/DueDateEdit.module.scss';
 import { ReactElement } from 'react';
 
 interface IDueDateEidtProps {
@@ -57,13 +57,13 @@ const DueDateEdit = ({ children, defaultValue, onUpdate }:IDueDateEidtProps) => 
             }),
         }));
         if(timeField.current) {
-            timeField.current.focus();
+            timeField.current.select();
         };
     }, [setData, t]);
 
     const handleSubmit = useCallback(() => {
         if (!nullableDate) {
-            dateField.current.focus();
+            dateField.current.select();
             return;
         }
         const value = new Date(t('format:dateTime', {
@@ -72,7 +72,7 @@ const DueDateEdit = ({ children, defaultValue, onUpdate }:IDueDateEidtProps) => 
         }));
       
         if (Number.isNaN(value.getTime())) {
-            timeField.current.focus();
+            timeField.current.select();
             return;
         };
     
@@ -92,36 +92,24 @@ const DueDateEdit = ({ children, defaultValue, onUpdate }:IDueDateEidtProps) => 
     }, [defaultValue, onUpdate]);
 
     const handleFieldChange = useCallback((event:any) =>{
-        if(event.target === timeField.current) {
-            setData((prevData) => ({
-                ...prevData,
-                date: t('format:date', {
-                    postProcess: 'formatDate',
-                    value: event.target.value,
-                }),
-        }))}
-        else if(event.target === dateField.current) {
-            setData((prevData) => ({
-                ...prevData,
-                time: t('format:time', {
-                    postProcess: 'formatDate',
-                    value: event.target.value,
-                }),
-        }))};
+        console.log("handleFieldChange : ", event);
+        setData((prevData) => ({
+            ...prevData,
+            [event.target.name]: event.target.value,
+        }))
     }, [t]);
 
     const handleTriggerClick = useCallback(()=>{
-        console.log('handleTriggerClick');
-        setIsOpened(true);
-    }, []);
+        setIsOpened(!isOpened);
+    }, [isOpened]);
 
     const trigger = cloneElement(children as ReactElement<any>, {
         onClick : handleTriggerClick
     });
 
     useEffect(() => {
-        if(dateField.current){
-            dateField.current.focus();
+        if(dateField.current) {
+            dateField.current.select();
         }
     }, []);
 
