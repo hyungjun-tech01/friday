@@ -4,6 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useQuery } from "react-query";
+import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
+import { IComment, defaultComment } from "../atoms/atomAction"
+import { ILabel } from '../atoms/atomLabel';
+import { ICard, atomCurrentCard, defaultCard, IModifyCard, defaultModifyCard } from '../atoms/atomCard';
+import { ITask, defaultTask } from '../atoms/atomTask';
+import { IMembership } from '../atoms/atomsUser';
+import { IStopwatch, defaultStopwatch } from '../atoms/atomStopwatch';
 import Activities from "./Activities";
 import DescriptionEdit from "./DescriptionEdit";
 import Tasks from "./Tasks"
@@ -13,24 +20,12 @@ import User from './User'
 import DueDate from './DueDate';
 import DueDateEdit from './DueDateEdit';
 import Stopwatch from './Stopwatch';
-import { apiGetInfosByCardId, apiModifyCard } from "../api/card"
-import { IComment, defaultComment } from "../atoms/atomAction"
-import { ILabel } from '../atoms/atomLabel';
-import { ICard, atomCurrentCard, defaultCard, IModifyCard, defaultModifyCard } from '../atoms/atomCard';
-import { ITask, defaultTask } from '../atoms/atomTask';
-import { IMembership } from '../atoms/atomsUser';
+import StopwatchEdit from './StopwatchEdit';
 
 import classNames from 'classnames';
 import styles from "../scss/CardModal.module.scss";
+import { startStopwatch, stopStopwatch } from "../utils/stopwatch";
 
-interface IStopWatch {
-  total: number;
-  startedAt: Date | undefined;
-}
-
-const defaultStopWatch: IStopWatch = {
-  total: 0, startedAt: undefined
-}
 interface ICardModalProps{
   card: ICard;
   canEdit: boolean;
@@ -47,8 +42,8 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [comments, setComments] = useState<IComment[]>([]);
   // const [actions, setActions] = useState<IAction[]>([]);
-  const [dueDate, setDueDate] = useState<string>('');
-  const [stopwatch, setStopwatch] = useState<IStopWatch>(defaultStopWatch);
+  const [dueDate, setDueDate] = useState<string | null>('');
+  const [stopwatch, setStopwatch] = useState<IStopwatch | null>(defaultStopwatch);
   const [cookies] = useCookies(['UserId','UserName', 'AuthToken']);
 
   const {isLoading, data, isSuccess} = useQuery<any>(
@@ -67,8 +62,8 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
             setDueDate(data[0].dueDate);
           };
           if(data[0].stopwatch) {
-            const stopwatch_input:IStopWatch = {
-              total: data[0].stopwatch.total,
+            const stopwatch_input:IStopwatch = {
+              total: parseInt(data[0].stopwatch.total),
               startedAt: new Date(data[0].stopwatch.startedAt),
             }
             setStopwatch(stopwatch_input);
@@ -138,7 +133,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
       })
   }, [card, cookies.UserId, setCurrentCard]);
 
-  //------------------DueDate Functions------------------
+  //------------------Due Date Functions------------------
   const handleDueDateUpdate = useCallback((date:Date | null)=>{
     if(!date) {
       console.log("DueDate is null");
@@ -146,7 +141,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     }
 
     const date_string = date.toString();
-    const modifiedCard : IModifyCard= {
+    const modifiedCard : IModifyCard = {
       ...defaultModifyCard,
       cardId: card.cardId,
       userId: cookies.UserId,
@@ -167,7 +162,46 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
         console.log('Fail to update due date of card', message);
       })
 
-  }, [card, cookies.UserId, setCurrentCard])
+  }, [card, cookies.UserId, setCurrentCard]);
+
+  //------------------Stopwatch Functions------------------
+  const handleStopwatchUpdate = useCallback((stopwatch: IStopwatch | null) => {
+    const modifiedCard : IModifyCard= {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      stopwatch: {
+        total: stopwatch ? stopwatch.total.toString() : "-1",
+        startedAt: stopwatch
+          ? (stopwatch.startedAt
+              ? stopwatch.startedAt.toString()
+              : null)
+          : null,
+      },
+    };
+    const response = apiModifyCard(modifiedCard);
+    response
+      .then((result)=>{
+        console.log('Succeed to update stopwatch of card', result);
+        const updatedCard = {
+          ...card,
+          stopwatch : stopwatch,
+        };
+        setCurrentCard(updatedCard);
+        setStopwatch(stopwatch);
+      })
+      .catch((message)=>{
+        console.log('Fail to update stopwatch of card', message);
+      })
+  }, [card, cookies.UserId, setCurrentCard]);
+
+  const handleToggleStopwatchClick = useCallback(()=>{
+    if(stopwatch?.startedAt) {
+      handleStopwatchUpdate(stopStopwatch(stopwatch));
+    } else {
+      handleStopwatchUpdate(startStopwatch(stopwatch));
+    }
+  }, [handleStopwatchUpdate, stopwatch]);
 
   //------------------Task Functions------------------
   const handleTaskCreate = useCallback((data: string) =>{
@@ -507,21 +541,20 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
                       })}
                     </div>
                     <span className={styles.attachment}>
-                      {/* {canEdit ? (
-                        <StopwatchEditPopup
+                      {canEdit ? (
+                        <StopwatchEdit
                           defaultValue={stopwatch}
                           onUpdate={handleStopwatchUpdate}
                         >
                           <Stopwatch startedAt={stopwatch.startedAt} total={stopwatch.total} />
-                        </StopwatchEditPopup>
+                        </StopwatchEdit>
                       ) : (
                         <Stopwatch startedAt={stopwatch.startedAt} total={stopwatch.total} />
-                      )} */}
-                      <Stopwatch startedAt={stopwatch.startedAt} total={stopwatch.total} />
+                      )}
                     </span>
                     {canEdit && (
                       <button
-                        //onClick={handleToggleStopwatchClick}
+                        onClick={handleToggleStopwatchClick}
                         type="button"
                         className={classNames(styles.attachment, styles.dueDate)}
                       >
