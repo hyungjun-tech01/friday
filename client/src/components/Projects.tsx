@@ -14,7 +14,7 @@ import Paths from "../constants/Paths";
 
 function Projects(){
     // atom에서 data 가지고 옴 .   
-    const [projects, setProjects] = useRecoilState<IProject[]>(atomMyProject); 
+        const [projects, setProjects] = useRecoilState<IProject[]>(atomMyProject); 
     const [showProjectAddModal, setShowProjectAddModal] = useState(false);
     // login 하면 가지고 있을 것.  const [user, setUser] = useRecoilState<IUser>(atomUser); 
     const userId = "967860418955445249";

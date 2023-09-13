@@ -26,6 +26,11 @@ export interface ICreateCard{
     cardName:string;
 }
 
+interface IStopwatch{
+    total : number |null;
+    startedAt:string | null;
+}
+
 export interface IModifyCard{
    cardId : string ;     // number 
     userId : string;       // number 
@@ -34,6 +39,7 @@ export interface IModifyCard{
     cardName :  string |null ;
     dueDate :  string |null ;
     position : string |null ;
+    stopwatch : IStopwatch;
     cardMembershipActionType : 'ADD'|'DELETE'|null; 
     cardMembershipId : string |null ;
     cardMembershipUserId : string |null ;
@@ -66,6 +72,7 @@ export const defaultModifyCard:IModifyCard = {
     cardName :null, 
     dueDate :null, 
     position :null,
+    stopwatch : {total:0,startedAt:null},
     cardMembershipActionType :null,
     cardMembershipId :null,
     cardMembershipUserId :null,
