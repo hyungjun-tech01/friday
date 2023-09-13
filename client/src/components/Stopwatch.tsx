@@ -9,14 +9,14 @@ type StopWatchSize = "tiny" | "small" | "medium";
 
 interface IStopwatchProps {
   as?: ElementType;
-  startedAt?: Date;
+  startedAt: Date | null;
   total: number;
   size?: StopWatchSize;
   isDisabled?: boolean;
   onClick?: () => void;
 }
 
-const Stopwatch = ({ as='button', startedAt=undefined, total, size="medium"
+const Stopwatch = ({ as='button', startedAt=null, total, size="medium"
   , isDisabled=false, onClick=undefined }:IStopwatchProps) => {
   const [prevStartedAt, setPrevStartedAt] = useState(startedAt);
   const [doUpdate, setDoUpdate] = useState(false);
