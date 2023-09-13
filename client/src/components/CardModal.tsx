@@ -42,8 +42,8 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [comments, setComments] = useState<IComment[]>([]);
   // const [actions, setActions] = useState<IAction[]>([]);
-  const [dueDate, setDueDate] = useState<string | null>('');
-  const [stopwatch, setStopwatch] = useState<IStopwatch | null>(defaultStopwatch);
+  const [dueDate, setDueDate] = useState<string | null>(null);
+  const [stopwatch, setStopwatch] = useState<IStopwatch | null>(null);
   const [cookies] = useCookies(['UserId','UserName', 'AuthToken']);
 
   const {isLoading, data, isSuccess} = useQuery<any>(
@@ -51,7 +51,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     ()=>apiGetInfosByCardId(card.cardId),
     {
       onSuccess: data => {
-          console.log("[CardModal] Called Card Info", data[0].stopwatch);
+          console.log("[CardModal] Called Card Info");
           if(data[0].cardMembership) {
             setMemberships(data[0].cardMembership);
           };
@@ -179,6 +179,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
           : null,
       },
     };
+    console.log("check value : ", modifiedCard.stopwatch);
     const response = apiModifyCard(modifiedCard);
     response
       .then((result)=>{
