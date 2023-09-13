@@ -21,9 +21,7 @@ const createData = (stopwatch: IStopwatch) => {
             seconds: "0",
         };
     };
-    console.log("createData / staredAt :", stopwatch.startedAt);
     const { hours, minutes, seconds } = getStopwatchParts(stopwatch);
-    console.log("createData / output :", hours, minutes, seconds);
 
     return {
         hours: `${hours}`,
