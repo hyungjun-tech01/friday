@@ -11,15 +11,15 @@ import {useEffect} from 'react';
      const card : IModifyCard = {...defaultModifyCard, 
        cardId:'1061970265900057818', 
        userId:'967860418955445249',
-       cardCommentId:'1064146980315333892',
-       cardCommentActionType:'DELETE',
-       cardCommentText:null,
+       cardActionType : 'UPDATE',
+       description : 'stopwatch update11',
+       stopwatch :{total:'1000', startedAt:'2023.09.01'}
      };
      console.log(card);
      const response = await apiModifyCard(card);
      console.log('moddify response', response);
    }    
- ///// sample code 
+ ///// sample code         stopwatch :{total:'1000', startedAt:'2023.09.01'}
 
 
 function SampleTest(){
