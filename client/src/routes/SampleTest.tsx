@@ -13,7 +13,7 @@ import {useEffect} from 'react';
        userId:'967860418955445249',
        cardActionType : 'UPDATE',
        description : 'stopwatch update 555',
-       stopwatch :{total:'-1', startedAt:null}
+       stopwatch :{total:'-1', startedAt:'2023.09.01'}
      };
      console.log(card);
      const response = await apiModifyCard(card);
