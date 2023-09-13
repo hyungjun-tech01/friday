@@ -56,7 +56,7 @@ const CardModal = ({card, canEdit}:ICardModalProps) => {
     ()=>apiGetInfosByCardId(card.cardId),
     {
       onSuccess: data => {
-          console.log("[CardModal] Called Card Info");
+          console.log("[CardModal] Called Card Info", data[0].stopwatch);
           if(data[0].cardMembership) {
             setMemberships(data[0].cardMembership);
           };

@@ -69,7 +69,16 @@ BEGIN
 	if(i_card_action_type is not null) then
 	   if(i_card_action_type = 'UPDATE') then 
 	   	-- card_name, description, due_date, position 이 null 이면 update 하지 않는다.
-		if(i_stopwatch->>'total' is not null) then
+		if(i_stopwatch->>'total' = '-1') then
+			update card
+				set name = COALESCE(i_card_name, name), 
+				description = COALESCE(i_description, description), 
+				due_date = to_date(COALESCE(i_due_date, due_date::text), 'YYYY.MM.DD'),
+				position = COALESCE(i_position::double precision, position) ,
+				stopwatch = null,
+				updated_at = now()
+			where id = i_card_id::bigint;
+		elseif(i_stopwatch->>'total' is not null) then
 			update card
 				set name = COALESCE(i_card_name, name), 
 				description = COALESCE(i_description, description), 
