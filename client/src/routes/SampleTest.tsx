@@ -13,7 +13,7 @@ import {useEffect} from 'react';
        userId:'967860418955445249',
        cardActionType : 'UPDATE',
        description : 'stopwatch update 886555',
-       dueDate : '-1',
+       dueDate : '2023-10-10 09:23:56',
 //       stopwatch :{total:'1000', startedAt:'2023.09.01'}
      };
      console.log(card);

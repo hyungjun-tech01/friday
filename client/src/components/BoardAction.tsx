@@ -24,12 +24,12 @@ function BoardAction({boardId}:IBoardActionProp){
         }
 
     }
-    useEffect(()=>{checkEdit()},[boardId]);
+    useEffect(()=>{checkEdit()},[boardId, isMemberLoading]);
     return(
         <div className={styles.wrapper}>
             <div className={styles.actions}>
                 <div className={styles.action}>
-                    {members !== undefined &&<Membership members={members} boardId={boardId}/>}
+                    {members !== undefined &&<Membership members={members} boardId={boardId} isMemberLoading={isMemberLoading} setIsMemberLoading={setIsMemberLoading}/>}
             {/*<Filters />*/}
                 </div>
             </div>

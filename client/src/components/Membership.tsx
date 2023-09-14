@@ -9,10 +9,13 @@ import {useCookies} from "react-cookie";
 import DeleteStep from "./DeleteStep";
 import {useTranslation} from "react-i18next";
 import {apiCreateBoard} from "../api/board";
+import { Value } from "sass";
 
 interface IMembershipProps {
     boardId: string;
     members?: IBoardMember[];
+    isMemberLoading : boolean;
+    setIsMemberLoading: (value:boolean) => void;
   }
 interface IboardMemberActionUserId{
     userId:string;
@@ -23,7 +26,7 @@ interface IboardMemberActionUserId{
     positionX:number;
     positionY:number;
 }
-function Membership({boardId, members}:IMembershipProps){
+function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMembershipProps){
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [positions, setPositions] = useState({positionX:-1, positionY:-1})
@@ -56,6 +59,7 @@ function Membership({boardId, members}:IMembershipProps){
             if(response.boardId){  // 성공하면 
                 setDeleteStep(false); // 
                 setBoardMemberAction(true);
+                setIsMemberLoading(!isMemberLoading);
             }else if(response.message){
                 setDeleteStep(true);  // 에러 메세지를 표현 해 주어야 하나??
             }else{

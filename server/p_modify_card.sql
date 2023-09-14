@@ -94,7 +94,7 @@ BEGIN
 		update card
 			set name = COALESCE(i_card_name, name), 
 			description = COALESCE(i_description, description), 
-			due_date = to_date(v_null_udpate_due_date, 'YYYY.MM.DD'),
+			due_date = to_timestamp(v_null_udpate_due_date, 'YYYY-MM-DD HH24:MI:SS'),
 			position = COALESCE(i_position::double precision, position) ,
 			stopwatch = v_null_udpate_stopwatch,
 			updated_at = now()

@@ -39,7 +39,6 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
     
     const [t] = useTranslation();
     const [dummyState, setDummyState]= useState({userId:"",userName:"", userEmail:"", avatarUrl:"", positionX:-1, positionY:-1});
-    console.log('boardMemberActionPopup', boardId, userName, userEmail, currentUserCanEdit);
     const [editPermissions, setEditPermissions] = useState(false);
     //클릭한 마우스 위치 가지고 있을 수 있는 const 지정 
     const [positions, setPositions] = useState({positionX:-1, positionY:-1});
