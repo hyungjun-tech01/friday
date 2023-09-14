@@ -12,8 +12,9 @@ import {useEffect} from 'react';
        cardId:'1061970265900057818', 
        userId:'967860418955445249',
        cardActionType : 'UPDATE',
-       description : 'stopwatch update 555',
-       stopwatch :{total:'-1', startedAt:'2023.09.01'}
+       description : 'stopwatch update 886555',
+       dueDate : '-1',
+//       stopwatch :{total:'1000', startedAt:'2023.09.01'}
      };
      console.log(card);
      const response = await apiModifyCard(card);

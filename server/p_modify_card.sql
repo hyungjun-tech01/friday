@@ -65,10 +65,42 @@ vv_comment_id bigint default null;
 vv_comment_created_at timestamp without time zone default null;
 vv_comment_updated_at timestamp without time zone  default null;
 v_task_count double precision default 0;
+v_null_udpate_stopwatch jsonb;
+v_null_udpate_due_date text;
 BEGIN
 	if(i_card_action_type is not null) then
 	   if(i_card_action_type = 'UPDATE') then 
-	   	-- card_name, description, due_date, position 이 null 이면 update 하지 않는다.
+
+		if(i_stopwatch->>'total' is null) then
+			select stopwatch into v_null_udpate_stopwatch 
+			from card t where t.id = i_card_id::bigint;
+		elseif(i_stopwatch->>'total' = '-1') then
+		   v_null_udpate_stopwatch := null;
+		else 
+		   v_null_udpate_stopwatch := i_stopwatch;
+		end if;
+
+		if(i_due_date is null) then
+			select due_date::text into v_null_udpate_due_date
+			from card t where t.id = i_card_id::bigint;		
+		elseif(i_due_date = '-1') then
+		   v_null_udpate_due_date := null;
+		else 
+			v_null_udpate_due_date := i_due_date;
+		end if;
+
+	   	-- card_name, description, due_date, position, stopwatch 이 null 이면 update 하지 않는다.
+
+		update card
+			set name = COALESCE(i_card_name, name), 
+			description = COALESCE(i_description, description), 
+			due_date = to_date(v_null_udpate_due_date, 'YYYY.MM.DD'),
+			position = COALESCE(i_position::double precision, position) ,
+			stopwatch = v_null_udpate_stopwatch,
+			updated_at = now()
+		where id = i_card_id::bigint;
+
+		/*
 		if(i_stopwatch->>'total' is not null) then
 		    if(i_stopwatch->>'total' = '-1') then
 				update card
@@ -98,6 +130,7 @@ BEGIN
 			updated_at = now()
 			where id = i_card_id::bigint;
 		end if;
+		*/
 			
 	   elsif (i_card_action_type = 'DELETE') then
 		delete from card_label t where t.card_id = i_card_id::bigint;
