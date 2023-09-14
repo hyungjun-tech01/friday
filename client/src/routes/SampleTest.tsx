@@ -8,17 +8,28 @@ import {useEffect} from 'react';
 
  // Update comment Sample 
   const cardModifySample = async() => {
+    const TIME_ZONE = 9 * 60 * 60 * 1000; // 9시간
+    const d = new Date();
+
+    const date = new Date(d.getTime() + TIME_ZONE).toISOString().split('T')[0];
+    const time = d.toTimeString().split(' ')[0];
+    const date_time = date + ' ' + time;
+//    console.log(date + ' ' + time);
+
      const card : IModifyCard = {...defaultModifyCard, 
        cardId:'1061970265900057818', 
        userId:'967860418955445249',
        cardActionType : 'UPDATE',
        description : 'stopwatch update 886555',
-       dueDate : '2023-10-10 09:23:56',
+       dueDate : date_time,
 //       stopwatch :{total:'1000', startedAt:'2023.09.01'}
      };
-     console.log(card);
+     console.log(card); 
      const response = await apiModifyCard(card);
      console.log('moddify response', response);
+     const dbTimestamp = new Date('2023-09-14T08:24:44.000Z');
+     console.log(dbTimestamp.toLocaleString());
+
    }    
  ///// sample code         stopwatch :{total:'1000', startedAt:'2023.09.01'}
 
