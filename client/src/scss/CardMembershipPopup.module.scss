@@ -1,35 +1,23 @@
 //:global(#app) {
-  .closeButton {
-    right: 5px;
-    background: #ffffff;
-    &:hover {
-      background: #cbcccc;
+  .menu {
+    margin: 8px auto 0;
+    max-height: 60vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    width: 100%;
+
+    &::-webkit-scrollbar {
+      width: 5px;
     }
-  }
 
-  .deleteButton {
-    bottom: 12px;
-    box-shadow: 0 1px 0 #cbcccc;
-    position: absolute;
-    right: 12px;
-  }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
-  .fieldBox {
-    display: inline-block;
-    margin: 0 4px 12px;
-    width: calc(50% - 8px);
-  }
-
-  .fieldWrapper {
-    margin: 0 -4px;
-  }
-
-  .text {
-    color: #444444;
-    font-size: 12px;
-    font-weight: bold;
-    padding-bottom: 4px;
-    padding-left: 2px;
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+    }
   }
 
   .popupHeader {

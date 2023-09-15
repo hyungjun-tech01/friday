@@ -44,6 +44,7 @@ const core = {
       productName: '마이플래너',
       project: '프로젝트',
       projectManagement: '프로젝트 매니지먼트',
+      searchMembers: '회원을 검색합니다.',
       searchUsers: '아이디로 검색하세요',
       seconds: '초',
       stopwatch: '활동 시간',
