@@ -1,5 +1,12 @@
 import { dequal } from "dequal";
-import { useCallback, useEffect, useRef, useState, ReactElement } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  ReactElement,
+  cloneElement,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Form, Popup, Input } from "semantic-ui-react";
 import {
@@ -14,20 +21,20 @@ import styles from "../scss/StopwatchEdit.module.scss";
 import { IStopwatch } from "../atoms/atomStopwatch";
 
 const createData = (stopwatch: IStopwatch) => {
-    if (!stopwatch) {
-        return {
-            hours: "0",
-            minutes: "0",
-            seconds: "0",
-        };
-    };
-    const { hours, minutes, seconds } = getStopwatchParts(stopwatch);
-
+  if (!stopwatch) {
     return {
-        hours: `${hours}`,
-        minutes: `${minutes}`,
-        seconds: `${seconds}`,
+      hours: "0",
+      minutes: "0",
+      seconds: "0",
     };
+  }
+  const { hours, minutes, seconds } = getStopwatchParts(stopwatch);
+
+  return {
+    hours: `${hours}`,
+    minutes: `${minutes}`,
+    seconds: `${seconds}`,
+  };
 };
 
 interface IStopwatchEditProps {
@@ -36,10 +43,34 @@ interface IStopwatchEditProps {
   onUpdate: (data: IStopwatch | null) => void;
 }
 
-const StopwatchEdit = ({ children,defaultValue, onUpdate }: IStopwatchEditProps) => {
+const StopwatchEdit = ({
+  children,
+  defaultValue,
+  onUpdate,
+}: IStopwatchEditProps) => {
+  // Popup Control Part ---------------------
   const [t] = useTranslation();
-  const [data, setData] = useState(() => createData(defaultValue));
+  const popupRef = useRef<any>(null);
   const [isOpened, setIsOpened] = useState(false);
+
+  // const handleOpen = useCallback(() => {
+  //   setIsOpened(true);
+  // }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpened(false);
+  }, []);
+
+  const handleTriggerClick = useCallback(() => {
+    setIsOpened(!isOpened);
+  }, [isOpened]);
+
+  const trigger = cloneElement(children as ReactElement<any>, {
+    onClick: handleTriggerClick,
+  });
+
+  // Stopwatch Properties ---------------------
+  const [data, setData] = useState(() => createData(defaultValue));
   const [isEditing, setIsEditing] = useState(false);
 
   const hoursField = useRef<any>(null);
@@ -74,8 +105,9 @@ const StopwatchEdit = ({ children,defaultValue, onUpdate }: IStopwatchEditProps)
     }));
   }, []);
 
-  const handleOpenPopup = useCallback(()=>{
+  const handleOpenPopup = useCallback(() => {
     setData(createData(defaultValue));
+    setIsOpened(true);
   }, [defaultValue]);
 
   const handleSubmit = useCallback(() => {
@@ -116,13 +148,9 @@ const StopwatchEdit = ({ children,defaultValue, onUpdate }: IStopwatchEditProps)
     }
   }, [isEditing]);
 
-  return (
-    <Popup
-        on="click"
-        trigger={children}
-        onOpen={handleOpenPopup}
-    >
-      <Popup.Header>
+  const contents = (
+    <>
+      <Popup.Header className={styles.popupHeader}>
         {t("common.editStopwatch", {
           context: "title",
         })}
@@ -198,6 +226,41 @@ const StopwatchEdit = ({ children,defaultValue, onUpdate }: IStopwatchEditProps)
           onClick={handleClearClick}
         />
       </Popup.Content>
+    </>
+  );
+
+  return (
+    <Popup
+      basic
+      // wide
+      ref={popupRef}
+      trigger={trigger}
+      on="click"
+      open={isOpened}
+      position="bottom left"
+      popperModifiers={[
+        {
+          name: "preventOverflow",
+          enabled: true,
+          options: {
+            altAxis: true,
+            padding: 20,
+          },
+        },
+      ]}
+      className={styles.popupWrapper}
+      onOpen={handleOpenPopup}
+      onClose={handleClose}
+    >
+      <div>
+        {/* <div ref={handleContentRef}> */}
+        <Button
+          icon="close"
+          onClick={handleClose}
+          className={styles.popupCloseButton}
+        />
+        {contents}
+      </div>
     </Popup>
   );
 };

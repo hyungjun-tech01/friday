@@ -4,7 +4,7 @@ import BoardMemberActionPopup from "./BoardMemberActionPopup";
 import {Button} from "semantic-ui-react";
 import User from "./User";
 import BoardMemeberAdd from "./BoardMemeberAdd";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import {useCookies} from "react-cookie";
 import DeleteStep from "./DeleteStep";
 import {useTranslation} from "react-i18next";
@@ -67,6 +67,9 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
             }
         }
     };
+    const handleClick = useCallback(()=>{
+        console.log("Temporary function");
+    }, [])
 
     const onBack = () =>{
         setDeleteStep(false);
@@ -78,7 +81,7 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
                 {/* 보드에 접근 가능한 사용자 */}
                 {members[0].users.map((user)=>(
                     <span key={user.userId} className={styles.user}>
-                        <User userId={user.userId} onClick={true} size="small"
+                        <User userId={user.userId} onClick={handleClick} size="small"
                             showAnotherPopup={setBoardMemberActionUserId} 
                             userName={user.userName} 
                             userEmail={user.userEmail}

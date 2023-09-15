@@ -66,7 +66,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
             <div className={styles.modal} ref={wrapperRef} >
               <span>
               <span className={styles.user}>
-                <User userId={userId} onClick = {false} size="large" showAnotherPopup={setDummyState} userName={userName} canEdit={canEdit} avatarUrl={avatarUrl} userEmail={userEmail} />
+                <User userId={userId} size="large" showAnotherPopup={setDummyState} userName={userName} canEdit={canEdit} avatarUrl={avatarUrl} userEmail={userEmail} />
               </span>
               <span className={styles.content}>
                 <div className={styles.name}>{userName}</div>

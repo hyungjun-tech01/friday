@@ -11,7 +11,7 @@ interface IUserProps{
     avatarUrl : string | undefined;
     canEdit?: string;
     size ?: UserSize;
-    onClick ?: boolean | undefined;
+    onClick ?: ()=>void | undefined;
     showAnotherPopup? : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) => void;
 }
 
