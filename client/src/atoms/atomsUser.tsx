@@ -43,9 +43,9 @@ export interface IMembership {
     membershipId: string;
     cardId: string;
     userId: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: string | null;   // delete 'null' later
+    updatedAt: string | null;
     email: string;
     userName: string;
-    avatarUrl: string;
+    avatarUrl: string | null;
 }

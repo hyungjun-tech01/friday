@@ -8,14 +8,14 @@ import CommentItem from './CommentItem'
 
 interface IActivityProps{
   items: IComment[];
-  isDetailsVisible: boolean;
+  //isDetailsVisible: boolean;
   canEdit: boolean;
   onCreate: (data:string) => void;
   onUpdate: (id:string, data:string) => void;
   onDelete: (id:string) => void;
 };
 
-const Activities = ({items, isDetailsVisible, canEdit, onCreate, onUpdate, onDelete} : IActivityProps) => {
+const Activities = ({items, /*isDetailsVisible,*/ canEdit, onCreate, onUpdate, onDelete} : IActivityProps) => {
   const [t] = useTranslation();
 
   // const handleToggleDetailsClick = useCallback(() => {
@@ -47,12 +47,13 @@ const Activities = ({items, isDetailsVisible, canEdit, onCreate, onUpdate, onDel
         <div className={styles.wrapper}>
             <Comment.Group>
               {items.map((item) =>(
-                <CommentItem 
+                <CommentItem
                   key={item.commentId}
                   commentId = {item.commentId}
                   userName={item.userName}
                   createdAt={item.createdAt}
                   updatedAt={item.updatedAt}
+                  avatarUrl={item.avatarUrl}
                   data={item.text}
                   canEdit={canEdit}
                   onUpdate={handleCommentUpdate}

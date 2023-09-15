@@ -8,7 +8,7 @@ interface IUserProps{
     userId?:string;
     userName:string;
     userEmail?:string;
-    avatarUrl : string | undefined;
+    avatarUrl : string | null;
     canEdit?: string;
     size ?: UserSize;
     onClick ?: ()=>void | undefined;
@@ -35,7 +35,7 @@ const getColor = (name:any) => {
 
   return COLORS[sum % COLORS.length];
 };
-function User({userId, userName, userEmail, avatarUrl=undefined, canEdit, size='medium', onClick=undefined, showAnotherPopup}:IUserProps){
+function User({userId, userName, userEmail, avatarUrl=null, canEdit, size='medium', onClick=undefined, showAnotherPopup}:IUserProps){
     const contentNode = (
         <span
           title={userName}
@@ -43,7 +43,7 @@ function User({userId, userName, userEmail, avatarUrl=undefined, canEdit, size='
             classNames(styles.wrapper,styles.wrapperHoverable, styles[`wrapper${upperFirst(size)}`],
             onClick && styles.wrapperHoverable,!avatarUrl && styles[`background${upperFirst(camelCase(getColor(userName)))}`],)}
           style={{
-            background: avatarUrl && `url("${avatarUrl}") center / cover`,
+            background: avatarUrl ? `url("${avatarUrl}") center / cover` : undefined,
           }} 
         >
           {!avatarUrl && <span className={styles.initials}>{initials(userName)}</span>}
@@ -61,7 +61,7 @@ function User({userId, userName, userEmail, avatarUrl=undefined, canEdit, size='
       }
     };
     return onClick ? (
-      <button type="button" disabled={isDisabled} className={styles.button} onClick={onCreate}>
+      <button type="button" disabled={isDisabled} className={styles.button} onClick={ showAnotherPopup ? onCreate : onClick}>
         {contentNode}
       </button>
     ) : (

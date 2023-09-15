@@ -44,7 +44,7 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
   // let wrapperRef = useRef<any>(null);
 
   const [t] = useTranslation();
-  const [isDetailsVisible, setIsDetailVisible] = useState(false);
+  //const [isDetailsVisible, setIsDetailVisible] = useState(false);
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
   const [cardMemberships, setCardMemberships] = useState<IMembership[]>([]);
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
@@ -61,7 +61,7 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
     () => apiGetInfosByCardId(card.cardId),
     {
       onSuccess: (data) => {
-        console.log('[CardModal] Called Card Info : ');
+        console.log('[CardModal] Called Card Info : ', data[0].cardMembership);
         if (data[0].cardMembership) {
           setCardMemberships(data[0].cardMembership);
           setCardUserIds(cardMemberships.map((user) => user.userId));
@@ -96,13 +96,100 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
   }, [setCurrentCard]);
 
   //------------------Membership Functions------------------
-  const onUserAdd = useCallback((id: string) => {
-    console.log('OnUserAdd');
-  }, []);
+  const handleUserAdd = useCallback(
+    (id: string) => {
+      console.log('handleUserAdd : ', id);
+      const addUser = boardUsers.filter((user) => user.userId === id).at(0);
+      if (addUser) {
+        const modifiedCard: IModifyCard = {
+          ...defaultModifyCard,
+          cardId: card.cardId,
+          userId: cookies.UserId,
+          cardMembershipActionType: 'ADD',
+          cardMembershipUserId: id,
+        };
+        const response = apiModifyCard(modifiedCard);
+        response
+          .then((result) => {
+            if (result.message) {
+              console.log(
+                'Fail to update add membership of card',
+                result.message
+              );
+            } else {
+              console.log('Succeed to add new membership', result);
+              const newMembership: IMembership = {
+                membershipId: result.outCardMembershipId,
+                cardId: card.cardId,
+                userId: addUser.userId,
+                createdAt: result.outCreatedAt ? result.outCreatedAt : null,
+                updatedAt: null,
+                email: addUser.userEmail,
+                userName: addUser.userName,
+                avatarUrl: addUser.avatarUrl,
+              };
+              const newCardMembership = cardMemberships.concat(newMembership);
+              setCardMemberships(newCardMembership);
+              const newCardUserIds = cardUserIds.concat(id);
+              setCardUserIds(newCardUserIds);
+            }
+          })
+          .catch((message) => {
+            console.log('Fail to update name of card', message);
+          });
+      }
+    },
+    [boardUsers, card.cardId, cardMemberships, cardUserIds, cookies.UserId]
+  );
 
-  const onUserRemove = useCallback((id: string) => {
-    console.log('OnUserRemove');
-  }, []);
+  const handleUserRemove = useCallback(
+    (id: string) => {
+      console.log('handleUserRemove : ', id);
+      const deleteUser = boardUsers.filter((user) => user.userId === id).at(0);
+      if (deleteUser) {
+        const modifiedCard: IModifyCard = {
+          ...defaultModifyCard,
+          cardId: card.cardId,
+          userId: cookies.UserId,
+          cardMembershipActionType: 'DELETE',
+          cardMembershipUserId: id,
+        };
+        const response = apiModifyCard(modifiedCard);
+        response
+          .then((result) => {
+            if (result.message) {
+              console.log(
+                'Fail to update delete membership of card',
+                result.message
+              );
+            } else {
+              console.log('Succeed to delete membership', result);
+              const member_index = cardMemberships.findIndex(
+                (membership) => membership.userId === id
+              );
+              const newCardMembership = [
+                ...cardMemberships.slice(0, member_index),
+                ...cardMemberships.slice(member_index + 1),
+              ];
+              setCardMemberships(newCardMembership);
+
+              const userId_index = cardUserIds.findIndex(
+                (userId) => userId === id
+              );
+              const newCardUserIds = [
+                ...cardUserIds.slice(0, userId_index),
+                ...cardUserIds.slice(userId_index + 1),
+              ];
+              setCardUserIds(newCardUserIds);
+            }
+          })
+          .catch((message) => {
+            console.log('Fail to update name of card', message);
+          });
+      }
+    },
+    [boardUsers, card.cardId, cardMemberships, cardUserIds, cookies.UserId]
+  );
 
   //------------------Name Functions------------------
   const handleNameUpdate = useCallback(
@@ -119,12 +206,16 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
-          console.log('Succeed to update name of card', result);
-          const updatedCard = {
-            ...card,
-            cardName: data,
-          };
-          setCurrentCard(updatedCard);
+          if (result.message) {
+            console.log('Fail to update name of card', result.message);
+          } else {
+            console.log('Succeed to update name of card', result);
+            const updatedCard = {
+              ...card,
+              cardName: data,
+            };
+            setCurrentCard(updatedCard);
+          }
         })
         .catch((message) => {
           console.log('Fail to update name of card', message);
@@ -148,12 +239,16 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
-          console.log('Succeed to update description of card', result);
-          const updatedCard = {
-            ...card,
-            description: data,
-          };
-          setCurrentCard(updatedCard);
+          if (result.message) {
+            console.log('Fail to update description of card', result.message);
+          } else {
+            console.log('Succeed to update description of card', result);
+            const updatedCard = {
+              ...card,
+              description: data,
+            };
+            setCurrentCard(updatedCard);
+          }
         })
         .catch((message) => {
           console.log('Fail to update description of card', message);
@@ -240,13 +335,17 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
-          console.log('Succeed to update stopwatch of card', result);
-          const updatedCard = {
-            ...card,
-            stopwatch: stopwatch,
-          };
-          setCurrentCard(updatedCard);
-          setStopwatch(stopwatch);
+          if (result.message) {
+            console.log('Fail to update stopwatch of card', result.message);
+          } else {
+            console.log('Succeed to update stopwatch of card', result);
+            const updatedCard = {
+              ...card,
+              stopwatch: stopwatch,
+            };
+            setCurrentCard(updatedCard);
+            setStopwatch(stopwatch);
+          }
         })
         .catch((message) => {
           console.log('Fail to update stopwatch of card', message);
@@ -520,16 +619,13 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
                     })}
                   </div>
                   {cardMemberships.map((user) => (
-                    <span
-                      key={user.membershipId}
-                      className={styles.attachment}
-                    >
+                    <span key={user.membershipId} className={styles.attachment}>
                       {canEdit ? (
                         <CardMembershipPopup
                           items={boardUsers}
                           currentUserIds={cardUserIds}
-                          onUserSelect={onUserAdd}
-                          onUserDeselect={onUserRemove}
+                          onUserSelect={handleUserAdd}
+                          onUserDeselect={handleUserRemove}
                         >
                           <User
                             userName={user.userName}
@@ -749,7 +845,7 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
           )}
           <Activities
             items={comments}
-            isDetailsVisible={isDetailsVisible}
+            //isDetailsVisible={isDetailsVisible}
             canEdit={canEdit}
             onCreate={handleCommentsCreate}
             onUpdate={handleCommentsUpdate}

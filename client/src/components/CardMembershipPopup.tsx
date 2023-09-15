@@ -10,6 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Input, Menu, Popup, Button } from 'semantic-ui-react';
 import { IBoardUser } from '../atoms/atomsBoard';
+import CardMembershipItem from './CardMembershipItem'
 import styles from '../scss/CardMembershipPopup.module.scss';
 
 interface ICardMembershipProps {
@@ -111,7 +112,7 @@ const CardMembershipPopup = ({
         {filteredItems.length > 0 && (
           <Menu secondary vertical className={styles.menu}>
             {filteredItems.map((user) => (
-              <Menu.Item
+              <CardMembershipItem
                 key={user.userId}
                 //isPersisted={item.isPersisted}
                 isActive={currentUserIds.includes(user.userId)}

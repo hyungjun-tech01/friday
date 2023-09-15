@@ -12,13 +12,14 @@ interface ICommentItemProps {
   userName: string;
   createdAt: string;
   updatedAt: string | null;
+  avatarUrl: string | null;
   data: string;
   canEdit: boolean;
   onUpdate: (id:string, data:string) => void;
   onDelete: (id:string) => void;
 }
 
-const CommentItem = ({commentId, userName, createdAt, updatedAt, data, canEdit, onUpdate, onDelete}:ICommentItemProps) => {
+const CommentItem = ({commentId, userName, createdAt, updatedAt=null, avatarUrl=null, data, canEdit, onUpdate, onDelete}:ICommentItemProps) => {
     const [t] = useTranslation();
     const commentEdit = useRef<any>(null);
     const formatted_date = new Date(updatedAt ? updatedAt : createdAt);
@@ -42,13 +43,16 @@ const CommentItem = ({commentId, userName, createdAt, updatedAt, data, canEdit, 
     return (
       <Comment>
         <span className={styles.user}>
-          <User userName={userName} avatarUrl={undefined} />
+          <User userName={userName} avatarUrl={avatarUrl} />
         </span>
         <div className={classNames(styles.content)}>
           <div className={styles.title}>
             <span className={styles.author}>{userName}</span>
             <span className={styles.date}>
-            {formatDate(formatted_date, " M'월'd'일 ' HH:MM")}
+            {t('format:longDateTime', {
+                postProcess: 'formatDate',
+                value: formatted_date,
+              })}
             </span>
           </div>
           <NameEdit ref={commentEdit} defaultValue={data} onUpdate={handleCommentUpdate}>

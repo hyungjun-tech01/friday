@@ -22,9 +22,10 @@ export interface IComment {
     text: string;
     createdAt: string;
     updatedAt: string | null;
+    avatarUrl: string | null;
 };
 
 export const defaultComment:IComment = {
     commentId: '', cardId: '', userId: '', userName: '',
-    text: '', createdAt:'', updatedAt: null,
+    text: '', createdAt:'', updatedAt: null, avatarUrl: null,
 }
