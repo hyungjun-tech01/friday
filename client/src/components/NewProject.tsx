@@ -1,13 +1,15 @@
 import {useState} from "react";
 import {INewProject} from "../atoms/atomsProject";
 import { apiPostProjects } from "../api/project";
+import {useCookies} from "react-cookie";
 
 function NewProject({setshowNewProject}:any) {
+  const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [data, setData] = useState<INewProject>(
         {
           projectId: ""  ,  // : ''  // cookies.Email,
           projectName : "" , // editMode ? task.title : "",
-          userId : "967860418955445249",
+          userId : cookies.UserId,
           date: new Date()
         });
     
