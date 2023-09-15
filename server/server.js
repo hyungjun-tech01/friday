@@ -116,8 +116,11 @@ app.get('/cards/:listId', async(req, res)=>{
             select id as "cardId", board_id as "boardId", list_id as "listId", 
             cover_attachment_id as "coverUrl", name as "cardName", description as "description",
             created_at as "createdAt", 
-            updated_at as "updatedAt" from card 
-            where list_id = $1`, [listId]);
+            updated_at as "updatedAt" ,
+            position as "position" 
+            from card 
+            where list_id = $1
+            order by position desc`, [listId]);
 
             if( cardResult.rows.length > 0 ) {
                 const cards = cardResult.rows;
@@ -165,8 +168,10 @@ app.get('/cards/:boardId', async(req, res)=>{
                     select id as "cardId", board_id as "boardId", list_id as "listId", 
                     cover_attachment_id as "coverUrl", name as "cardName", description as "description",
                     created_at as "createdAt", 
-                    updated_at as "updatedAt" from card 
-                    where list_id = $1`, [list.listId]);
+                    updated_at as "updatedAt",
+                    position as "position" from card 
+                    where list_id = $1
+                    order by position desc`, [list.listId]);
 
                     if( cardResult.rows.length > 0 ) {
                         const cards = cardResult.rows;
@@ -399,17 +404,84 @@ app.post('/list', async(req, res) => {
 //create card 
 // create list 
 app.post('/card', async(req, res) => {
-    const {listId, userId, cardName} = req.body;
+    const {cardId,     // number 
+        userId ,       // number 
+        cardActionType ,    // 나머지는 모두 string 
+        listId,
+        boardId,
+        description ,
+        cardName , 
+        dueDate , 
+        position ,
+        stopwatch,
+        cardMembershipActionType ,
+        cardMembershipId ,
+        cardMembershipUserId ,
+        cardLabelActionType ,
+        cardLabelId , 
+        labelId ,
+        cardTaskActionType ,
+        cardTaskId ,
+        cardTaskName ,
+        cardTaskIsCompleted ,
+        cardTaskPosition , 
+        cardAttachmentActionType ,
+        cardAttachmentId ,
+        cardAttachmentDirname ,
+        cardAttachmentFilename ,
+        cardAttachmentName , 
+        cardAttachmentImage ,
+        cardCommentActionType ,  
+        cardCommentId , 
+        cardCommentText  ,
+        cardStatusActionType ,
+        cardStatusId } = req.body;
     try{
-        console.log('create new card', cardName);
+        console.log('create card');
         // insert project 
-        const response = await pool.query(`
-        insert into card(id, board_id, list_id, creator_user_id,name, created_at)
-        select next_id(), board_id, $1, $2, $3, now()
-        from list where id=$1`,
-        [listId,userId,cardName]);
-       
-        res.json({cardName:cardName}); // 결과 리턴을 해 줌 .  
+        const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
+                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39)`,
+        [cardId,     //  
+        userId ,       //  
+        cardActionType ,    // 나머지는 모두 string 
+        listId,
+        boardId,
+        description ,
+        cardName , 
+        dueDate , 
+        position ,
+        stopwatch,
+        cardMembershipActionType ,
+        cardMembershipId ,
+        cardMembershipUserId ,
+        cardLabelActionType ,
+        cardLabelId , 
+        labelId ,
+        cardTaskActionType ,
+        cardTaskId ,
+        cardTaskName ,
+        cardTaskIsCompleted ,
+        cardTaskPosition , 
+        cardAttachmentActionType ,
+        cardAttachmentId ,
+        cardAttachmentDirname ,
+        cardAttachmentFilename ,
+        cardAttachmentName , 
+        cardAttachmentImage ,
+        cardCommentActionType ,  
+        cardCommentId , 
+        cardCommentText  ,
+        cardStatusActionType ,
+        cardStatusId,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+     ]);
+        res.json({ cardName:cardName }); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){
         console.error(err);
@@ -424,6 +496,8 @@ app.post('/modifyCard', async(req, res) => {
     const {cardId,     // number 
         userId ,       // number 
         cardActionType ,    // 나머지는 모두 string 
+        listId,
+        boardId,
         description ,
         cardName , 
         dueDate , 
@@ -455,10 +529,12 @@ app.post('/modifyCard', async(req, res) => {
         console.log('modify card');
         // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
-                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37)`,
+                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39)`,
         [cardId,     //  
         userId ,       //  
         cardActionType ,    // 나머지는 모두 string 
+        listId,
+        boardId,
         description ,
         cardName , 
         dueDate , 

@@ -12,12 +12,13 @@ export interface ICard{
     description: string;
     createdAt: string;
     updatedAt: string;
+    position : string;
     labels: ILabel[];
 }
 
 export const defaultCard:ICard = {
     cardId:"" , cardName:"",  coverUrl:"", boardId:"", listId:"",
-    description:"",  labels:[], createdAt:"", updatedAt:"" ,
+    description:"",  labels:[], createdAt:"", updatedAt:"" , position:"",
 }
 
 export interface ICreateCard{
@@ -34,7 +35,9 @@ interface IStopwatch{
 export interface IModifyCard{
    cardId : string ;     // number 
     userId : string;       // number 
-    cardActionType : 'ADD'|'UPDATE'|null;    // 나머지는 모두 string 
+    cardActionType : 'ADD'|'UPDATE'|'DELETE'|null;    // 나머지는 모두 string 
+    listId : string | null;
+    boardId : string | null;
     description : string |null ;
     cardName :  string |null ;
     dueDate :  string |null ;
@@ -68,6 +71,8 @@ export const defaultModifyCard:IModifyCard = {
     cardId:'0',     // number 
     userId :'0',       // number 
     cardActionType :null,    // 나머지는 모두 string 
+    listId: null,
+    boardId : null,
     description :null,
     cardName :null, 
     dueDate :null, 

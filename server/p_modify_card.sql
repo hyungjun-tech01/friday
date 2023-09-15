@@ -3,6 +3,8 @@ drop procedure p_modify_card;
 CREATE OR REPLACE PROCEDURE p_modify_card(i_card_id in text, 
 i_user_id in text, 
 i_card_action_type in text, 
+i_list_id in text,
+i_board_id in text,
 i_description in text,
 i_card_name in text, 
 i_due_date in text, 
@@ -67,9 +69,24 @@ vv_comment_updated_at timestamp without time zone  default null;
 v_task_count double precision default 0;
 v_null_udpate_stopwatch jsonb;
 v_null_udpate_due_date text;
+v_card_count int;
+v_card_id bigint;
 BEGIN
 	if(i_card_action_type is not null) then
-	   if(i_card_action_type = 'UPDATE') then 
+	   if(i_card_action_type = 'ADD') then
+
+	      SELECT next_id() INTO v_card_id;
+		
+		select count(*) 
+			into v_card_count 
+			from card 
+			where list_id = i_list_id::bigint;
+        
+		insert into card(id, board_id, list_id, creator_user_id,name, position, created_at)
+		select v_card_id, board_id, i_list_id::bigint, i_user_id::bigint, i_card_name,v_card_count+1, now()
+        from list where id= i_list_id::bigint ;
+
+	   elseif(i_card_action_type = 'UPDATE') then 
 
 		if(i_stopwatch->>'total' is null) then
 			select stopwatch into v_null_udpate_stopwatch 
@@ -99,39 +116,7 @@ BEGIN
 			stopwatch = v_null_udpate_stopwatch,
 			updated_at = now()
 		where id = i_card_id::bigint;
-
-		/*
-		if(i_stopwatch->>'total' is not null) then
-		    if(i_stopwatch->>'total' = '-1') then
-				update card
-					set name = COALESCE(i_card_name, name), 
-					description = COALESCE(i_description, description), 
-					due_date = to_date(COALESCE(i_due_date, due_date::text), 'YYYY.MM.DD'),
-					position = COALESCE(i_position::double precision, position) ,
-					stopwatch = null,
-					updated_at = now()
-				where id = i_card_id::bigint;
-			else
-				update card
-					set name = COALESCE(i_card_name, name), 
-					description = COALESCE(i_description, description), 
-					due_date = to_date(COALESCE(i_due_date, due_date::text), 'YYYY.MM.DD'),
-					position = COALESCE(i_position::double precision, position) ,
-					stopwatch = i_stopwatch,
-					updated_at = now()
-				where id = i_card_id::bigint;
-			end if;
-		else
-			update card
-			set name = COALESCE(i_card_name, name), 
-	    	description = COALESCE(i_description, description), 
-			due_date = to_date(COALESCE(i_due_date, due_date::text), 'YYYY.MM.DD'),
-			position = COALESCE(i_position::double precision, position) ,
-			updated_at = now()
-			where id = i_card_id::bigint;
-		end if;
-		*/
-			
+		
 	   elsif (i_card_action_type = 'DELETE') then
 		delete from card_label t where t.card_id = i_card_id::bigint;
 		delete from card_membership t where t.card_id = i_card_id::bigint;

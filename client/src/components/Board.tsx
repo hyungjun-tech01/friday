@@ -31,6 +31,7 @@ function Board({boardId}:IListProps){
     const {isLoading, data } = useQuery<IList[]>(["myBoardLists", boardId], ()=>apiGetLists(boardId),{
         onSuccess: data => {
             setLists(data);   // use Query 에서 atom에 set 
+            setShowList(false);
         },
         enabled : showList
       }

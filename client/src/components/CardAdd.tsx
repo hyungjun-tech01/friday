@@ -3,7 +3,7 @@ import styles from "../scss/CardAdd.module.scss";
 import { Button, Form, TextArea } from 'semantic-ui-react';
 import {useTranslation} from "react-i18next";
 import {useForm} from "react-hook-form";
-import {ICreateCard} from "../atoms/atomCard";
+import {IModifyCard, defaultModifyCard} from "../atoms/atomCard";
 import {useCookies} from "react-cookie";
 import {apiCreateCard, apiModifyCard} from "../api/card";
 
@@ -35,10 +35,10 @@ function CardAdd({listId, setIsCardAddOpened}:ICardAddProps){
    
   const onValid = async(data:any) => {
   
-    const card : ICreateCard = {...data, "listId":listId, userId:cookies.UserId };
+    const card : IModifyCard = {...defaultModifyCard, ...data, cardActionType:'ADD', listId:listId, userId:cookies.UserId };
     console.log('create card', card);
     const response = await apiCreateCard(card);
-
+    console.log(response);
     if(response.message){
       setIsCardAddOpened(true);
     }else{

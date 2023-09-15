@@ -4,7 +4,7 @@ import {useQuery} from "react-query";
 import { Container, Grid } from 'semantic-ui-react';
 import {useState} from "react";
 import {Link} from "react-router-dom";
-
+import {useCookies} from "react-cookie";
 import {atomMyProject,IProject} from "../atoms/atomsProject";
 import {apiGetProjects} from "../api/project";
 import styles from "../scss/Projects.module.scss";
@@ -13,11 +13,12 @@ import ProjectAddModal from "./ProjectAddModal";
 import Paths from "../constants/Paths";
 
 function Projects(){
+    const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     // atom에서 data 가지고 옴 .   
-        const [projects, setProjects] = useRecoilState<IProject[]>(atomMyProject); 
+    const [projects, setProjects] = useRecoilState<IProject[]>(atomMyProject); 
     const [showProjectAddModal, setShowProjectAddModal] = useState(false);
     // login 하면 가지고 있을 것.  const [user, setUser] = useRecoilState<IUser>(atomUser); 
-    const userId = "967860418955445249";
+    const userId = cookies.UserId;
     // useQuery 에서 db에서 데이터를 가지고 와서 atom에 세팅 후에     
     // useQuery(['todos', todoId], () => fetchTodoById(todoId))
     const {isLoading, data, isSuccess} = useQuery<IProject[]>(["allMyProjects", userId], ()=>apiGetProjects(userId),{
