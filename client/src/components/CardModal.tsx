@@ -6,7 +6,6 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useQuery } from 'react-query';
 import { apiGetInfosByCardId, apiModifyCard } from '../api/card';
 import { IComment, defaultComment } from '../atoms/atomAction';
-import { ILabel } from '../atoms/atomLabel';
 import {
   ICard,
   atomCurrentCard,
@@ -18,6 +17,7 @@ import { ITask, defaultTask } from '../atoms/atomTask';
 import { IMembership } from '../atoms/atomsUser';
 import { IStopwatch } from '../atoms/atomStopwatch';
 import { IBoardUser } from '../atoms/atomsBoard';
+import { ICardLabel } from '../atoms/atomLabel';
 import Activities from './Activities';
 import DescriptionEdit from './DescriptionEdit';
 import Tasks from './Tasks';
@@ -29,6 +29,7 @@ import DueDate from './DueDate';
 import DueDateEdit from './DueDateEdit';
 import Stopwatch from './Stopwatch';
 import StopwatchEdit from './StopwatchEdit';
+import Label from './Label';
 
 import classNames from 'classnames';
 import styles from '../scss/CardModal.module.scss';
@@ -48,7 +49,7 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
   const [cardMemberships, setCardMemberships] = useState<IMembership[]>([]);
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
-  const [labels, setLabels] = useState<ILabel[]>([]);
+  const [labels, setLabels] = useState<ICardLabel[]>([]);
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [comments, setComments] = useState<IComment[]>([]);
   // const [actions, setActions] = useState<IAction[]>([]);
@@ -61,7 +62,7 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
     () => apiGetInfosByCardId(card.cardId),
     {
       onSuccess: (data) => {
-        console.log('[CardModal] Called Card Info : ', data[0].cardMembership);
+        console.log('[CardModal] Called Card Info');
         if (data[0].cardMembership) {
           setCardMemberships(data[0].cardMembership);
           setCardUserIds(cardMemberships.map((user) => user.userId));
@@ -82,6 +83,9 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
         }
         if (data[0].cardComment) {
           setComments(data[0].cardComment);
+        }
+        if (data[0].cardLabel) {
+          setLabels(data[0].cardLabel);
         }
         // if(data[0].cardAction) {
         //   setActions(data[0].cardAction);
@@ -586,6 +590,10 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
     [card.cardId, cookies.UserId, comments]
   );
 
+  useEffect(() => {
+    console.log("CardModal : ", card)
+  }, [card]);
+
   const contentNode = (
     <Grid className={styles.grid}>
       <Grid.Row className={styles.headerPadding}>
@@ -667,6 +675,37 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
                     </CardMembershipPopup>
                   )}
                 </div>
+              )}
+              {labels.length > 0 && (
+                  <div className={styles.attachments}>
+                    <div className={styles.text}>
+                      {t('common.labels', {
+                        context: 'title',
+                      })}
+                    </div>
+                    {labels.map((label) => (
+                      <span key={label.lableId} className={styles.attachment}>
+                        {/* {canEdit ? (
+                          <LabelsPopup
+                            key={label.id}
+                            items={allLabels}
+                            currentIds={labelIds}
+                            onSelect={onLabelAdd}
+                            onDeselect={onLabelRemove}
+                            onCreate={onLabelCreate}
+                            onUpdate={onLabelUpdate}
+                            onMove={onLabelMove}
+                            onDelete={onLabelDelete}
+                          >
+                            <Label name={label.name} color={label.color} />
+                          </LabelsPopup>
+                        ) : (
+                          <Label name={label.name} color={label.color} />
+                        )} */}
+                        <Label name={label.labelName} color={label.color} />
+                      </span>
+                    ))}
+                  </div>
               )}
               {/* {labels.length > 0 && (
                   <div className={styles.attachments}>
