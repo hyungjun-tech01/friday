@@ -130,6 +130,7 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
               };
               const newCardMembership = cardMemberships.concat(newMembership);
               setCardMemberships(newCardMembership);
+
               const newCardUserIds = cardUserIds.concat(id);
               setCardUserIds(newCardUserIds);
             }
@@ -144,15 +145,16 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
 
   const handleUserRemove = useCallback(
     (id: string) => {
-      console.log('handleUserRemove : ', id);
-      const deleteUser = boardUsers.filter((user) => user.userId === id).at(0);
-      if (deleteUser) {
+      const deleteMember = cardMemberships.filter((user) => user.userId === id).at(0);
+      if (deleteMember) {
+        console.log('handleUserRemove : ', id);
         const modifiedCard: IModifyCard = {
           ...defaultModifyCard,
           cardId: card.cardId,
           userId: cookies.UserId,
           cardMembershipActionType: 'DELETE',
-          cardMembershipUserId: id,
+          cardMembershipId: deleteMember.membershipId,
+          cardMembershipUserId: deleteMember.userId,
         };
         const response = apiModifyCard(modifiedCard);
         response
@@ -188,7 +190,7 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
           });
       }
     },
-    [boardUsers, card.cardId, cardMemberships, cardUserIds, cookies.UserId]
+    [card.cardId, cardMemberships, cardUserIds, cookies.UserId]
   );
 
   //------------------Name Functions------------------
@@ -640,12 +642,12 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
                       )}
                     </span>
                   ))}
-                  {/* {canEdit && (
-                      <BoardMembershipsPopup
-                        items={allBoardMemberships}
-                        currentUserIds={userIds}
-                        onUserSelect={onUserAdd}
-                        onUserDeselect={onUserRemove}
+                  {canEdit && (
+                      <CardMembershipPopup
+                          items={boardUsers}
+                          currentUserIds={cardUserIds}
+                          onUserSelect={handleUserAdd}
+                          onUserDeselect={handleUserRemove}
                       >
                         <button
                           type="button"
@@ -653,18 +655,8 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
                         >
                           <Icon name="add" size="small" className={styles.addAttachment} />
                         </button>
-                      </BoardMembershipsPopup>
-                    )} */}
-                  <button
-                    type="button"
-                    className={classNames(styles.attachment, styles.dueDate)}
-                  >
-                    <Icon
-                      name="add"
-                      size="small"
-                      className={styles.addAttachment}
-                    />
-                  </button>
+                      </CardMembershipPopup>
+                    )}
                 </div>
               )}
               {/* {labels.length > 0 && (

@@ -44,7 +44,6 @@ const CardMembershipPopup = ({
   }, []);
 
   const handleTriggerClick = useCallback(() => {
-    console.log('Popup / handleTriggerClick - ');
     setIsOpened(!isOpened);
   }, [isOpened]);
 
@@ -130,7 +129,7 @@ const CardMembershipPopup = ({
   return (
     <Popup
       basic
-      wide
+      //wide
       ref={popupRef}
       trigger={trigger}
       on="click"
