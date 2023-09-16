@@ -13,7 +13,7 @@ const FORMATS = {
 };
 
 interface IDueDateProps {
-  value: Date;
+  value: Date | null;
   size?: DueDateSize;
   isDisabled?: boolean;
   onClick?: () => void;

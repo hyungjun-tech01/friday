@@ -20,7 +20,7 @@ import {
 import styles from "../scss/StopwatchEdit.module.scss";
 import { IStopwatch } from "../atoms/atomStopwatch";
 
-const createData = (stopwatch: IStopwatch) => {
+const createData = (stopwatch: IStopwatch | null) => {
   if (!stopwatch) {
     return {
       hours: "0",
@@ -39,7 +39,7 @@ const createData = (stopwatch: IStopwatch) => {
 
 interface IStopwatchEditProps {
   children: ReactElement;
-  defaultValue: IStopwatch;
+  defaultValue: IStopwatch | null;
   onUpdate: (data: IStopwatch | null) => void;
 }
 

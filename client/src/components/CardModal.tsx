@@ -145,7 +145,9 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
 
   const handleUserRemove = useCallback(
     (id: string) => {
-      const deleteMember = cardMemberships.filter((user) => user.userId === id).at(0);
+      const deleteMember = cardMemberships
+        .filter((user) => user.userId === id)
+        .at(0);
       if (deleteMember) {
         console.log('handleUserRemove : ', id);
         const modifiedCard: IModifyCard = {
@@ -643,20 +645,27 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
                     </span>
                   ))}
                   {canEdit && (
-                      <CardMembershipPopup
-                          items={boardUsers}
-                          currentUserIds={cardUserIds}
-                          onUserSelect={handleUserAdd}
-                          onUserDeselect={handleUserRemove}
+                    <CardMembershipPopup
+                      items={boardUsers}
+                      currentUserIds={cardUserIds}
+                      onUserSelect={handleUserAdd}
+                      onUserDeselect={handleUserRemove}
+                    >
+                      <button
+                        type="button"
+                        className={classNames(
+                          styles.attachment,
+                          styles.dueDate
+                        )}
                       >
-                        <button
-                          type="button"
-                          className={classNames(styles.attachment, styles.dueDate)}
-                        >
-                          <Icon name="add" size="small" className={styles.addAttachment} />
-                        </button>
-                      </CardMembershipPopup>
-                    )}
+                        <Icon
+                          name="add"
+                          size="small"
+                          className={styles.addAttachment}
+                        />
+                      </button>
+                    </CardMembershipPopup>
+                  )}
                 </div>
               )}
               {/* {labels.length > 0 && (
@@ -718,13 +727,13 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
                   <span className={styles.attachment}>
                     {canEdit ? (
                       <DueDateEdit
-                        defaultValue={new Date(dueDate)}
+                        defaultValue={dueDate}
                         onUpdate={handleDueDateUpdate}
                       >
-                        <DueDate value={new Date(dueDate)} />
+                        <DueDate value={dueDate} />
                       </DueDateEdit>
                     ) : (
-                      <DueDate value={new Date(dueDate)} />
+                      <DueDate value={dueDate} />
                     )}
                   </span>
                 </div>
@@ -848,27 +857,44 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
           <Grid.Column width={4} className={styles.sidebarPadding}>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('action.addCard')}</span>
-              <Button fluid className={styles.actionButton}>
-                <Icon name="user outline" className={styles.actionIcon} />
-                {t('common.members')}
-              </Button>
+              <CardMembershipPopup
+                items={boardUsers}
+                currentUserIds={cardUserIds}
+                onUserSelect={handleUserAdd}
+                onUserDeselect={handleUserRemove}
+              >
+                <Button fluid className={styles.actionButton}>
+                  <Icon name="user outline" className={styles.actionIcon} />
+                  {t('common.members')}
+                </Button>
+              </CardMembershipPopup>
               <Button fluid className={styles.actionButton}>
                 <Icon name="bookmark outline" className={styles.actionIcon} />
                 {t('common.labels')}
               </Button>
-              <Button fluid className={styles.actionButton}>
-                <Icon
-                  name="calendar check outline"
-                  className={styles.actionIcon}
-                />
-                {t('common.dueDate', {
-                  context: 'title',
-                })}
-              </Button>
+              <DueDateEdit
+                defaultValue={dueDate}
+                onUpdate={handleDueDateUpdate}
+              >
+                <Button fluid className={styles.actionButton}>
+                  <Icon
+                    name="calendar check outline"
+                    className={styles.actionIcon}
+                  />
+                  {t('common.dueDate', {
+                    context: 'title',
+                  })}
+                </Button>
+              </DueDateEdit>
+              <StopwatchEdit
+                        defaultValue={stopwatch}
+                        onUpdate={handleStopwatchUpdate}
+                      >
               <Button fluid className={styles.actionButton}>
                 <Icon name="clock outline" className={styles.actionIcon} />
                 {t('common.stopwatch')}
               </Button>
+              </StopwatchEdit>
               <Button fluid className={styles.actionButton}>
                 <Icon name="attach" className={styles.actionIcon} />
                 {t('common.attachment')}

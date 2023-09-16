@@ -14,7 +14,7 @@ import { ReactElement } from "react";
 
 interface IDueDateEidtProps {
   children: ReactElement;
-  defaultValue: Date;
+  defaultValue: Date | null;
   onUpdate: (date: Date | null) => void;
 }
 const DueDateEdit = ({
@@ -48,7 +48,7 @@ const DueDateEdit = ({
   const timeField = useRef<any>(null);
 
   const [data, setData] = useState(() => {
-    const date = new Date(defaultValue) || new Date().setHours(12, 0, 0, 0);
+    const date = defaultValue ? new Date(defaultValue) : new Date().setHours(12, 0, 0, 0);
 
     return {
       date: t("format:date", {
