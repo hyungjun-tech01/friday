@@ -19,16 +19,22 @@ import {useEffect} from 'react';
      const card : IModifyCard = {...defaultModifyCard, 
        cardId:'1061970265900057818', 
        userId:'967860418955445249',
-       cardActionType : 'UPDATE',
-       description : 'stopwatch update 886555',
-       dueDate : date_time,
+      cardTaskActionType : 'UPDATE',
+      cardTaskName : '...',
+      cardTaskId : '1070922052166223211',
+     // cardAttachmentId : '1070918898787812709',
+      //cardAttachmentDirname : '.',
+      //cardAttachmentFilename:'aa.txt',
+      //cardAttachmentName : 'aaa',
+      //cardMembershipUserId: '967860418955445249',
+      //cardMembershipId : '1070915891119523165',
+       // description : 'stopwatch update 886555',
+       // dueDate : date_time,
 //       stopwatch :{total:'1000', startedAt:'2023.09.01'}
      };
      console.log(card); 
      const response = await apiModifyCard(card);
      console.log('moddify response', response);
-     const dbTimestamp = new Date('2023-09-14T08:24:44.000Z');
-     console.log(dbTimestamp.toLocaleString());
 
    }    
  ///// sample code         stopwatch :{total:'1000', startedAt:'2023.09.01'}

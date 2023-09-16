@@ -38,7 +38,12 @@ x_task_id out text,
 x_attachment_id out text,
 x_comment_id out text,
 x_comment_created_at out text,
-x_comment_updated_at out text
+x_comment_updated_at out text,
+x_card_membership_created_at out text,
+x_card_task_created_at out text,
+x_card_task_updated_at out text,
+x_card_attachment_created_at out text,
+x_card_attachment_updatec_at out text
  )
 LANGUAGE plpgsql
 AS $$
@@ -71,6 +76,11 @@ v_null_udpate_stopwatch jsonb;
 v_null_udpate_due_date text;
 v_card_count int;
 v_card_id bigint;
+vv_card_membership_created_at timestamp without time zone default null;
+vv_card_task_created_at timestamp without time zone default null;
+vv_card_task_updated_at timestamp without time zone default null;
+vv_card_attachment_created_at timestamp without time zone default null;
+vv_card_attachment_updatec_at timestamp without time zone default null;
 BEGIN
 	if(i_card_action_type is not null) then
 	   if(i_card_action_type = 'ADD') then
@@ -141,8 +151,9 @@ BEGIN
 	if(i_card_membership_action_type is not null) then
 		if(i_card_membership_action_type = 'ADD') then
             select next_id() into vv_card_membership_id;
+			select now() into vv_card_membership_created_at;
 			insert into card_membership(id, card_id, user_id, created_at, updated_at)
-			values(vv_card_membership_id, i_card_id::bigint, i_card_membership_user_id::bigint, now(), now());
+			values(vv_card_membership_id, i_card_id::bigint, i_card_membership_user_id::bigint, vv_card_membership_created_at, now());
 		elseif (i_card_membership_action_type = 'DELETE') then
 			delete from card_membership
 			where id = i_card_membership_id::bigint;
@@ -184,6 +195,7 @@ BEGIN
 		if(i_card_task_action_type = 'ADD') then
 			
 			select next_id() into vv_task_id;
+			select now() into vv_card_task_created_at;
 
 			select count(*) 
 			  into v_task_count 
@@ -191,13 +203,15 @@ BEGIN
 			   where card_id = i_card_id::bigint;
 			   
 			insert into task(id, card_id, name, is_completed, created_at, updated_at, position)
-			values(vv_task_id, i_card_id::bigint, i_card_task_name, false, now(), now(), v_task_count+1) ;
+			values(vv_task_id, i_card_id::bigint, i_card_task_name, false, vv_card_task_created_at, now(), v_task_count+1) ;
 			
 		elseif (i_card_task_action_type = 'UPDATE') then
+			select now() into vv_card_task_updated_at;
 			update task 
 			set name = COALESCE(i_card_task_name, name), 
-			    is_completed = COALESCE(i_card_task_is_completed::boolean),
-				position = COALESCE(i_card_task_position::double precision, position)
+			    is_completed = COALESCE(i_card_task_is_completed::boolean, is_completed),
+				position = COALESCE(i_card_task_position::double precision, position),
+				updated_at = vv_card_task_updated_at
 			where id = i_card_task_id::bigint;
 		elseif (i_card_task_action_type = 'DELETE') then
 		    delete from task 
@@ -215,12 +229,15 @@ BEGIN
 	end if;
 	if(i_card_attachment_action_type is not null) then
 		if(i_card_attachment_action_type = 'ADD') then
-                       select next_id() into vv_attachment_id ;
+            select next_id() into vv_attachment_id ;
+			select now() into vv_card_attachment_created_at;
 			insert  into attachment(id, card_id, creator_user_id, dirname, filename, name, created_at, updated_at, image)
-			values(vv_attachment_id , i_card_id::bigint, i_user_id::bigint, i_card_attachment_dirname, i_card_attachment_filename, i_card_attachment_name, now(), now(), i_card_attachment_image::text::json);
+			values(vv_attachment_id , i_card_id::bigint, i_user_id::bigint, i_card_attachment_dirname, i_card_attachment_filename, i_card_attachment_name, vv_card_attachment_created_at, now(), i_card_attachment_image::text::json);
 		elseif 	(i_card_attachment_action_type = 'UPDATE') then
+			select now() into vv_card_attachment_updatec_at;
 		   update attachment 
-		   set name = COALESCE(i_card_attachment_name, name)
+		   set name = COALESCE(i_card_attachment_name, name),
+		   updated_at = vv_card_attachment_updatec_at
 		   where id = i_card_attachment_id::bigint;
 		elseif (i_card_attachment_action_type = 'DELETE') then
 		   delete from attachment
@@ -282,5 +299,11 @@ BEGIN
     x_comment_id = vv_comment_id::text;
 	x_comment_created_at = vv_comment_created_at::text;
 	x_comment_updated_at = vv_comment_updated_at::text;
+
+	x_card_membership_created_at = vv_card_membership_created_at::text;
+	x_card_task_created_at = vv_card_task_created_at::text;
+	x_card_task_updated_at = vv_card_task_updated_at::text;
+	x_card_attachment_created_at = vv_card_attachment_created_at::text;
+	x_card_attachment_updatec_at = vv_card_attachment_updatec_at::text;
 END;
 $$;

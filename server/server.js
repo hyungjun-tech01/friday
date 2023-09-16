@@ -259,7 +259,8 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     const cardComment = await pool.query(`
                     select a.id as "commentId" , a.card_id as "cardId", 
                         a.user_id as "userId", b.name as "userName", a.text as "text", 
-                        a.created_at as "createdAt", a.updated_at as "updatedAt"
+                        a.created_at as "createdAt", a.updated_at as "updatedAt", 
+                        b.avatar as "avatarUrl"
                     from comment a , user_account b
                     where a.user_id = b.id
                     and a.card_id = $1`, [card.cardId]);
@@ -440,7 +441,7 @@ app.post('/card', async(req, res) => {
         console.log('create card');
         // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
-                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39)`,
+                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44)`,
         [cardId,     //  
         userId ,       //  
         cardActionType ,    // 나머지는 모두 string 
@@ -473,6 +474,11 @@ app.post('/card', async(req, res) => {
         cardCommentText  ,
         cardStatusActionType ,
         cardStatusId,
+        null,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null,
@@ -529,7 +535,7 @@ app.post('/modifyCard', async(req, res) => {
         console.log('modify card');
         // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
-                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39)`,
+                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44)`,
         [cardId,     //  
         userId ,       //  
         cardActionType ,    // 나머지는 모두 string 
@@ -568,7 +574,12 @@ app.post('/modifyCard', async(req, res) => {
         null,
         null,
         null,
-        null
+        null,
+        null,
+        null,
+        null,
+        null,
+        null       
      ]);
         // out 매개변수의 값을 확인합니다.
         const outCardMembershipId = response.rows[0].x_card_membership_id;
@@ -578,9 +589,18 @@ app.post('/modifyCard', async(req, res) => {
         const outCommentId = response.rows[0].x_comment_id;
         const outCommentCreatedAt = response.rows[0].x_comment_created_at;
         const outCommentUpdatedAt = response.rows[0].x_comment_updated_at;
+
+        const outMembershipCreatedAt = response.rows[0].x_card_membership_created_at;
+        const outTaskCreatedAt = response.rows[0].x_card_task_created_at;
+        const outTaskUpdatedAt = response.rows[0].x_card_task_updated_at;
+        const outAttachmentCreatedAt = response.rows[0].x_card_attachment_created_at;
+        const outAttachmentUpdatedAt = response.rows[0].x_card_attachment_updatec_at;
+        
         res.json({ cardId:cardId, outCardMembershipId : outCardMembershipId, outCardLabelId:outCardLabelId,
             outTaskId:outTaskId, outAttachmentId:outAttachmentId, outCommentId:outCommentId, outCommentCreatedAt:outCommentCreatedAt,
-            outCommentUpdatedAt:outCommentUpdatedAt
+            outCommentUpdatedAt:outCommentUpdatedAt, outMembershipCreatedAt:outMembershipCreatedAt, 
+            outTaskCreatedAt:outTaskCreatedAt, outTaskUpdatedAt:outTaskUpdatedAt, outAttachmentCreatedAt:outAttachmentCreatedAt,
+            outAttachmentUpdatedAt:outAttachmentUpdatedAt,
          }); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){
