@@ -52,6 +52,11 @@ const core = {
       taskActions: '태스크 편집',
       time: '시간',
       writeComment: '댓글 추가하기',
+      selectPermission : '권한 선택',
+      editor : '편집자',
+      viewer : '뷰어',
+      canEditContentOfBoard : '보드 및 하위 컨텐츠를 편집할 수 있습니다.',
+      canOnlyViewBoard : '보드 및 하위 컨텐츠를 볼 수 있습니다.'      
     },
     action:{
       Login: '로그인',
@@ -82,6 +87,8 @@ const core = {
       subscribe: '구독',
       unsubscribe: '구독 취소',
       leaveBoardButton: '보드에서 나가기',
+      addMember : '멤버 추가',
+ 
     }
   },
 };

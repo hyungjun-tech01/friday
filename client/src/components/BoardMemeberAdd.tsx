@@ -5,6 +5,7 @@ import {IBoardMember} from "../atoms/atomsBoard";
 import {Input} from "semantic-ui-react";
 import UserItem from "./UserItem";
 import BoardMemberPermission from "./BoardMemberPermission";
+import BoardRole from "../constants/BoardRole";
 
 interface IBoardmemberAddProps{
     members?: IBoardMember[];
@@ -55,6 +56,12 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
 
       }
     }
+    const onBack = () =>{
+
+    }; 
+  const onConfirm = () =>{
+
+    }; 
     return(
       <>
       <div className = {styles.overlay}>
@@ -81,7 +88,9 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
         </div>
         </div>  
       </div>
-      {isBoardMemberPermission &&<BoardMemberPermission addBoardId={addBoardId} addMemberId={addMemberId}/>}
+      {isBoardMemberPermission &&<BoardMemberPermission addBoardId={addBoardId} addMemberId={addMemberId}
+      title={t('common.selectPermission')} content={t('common.leaveBoardContent')} buttonContent={t('action.addMember')}  onConfirm={onConfirm}  onBack={onBack}
+      />}
       </>
     );
 }
