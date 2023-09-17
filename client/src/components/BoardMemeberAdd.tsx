@@ -4,6 +4,7 @@ import styles from '../scss//BoardMemberAdd.module.scss';
 import {IBoardMember} from "../atoms/atomsBoard";
 import {Input} from "semantic-ui-react";
 import UserItem from "./UserItem";
+import BoardMemberPermission from "./BoardMemberPermission";
 
 interface IBoardmemberAddProps{
     members?: IBoardMember[];
@@ -11,6 +12,9 @@ interface IBoardmemberAddProps{
 }
 function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
     const [t] = useTranslation();
+    const [isBoardMemberPermission, setIsBoardMemberPermission] = useState(false);
+    const [addMemberId, setAddMemberId] = useState("");
+    const addBoardId = members !== undefined ? members[0].boardId:"";
     let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
     const users = members !== undefined ? members[0].boardmMemberAllUsers:null;
     const [search, handleSearchChange] = useState('');
@@ -46,11 +50,15 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
     const handleUserSelect = (userId:string, canEdit:string) => {
       if(canEdit === null){
         console.log('add user');
+        setAddMemberId(userId);
+        setIsBoardMemberPermission(true);
+
       }
     }
     return(
+      <>
       <div className = {styles.overlay}>
-      <div className={styles.modal} >
+        <div className={styles.modal} >
           <div ref={wrapperRef} >
             <div className={styles.content}>
               <div className={styles.title} >
@@ -71,8 +79,10 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
             )}
             </div>
         </div>
-      </div>  
+        </div>  
       </div>
+      {isBoardMemberPermission &&<BoardMemberPermission addBoardId={addBoardId} addMemberId={addMemberId}/>}
+      </>
     );
 }
 export default BoardMemeberAdd;

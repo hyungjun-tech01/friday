@@ -109,8 +109,9 @@ app.get('/lists/:boardId', async(req, res)=>{
 );
 
 // get cards by list id 
-app.get('/cards/:listId', async(req, res)=>{
+app.get('/cardbylistId/:listId', async(req, res)=>{
     const listId = req.params.listId;
+    console.log('cardbylistid', listId);
     try{
             const cardResult =   await pool.query(`
             select id as "cardId", board_id as "boardId", list_id as "listId", 
@@ -136,7 +137,7 @@ app.get('/cards/:listId', async(req, res)=>{
                         card.labels = labelResult.rows;
                 }
                 res.json(cards);
-                console.log("queryed card", cards);
+//                console.log("queryed card", cards);
                 res.end();
                 
             }

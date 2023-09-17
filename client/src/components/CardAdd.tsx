@@ -10,8 +10,10 @@ import {apiCreateCard} from "../api/card";
 interface ICardAddProps{
     listId:string;
     setIsCardAddOpened:(value:boolean) => void;
+    isCardRequery : boolean;
+    setIsCardRequery : (value:boolean) => void;
 }
-function CardAdd({listId, setIsCardAddOpened}:ICardAddProps){
+function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:ICardAddProps){
   const [t] = useTranslation();
   const {register, handleSubmit,formState:{errors}} = useForm();
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
@@ -39,11 +41,15 @@ function CardAdd({listId, setIsCardAddOpened}:ICardAddProps){
     console.log('create card', card);
     const response = await apiCreateCard(card);
     console.log(response);
-    if(response.message){
-      setIsCardAddOpened(true);
-    }else{
-      setIsCardAddOpened(false);
-    }    
+    if(response)
+    {
+      if(response.message){
+        setIsCardAddOpened(true);
+      }else{
+        setIsCardAddOpened(false);
+        setIsCardRequery(!isCardRequery);
+      } 
+    }   
 
   }  
 

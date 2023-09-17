@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useRecoilValue} from "recoil";
+import { useRecoilValue, useRecoilState} from "recoil";
 import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import {projectSelector, IProject } from '../atoms/atomsProject';
+import {atomCurrentMyBoard} from "../atoms/atomsBoard";
 
 import Fix from "../components/Fix";
 import Static from "../components/Static";
@@ -23,7 +24,8 @@ function Core(){
 
   const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:"", defaultBoardId:""});
   const [current, setCurrent] = useState(false);
-  const [currentBoardId, setCurrentBoardId] = useState("");
+  const [currentBoardId, setCurrentBoardId] = useRecoilState(atomCurrentMyBoard);
+  //const [currentBoardId, setCurrentBoardId] = useState("");
   const [currentProjectId, setCurrentProjectId] = useState("");
 
   const selectProject  = useRecoilValue(projectSelector); 
@@ -36,7 +38,7 @@ function Core(){
       {
         setCurrentProject(selectProject(id)[0]);
  
-        setCurrentBoardId(""); 
+        setCurrentBoardId({boardId:""}); 
         setCurrent(true);
 
       }else{
@@ -44,7 +46,7 @@ function Core(){
       }
     }
     if(IsDetail){
-      setCurrentBoardId(id);
+      setCurrentBoardId({boardId:id});
       setCurrent(true);
     }
     
@@ -65,7 +67,7 @@ function Core(){
       <>
           <Fix setCurrent={setCurrent} projectName={current ? currentProject?.projectName:""} />
           {(!current)? <Static projectId="" boardId="" defaultBoardId=""/> :
-            <Static projectId={currentProjectId} boardId={currentBoardId} defaultBoardId = {currentProject?.defaultBoardId} />}
+            <Static projectId={currentProjectId} boardId={currentBoardId.boardId} defaultBoardId = {currentProject?.defaultBoardId} />}
           {currentModal === "USERS" && <UsersModal/>}
           {currentModal === "USER_SETTING" && <UserSettingModal/>}
       </>

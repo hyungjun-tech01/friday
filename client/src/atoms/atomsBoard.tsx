@@ -37,7 +37,6 @@ export const defaultModifyBoard:IModfiyBoard = {
 }
 export interface ICurrent{
     boardId : string;
-    projectId : string;
 }
 
 export interface ICreateBoard{
@@ -69,7 +68,7 @@ export interface IBoardMember{
 
 export const atomCurrentMyBoard = atom<ICurrent>({
     key : "currentBoard",
-    default : { boardId:"" , projectId:""}
+    default : { boardId:"" }
 });
 
 // default value 1, MyProject 1

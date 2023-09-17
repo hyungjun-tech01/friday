@@ -21,7 +21,7 @@ export const apiGetCardsbyListId = async (listId:string) => {
         return(null);
     }
     try{
-        const response = await fetch(`${BASE_PATH}/cards/${listId}`);  // backtik 
+        const response = await fetch(`${BASE_PATH}/cardbylistId/${listId}`);  // backtik 
         const json = await response.json()
         return json;
     }catch(err){

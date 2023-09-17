@@ -26,15 +26,11 @@ function Board({boardId}:IListProps){
     const checkBoardUsers = async () => {
         const checkAuth:ICheckBoardEditAuth= {"boardId":boardId, "userId":cookies.UserId };
         const response = await apiCheckEditBoard(checkAuth);
-        if(response.messsage){
-            console.log("Fail to get response ....", response.message);
-        }else{
-            if(response && response[0] && response[0].users) {
+        if(response && response[0] && response[0].users) {
                 setBoardUsers(response[0].users);
             } else {
                 console.log("Fail to get board users...", response);
             };
-        };
     };
 
     const [showList, setShowList] = useState(false);

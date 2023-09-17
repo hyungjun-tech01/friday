@@ -1,5 +1,5 @@
-import {useRecoilState} from "recoil";
-import {IBoard, IQueryBoard, atomMyBoard} from "../atoms/atomsBoard";
+import {useRecoilState, useRecoilValue} from "recoil";
+import {IBoard, IQueryBoard, atomMyBoard, atomCurrentMyBoard} from "../atoms/atomsBoard";
 import {useQuery} from "react-query";
 import { Button, Icon } from 'semantic-ui-react';
 import {Link} from "react-router-dom";
@@ -9,6 +9,7 @@ import {apiGetBoards} from "../api/board";
 import styles from "../scss/Boards.module.scss";
 import Paths from "../constants/Paths";
 import AddBoardModal from "./AddBoardModal";
+import classNames from "classnames";
 
 interface IBoardProps{
     projectId:string;
@@ -20,6 +21,7 @@ function Boards({projectId}:IBoardProps){
     const [boards, setBoards] = useRecoilState<IBoard[]>(atomMyBoard); 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isBoardLoading, setIsBoardLoading] = useState(false);
+    const currentBoardId = useRecoilValue(atomCurrentMyBoard);
     // login 하면 가지고 있을 것.  const [user, setUser] = useRecoilState<IUser>(atomUser); 
 
     //board id가 바뀔때마다 showList 를 변경 
@@ -57,7 +59,7 @@ function Boards({projectId}:IBoardProps){
                     <div className={styles.tabs}>
                         <div className={styles.tabWrapper} >
                             {boards.map( (item) => (
-                                <div key={item.boardId} className={styles.tab} >
+                                <div key={item.boardId} className={classNames(styles.tab, item.boardId === currentBoardId.boardId && styles.tabActive)} >
                                     <Link
                                         key={item.boardId}
                                         to={Paths.BOARDS.replace(':id', item.boardId)}

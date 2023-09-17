@@ -23,6 +23,7 @@ function List({id, index, name}:IListProps){
     const [isCardLoading, setIsCardLoading] = useState(true);
     const [cards, setCards] = useState<ICard[]>();
     const [isCardAddOpened, setIsCardAddOpened] = useState(false);
+    const [isCardRequery, setIsCardRequery] = useState(false);
     
     const onQueryCards = async () => {
         setIsCardLoading(true);
@@ -36,7 +37,7 @@ function List({id, index, name}:IListProps){
     };
 
     useEffect(
-        () => { onQueryCards(); } ,[id, isCardAddOpened]
+        () => { onQueryCards(); } ,[id, isCardRequery]
     );
 
     
@@ -54,7 +55,7 @@ function List({id, index, name}:IListProps){
             <div className={styles.cardsOuterWrapper}>
                 <div className={styles.cards}>
                     {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} card={card}/>))}
-                    {isCardAddOpened&&<CardAdd listId={id} setIsCardAddOpened={setIsCardAddOpened}/>}
+                    {isCardAddOpened&&<CardAdd listId={id} setIsCardAddOpened={setIsCardAddOpened} isCardRequery={isCardRequery} setIsCardRequery={setIsCardRequery}/>}
                     {!isCardAddOpened&&(
                         <button
                         type="button"
