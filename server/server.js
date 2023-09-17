@@ -229,14 +229,18 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                         card.cardMembership = cardMembership.rows;
 
                     const cardLabel = await pool.query(`
-                    select a.id as "cardLabelId", a.label_id as "lableId" , card_id as "cardId", 
-                      b.name as "labelName", b.color as "color", a.created_at as "createdAt",
-                      a.updated_at as "updatedAt" 
-                    from card_label a, label b
-                    where a.label_id = b.id
-                    and a.card_id = $1`,[card.cardId]);    
+                    select (select a.id from card_label a 
+                            where a.label_id = b.id 
+                            and a.card_id = $1) as "cardLabelId", 
+                            b.id as "lableId" , 
+                            $1 as "cardId", 
+                            b.name as "labelName", b.color as "color"
+                        from label b
+                        where b.board_id = $2`,[card.cardId, card.boardId]);    
                     if(cardLabel.rows.length > 0 )
+                    {
                         card.cardLabel = cardLabel.rows;
+                    }
 
                     const cardTask = await pool.query(`
                     select id as "taskId", card_id as "cardId", name as "taskName", is_completed as "isCompleted" ,
@@ -283,8 +287,9 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                    //     card.cardAction = cardAction.rows;    
 
                 }
-                console.log(cards);
+                //console.log(cards.cardLabel);
             }    
+          //  console.log('cardlabel', cards);
             res.json(cards);
             res.end();
          //   console.log('result', res);
