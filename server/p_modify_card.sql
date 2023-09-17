@@ -156,7 +156,9 @@ BEGIN
 			values(vv_card_membership_id, i_card_id::bigint, i_card_membership_user_id::bigint, vv_card_membership_created_at, now());
 		elseif (i_card_membership_action_type = 'DELETE') then
 			delete from card_membership
-			where id = i_card_membership_id::bigint;
+			where id = COALESCE(i_card_membership_id::bigint, id)
+			and card_id = i_card_id::bigint
+			and user_id = i_card_membership_user_id::bigint;
 		end if;
 
 	 select COALESCE(i_card_membership_user_id, ' '), COALESCE(i_card_membership_id, ' ')

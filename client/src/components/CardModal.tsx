@@ -162,6 +162,7 @@ const CardModal = ({ boardUsers, card, canEdit }: ICardModalProps) => {
           cardMembershipId: deleteMember.membershipId,
           cardMembershipUserId: deleteMember.userId,
         };
+        console.log(modifiedCard);
         const response = apiModifyCard(modifiedCard);
         response
           .then((result) => {

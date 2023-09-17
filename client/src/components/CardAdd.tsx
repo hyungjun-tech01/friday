@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import {useForm} from "react-hook-form";
 import {IModifyCard, defaultModifyCard} from "../atoms/atomCard";
 import {useCookies} from "react-cookie";
-import {apiCreateCard, apiModifyCard} from "../api/card";
+import {apiCreateCard} from "../api/card";
 
 interface ICardAddProps{
     listId:string;

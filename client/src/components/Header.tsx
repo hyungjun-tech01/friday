@@ -30,6 +30,7 @@ function Header({setCurrent, projectName}:any){
         removeCookie('AuthToken');
         removeCookie('UserName');
         removeCookie('UserId');
+        history.push(Path.LOGIN);
     //    console.log(cookies);
     };
 
