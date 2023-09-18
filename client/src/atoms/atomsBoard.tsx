@@ -1,4 +1,5 @@
 import {atom} from "recoil";
+import {ILabel} from "./atomLabel";
 
 export interface IBoard{
     boardId : string;
@@ -37,6 +38,8 @@ export const defaultModifyBoard:IModfiyBoard = {
 }
 export interface ICurrent{
     boardId : string;
+    users : IBoardUser[];
+    labels : ILabel[];
 }
 
 export interface ICreateBoard{
@@ -65,10 +68,23 @@ export interface IBoardMember{
     users : IBoardUser[];
     boardmMemberAllUsers : IBoardUser[];
 }
-
+export const defaultCurrentMyBoard:ICurrent = {
+    boardId:"", 
+    users:[{ userId:"",
+        userName: "",
+        avatarUrl: "",
+        userEmail:"",
+        canEdit:""}],
+     labels : [{
+        labelId : "",
+        labelName: "",
+        boardId: "",
+        color: "",
+     }],
+}
 export const atomCurrentMyBoard = atom<ICurrent>({
     key : "currentBoard",
-    default : { boardId:"" }
+    default : defaultCurrentMyBoard
 });
 
 // default value 1, MyProject 1

@@ -20,6 +20,20 @@ export const apiGetBoards = async (project:IQueryBoard) => {
     //    (response) => response.json()
     //);
 };
+export const apiGetCurrentBoards = async (boardId:string) => {
+    console.log("apiGetCurrentBoards", boardId);
+    if(boardId === null || boardId === ''){
+        return(null);
+    }
+    try{
+        const response = await fetch(`${BASE_PATH}/currentBoard/${boardId}`);  // backtik 
+        const json = await response.json()
+        return json;
+    }catch(err){
+        console.error(err);
+    }
+};
+
 export const apiCreateBoard = async(board:IModfiyBoard) => {
     console.log('create or modify Board api');
     try{

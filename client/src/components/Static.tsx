@@ -25,7 +25,7 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
     }else{
        // setCurrentBoardId({boardId:defaultBoardId});
        if(defaultBoardId !== "" && boardId ==="" ){
-        setCurrentBoardId({boardId:defaultBoardId});
+        setCurrentBoardId({...currentBoardId, boardId:defaultBoardId});
        }
         return(
             <div className={`${styles.wrapper}`}>

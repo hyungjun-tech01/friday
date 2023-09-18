@@ -3,11 +3,11 @@ import {atom} from "recoil";
 export interface ILabel{
     labelId : string; 
     labelName: string;
-    cardId: string;
+    boardId: string;
     color:string;
 }
 export const defaultLabel:ILabel = {
-    labelId:"", labelName:"", cardId:"", color:""
+    labelId:"", labelName:"", boardId:"", color:""
 }
 
 export interface ICardLabel {

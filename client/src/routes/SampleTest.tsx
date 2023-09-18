@@ -3,6 +3,7 @@ import {useEffect} from 'react';
  import {ICard, defaultCard} from "../atoms/atomCard";
  import {IModifyCard, defaultModifyCard} from "../atoms/atomCard";
  import {apiModifyCard} from "../api/card";
+import { apiGetCurrentBoards } from '../api/board';
  // cardId, userId는 반드시 들어가야 함. 
  // 필요에 따라 Actiontype 과 값들을 적절하게 세팅하여 호출 : 아래는 descriptipon 변경 방법
 
@@ -16,15 +17,16 @@ import {useEffect} from 'react';
     const date_time = date + ' ' + time;
 //    console.log(date + ' ' + time);
 
-     const card : IModifyCard = {...defaultModifyCard, 
-       cardId:'1061970265900057818', 
-       userId:'967860418955445249',
-      cardTaskActionType : 'UPDATE',
-      cardTaskName : '...',
-      cardTaskId : '1070922052166223211',
-     };
-     console.log(card); 
-     const response = await apiModifyCard(card);
+    //  const card : IModifyCard = {...defaultModifyCard, 
+    //    cardId:'1061970265900057818', 
+    //    userId:'967860418955445249',
+    //   cardTaskActionType : 'UPDATE',
+    //   cardTaskName : '...',
+    //   cardTaskId : '1070922052166223211',
+    //  };
+    //  console.log(card); 
+    //  const response = await apiModifyCard(card);
+    const response = await apiGetCurrentBoards('1016265084713829473');
      console.log('moddify response', response);
 
    }    

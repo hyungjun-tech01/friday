@@ -38,7 +38,7 @@ function Core(){
       {
         setCurrentProject(selectProject(id)[0]);
  
-        setCurrentBoardId({boardId:""}); 
+        setCurrentBoardId({...currentBoardId, boardId:""}); 
         setCurrent(true);
 
       }else{
@@ -46,7 +46,7 @@ function Core(){
       }
     }
     if(IsDetail){
-      setCurrentBoardId({boardId:id});
+      setCurrentBoardId({...currentBoardId, boardId:id});
       setCurrent(true);
     }
     

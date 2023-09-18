@@ -87,6 +87,43 @@ app.post('/boards', async(req, res)=>{
     }
     }
 );
+// get current board info by board id 
+app.get('/currentBoard/:boardId', async(req, res)=>{
+    const boardId = req.params.boardId;
+    let currentBoard = {boardId:boardId};
+
+    try{
+        const users = await pool.query(`
+            select t.user_id as "userId", 
+                t1.name as "userName",
+                t1.avatar as "avatarUrl",
+                t1.email as "userEmail",
+                t.role as "cadEdit"
+            from board_membership t, user_account t1
+            where t.user_id = t1.id
+            and t.board_id = $1`, [boardId]);
+         if( users.rows.length > 0 ) {
+                currentBoard.users = users.rows;
+            }
+        const labels = await pool.query(`
+            select id as "labelId",
+            name as "labelName",
+            board_id as "boardId",
+            color as "color"
+            from label
+            where board_id = $1`, [boardId]);
+        if( labels.rows.length > 0 ) {
+                currentBoard.labels = labels.rows;
+        }
+        res.json(currentBoard);
+        res.end();
+    }catch(err){
+    console.log(err);
+    res.json({message:err});        
+    res.end();
+    }
+}  
+);
 
 // get my lists by board id 
 app.get('/lists/:boardId', async(req, res)=>{
