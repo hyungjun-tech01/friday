@@ -34,7 +34,7 @@ function BoardMemberPermission({addBoardId, addMemberId, title, content, buttonC
     const handleSelectRoleClick = (role:any)=>{
         setData({role:role, canComment:null})
     }
-    return(
+    return(   
     <div className={styles.overlay} > 
       <div className={styles.modal} >
         <SemanticUIPopup.Header className={styles.wrapper}>
