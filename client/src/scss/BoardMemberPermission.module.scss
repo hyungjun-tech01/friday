@@ -27,7 +27,7 @@
     left: 0;
     line-height: 20px;
     margin: 0 12px;
-    padding: 12px 28px 8px;
+    padding: 5px 5px 5px;
     position: absolute;
     right: 0;
     top: 0;
@@ -60,7 +60,23 @@
         line-height: 1.2;
         padding: 9px 28px 0 2px;
       }
+
+      .menu {
+        margin: 0 auto 8px;
+        width: 100%;
+      }
     
+      .menuItemDescription {
+        opacity: 0.5;
+      }
+    
+      .menuItemTitle {
+        margin-bottom: 8px;
+      }
+    
+      .settings {
+        margin: 0 0 8px;
+      }      
           /* 실제 모달창 */
   .modal {
     z-index : 99997 !important;
