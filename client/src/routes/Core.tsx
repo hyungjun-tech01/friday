@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 
 import {projectSelector, IProject } from '../atoms/atomsProject';
 import {atomCurrentMyBoard} from "../atoms/atomsBoard";
+import {apiGetCurrentBoards} from "../api/board";
 
 import Fix from "../components/Fix";
 import Static from "../components/Static";
@@ -46,11 +47,18 @@ function Core(){
       }
     }
     if(IsDetail){
-      setCurrentBoardId({...currentBoardId, boardId:id});
+      getCurrentBoard(id);
       setCurrent(true);
     }
     
   },[id,IsMaster, IsDetail,currentProjectId,selectProject]);  
+
+  const getCurrentBoard = async (id:string) => {
+    const response = await apiGetCurrentBoards(id);
+    if(response ) {
+      setCurrentBoardId({...currentBoardId, boardId:id, users:response.users, labels:response.labels});
+    }
+  };
 
   
     const [currentModal, setCurrentModal] = useState(null);
