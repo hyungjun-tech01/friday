@@ -1,4 +1,4 @@
-import {IBoardMember, IModfiyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
+import {IBoardMember, IModifyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
 import styles from "../scss/Membership.module.scss";
 import BoardMemberActionPopup from "./BoardMemberActionPopup";
 import {Button} from "semantic-ui-react";
@@ -8,7 +8,7 @@ import {useCallback, useState} from "react";
 import {useCookies} from "react-cookie";
 import DeleteStep from "./DeleteStep";
 import {useTranslation} from "react-i18next";
-import {apiCreateBoard} from "../api/board";
+import {apiModifyBoard} from "../api/board";
 import { Value } from "sass";
 
 interface IMembershipProps {
@@ -51,9 +51,9 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
       }
     const onConfirm = async ()=>{
         // server 처리 
-        const board : IModfiyBoard= {...defaultModifyBoard, boardMembershipActionType:'DELETE', boardMembershipUserId:boardMemberActionUserId.userId, boardId:boardId, userId:cookies.UserId};
+        const board : IModifyBoard= {...defaultModifyBoard, boardMembershipActionType:'DELETE', boardMembershipUserId:boardMemberActionUserId.userId, boardId:boardId, userId:cookies.UserId};
     
-        const response = await apiCreateBoard(board);
+        const response = await apiModifyBoard(board);
         console.log('response', response, response.status);
         if(response){
             if(response.boardId){  // 성공하면 

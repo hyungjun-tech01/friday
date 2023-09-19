@@ -407,18 +407,26 @@ app.post('/project', async(req, res) => {
 app.post('/board', async(req, res) => {
     const {boardActionType, userId, projectId, boardName, boardPosition,
         boardId, boardMembershipActionType, boardMembershipId, boardMembershipUserId , boardMembershipRole,
-        boardMembershipCanComment } = req.body;
+        boardMembershipCanComment, 
+        boardLabelActionType , labelId , labelName , labelColor , labelPosition 
+     } = req.body;
     try{
         console.log('create new board');
         // insert project 
-        const response = await pool.query(`call p_modify_board($1, $2, $3, $4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+        const response = await pool.query(`call p_modify_board($1, $2, $3, $4, $5, 
+             $6, $7, $8, $9, $10, $11, $12, $13,
+             $14, $15, $16, $17, $18, $19)`,
         [boardActionType, userId, projectId, boardName, boardPosition,
             boardId, boardMembershipActionType, boardMembershipId, boardMembershipUserId , boardMembershipRole,
-            boardMembershipCanComment, null]);
+            boardMembershipCanComment,  boardLabelActionType , labelId , labelName , labelColor , labelPosition ,null, null, null]);
         
             const outBoardId = response.rows[0].x_board_id;
+            const outLableId = response.rows[0].x_label_id;
+            const outBoardMembershipId = response.rows[0].x_board_membership_id;
 
-        res.json({ outBoardId:outBoardId, boardId:boardId}); //insert 시에는 outBoardId not null, 나머지 트랜잭션은 boardId not null  
+        //add 시에는 outBoardId, outLableId, outBoardMembershipId not null, 나머지 트랜잭션은 boardId not null  
+        res.json({ outBoardId:outBoardId, boardId:boardId, outLableId:outLableId, outBoardMembershipId:outBoardMembershipId}); 
+
         res.end();
     }catch(err){
         console.error(err);

@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { Button, Form, Icon } from 'semantic-ui-react';
 import styles from "../scss/AddBoardModal.module.scss";
 import {useForm} from "react-hook-form";
-import {IModfiyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
-import {apiCreateBoard} from "../api/board";
+import {IModifyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
+import {apiModifyBoard} from "../api/board";
 import {useCookies} from "react-cookie";
 import {useState, useRef, useEffect} from "react";
 import { useHistory } from "react-router-dom"; 
@@ -42,9 +42,9 @@ function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardMo
     }     
 
   const onValid = async (data:any) =>{
-    const board : IModfiyBoard= {...defaultModifyBoard, ...data, boardActionType:'ADD', projectId:projectId, userId:cookies.UserId};
+    const board : IModifyBoard= {...defaultModifyBoard, ...data, boardActionType:'ADD', projectId:projectId, userId:cookies.UserId};
     
-    const response = await apiCreateBoard(board);
+    const response = await apiModifyBoard(board);
     console.log('response', response, response.status);
     if(response){
       if(response.outBoardId){

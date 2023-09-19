@@ -10,7 +10,7 @@ export interface IBoard{
     role : string;
     userId : string;
 }
-export interface IModfiyBoard{
+export interface IModifyBoard{
     boardActionType:'ADD'|'UPDATE'|'DELETE'|null;
     userId : string;
     projectId:string|null;
@@ -22,8 +22,13 @@ export interface IModfiyBoard{
     boardMembershipUserId : string|null;
     boardMembershipRole : 'editor'|'viewer'|null;
     boardMembershipCanComment : 'true'|'false'|null;
+    boardLabelActionType : 'ADD'|'DELETE'|'UPDATE'|null;
+    labelId :string|null; 
+    labelName : string|null; 
+    labelColor : string|null; 
+    labelPosition : string|null;
 }
-export const defaultModifyBoard:IModfiyBoard = {
+export const defaultModifyBoard:IModifyBoard = {
     boardActionType:null,
     userId : '0',
     projectId: null,
@@ -35,6 +40,11 @@ export const defaultModifyBoard:IModfiyBoard = {
     boardMembershipUserId : null,
     boardMembershipRole : null,
     boardMembershipCanComment : null,
+    boardLabelActionType : null,
+    labelId : null, 
+    labelName : null, 
+    labelColor : null, 
+    labelPosition : null,
 }
 export interface ICurrent{
     boardId : string;

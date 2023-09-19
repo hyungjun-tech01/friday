@@ -1,4 +1,4 @@
-import { IModfiyBoard, IQueryBoard, ICheckBoardEditAuth } from "../atoms/atomsBoard";
+import { IModifyBoard, IQueryBoard, ICheckBoardEditAuth } from "../atoms/atomsBoard";
 import Paths from "../constants/Paths";
 
 const BASE_PATH = Paths.BASE_PATH; 
@@ -34,7 +34,7 @@ export const apiGetCurrentBoards = async (boardId:string) => {
     }
 };
 
-export const apiCreateBoard = async(board:IModfiyBoard) => {
+export const apiModifyBoard = async(board:IModifyBoard) => {
     console.log('create or modify Board api');
     try{
         const response = await fetch(`${BASE_PATH}/board`,{
