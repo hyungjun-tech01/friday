@@ -14,9 +14,6 @@ interface IBoardmemberAddProps{
 }
 function BoardMemeberAdd({members, setOnAddPopup, setBoardMemeberPermissionUserId}:IBoardmemberAddProps){
     const [t] = useTranslation();
-    const [isBoardMemberPermission, setIsBoardMemberPermission] = useState(false);
-    const [addMemberId, setAddMemberId] = useState("");
-    const addBoardId = members !== undefined ? members[0].boardId:"";
     let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
     const users = members !== undefined ? members[0].boardmMemberAllUsers:null;
     const [search, handleSearchChange] = useState('');
@@ -52,18 +49,10 @@ function BoardMemeberAdd({members, setOnAddPopup, setBoardMemeberPermissionUserI
     const handleUserSelect = (userId:string, canEdit:string) => {
       if(canEdit === null){
         console.log('add user');
-        setAddMemberId(userId);
+        setOnAddPopup(false);
         setBoardMemeberPermissionUserId({userId:userId, userName:"", userEmail:"", avatarUrl:"",  canEdit:canEdit, positionX:-1, positionY:-1});
       }
     }
-    const onBack = () =>{
-      console.log('onback');
-      setIsBoardMemberPermission(false);
-      setOnAddPopup(true);
-    }; 
-    const onConfirm = () =>{
-
-    }; 
     return(
       <>
       <div className = {styles.overlay}>

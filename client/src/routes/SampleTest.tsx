@@ -11,11 +11,14 @@ import { apiGetCurrentBoards, apiModifyBoard } from '../api/board';
   const cardModifySample = async() => {
     const TIME_ZONE = 9 * 60 * 60 * 1000; // 9시간
     const d = new Date();
-
+    console.log(d);
+    console.log(d.toISOString());
     const date = new Date(d.getTime() + TIME_ZONE).toISOString().split('T')[0];
+    console.log(date);
     const time = d.toTimeString().split(' ')[0];
+    console.log(time);
     const date_time = date + ' ' + time;
-//    console.log(date + ' ' + time);
+    console.log(date_time);
 
      const board : IModifyBoard = {...defaultModifyBoard, 
        boardId:'1016265084713829473', 

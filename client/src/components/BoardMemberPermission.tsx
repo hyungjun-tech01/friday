@@ -29,10 +29,13 @@ function BoardMemberPermission({addBoardId, addMember, title, content, buttonCon
     const [t] = useTranslation();
     const [data, setData] = useState(() => ({
         role: BoardRole.EDITOR,
-        canComment: null
+        canComment: true
       }));
     const handleSelectRoleClick = (role:any)=>{
-        setData({role:role, canComment:null})
+        setData({role:role, canComment:true})
+    }
+    const handleSettingChange = () => {
+      setData({...data, canComment:!data.canComment})
     }
     return(   
     <div className={styles.overlay} > 
@@ -42,7 +45,7 @@ function BoardMemberPermission({addBoardId, addMember, title, content, buttonCon
             <div className={styles.popupcontent}>{title}</div>
         </SemanticUIPopup.Header>
         <SemanticUIPopup.Content className={styles.wrapper}>
-        <div className={styles.popupcontent}>
+        <div className={styles.content}>
             <Menu secondary vertical className={styles.menu}>
               <Menu.Item
                 active={data.role === BoardRole.EDITOR}
@@ -57,7 +60,7 @@ function BoardMemberPermission({addBoardId, addMember, title, content, buttonCon
                 <div className={styles.menuItemDescription}>{t('common.canOnlyViewBoard')}</div>
               </Menu.Item>
             </Menu>
-        { /* data.role === BoardMembershipRoles.VIEWER && (
+        {  data.role === BoardRole.VIEWER && (
           <Segment basic className={styles.settings}>
             <Radio
               toggle
@@ -67,10 +70,8 @@ function BoardMemberPermission({addBoardId, addMember, title, content, buttonCon
               onChange={handleSettingChange}
             />
           </Segment>
-        ) */}
-          </div>
-          </SemanticUIPopup.Content>
-              <Button fluid positive 
+        ) }
+        <Button fluid positive 
                 style = {{
                   background : '#21d983',
                   color: 'white',
@@ -83,6 +84,8 @@ function BoardMemberPermission({addBoardId, addMember, title, content, buttonCon
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}                      
                 content={buttonContent} onClick={onConfirm} />
+          </div>
+          </SemanticUIPopup.Content>
         </div>  
       </div>
     );
