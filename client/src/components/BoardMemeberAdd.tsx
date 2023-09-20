@@ -10,8 +10,9 @@ import BoardMemberPermission from "./BoardMemberPermission";
 interface IBoardmemberAddProps{
     members?: IBoardMember[];
     setOnAddPopup:(value:boolean) => void;
+    setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) =>void;
 }
-function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
+function BoardMemeberAdd({members, setOnAddPopup, setBoardMemeberPermissionUserId}:IBoardmemberAddProps){
     const [t] = useTranslation();
     const [isBoardMemberPermission, setIsBoardMemberPermission] = useState(false);
     const [addMemberId, setAddMemberId] = useState("");
@@ -52,7 +53,7 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
       if(canEdit === null){
         console.log('add user');
         setAddMemberId(userId);
-        setIsBoardMemberPermission(true);
+        setBoardMemeberPermissionUserId({userId:userId, userName:"", userEmail:"", avatarUrl:"",  canEdit:canEdit, positionX:-1, positionY:-1});
       }
     }
     const onBack = () =>{
@@ -89,9 +90,7 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
         </div>
         </div>  
       </div>
-      {isBoardMemberPermission &&<BoardMemberPermission addBoardId={addBoardId} addMemberId={addMemberId}
-      title={t('common.selectPermission')} content={t('common.leaveBoardContent')} buttonContent={t('action.addMember')}  onConfirm={onConfirm}  onBack={onBack}  
-      />}
+
       </>
     );
 }

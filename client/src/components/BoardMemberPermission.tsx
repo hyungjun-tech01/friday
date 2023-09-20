@@ -8,10 +8,10 @@ import BoardRole from "../constants/BoardRole";
 
 interface IBoardMemberPermission{
     addBoardId : string;
-    addMemberId : string;
     title : string;
     content : string;
     buttonContent : string;
+    addMember : {userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number};
     onConfirm : ()=>void;
     onBack : () => void;
 }
@@ -25,7 +25,7 @@ const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
     e.currentTarget.style.color = 'white';
   };
 
-function BoardMemberPermission({addBoardId, addMemberId, title, content, buttonContent, onConfirm, onBack}:IBoardMemberPermission){
+function BoardMemberPermission({addBoardId, addMember, title, content, buttonContent, onConfirm, onBack}:IBoardMemberPermission){
     const [t] = useTranslation();
     const [data, setData] = useState(() => ({
         role: BoardRole.EDITOR,
