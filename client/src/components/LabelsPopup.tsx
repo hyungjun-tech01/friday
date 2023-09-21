@@ -8,7 +8,7 @@ import {
   cloneElement,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Popup, Input, StrictIconGroupProps } from 'semantic-ui-react';
+import { Button, Popup, Input } from 'semantic-ui-react';
 import { ILabel } from '../atoms/atomLabel';
 import LabelsPopupItem from './LabelsPopupItem';
 import LabelsPopupChange from './LabelsPopupChange';
@@ -71,7 +71,7 @@ const LabelsPopup = ({
   // Step Properties -----------------------
   const [step, setStep] = useState<{
     mode: LabelsPopupChangeMode;
-    id?: string;
+    data?: ILabel;
   } | null>(null);
 
   const handleBack = useCallback(() => {
@@ -80,6 +80,10 @@ const LabelsPopup = ({
 
   const handleAddClick = useCallback(() => {
     setStep({ mode: 'ADD' });
+  }, []);
+
+  const handleEdit = useCallback((data: ILabel) => {
+    setStep({ mode: 'EDIT', data: data });
   }, []);
 
   // Labels Properties ---------------------
@@ -131,10 +135,6 @@ const LabelsPopup = ({
     [onUpdate]
   );
 
-  const handleEdit = useCallback((id: string) => {
-    setStep({ mode: 'EDIT', id: id });
-  }, []);
-
   const handleDelete = useCallback(
     (id: string) => {
       onDelete(id);
@@ -143,10 +143,10 @@ const LabelsPopup = ({
   );
 
   useEffect(() => {
-    if(searchField.current) {
-        searchField.current.focus({
-            preventScroll: true,
-          });
+    if (searchField.current) {
+      searchField.current.focus({
+        preventScroll: true,
+      });
     }
   }, [items]);
 
@@ -182,7 +182,7 @@ const LabelsPopup = ({
                     canEdit={canEdit}
                     onSelect={() => handleSelect(item.labelId)}
                     onDeselect={() => handleDeselect(item.labelId)}
-                    onEdit={() => handleEdit(item.labelId)}
+                    onEdit={() => handleEdit(item)}
                   />
                 ))}
               </div>
@@ -210,7 +210,7 @@ const LabelsPopup = ({
       return (
         <LabelsPopupChange
           mode={step.mode}
-          defaultData={{ id: step.id }}
+          defaultData={step.data}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
           onBack={handleBack}
@@ -240,7 +240,7 @@ const LabelsPopup = ({
   return (
     <Popup
       basic
-      // wide
+      wide
       ref={popupRef}
       trigger={trigger}
       on="click"

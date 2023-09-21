@@ -1,8 +1,9 @@
 import { useCallback, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Popup, Button, Form } from 'semantic-ui-react';
-import classNames from 'classnames';
 import { upperFirst, camelCase } from 'lodash';
+import { ILabel } from '../atoms/atomLabel';
+import classNames from 'classnames';
 import LabelColors from '../constants/LabelColors';
 import styles from '../scss/LabelsPopupChange.module.scss';
 import globalStyles from '../styles.module.scss';
@@ -11,7 +12,7 @@ type LabelsPopupChangeMode = 'ADD' | 'EDIT';
 
 interface ILabelsPopupChangeProps {
   mode: LabelsPopupChangeMode;
-  defaultData?: { id?: string; name?: string; color?: string };
+  defaultData?: ILabel;
   onCreate?: (data: { name: string | null; color: string }) => void;
   onUpdate?: (data: { id: string; name?: string; color?: string }) => void;
   onDelete?: (id: string) => void;
@@ -64,8 +65,8 @@ const LabelsPopupChange = ({
   }, [data, mode, onCreate, onUpdate, onBack]);
 
   const handleDelete = useCallback(()=>{
-    if(defaultData && defaultData.id && onDelete) {
-      onDelete(defaultData.id);
+    if(defaultData && defaultData.labelId && onDelete) {
+      onDelete(defaultData.labelId);
     };
   }, [defaultData, onDelete])
 
@@ -89,7 +90,7 @@ const LabelsPopupChange = ({
             fluid
             ref={nameField}
             name="name"
-            value={data.name}
+            value={data.labelName}
             className={styles.field}
             onChange={handleChange}
           />
