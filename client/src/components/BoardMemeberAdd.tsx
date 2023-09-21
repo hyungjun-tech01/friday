@@ -5,17 +5,15 @@ import {IBoardMember} from "../atoms/atomsBoard";
 import {Input} from "semantic-ui-react";
 import UserItem from "./UserItem";
 import BoardMemberPermission from "./BoardMemberPermission";
-import BoardRole from "../constants/BoardRole";
+
 
 interface IBoardmemberAddProps{
     members?: IBoardMember[];
     setOnAddPopup:(value:boolean) => void;
+    setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) =>void;
 }
-function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
+function BoardMemeberAdd({members, setOnAddPopup, setBoardMemeberPermissionUserId}:IBoardmemberAddProps){
     const [t] = useTranslation();
-    const [isBoardMemberPermission, setIsBoardMemberPermission] = useState(false);
-    const [addMemberId, setAddMemberId] = useState("");
-    const addBoardId = members !== undefined ? members[0].boardId:"";
     let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
     const users = members !== undefined ? members[0].boardmMemberAllUsers:null;
     const [search, handleSearchChange] = useState('');
@@ -51,17 +49,10 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
     const handleUserSelect = (userId:string, canEdit:string) => {
       if(canEdit === null){
         console.log('add user');
-        setAddMemberId(userId);
-        setIsBoardMemberPermission(true);
-
+        setOnAddPopup(false);
+        setBoardMemeberPermissionUserId({userId:userId, userName:"", userEmail:"", avatarUrl:"",  canEdit:canEdit, positionX:-1, positionY:-1});
       }
     }
-    const onBack = () =>{
-
-    }; 
-  const onConfirm = () =>{
-
-    }; 
     return(
       <>
       <div className = {styles.overlay}>
@@ -88,9 +79,7 @@ function BoardMemeberAdd({members, setOnAddPopup}:IBoardmemberAddProps){
         </div>
         </div>  
       </div>
-      {isBoardMemberPermission &&<BoardMemberPermission addBoardId={addBoardId} addMemberId={addMemberId}
-      title={t('common.selectPermission')} content={t('common.leaveBoardContent')} buttonContent={t('action.addMember')}  onConfirm={onConfirm}  onBack={onBack}
-      />}
+
       </>
     );
 }

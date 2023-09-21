@@ -1,6 +1,7 @@
 import {IBoardMember, IModifyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
 import styles from "../scss/Membership.module.scss";
 import BoardMemberActionPopup from "./BoardMemberActionPopup";
+import BoardMemberPermission from "./BoardMemberPermission";
 import {Button} from "semantic-ui-react";
 import User from "./User";
 import BoardMemeberAdd from "./BoardMemeberAdd";
@@ -10,6 +11,7 @@ import DeleteStep from "./DeleteStep";
 import {useTranslation} from "react-i18next";
 import {apiModifyBoard} from "../api/board";
 import { Value } from "sass";
+import { previousDay } from "date-fns";
 
 interface IMembershipProps {
     boardId: string;
@@ -43,6 +45,7 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
     const [boardMemberAction, setBoardMemberAction] = useState(false);
     // 사용자 삭제 Modal 
     const [deleteStep, setDeleteStep]  = useState(false);
+    const [boardMemeberPermissionUserId, setBoardMemeberPermissionUserId]  = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"", positionX:-1, positionY:-1 });
     const handleDeleteClick = () => { 
         // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
         console.log('handleDeleteClick');
@@ -74,7 +77,15 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
     const onBack = () =>{
         setDeleteStep(false);
         setBoardMemberAction(false);
-    };      
+    };     
+    const onMemberBack = () => {
+        setOnAddPopup(true);
+        setBoardMemeberPermissionUserId({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"", positionX:-1, positionY:-1 });
+    } 
+    const onMemberConfirm = () => {
+        //db 처리 
+        //add recoil
+    }
     if (members) {
         return(
             <span className={styles.users}>
@@ -117,8 +128,14 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
                     width: '36px',}} />}
                 {members !== undefined &&onAddPopup&&
                   <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
-                    <BoardMemeberAdd members={members} setOnAddPopup={setOnAddPopup}/>
+                    <BoardMemeberAdd members={members} setOnAddPopup={setOnAddPopup} setBoardMemeberPermissionUserId={setBoardMemeberPermissionUserId}/>
                   </div>}
+                {boardMemeberPermissionUserId.userId !== "" &&
+                  <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
+                  <BoardMemberPermission addBoardId={boardId} addMember={boardMemeberPermissionUserId}
+                 title={t('common.selectPermission')} content={t('common.leaveBoardContent')} buttonContent={t('action.addMember')}  onConfirm={onMemberConfirm}  onBack={onMemberBack}  />
+                </div>
+                }  
             </span>    
         );
     }
