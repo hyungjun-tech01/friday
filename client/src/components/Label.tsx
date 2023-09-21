@@ -1,14 +1,12 @@
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
-import React from 'react';
 import classNames from 'classnames';
-import LabelColors from '../constants/LabelColors';
+//import LabelColors from '../constants/LabelColors';
 
 import styles from '../scss/Label.module.scss';
 import globalStyles from '../styles.module.scss';
 
 type SIZES = 'tiny' | 'small' | 'medium';
-
 
 interface ILabelProps {
   name?: string;
@@ -18,7 +16,13 @@ interface ILabelProps {
   onClick?: () => void;
 }
 
-const Label = ({ name, color, size='medium', isDisabled=false, onClick }: ILabelProps) => {
+const Label = ({
+  name,
+  color,
+  size = 'medium',
+  isDisabled = false,
+  onClick,
+}: ILabelProps) => {
   const contentNode = (
     <div
       title={name}
@@ -27,7 +31,7 @@ const Label = ({ name, color, size='medium', isDisabled=false, onClick }: ILabel
         !name && styles.wrapperNameless,
         styles[`wrapper${upperFirst(size)}`],
         onClick && styles.wrapperHoverable,
-        globalStyles[`background${upperFirst(camelCase(color))}`],
+        globalStyles[`background${upperFirst(camelCase(color))}`]
       )}
     >
       {name || '\u00A0'}
@@ -35,7 +39,12 @@ const Label = ({ name, color, size='medium', isDisabled=false, onClick }: ILabel
   );
 
   return onClick ? (
-    <button type="button" disabled={isDisabled} className={styles.button} onClick={onClick}>
+    <button
+      type="button"
+      disabled={isDisabled}
+      className={styles.button}
+      onClick={onClick}
+    >
       {contentNode}
     </button>
   ) : (
