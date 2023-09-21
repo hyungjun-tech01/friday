@@ -56,7 +56,8 @@ const core = {
       editor : '편집자',
       viewer : '뷰어',
       canEditContentOfBoard : '보드 및 하위 컨텐츠를 편집할 수 있습니다.',
-      canOnlyViewBoard : '보드 및 하위 컨텐츠를 볼 수 있습니다.'        
+      canOnlyViewBoard : '보드 및 하위 컨텐츠를 볼 수 있습니다.',
+      canComment :'코맨트 가능',
     },
     action:{
       Login: '로그인',
