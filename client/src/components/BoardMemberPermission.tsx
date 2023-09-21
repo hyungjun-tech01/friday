@@ -46,7 +46,7 @@ function BoardMemberPermission({addBoardId, addMember, title, content, buttonCon
         </SemanticUIPopup.Header>
         <SemanticUIPopup.Content className={styles.wrapper}>
         <div className={styles.content}>
-            <Menu secondary vertical className={styles.menu}>
+            <Menu secondary vertical style={{ margin: '0px 0px 10px 0px', width: '100%', }}>
               <Menu.Item
                 active={data.role === BoardRole.EDITOR}
                 onClick={() => handleSelectRoleClick(BoardRole.EDITOR)}>
@@ -61,7 +61,7 @@ function BoardMemberPermission({addBoardId, addMember, title, content, buttonCon
               </Menu.Item>
             </Menu>
         {  data.role === BoardRole.VIEWER && (
-          <Segment basic className={styles.settings}>
+          <Segment basic style={{ margin: '0px 0px 0px', float:'left'}} >
             <Radio
               toggle
               name="canComment"

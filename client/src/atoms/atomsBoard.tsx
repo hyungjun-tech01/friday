@@ -68,6 +68,7 @@ export interface ICheckBoardEditAuth{
 export interface IBoardUser{
     userId:string;
     userName:string;
+    role:string;
     avatarUrl:string;
     userEmail:string;
     canEdit:string;
@@ -82,6 +83,7 @@ export const defaultCurrentMyBoard:ICurrent = {
     boardId:"", 
     users:[{ userId:"",
         userName: "",
+        role:"",
         avatarUrl: "",
         userEmail:"",
         canEdit:""}],

@@ -114,8 +114,11 @@ app.get('/currentBoard/:boardId', async(req, res)=>{
             where board_id = $1`, [boardId]);
         if( labels.rows.length > 0 ) {
                 currentBoard.labels = labels.rows;
+        }else{
+            currentBoard.labels = [];
         }
         res.json(currentBoard);
+        console.log(currentBoard);
         res.end();
     }catch(err){
     console.log(err);
