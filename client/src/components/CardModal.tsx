@@ -65,33 +65,44 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
     () => apiGetInfosByCardId(currentCard.cardId),
     {
       onSuccess: (data) => {
-        console.log('[CardModal] Called Card Info ----');
+        console.log('[CardModal] Called Card Info : ', data);
         if (data[0].cardMembership) {
-          setCardMemberships(data[0].cardMembership);
-          setCardUserIds(cardMemberships.map((user) => user.userId));
-        } ;
+          const newCardMembership:IMembership[] = [
+            ...data[0].cardMembership
+          ];
+          setCardMemberships(newCardMembership);
+          setCardUserIds(newCardMembership.map((user) => user.userId));
+        }
         if (data[0].cardTask) {
-          setTasks(data[0].cardTask);
-        };
+          const newTasks = [
+            ...data[0].cardTask
+          ];
+          setTasks(newTasks);
+        }
         if (data[0].dueDate) {
           const date = new Date(data[0].dueDate);
           setDueDate(date);
-        };
+        }
         if (data[0].stopwatch) {
           const stopwatch_input: IStopwatch = {
             total: parseInt(data[0].stopwatch.total),
             startedAt: new Date(data[0].stopwatch.startedAt),
           };
           setStopwatch(stopwatch_input);
-        };
+        }
         if (data[0].cardComment) {
-          setComments(data[0].cardComment);
-        };
+          const newCardComment = [
+            ...data[0].cardComment
+          ];
+          setComments(newCardComment);
+        }
         // if(data[0].cardAction) {
         //   setActions(data[0].cardAction);
         // };
+        console.log('[CardModal] Check : ', cardMemberships);
       },
-      //enabled : !showCreateModal
+      refetchOnWindowFocus: false,
+      enabled : !!currentCard
     }
   );
 
@@ -294,7 +305,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 labels: newLabels,
               };
               setCurrentCard(updatedCard);
-            };
+            }
           })
           .catch((message) => {
             console.log('Fail to update name of card', message);
@@ -384,7 +395,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   );
 
   const handleLabelUpdate = useCallback(
-    (data: {id: string, name?: string; color?: string}) => {
+    (data: { id: string; name?: string; color?: string }) => {
       const found_index = currentCard.labels.findIndex(
         (label) => label.labelId === data.id
       );
@@ -792,8 +803,8 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   );
 
   useEffect(() => {
-    console.log('CardModal : ', currentCard);
-  }, [currentCard]);
+    console.log('Card Modal Rendering :');  
+  }, [])
 
   const contentNode = ( isLoading ? ('Now Loading ..... ') : (
     <Grid className={styles.grid}>
@@ -831,7 +842,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                       context: 'title',
                     })}
                   </div>
-                  {cardMemberships.map((user, index) => (
+                  {cardMemberships.map((user) => (
                     <span key={user.cardMembershipId} className={styles.attachment}>
                       {canEdit ? (
                         <CardMembershipPopup
