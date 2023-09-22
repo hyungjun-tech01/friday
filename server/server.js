@@ -169,7 +169,7 @@ app.get('/cardbylistId/:listId', async(req, res)=>{
                 for(const card of cards){
                     //console.log('card', card.cardId);
                     const labelResult = await pool.query(`
-                    select l.id as "labelId", l.name as "labelName", l.color as "color"
+                    select l.id as "labelId", l.board_id as "boardId", l.name as "labelName", l.color as "color"
                     from card_label cl, label l
                     where cl.label_id = l.id
                     and cl.card_id = $1`

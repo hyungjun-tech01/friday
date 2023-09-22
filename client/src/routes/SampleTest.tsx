@@ -1,7 +1,7 @@
  ///// api 호출 sample code 
 import {useEffect} from 'react';
- import {ICard, defaultCard} from "../atoms/atomCard";
- import {IModifyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
+ import {ICard, defaultCard, IModifyCard, defaultModifyCard} from "../atoms/atomCard";
+ import {IModifyBoard, defaultModifyBoard, } from "../atoms/atomsBoard";
  import {apiModifyCard} from "../api/card";
 import { apiGetCurrentBoards, apiModifyBoard } from '../api/board';
  // cardId, userId는 반드시 들어가야 함. 
@@ -20,17 +20,27 @@ import { apiGetCurrentBoards, apiModifyBoard } from '../api/board';
     const date_time = date + ' ' + time;
     console.log(date_time);
 
-     const board : IModifyBoard = {...defaultModifyBoard, 
-       boardId:'1016265084713829473', 
-       userId:'967860418955445249',
-       boardLabelActionType : 'DELETE',
-       labelId : '1073004397610403292',
-       labelName :'테스트',
-       labelColor : 'red',
-       //
-     };
-     console.log(board); 
-     const response = await apiModifyBoard(board);
+    //  const board : IModifyCard = {...defaultModifyBoard, 
+    //    boardId:'1016265084713829473', 
+    //    userId:'967860418955445249',
+    //    boardLabelActionType : 'DELETE',
+    //    labelId : '1073004397610403292',
+    //    labelName :'테스트',
+    //    labelColor : 'red',
+    //    //
+    //  };
+     const card : IModifyCard = {...defaultModifyCard, 
+      boardId:'1016265084713829473', 
+      userId:'967860418955445249',
+      cardLabelActionType : 'DELETE',
+      labelId : '1027147958514091150',
+      cardId :'1027148357342069905',
+
+      //
+    };
+     console.log(card); 
+     // const response = await apiModifyBoard(board);
+     const response = await apiModifyCard(card);
     // const response = await apiGetCurrentBoards('1016265084713829473');
      console.log('modify response', response);
 
