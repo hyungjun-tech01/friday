@@ -280,15 +280,18 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                             where a.label_id = b.id 
                             and a.card_id = $1) as "cardLabelId", 
                             b.id as "lableId" , 
+                            b.board_id as "boardId",
                             $1 as "cardId", 
                             b.name as "labelName", b.color as "color"
-                        from label b
-                        where b.board_id = $2`,[card.cardId, card.boardId]);    
+                        from label b, card_label c
+                        where b.id = c.label_id
+                        and c.card_id = $1
+                        and b.board_id = $2`,[card.cardId, card.boardId]);    
                     if(cardLabel.rows.length > 0 )
                     {
-                        card.cardLabel = cardLabel.rows;
+                        card.cardLabels = cardLabel.rows;
                     }else{
-                        card.cardLabel = [];
+                        card.cardLabels = [];
                     }
 
                     const cardTask = await pool.query(`
