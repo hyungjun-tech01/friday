@@ -176,6 +176,8 @@ app.get('/cardbylistId/:listId', async(req, res)=>{
                     , [card.cardId]);
                     if( labelResult.rows.length > 0 ) 
                         card.labels = labelResult.rows;
+                    else
+                        card.labels = [];
                 }
                 res.json(cards);
 //                console.log("queryed card", cards);
@@ -227,6 +229,8 @@ app.get('/cards/:boardId', async(req, res)=>{
                             , [card.cardId]);
                             if( labelResult.rows.length > 0 ) 
                                 card.labels = labelResult.rows;
+                            else
+                            card.labels = [];
                         }
                         cardsResults.push.apply(cardsResults,cards);
                     }
@@ -268,6 +272,8 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     and card_id = $1`, [card.cardId]);
                     if( cardMembership.rows.length > 0 ) 
                         card.cardMembership = cardMembership.rows;
+                    else
+                        card.cardMembership = [];
 
                     const cardLabel = await pool.query(`
                     select (select a.id from card_label a 
@@ -281,6 +287,8 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     if(cardLabel.rows.length > 0 )
                     {
                         card.cardLabel = cardLabel.rows;
+                    }else{
+                        card.cardLabel = [];
                     }
 
                     const cardTask = await pool.query(`
@@ -290,6 +298,8 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     where card_id = $1`, [card.cardId]);    
                     if(cardTask.rows.length > 0 )
                         card.cardTask = cardTask.rows;
+                    else
+                        card.cardTask = [];
 
                     const cardAttachment = await pool.query(`
                     select a.id as "cardAttachementId", a.card_id as "cardId", a.creator_user_id as "creatorUserId", b.name as "creatorUserName",
@@ -301,6 +311,8 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
 
                     if(cardAttachment.rows.length > 0 )
                         card.cardAttachment = cardAttachment.rows;
+                    else
+                       card.cardAttachment = [];
                     
                     const cardComment = await pool.query(`
                     select a.id as "commentId" , a.card_id as "cardId", 
@@ -313,6 +325,8 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
     
                     if(cardComment.rows.length > 0 )
                         card.cardComment = cardComment.rows;
+                    else
+                        card.cardComment = [];
 
                     // card action은 우선 조회에서 제외    
                     // const cardAction = await pool.query(`
@@ -330,7 +344,7 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                 }
                 //console.log(cards.cardLabel);
             }    
-          //  console.log('cardlabel', cards);
+            console.log('cardlabel', cards);
             res.json(cards);
             res.end();
          //   console.log('result', res);

@@ -1,6 +1,4 @@
 import { atom, selector } from "recoil";
-import { IUser, defaultUser } from "./atomsUser";
-import { ITask, defaultTask } from "./atomTask";
 import { ILabel, defaultLabel } from "./atomLabel";
 
 export interface ICard{

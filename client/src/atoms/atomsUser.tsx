@@ -40,7 +40,7 @@ export const atomMyUser = atom<IUser>({
 });
 
 export interface IMembership {
-    membershipId: string;
+    cardMembershipId: string;
     cardId: string;
     userId: string;
     createdAt: string | null;   // delete 'null' later

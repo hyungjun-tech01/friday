@@ -43,6 +43,14 @@ const CardMembershipPopup = ({
     setIsOpened(false);
   }, []);
 
+  const handleMouseDown = useCallback((event:any) => {
+    event.stopPropagation();
+  }, []);
+
+  const handleClick = useCallback((event:any) => {
+    event.stopPropagation();
+  }, []);
+
   const handleTriggerClick = useCallback(() => {
     setIsOpened(!isOpened);
   }, [isOpened]);
@@ -148,6 +156,8 @@ const CardMembershipPopup = ({
       className={styles.popupWrapper}
       onOpen={handleOpen}
       onClose={handleClose}
+      onMouseDown={handleMouseDown}
+      onClick={handleClick}
     >
       <div>
         {/* <div ref={handleContentRef}> */}

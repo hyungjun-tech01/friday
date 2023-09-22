@@ -11,9 +11,6 @@ import styles from "../scss/Board.module.scss";
 import ListAdd from "./ListAdd";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
 import { ICard, atomCurrentCard } from "../atoms/atomCard";
-import {useCookies} from "react-cookie";
-import {apiCheckEditBoard} from "../api/board";
-import { ICheckBoardEditAuth, IBoardUser } from "../atoms/atomsBoard";
 import CardModal from "./CardModal";
 
 interface IListProps{
@@ -21,18 +18,6 @@ interface IListProps{
 }
 function Board({boardId}:IListProps){
     const [t] = useTranslation();
-    const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
-    const [boardUsers, setBoardUsers] = useState<IBoardUser[]>([]);
-    const checkBoardUsers = async () => {
-        const checkAuth:ICheckBoardEditAuth= {"boardId":boardId, "userId":cookies.UserId };
-        const response = await apiCheckEditBoard(checkAuth);
-        if(response && response[0] && response[0].users) {
-                setBoardUsers(response[0].users);
-            } else {
-                console.log("Fail to get board users...", response);
-            };
-    };
-
     const [showList, setShowList] = useState(false);
     //board id로 리스트를 쿼리할 것.
     const [lists, setLists] = useRecoilState<IList[]>(atomMyList);
@@ -40,7 +25,6 @@ function Board({boardId}:IListProps){
     //board id가 바뀔때마다 showList 를 변경 
     useEffect(() => {
         setShowList(true);
-        checkBoardUsers();
     }, [boardId]);
 
     const {isLoading, data } = useQuery<IList[]>(["myBoardLists", boardId], ()=>apiGetLists(boardId),{
@@ -90,7 +74,7 @@ function Board({boardId}:IListProps){
                     </div>
                 </div>
             </div>[]
-            {(currentCard.cardId !== "") && <CardModal boardUsers={boardUsers} card={currentCard} canEdit={true}/>}
+            {(currentCard.cardId !== "") && <CardModal canEdit={true}/>}
       </div>
     )
 }

@@ -61,6 +61,14 @@ const StopwatchEdit = ({
     setIsOpened(false);
   }, []);
 
+  const handleMouseDown = useCallback((event:any) => {
+    event.stopPropagation();
+  }, []);
+
+  const handleClick = useCallback((event:any) => {
+    event.stopPropagation();
+  }, []);
+
   const handleTriggerClick = useCallback(() => {
     setIsOpened(!isOpened);
   }, [isOpened]);
@@ -251,6 +259,8 @@ const StopwatchEdit = ({
       className={styles.popupWrapper}
       onOpen={handleOpenPopup}
       onClose={handleClose}
+      onMouseDown={handleMouseDown}
+      onClick={handleClick}
     >
       <div>
         {/* <div ref={handleContentRef}> */}
