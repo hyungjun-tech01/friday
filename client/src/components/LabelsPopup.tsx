@@ -9,10 +9,13 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Popup, Input } from 'semantic-ui-react';
+import { useRecoilValue } from 'recoil';
+import { ICard, atomCurrentCard } from '../atoms/atomCard';
 import { ILabel } from '../atoms/atomLabel';
 import LabelsPopupItem from './LabelsPopupItem';
 import LabelsPopupChange from './LabelsPopupChange';
 import styles from '../scss/LabelsPopup.module.scss';
+
 
 type LabelsPopupChangeMode = 'ADD' | 'EDIT';
 
@@ -87,6 +90,7 @@ const LabelsPopup = ({
   }, []);
 
   // Labels Properties ---------------------
+  const currentCard = useRecoilValue<ICard>(atomCurrentCard);
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [search, setSearch] = useState('');
   const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
@@ -147,8 +151,10 @@ const LabelsPopup = ({
       searchField.current.focus({
         preventScroll: true,
       });
-    }
-  }, [items]);
+    };
+    const cardLabelIds = currentCard.labels.map(label => label.labelId);
+    setSelectedLabels(cardLabelIds);
+  }, [currentCard]);
 
   const openStep = useCallback(() => {
     if (step === null) {
@@ -262,6 +268,11 @@ const LabelsPopup = ({
       onMouseDown={handleMouseDown}
       onClick={handleClick}
     >
+      <Button
+          icon="close"
+          onClick={handleClose}
+          className={styles.popupCloseButton}
+        />
       <div>{contents}</div>
     </Popup>
   );

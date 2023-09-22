@@ -142,7 +142,7 @@ const DueDateEdit = ({
         [event.target.name]: event.target.value,
       }));
     },
-    [t]
+    []
   );
 
   useEffect(() => {
