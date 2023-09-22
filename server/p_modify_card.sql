@@ -180,7 +180,9 @@ BEGIN
 			values(vv_card_label_id , i_card_id::bigint, i_label_id::bigint, now(), now());
 		elseif (i_card_label_action_type = 'DELETE') then
 			delete from card_label
-			where id = i_card_label_id::bigint;
+			where id = COALESCE(i_card_label_id::bigint, id)
+			and card_id = i_card_id::bigint
+			and label_id = i_label_id::bigint;
 		end if;
 
 	 select COALESCE(i_label_id, ' '), COALESCE(i_card_label_id, ' ')

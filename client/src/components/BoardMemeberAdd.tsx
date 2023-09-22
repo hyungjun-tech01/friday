@@ -10,7 +10,7 @@ import BoardMemberPermission from "./BoardMemberPermission";
 interface IBoardmemberAddProps{
     members?: IBoardMember[];
     setOnAddPopup:(value:boolean) => void;
-    setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) =>void;
+    setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, role:string, positionX:number, positionY:number}) =>void;
 }
 function BoardMemeberAdd({members, setOnAddPopup, setBoardMemeberPermissionUserId}:IBoardmemberAddProps){
     const [t] = useTranslation();
@@ -50,7 +50,7 @@ function BoardMemeberAdd({members, setOnAddPopup, setBoardMemeberPermissionUserI
       if(canEdit === null){
         console.log('add user');
         setOnAddPopup(false);
-        setBoardMemeberPermissionUserId({userId:userId, userName:"", userEmail:"", avatarUrl:"",  canEdit:canEdit, positionX:-1, positionY:-1});
+        setBoardMemeberPermissionUserId({userId:userId, userName:"", userEmail:"", avatarUrl:"",  canEdit:canEdit,role:"", positionX:-1, positionY:-1});
       }
     }
     return(

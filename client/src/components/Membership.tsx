@@ -12,6 +12,7 @@ import {useTranslation} from "react-i18next";
 import {apiModifyBoard} from "../api/board";
 import { Value } from "sass";
 import { previousDay } from "date-fns";
+import { getRoles } from "@testing-library/react";
 
 interface IMembershipProps {
     boardId: string;
@@ -24,6 +25,7 @@ interface IboardMemberActionUserId{
     userName:string;
     avatarUrl:string;
     userEmail:string;
+    role : string;
     canEdit:string;
     positionX:number;
     positionY:number;
@@ -40,12 +42,12 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
     }
     const [onAddPopup, setOnAddPopup] = useState(false);
     // userId 와 현재 클릭한 포지션 획득 
-    const [boardMemberActionUserId, setBoardMemberActionUserId] = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"", positionX:-1, positionY:-1 });
+    const [boardMemberActionUserId, setBoardMemberActionUserId] = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"",role:"", positionX:-1, positionY:-1 });
     // board member 권한 및 삭제 
     const [boardMemberAction, setBoardMemberAction] = useState(false);
     // 사용자 삭제 Modal 
     const [deleteStep, setDeleteStep]  = useState(false);
-    const [boardMemeberPermissionUserId, setBoardMemeberPermissionUserId]  = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"", positionX:-1, positionY:-1 });
+    const [boardMemeberPermissionUserId, setBoardMemeberPermissionUserId]  = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"",role:"", positionX:-1, positionY:-1 });
     const handleDeleteClick = () => { 
         // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
         console.log('handleDeleteClick');
@@ -80,16 +82,17 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
     };     
     const onMemberBack = () => {
         setOnAddPopup(true);
-        setBoardMemeberPermissionUserId({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"", positionX:-1, positionY:-1 });
+        setBoardMemeberPermissionUserId({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"", role:"", positionX:-1, positionY:-1 });
     } 
     const onMemberConfirm = () => {
         //db 처리 
         //add recoil
+        setBoardMemeberPermissionUserId({...boardMemeberPermissionUserId})
     }
     if (members) {
         return(
             <span className={styles.users}>
-                {/* 보드에 접근 가능한 사용자 */}
+                {/* 보드에 접근 가능한 사용자 */}``
                 {members[0].users.map((user)=>(
                     <span key={user.userId} className={styles.user}>
                         <User userId={user.userId} onClick={handleClick} size="small"
@@ -97,7 +100,7 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
                             userName={user.userName} 
                             userEmail={user.userEmail}
                             avatarUrl={user.avatarUrl}
-                            canEdit = {user.canEdit}/>
+                            canEdit = {user.role}/>
                         {user.userName}
                     </span> 
                 ))}
@@ -133,7 +136,9 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
                 {boardMemeberPermissionUserId.userId !== "" &&
                   <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
                   <BoardMemberPermission addBoardId={boardId} addMember={boardMemeberPermissionUserId}
-                 title={t('common.selectPermission')} content={t('common.leaveBoardContent')} buttonContent={t('action.addMember')}  onConfirm={onMemberConfirm}  onBack={onMemberBack}  />
+                 title={t('common.selectPermission')} content={t('common.leaveBoardContent')} buttonContent={t('action.addMember')}  
+                 setBoardMemeberPermissionUserId={setBoardMemeberPermissionUserId}
+                 onMemberConfirm={onMemberConfirm}  onBack={onMemberBack}  />
                 </div>
                 }  
             </span>    

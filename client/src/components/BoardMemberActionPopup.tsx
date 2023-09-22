@@ -16,7 +16,7 @@ interface IBoardMemberActionPopupProps{
     userEmail : string;
     canEdit : string;
     avatarUrl : string;
-    showPopUp:(value:{userId:string, userName:string,  userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) =>  void;
+    showPopUp:(value:{userId:string, userName:string,  userEmail:string, avatarUrl:string, canEdit:string, role:string, positionX:number, positionY:number}) =>  void;
     handleDeleteClick : (value:boolean) => void;
 }
 function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, userId, userEmail, userName, avatarUrl, canEdit, showPopUp, handleDeleteClick}:IBoardMemberActionPopupProps){
@@ -33,7 +33,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
             wrapperRef.current &&
             !wrapperRef.current.contains(event.target)) {
           console.log('close modal');
-          showPopUp({userId:"", userName:"", userEmail:"", avatarUrl:"", canEdit:"", positionX:-1, positionY:-1 });
+          showPopUp({userId:"", userName:"", userEmail:"", avatarUrl:"", canEdit:"", role:"", positionX:-1, positionY:-1 });
         }
       }     
     

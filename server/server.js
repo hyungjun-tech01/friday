@@ -98,13 +98,14 @@ app.get('/currentBoard/:boardId', async(req, res)=>{
                 t1.name as "userName",
                 t1.avatar as "avatarUrl",
                 t1.email as "userEmail",
-                t.role as "cadEdit"
+                t.role as "role",
+                t.role as "canEdit"
             from board_membership t, user_account t1
             where t.user_id = t1.id
             and t.board_id = $1`, [boardId]);
          if( users.rows.length > 0 ) {
                 currentBoard.users = users.rows;
-            }
+         }
         const labels = await pool.query(`
             select id as "labelId",
             name as "labelName",

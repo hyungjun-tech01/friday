@@ -12,7 +12,7 @@ interface IUserProps{
     canEdit?: string;
     size ?: UserSize;
     onClick ?: ()=>void | undefined;
-    showAnotherPopup? : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number}) => void;
+    showAnotherPopup? : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, role:string, positionX:number, positionY:number}) => void;
 }
 
 type UserSize = "tiny" | 'small' | 'medium' | 'large' | 'massive';
@@ -57,7 +57,7 @@ function User({userId, userName, userEmail, avatarUrl=null, canEdit, size='mediu
       
       if (avatarUrl === null) avatarUrl = '';
       if(userId && userEmail && (avatarUrl==='' || avatarUrl)&& canEdit && showAnotherPopup) {
-       showAnotherPopup({userId:userId, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl, canEdit:canEdit, positionX:event.pageX, positionY:event.pageY});
+       showAnotherPopup({userId:userId, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl, canEdit:canEdit, role:"", positionX:event.pageX, positionY:event.pageY});
       }
     };
     return onClick ? (

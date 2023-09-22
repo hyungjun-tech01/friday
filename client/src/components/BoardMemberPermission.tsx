@@ -12,8 +12,9 @@ interface IBoardMemberPermission{
     content : string;
     buttonContent : string;
     addMember : {userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number};
-    onConfirm : ()=>void;
+    onMemberConfirm : ()=>void;
     onBack : () => void;
+    setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, role:string, positionX:number, positionY:number}) =>void;    
 }
 const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.currentTarget.style.background = '#9e3f08';
@@ -25,7 +26,7 @@ const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
     e.currentTarget.style.color = 'white';
   };
 
-function BoardMemberPermission({addBoardId, addMember, title, content, buttonContent, onConfirm, onBack}:IBoardMemberPermission){
+function BoardMemberPermission({addBoardId, addMember, title, content, buttonContent, onMemberConfirm, onBack}:IBoardMemberPermission){
     const [t] = useTranslation();
     const [data, setData] = useState(() => ({
         role: BoardRole.EDITOR,
@@ -36,6 +37,10 @@ function BoardMemberPermission({addBoardId, addMember, title, content, buttonCon
     }
     const handleSettingChange = () => {
       setData({...data, canComment:!data.canComment})
+    }
+    const onConfirm = ()=>{
+     // setBoardMemeberPermissionUserId({...addMember, role:data.role, canComment:data.canComment});
+      onMemberConfirm();
     }
     return(   
     <div className={styles.overlay} > 
