@@ -1,21 +1,25 @@
 import {useRef, useMemo, useEffect, useState} from "react";
 import { useTranslation } from 'react-i18next';
 import styles from '../scss//BoardMemberAdd.module.scss';
-import {IBoardMember} from "../atoms/atomsBoard";
+import {IBoardUser} from "../atoms/atomsBoard";
+import {atomAllUser} from "../atoms/atomsUser";
 import {Input} from "semantic-ui-react";
 import UserItem from "./UserItem";
+import {useRecoilValue} from "recoil";
 import BoardMemberPermission from "./BoardMemberPermission";
 
 
 interface IBoardmemberAddProps{
-    members?: IBoardMember[];
+    members?: IBoardUser[];
+    canEdit:string;
     setOnAddPopup:(value:boolean) => void;
     setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, role:string, positionX:number, positionY:number}) =>void;
 }
-function BoardMemeberAdd({members, setOnAddPopup, setBoardMemeberPermissionUserId}:IBoardmemberAddProps){
+function BoardMemeberAdd({members, canEdit,setOnAddPopup, setBoardMemeberPermissionUserId}:IBoardmemberAddProps){
+    const allUsers = useRecoilValue(atomAllUser);
     const [t] = useTranslation();
     let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
-    const users = members !== undefined ? members[0].boardmMemberAllUsers:null;
+    const users = members !== undefined ? allUsers:null;
     const [search, handleSearchChange] = useState('');
     const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
     const searchField = useRef(null);
@@ -71,7 +75,7 @@ function BoardMemeberAdd({members, setOnAddPopup, setBoardMemeberPermissionUserI
             {filteredUsers&&(
               <div className={styles.users}>
                 {filteredUsers.map((user)=>(
-                  <UserItem key={user.userId} userId={user.userId} userName={user.userName} avatarUrl={user.avatarUrl} canEdit={user.canEdit} onSelect={() => handleUserSelect(user.userId, user.canEdit)}/>
+                  <UserItem key={user.userId} userId={user.userId} userName={user.userName} avatarUrl={user.avatar} canEdit={canEdit} onSelect={() => handleUserSelect(user.userId, canEdit)}/>
                 ))}
               </div>
             )}

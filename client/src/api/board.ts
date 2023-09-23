@@ -20,15 +20,20 @@ export const apiGetBoards = async (project:IQueryBoard) => {
     //    (response) => response.json()
     //);
 };
-export const apiGetCurrentBoards = async (boardId:string) => {
-    console.log("apiGetCurrentBoards", boardId);
-    if(boardId === null || boardId === ''){
+export const apiGetCurrentBoards = async (checkAuth:ICheckBoardEditAuth) => {
+    console.log("apiGetCurrentBoards", checkAuth.boardId);
+    if(checkAuth.boardId === null || checkAuth.boardId === ''){
         return(null);
     }
     try{
-        const response = await fetch(`${BASE_PATH}/currentBoard/${boardId}`);  // backtik 
+        const response = await fetch(`${BASE_PATH}/currentBoard`, {
+        method: "POST", 
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(checkAuth)});  // backtik 
+        
         const json = await response.json()
         return json;
+  
     }catch(err){
         console.error(err);
     }

@@ -88,11 +88,22 @@ app.post('/boards', async(req, res)=>{
     }
 );
 // get current board info by board id 
-app.get('/currentBoard/:boardId', async(req, res)=>{
-    const boardId = req.params.boardId;
-    let currentBoard = {boardId:boardId};
-
+app.post('/currentBoard/', async(req, res)=>{
+    const {boardId, userId} = req.body;
     try{
+        const result = await pool.query(`
+        select b.id as "boardId" , bm.role as "canEdit"
+        from board b, board_membership bm, user_account u
+        where b.id = bm.board_id  
+        and bm.user_id = u.id
+        and b.id = $1
+        and u.id = $2
+        LIMIT 1`, [boardId, userId]);
+
+        let currentBoard;
+        if(result.rows.length > 0 ) {
+            currentBoard = result.rows[0];
+        }    
         const users = await pool.query(`
             select t.user_id as "userId", 
                 t1.name as "userName",
@@ -118,6 +129,112 @@ app.get('/currentBoard/:boardId', async(req, res)=>{
         }else{
             currentBoard.labels = [];
         }
+        // lists 
+        const lists = await pool.query(`
+        select id as "listId", board_id as "boardId", name as "listName", 
+        position as "position", created_at as "createdAt", 
+        updated_at as "updatedAt" from list 
+        where board_id = $1`, [boardId]);
+        
+        if( lists.rows.length > 0 ) {
+            currentBoard.lists = lists.rows;
+        }else{
+            currentBoard.lists = [];
+        }
+        // 보드에 속한 모든 cards ( card에 속한 label, users, attatchments, tasks, comment (??) )
+        const cardsResults = await pool.query(`
+        select id as "cardId", 
+            board_id as "boardId", 
+            list_id as "listId", 
+            cover_attachment_id as "coverAttachmentId", 
+            name as "cardName",
+            description as "description",
+            created_at as "createdAt",
+            updated_at as "updatedAt",
+            position as "position",
+            stopwatch as "stopwatch",
+            due_date as "dueDate",
+            status_id as "statusId",
+            '' as "statusName"
+            from card
+            where board_id = $1`,[boardId]);
+            let cards;
+            if( cardsResults.rows.length > 0 ) {
+                cards = cardsResults.rows;
+                console.log('currentboard', cards.rows);
+                /// card labels 
+                for(const card of cards){
+                    //console.log('card', card.cardId);
+                    const labelResult = await pool.query(`
+                    select l.id as "labelId", l.board_id as "boardId", l.name as "labelName", l.color as "color"
+                    from card_label cl, label l
+                    where cl.label_id = l.id
+                    and cl.card_id = $1`
+                    , [card.cardId]);
+                    if( labelResult.rows.length > 0 ) 
+                        card.labels = labelResult.rows;
+                    else
+                        card.labels = [];
+
+                    /// card memberships 
+                    const cardMembership = await pool.query(`
+                    select a.id as "cardMembershipId", a.card_id as "cardId",
+                       a.user_id as "userId", a.created_at as "createdAt",
+                       a.updated_at as "updatedAt",
+                       b.email as "email", b.name as "userName", b.avatar as "avatarUrl"
+                    from card_membership a, user_account b 
+                    where a.user_id = b.id
+                    and card_id = $1`, [card.cardId]);
+                    if( cardMembership.rows.length > 0 ) 
+                        card.memberships = cardMembership.rows;
+                    else
+                        card.memberships = [];
+
+                    const cardTask = await pool.query(`
+                    select id as "taskId", card_id as "cardId", name as "taskName", is_completed as "isCompleted" ,
+                        created_at as "createdAt", updated_at as "updatedAt", position as "position" 
+                    from task
+                    where card_id = $1`, [card.cardId]);    
+                    if(cardTask.rows.length > 0 )
+                        card.tasks = cardTask.rows;
+                    else
+                        card.tasks = [];
+
+                    const cardAttachment = await pool.query(`
+                    select a.id as "cardAttachementId", a.card_id as "cardId", a.creator_user_id as "creatorUserId", b.name as "creatorUserName",
+                        a.dirname as "dirName", a.filename as "fileName", a.name as "cardAttachmentName", 
+                        a.created_at as "createdAt", a.updated_at as "updatedAt", a.image as "image"
+                    from attachment a, user_account b
+                    where a.creator_user_id = b.id 
+                    and a.card_id = $1`, [card.cardId]);
+
+                    if(cardAttachment.rows.length > 0 )
+                        card.attachments = cardAttachment.rows;
+                    else
+                        card.attachments = [];
+                    
+                    const cardComment = await pool.query(`
+                    select a.id as "commentId" , a.card_id as "cardId", 
+                        a.user_id as "userId", b.name as "userName", a.text as "text", 
+                        a.created_at as "createdAt", a.updated_at as "updatedAt", 
+                        b.avatar as "avatarUrl"
+                    from comment a , user_account b
+                    where a.user_id = b.id
+                    and a.card_id = $1`, [card.cardId]);
+    
+                    if(cardComment.rows.length > 0 )
+                        card.comments = cardComment.rows;
+                    else
+                        card.comments = [];                        
+
+                }  // cards for 끝
+               
+
+                currentBoard.cards = cards;
+            }else{
+                currentBoard.cards = [];
+            }
+
         res.json(currentBoard);
         console.log(currentBoard);
         res.end();
@@ -694,7 +811,7 @@ app.post('/login', async(req, res) => {
         const token = jwt.sign({email}, 'secret', {expiresIn:'1hr'});
         if(success){
             console.log("success");
-            res.json({'email' : users.rows[0].id,'userName' : users.rows[0].username, token});
+            res.json({'userId' : users.rows[0].id,'userName' : users.rows[0].username, token});
         }else{
             console.log("fail");
             res.json({message:"Invalid email or password"});
@@ -713,15 +830,58 @@ app.post('/getuser', async(req, res) => {
     const {userId} = req.body;
     try{
         const users = await pool.query(`
-        SELECT t.id as "userId", t.email as "email", t.is_admin as "isAdmin", 
-        t.username as "userName", t.phone as "phone", t.organization  as "organization",
-        t.subscribe_to_own_cards  as "subscribeToOwnCards", t.created_at as "createdAt" 
+        SELECT t.id as "userId", 
+        t.username as "userName", 
+        t.name as "name",
+        t.email as "email", 
+        t.is_admin as "isAdmin", 
+        t.phone as "phone", 
+        t.organization  as "organization",
+        t.subscribe_to_own_cards  as "subscribeToOwnCards", 
+        t.created_at as "createdAt",
+        t.updated_at as "updatedAt",
+        t.deleted_at as "deletedAt", 
+        t.language as "language",
+        t.password_changed_at as "passwordChangeAt",
+        t.avatar as "avatar"
         FROM user_account t WHERE t.id = $1`, [userId]);
-        if(!users.rows.length) return res.json({detail:'User does not exist'});
+        if(!users.rows.length) 
+            return res.json({detail:'User does not exist'});
 
         console.log(users.rows[0]);
 
-        res.json(users); // 결과 리턴을 해 줌 .
+        res.json(users.rows); // 결과 리턴을 해 줌 .
+        res.end();
+
+    }catch(err){
+        console.error(err);
+        res.json({message:err});        
+        res.end();
+    }
+});
+
+app.get('/getalluser/:userId', async(req, res) => {
+    const userId = req.userId;
+    try{
+        const users = await pool.query(`
+        SELECT t.id as "userId", 
+        t.username as "userName", 
+        t.name as "name",
+        t.email as "email", 
+        t.is_admin as "isAdmin", 
+        t.phone as "phone", 
+        t.organization  as "organization",
+        t.subscribe_to_own_cards  as "subscribeToOwnCards", 
+        t.created_at as "createdAt",
+        t.updated_at as "updatedAt",
+        t.deleted_at as "deletedAt", 
+        t.language as "language",
+        t.password_changed_at as "passwordChangeAt",
+        t.avatar as "avatar"
+        FROM user_account t `);
+        if(!users.rows.length) 
+            return res.json({detail:'User does not exist'});
+        res.json(users.rows); // 결과 리턴을 해 줌 .
         res.end();
 
     }catch(err){

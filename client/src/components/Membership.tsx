@@ -1,4 +1,4 @@
-import {IBoardMember, IModifyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
+import {IBoardUser, IModifyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
 import styles from "../scss/Membership.module.scss";
 import BoardMemberActionPopup from "./BoardMemberActionPopup";
 import BoardMemberPermission from "./BoardMemberPermission";
@@ -16,7 +16,8 @@ import { getRoles } from "@testing-library/react";
 
 interface IMembershipProps {
     boardId: string;
-    members?: IBoardMember[];
+    canEdit : string;
+    members?: IBoardUser[];
     isMemberLoading : boolean;
     setIsMemberLoading: (value:boolean) => void;
   }
@@ -30,7 +31,7 @@ interface IboardMemberActionUserId{
     positionX:number;
     positionY:number;
 }
-function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMembershipProps){
+function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoading}:IMembershipProps){
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [positions, setPositions] = useState({positionX:-1, positionY:-1})
@@ -93,7 +94,7 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
         return(
             <span className={styles.users}>
                 {/* 보드에 접근 가능한 사용자 */}``
-                {members[0].users.map((user)=>(
+                {members.map((user)=>(
                     <span key={user.userId} className={styles.user}>
                         <User userId={user.userId} onClick={handleClick} size="small"
                             showAnotherPopup={setBoardMemberActionUserId} 
@@ -117,7 +118,7 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
                     </div>
         }            
                 {/* Add Borad Member 기능  */}
-                {members[0].canEdit==="editor" && 
+                {canEdit==="editor" && 
                 <Button icon="add user" onClick={onAddMemberPopup} style={{backgroundColor:'rgba(0, 0, 0, 0.24)',
                     borderRadius: '50%',
                     boxShadow: 'none',
@@ -131,7 +132,7 @@ function Membership({boardId, members,isMemberLoading, setIsMemberLoading}:IMemb
                     width: '36px',}} />}
                 {members !== undefined &&onAddPopup&&
                   <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
-                    <BoardMemeberAdd members={members} setOnAddPopup={setOnAddPopup} setBoardMemeberPermissionUserId={setBoardMemeberPermissionUserId}/>
+                    <BoardMemeberAdd members={members} canEdit={canEdit} setOnAddPopup={setOnAddPopup} setBoardMemeberPermissionUserId={setBoardMemeberPermissionUserId}/>
                   </div>}
                 {boardMemeberPermissionUserId.userId !== "" &&
                   <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>

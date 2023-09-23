@@ -1,5 +1,7 @@
 import {atom} from "recoil";
 import {ILabel} from "./atomLabel";
+import {IList} from "./atomsList";
+import {ICard} from "./atomCard";
 
 export interface IBoard{
     boardId : string;
@@ -10,6 +12,16 @@ export interface IBoard{
     role : string;
     userId : string;
 }
+
+// default value 1, MyProject 1
+export const atomMyBoard = atom<IBoard[]>({
+    key: "myBoard",
+    default : [
+        { boardId:"" , projectId:"", projectName:"", 
+          boardName:"", createdAt:"", role:"", userId:""},
+    ]
+});
+
 export interface IModifyBoard{
     boardActionType:'ADD'|'UPDATE'|'DELETE'|null;
     userId : string;
@@ -46,11 +58,7 @@ export const defaultModifyBoard:IModifyBoard = {
     labelColor : null, 
     labelPosition : null,
 }
-export interface ICurrent{
-    boardId : string;
-    users : IBoardUser[];
-    labels : ILabel[];
-}
+
 
 export interface ICreateBoard{
     projectId : string;
@@ -65,45 +73,49 @@ export interface ICheckBoardEditAuth{
     boardId: string;
     userId: string;
 }
+
+// 보드를 찍었을 때 보드 안에 있는 모든 데이터를 가지고 온다. currentBoard 
+export interface ICurrent{
+    boardId : string;
+    canEdit : string;
+    users : IBoardUser[];
+    labels : ILabel[];
+    lists : IList[];
+    cards : ICard[];
+}
+
+// board_memebership 대응
 export interface IBoardUser{
+    boardId:string;
     userId:string;
     userName:string;
     role:string;
     avatarUrl:string;
     userEmail:string;
     canEdit:string;
+    canComment:string;
 }
-export interface IBoardMember{
-    boardId : string;
-    canEdit : string; 
-    users : IBoardUser[];
-    boardmMemberAllUsers : IBoardUser[];
-}
+
 export const defaultCurrentMyBoard:ICurrent = {
     boardId:"", 
-    users:[{ userId:"",
-        userName: "",
-        role:"",
-        avatarUrl: "",
-        userEmail:"",
-        canEdit:""}],
-     labels : [{
-        labelId : "",
-        labelName: "",
-        boardId: "",
-        color: "",
-     }],
+    canEdit:"",
+    users:[],
+    labels : [],
+    lists: [],
+    cards:[],
+
 }
 export const atomCurrentMyBoard = atom<ICurrent>({
     key : "currentBoard",
     default : defaultCurrentMyBoard
 });
 
-// default value 1, MyProject 1
-export const atomMyBoard = atom<IBoard[]>({
-    key: "myBoard",
-    default : [
-        { boardId:"" , projectId:"", projectName:"", 
-          boardName:"", createdAt:"", role:"", userId:""},
-    ]
-});
+
+// 추후 삭제 필요 
+export interface IBoardMember{
+    boardId : string;
+    canEdit : string; 
+    users : IBoardUser[];
+    boardmMemberAllUsers : IBoardUser[];
+}
+

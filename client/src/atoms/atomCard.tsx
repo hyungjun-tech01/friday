@@ -1,22 +1,68 @@
 import { atom, selector } from "recoil";
 import { ILabel, defaultLabel } from "./atomLabel";
+import {IBoardUser} from "./atomsBoard";
+import {ITask} from "./atomTask";
+import { IStopwatch } from "./atomStopwatch";
 
 export interface ICard{
     cardId: string; 
     boardId: string;
     listId: string;
-    coverUrl: string;
+    converAttachmentId: string | null;
     cardName: string;
     description: string;
     createdAt: string;
     updatedAt: string;
-    position : string;
+    position : string | null;
+    dueDate : string|null;
+    statusId:string | null;
+    statusName:string;
+    stopwatch : IStopwatch|null;
     labels: ILabel[];
+    memberships : ICardUser[];
+    attachments : IAttachemnt[];
+    tasks : ITask[];
+    comments : IComment[];
 }
 
+export interface ICardUser{
+    cardMembershipId:string;
+    cardId:string;
+    userId:string;
+    createdAt:string;
+    updatedAt:string;
+    email:string;
+    userName:string;
+    avatarUrl:string;
+}
+export interface IAttachemnt{
+    cardAttachementId : string;
+    cardId : string;
+    creatorUserId : string;
+    creatorUserName : string;
+    dirName : string;
+    fileName : string;
+    cardAttachmentName : string;
+    createdAt : string;
+    updatedAt : string;
+    image : IImage;
+}
+export interface IComment{
+    commentId:string
+    cardId:string
+    userId:string
+    userName:string
+    text:string
+    createdAt:string
+    updatedAt:string
+    avatarUrl:string
+}
 export const defaultCard:ICard = {
-    cardId:"" , cardName:"",  coverUrl:"", boardId:"", listId:"",
+    cardId:"" , cardName:"",  converAttachmentId:"", boardId:"", listId:"",
     description:"",  labels:[], createdAt:"", updatedAt:"" , position:"",
+    dueDate:"", statusId:"", statusName:"",
+    stopwatch:{total:0,startedAt:null }, memberships:[], attachments:[], 
+    tasks:[], comments:[],
 }
 
 export interface ICreateCard{
@@ -25,11 +71,12 @@ export interface ICreateCard{
     cardName:string;
 }
 
-interface IStopwatch{
-    total : string |null;
-    startedAt:string | null;
-}
 
+interface IImage {
+    width : string;
+    height : string;
+    thumbnailsExtension: string;
+}
 export interface IModifyCard{
    cardId : string ;     // number 
     userId : string;       // number 
@@ -75,7 +122,7 @@ export const defaultModifyCard:IModifyCard = {
     cardName :null, 
     dueDate :null, 
     position :null,
-    stopwatch : {total:null,startedAt:null},
+    stopwatch : {total:0,startedAt:null},
     cardMembershipActionType :null,
     cardMembershipId :null,
     cardMembershipUserId :null,

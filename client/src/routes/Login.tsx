@@ -3,11 +3,13 @@ import styles from "../scss/Login.module.scss";
 import { Form, Grid, Header, Message } from 'semantic-ui-react';
 import {useForm} from "react-hook-form";
 import {useCookies} from "react-cookie";
-import {apiLoginValidate} from "../api/user";
-import { IValidateUser} from "../atoms/atomsUser";
+import {apiLoginValidate, apiGetUser, apiGetAllUser} from "../api/user";
+import { IValidateUser,IUser, atomMyUser, atomAllUser} from "../atoms/atomsUser";
 import Path from '../constants/Paths';
 import {useHistory} from "react-router-dom";
 import { useTranslation } from 'react-i18next';
+import {useRecoilState} from "recoil";
+
 
 const createMessage = (error:IError) => {
   if (!error) {
@@ -47,6 +49,9 @@ interface IError {
   content:string;
 }
 function Login(){
+
+  const [currentUser, setCurrentUser] = useRecoilState<IUser>(atomMyUser);
+  const [allUser, setAllUser] = useRecoilState<IUser[]>(atomAllUser);
   const { t, i18n } = useTranslation();
     const [cookies, setCookie, removeCookie] = useCookies(['UserId', 'UserName','AuthToken']);
 
@@ -74,11 +79,19 @@ function Login(){
         removeCookie('UserName');
         removeCookie('AuthToken');
       }else{
-        setCookie('UserId', response.email);
+        setCookie('UserId', response.userId);
         setCookie('UserName', response.userName);
         setCookie('AuthToken', response.token);
 
-        history.push(Path.ROOT);  
+        if(response.userId !== ""){
+          const userInfo = await apiGetUser(response.userId);
+          const alluser = await apiGetAllUser();
+          if(userInfo && alluser){
+              setCurrentUser(userInfo);
+              setAllUser(alluser);
+              history.push(Path.ROOT); 
+          }
+        }
       }
       setIsSubmitting(false);
     }

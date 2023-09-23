@@ -5,7 +5,8 @@ export interface ILabel{
     labelName: string;
     boardId: string;
     color:string;
+    position : string;
 }
 export const defaultLabel:ILabel = {
-    labelId:"", labelName:"", boardId:"", color:""
+    labelId:"", labelName:"", boardId:"", color:"", position:"",
 }

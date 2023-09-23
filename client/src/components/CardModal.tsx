@@ -378,6 +378,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               labelId: result.outLabelId,
               labelName: data.name ? data.name : '',
               color: data.color,
+              position:"",
             };
             const newLabels = currentCard.labels.concat(newLabel);
             const updatedCard = {
@@ -543,10 +544,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         userId: cookies.UserId,
         cardActionType: 'UPDATE',
         stopwatch: {
-          total: stopwatch ? stopwatch.total.toString() : '-1',
+          total: stopwatch ? stopwatch.total : -1,
           startedAt: stopwatch
             ? stopwatch.startedAt
-              ? stopwatch.startedAt.toString()
+              ? stopwatch.startedAt
               : null
             : null,
         },

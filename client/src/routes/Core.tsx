@@ -4,8 +4,9 @@ import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import {projectSelector, IProject } from '../atoms/atomsProject';
-import {atomCurrentMyBoard} from "../atoms/atomsBoard";
+import {atomCurrentMyBoard, ICheckBoardEditAuth} from "../atoms/atomsBoard";
 import {apiGetCurrentBoards} from "../api/board";
+import {useCookies} from "react-cookie";
 
 import Fix from "../components/Fix";
 import Static from "../components/Static";
@@ -17,6 +18,7 @@ interface ICoreParams {
     id : string;
 }
 function Core(){
+  const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
   const {pathname} = useLocation();
   const IsDetail = pathname.includes('board');
   let IsMaster = pathname.includes('projects');
@@ -54,7 +56,7 @@ function Core(){
   },[id,IsMaster, IsDetail,currentProjectId,selectProject]);  
 
   const getCurrentBoard = async (id:string) => {
-    const response = await apiGetCurrentBoards(id);
+    const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
     if(response ) {
       setCurrentBoardId({...currentBoardId, boardId:id, users:response.users, labels:response.labels});
     }
