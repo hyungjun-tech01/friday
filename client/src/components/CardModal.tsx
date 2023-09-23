@@ -67,16 +67,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       onSuccess: (data) => {
         console.log('[CardModal] Called Card Info : ', data);
         if (data[0].cardMembership) {
-          const newCardMembership:IMembership[] = [
-            ...data[0].cardMembership
-          ];
+          const newCardMembership: IMembership[] = [...data[0].cardMembership];
           setCardMemberships(newCardMembership);
           setCardUserIds(newCardMembership.map((user) => user.userId));
         }
         if (data[0].cardTask) {
-          const newTasks = [
-            ...data[0].cardTask
-          ];
+          const newTasks = [...data[0].cardTask];
           setTasks(newTasks);
         }
         if (data[0].dueDate) {
@@ -91,18 +87,15 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           setStopwatch(stopwatch_input);
         }
         if (data[0].cardComment) {
-          const newCardComment = [
-            ...data[0].cardComment
-          ];
+          const newCardComment = [...data[0].cardComment];
           setComments(newCardComment);
         }
         // if(data[0].cardAction) {
         //   setActions(data[0].cardAction);
         // };
-        console.log('[CardModal] Check : ', cardMemberships);
       },
       refetchOnWindowFocus: false,
-      enabled : !!currentCard
+      enabled: !!currentCard,
     }
   );
 
@@ -300,7 +293,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             } else {
               console.log('Succeed to update label selection', result);
               const newLabels = currentCard.labels.concat(found_label);
-              const updatedCard = {
+              const updatedCard: ICard = {
                 ...currentCard,
                 labels: newLabels,
               };
@@ -327,7 +320,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           cardId: currentCard.cardId,
           userId: cookies.UserId,
           cardLabelActionType: 'DELETE',
-          cardLabelId: id,
+          labelId: id,
         };
         const response = apiModifyCard(modifiedCard);
         response
@@ -340,7 +333,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 ...currentCard.labels.slice(0, found_index),
                 ...currentCard.labels.slice(found_index + 1),
               ];
-              const updatedCard = {
+              const updatedCard: ICard = {
                 ...currentCard,
                 labels: newLabels,
               };
@@ -803,10 +796,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   );
 
   useEffect(() => {
-    console.log('Card Modal Rendering :');  
-  }, [])
+    console.log('Card Modal Rendering/currentCard :');
+  }, [currentCard]);
 
-  const contentNode = ( isLoading ? ('Now Loading ..... ') : (
+  const contentNode = isLoading ? (
+    'Now Loading ..... '
+  ) : (
     <Grid className={styles.grid}>
       <Grid.Row className={styles.headerPadding}>
         <Grid.Column width={canEdit ? 12 : 16} className={styles.headerPadding}>
@@ -843,7 +838,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                     })}
                   </div>
                   {cardMemberships.map((user) => (
-                    <span key={user.cardMembershipId} className={styles.attachment}>
+                    <span
+                      key={user.cardMembershipId}
+                      className={styles.attachment}
+                    >
                       {canEdit ? (
                         <CardMembershipPopup
                           items={board.users}
@@ -909,16 +907,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                           // onMove={onLabelMove}
                           onDelete={handleLabelDelete}
                         >
-                          <Label
-                            name={label.labelName}
-                            color={label.color}
-                          />
+                          <Label name={label.labelName} color={label.color} />
                         </LabelsPopup>
                       ) : (
-                        <Label
-                          name={label.labelName}
-                          color={label.color}
-                        />
+                        <Label name={label.labelName} color={label.color} />
                       )}
                     </span>
                   ))}
@@ -1075,10 +1067,21 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   {t('common.members')}
                 </Button>
               </CardMembershipPopup>
-              <Button fluid className={styles.actionButton}>
-                <Icon name="bookmark outline" className={styles.actionIcon} />
-                {t('common.labels')}
-              </Button>
+              <LabelsPopup
+                items={board.labels}
+                canEdit={canEdit}
+                onSelect={handleLabelSelect}
+                onDeselect={handleLabelUnselect}
+                onCreate={handleLabelCreate}
+                onUpdate={handleLabelUpdate}
+                // onMove={onLabelMove}
+                onDelete={handleLabelDelete}
+              >
+                <Button fluid className={styles.actionButton}>
+                  <Icon name="bookmark outline" className={styles.actionIcon} />
+                  {t('common.labels')}
+                </Button>
+              </LabelsPopup>
               <DueDateEdit
                 defaultValue={dueDate}
                 onUpdate={handleDueDateUpdate}
@@ -1151,7 +1154,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         )}
       </Grid.Row>
     </Grid>
-  ));
+  );
 
   return (
     <Modal

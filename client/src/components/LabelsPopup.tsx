@@ -14,8 +14,8 @@ import { ICard, atomCurrentCard } from '../atoms/atomCard';
 import { ILabel } from '../atoms/atomLabel';
 import LabelsPopupItem from './LabelsPopupItem';
 import LabelsPopupChange from './LabelsPopupChange';
+import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
 import styles from '../scss/LabelsPopup.module.scss';
-
 
 type LabelsPopupChangeMode = 'ADD' | 'EDIT';
 
@@ -52,6 +52,7 @@ const LabelsPopup = ({
   }, []);
 
   const handleClose = useCallback(() => {
+    setStep(null);
     setIsOpened(false);
   }, []);
 
@@ -151,8 +152,8 @@ const LabelsPopup = ({
       searchField.current.focus({
         preventScroll: true,
       });
-    };
-    const cardLabelIds = currentCard.labels.map(label => label.labelId);
+    }
+    const cardLabelIds = currentCard.labels.map((label) => label.labelId);
     setSelectedLabels(cardLabelIds);
   }, [currentCard]);
 
@@ -160,11 +161,11 @@ const LabelsPopup = ({
     if (step === null) {
       return (
         <>
-          <Popup.Header>
-            {t('common.title', {
+          <CustomPopupHeader>
+            {t('common.labels', {
               context: 'title',
             })}
-          </Popup.Header>
+          </CustomPopupHeader>
           <Popup.Content>
             <Input
               fluid
@@ -269,10 +270,10 @@ const LabelsPopup = ({
       onClick={handleClick}
     >
       <Button
-          icon="close"
-          onClick={handleClose}
-          className={styles.popupCloseButton}
-        />
+        icon="close"
+        onClick={handleClose}
+        className={styles.popupCloseButton}
+      />
       <div>{contents}</div>
     </Popup>
   );

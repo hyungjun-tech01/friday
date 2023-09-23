@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import DatePicker from "react-datepicker";
 import { Button, Form, Popup, Input } from "semantic-ui-react";
 import styles from "../scss/DueDateEdit.module.scss";
+import CustomPopupHeader from "../lib/ui/CustomPopupHeader";
 import { ReactElement } from "react";
 
 interface IDueDateEidtProps {
@@ -153,11 +154,11 @@ const DueDateEdit = ({
 
   const contents = (
     <>
-      <Popup.Header className={styles.popupHeader}>
+      <CustomPopupHeader>
         {t("common.editDueDate", {
           context: "title",
         })}
-      </Popup.Header>
+      </CustomPopupHeader>
       <Popup.Content>
         <Form onSubmit={handleSubmit}>
           <div className={styles.fieldWrapper}>
@@ -201,7 +202,7 @@ const DueDateEdit = ({
   return (
     <Popup
       basic
-      // wide
+      wide
       ref={popupRef}
       trigger={trigger}
       on="click"

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Input, Popup, Button, Form } from 'semantic-ui-react';
 import { upperFirst, camelCase } from 'lodash';
 import { ILabel } from '../atoms/atomLabel';
+import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
 import classNames from 'classnames';
 import LabelColors from '../constants/LabelColors';
 import styles from '../scss/LabelsPopupChange.module.scss';
@@ -80,9 +81,9 @@ const LabelsPopupChange = ({
 
   return (
     <>
-      <Popup.Header onBack={onBack}>
+      <CustomPopupHeader onBack={onBack}>
         {title}
-      </Popup.Header>
+      </CustomPopupHeader>
       <Popup.Content>
         <Form onSubmit={handleSubmit}>
           <div className={styles.text}>{t('common.title')}</div>
