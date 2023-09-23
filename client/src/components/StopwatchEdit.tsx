@@ -16,7 +16,7 @@ import {
   stopStopwatch,
   updateStopwatch,
 } from "../utils/stopwatch";
-
+import CustomPopupHeader from "../lib/ui/CustomPopupHeader";
 import styles from "../scss/StopwatchEdit.module.scss";
 import { IStopwatch } from "../atoms/atomStopwatch";
 
@@ -158,11 +158,11 @@ const StopwatchEdit = ({
 
   const contents = (
     <>
-      <Popup.Header className={styles.popupHeader}>
+      <CustomPopupHeader>
         {t("common.editStopwatch", {
           context: "title",
         })}
-      </Popup.Header>
+      </CustomPopupHeader>
       <Popup.Content>
         <Form onSubmit={handleSubmit}>
           <div className={styles.fieldWrapper}>
@@ -240,7 +240,7 @@ const StopwatchEdit = ({
   return (
     <Popup
       basic
-      // wide
+      wide
       ref={popupRef}
       trigger={trigger}
       on="click"
@@ -263,7 +263,6 @@ const StopwatchEdit = ({
       onClick={handleClick}
     >
       <div>
-        {/* <div ref={handleContentRef}> */}
         <Button
           icon="close"
           onClick={handleClose}

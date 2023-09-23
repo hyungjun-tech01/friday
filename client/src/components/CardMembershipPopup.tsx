@@ -10,7 +10,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Input, Menu, Popup, Button } from 'semantic-ui-react';
 import { IBoardUser } from '../atoms/atomsBoard';
-import CardMembershipItem from './CardMembershipItem'
+import CardMembershipItem from './CardMembershipItem';
+import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
 import styles from '../scss/CardMembershipPopup.module.scss';
 
 interface ICardMembershipProps {
@@ -102,11 +103,11 @@ const CardMembershipPopup = ({
 
   const contents = (
     <>
-      <Popup.Header className={styles.popupHeader}>
+      <CustomPopupHeader>
         {t(title, {
           context: 'title',
         })}
-      </Popup.Header>
+      </CustomPopupHeader>
       <Popup.Content>
         <Input
           fluid
@@ -137,7 +138,7 @@ const CardMembershipPopup = ({
   return (
     <Popup
       basic
-      //wide
+      wide
       ref={popupRef}
       trigger={trigger}
       on="click"
@@ -160,7 +161,6 @@ const CardMembershipPopup = ({
       onClick={handleClick}
     >
       <div>
-        {/* <div ref={handleContentRef}> */}
         <Button
           icon="close"
           onClick={handleClose}
