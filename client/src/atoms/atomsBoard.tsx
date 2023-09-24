@@ -1,4 +1,4 @@
-import {atom} from "recoil";
+import {atom, selector, RecoilState} from "recoil";
 import {ILabel} from "./atomLabel";
 import {IList} from "./atomsList";
 import {ICard} from "./atomCard";
@@ -110,6 +110,88 @@ export const atomCurrentMyBoard = atom<ICurrent>({
     default : defaultCurrentMyBoard
 });
 
+// users get , set 
+
+// labels get. set
+
+// lists get, set (추가 , 삭제 ??)
+export const listsSelector = selector ({
+    key:"listsSelector",
+    get:({get}) => {
+        const board = get(atomCurrentMyBoard); 
+        return () => {
+            return (board.lists);
+        };
+    },
+});
+
+// 특정 listId를 가진 List를 get ,  selector 의 set을 통해 변경
+export const listSelector = selector({
+    key:"listSelector",
+    get:( {get}) => {
+        const board = get(atomCurrentMyBoard); 
+        return (InListId:string) => {
+            return (board.lists.filter((list)=> list.listId === InListId)
+                );
+        };
+    },
+    set:({set, get}, newValue )=>{
+        if (Array.isArray(newValue) && newValue.length === 2) {
+        const [InListId, newList] = newValue;
+        const board = get(atomCurrentMyBoard); 
+        const updatedLists = board.lists.map((list:any) => {
+            if(list.listId === InListId){
+                return{...list, ...newList};
+            }
+            return list;
+        })
+        const newAtomCurrentMyBoard = {...board,  lists: updatedLists,};
+
+        return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+    }
+    }
+});
+
+
+// 특정 listId  가진 Cards 를 selecting 
+export const cardsbyListIdSelector = selector({
+    key:"cardsbyListIdSelector",
+    get:( {get}) => {
+        const board = get(atomCurrentMyBoard); 
+        return (InListId:string) => {
+            return (board.cards.filter((card)=> card.listId === InListId)
+                );
+        };
+    },
+});
+
+
+// 특정 cardId를  가진 Card를 selecting 하고 set을 통해서 변경 
+export const cardSelector = selector({
+    key:"cardSelector",
+    get:( {get}) => {
+        const board = get(atomCurrentMyBoard); 
+        return (InCardId:string) => {
+            return (board.cards.filter((card)=> card.cardId === InCardId)
+                );
+        };
+    },
+    set:({set, get}, newValue )=>{
+        if (Array.isArray(newValue) && newValue.length === 2) {
+        const [InCardId, newCard] = newValue;
+        const board = get(atomCurrentMyBoard); 
+        const updatedCards = board.cards.map((card:any) => {
+            if(card.cardId === InCardId){
+                return{...card, ...newCard};
+            }
+            return card;
+        })
+        const newAtomCurrentMyBoard = {...board,  cards: updatedCards,};
+
+        return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+    }
+    }
+});
 
 // 추후 삭제 필요 
 export interface IBoardMember{

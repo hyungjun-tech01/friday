@@ -4,21 +4,15 @@ import {useEffect} from 'react';
  import {IModifyBoard, defaultModifyBoard, } from "../atoms/atomsBoard";
  import {apiModifyCard} from "../api/card";
 import { apiGetCurrentBoards, apiModifyBoard } from '../api/board';
+import {useRecoilValue} from "recoil";
+import {listSelector} from "../atoms/atomsBoard";
  // cardId, userId는 반드시 들어가야 함. 
  // 필요에 따라 Actiontype 과 값들을 적절하게 세팅하여 호출 : 아래는 descriptipon 변경 방법
 
  // Update comment Sample 
   const cardModifySample = async() => {
-    const TIME_ZONE = 9 * 60 * 60 * 1000; // 9시간
-    const d = new Date();
-    console.log(d);
-    console.log(d.toISOString());
-    const date = new Date(d.getTime() + TIME_ZONE).toISOString().split('T')[0];
-    console.log(date);
-    const time = d.toTimeString().split(' ')[0];
-    console.log(time);
-    const date_time = date + ' ' + time;
-    console.log(date_time);
+ 
+    
 
     //  const board : IModifyCard = {...defaultModifyBoard, 
     //    boardId:'1016265084713829473', 
@@ -49,9 +43,13 @@ import { apiGetCurrentBoards, apiModifyBoard } from '../api/board';
 
 
 function SampleTest(){
-    useEffect( ()=>{
-        cardModifySample();
-     },[]);
+  const aa  = useRecoilValue(listSelector); 
+    const list = aa('1071594612235175380');
+    console.log('list', list);
+
+    // useEffect( ()=>{
+    //     cardModifySample();
+    //  },[]);
 
     return(
         <div>
