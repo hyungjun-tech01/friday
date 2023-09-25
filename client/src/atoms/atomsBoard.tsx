@@ -119,10 +119,17 @@ export const listsSelector = selector ({
     key:"listsSelector",
     get:({get}) => {
         const board = get(atomCurrentMyBoard); 
-        return () => {
-            return (board.lists);
-        };
+        return (board.lists);
     },
+    set:({set, get}, newValue )=>{
+        if (Array.isArray(newValue) && newValue.length === 2) {
+            const [InListId, newList] = newValue;
+            const board = get(atomCurrentMyBoard); 
+            const updatedLists = {...board.lists, newList};
+            const newAtomCurrentMyBoard = {...board,  lists: updatedLists,};
+            return set(atomCurrentMyBoard, newAtomCurrentMyBoard);    
+        }
+    }
 });
 
 // 특정 listId를 가진 List를 get ,  selector 의 set을 통해 변경

@@ -25,6 +25,8 @@ function ListAdd({setShowList, boardId, setIsListAddOpened}:IListAddProp){
         if(response.message){
             setShowList(false);
         }else{
+            // recoil 변경 
+
             setShowList(true);
             setIsListAddOpened(false);
         }

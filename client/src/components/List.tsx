@@ -10,10 +10,10 @@ import CardAdd from "./CardAdd";
 
 interface IListProps{
     id:string;
-    index:number;
+    position:number;
     name : string;
 }
-function List({id, index, name}:IListProps){
+function List({id, position, name}:IListProps){
     const [t] = useTranslation();
 //    const selectCards = useRecoilValue(cardSelector); // 호출 가능한 함수를 가져옴
 //    console.log('isCardLoading',isCardLoading);
