@@ -24,8 +24,20 @@ export const atomMyList = atom<IList[]>({
     ]
 });
 
-/*
-select id as "listId", board_id as "boardId", name as "listName", 
-position as "position", created_at as "createdAt", 
-updated_at as "updatedAt" from list
-*/
+
+export interface IModifyList{
+    listActionType:'ADD'|'UPDATE'|'DELETE'|null;
+    userId : string;
+    position:string|null;
+    boardId:string|null;
+    listName:string|null;
+    listId:string|null;
+}
+export const defaultModifyList:IModifyList = {
+    listActionType:null, 
+    userId : '0',
+    position:null,
+    boardId:null,
+    listName:null,
+    listId:null,
+}

@@ -575,14 +575,23 @@ app.post('/board', async(req, res) => {
 
 // create list 
 app.post('/list', async(req, res) => {
-    const {boardId, userId, listName} = req.body;
+    const {boardId, userId, listActionType, listId,  listName, position} = req.body;
     try{
         console.log('create new list');
         // insert project 
-        const response = await pool.query(`call p_create_list($1, $2, $3)`,
-        [userId,boardId,listName]);
+        const response = await pool.query(`call p_modify_list($1, $2, $3, $4, $5, $6,
+            $7, $8, $9, $10)`,
+        [boardId,userId,listActionType, listId, listName, position,
+        null, null, null, null]);
        
-        res.json({listName:listName}); // 결과 리턴을 해 줌 .  
+        const outlistId = response.rows[0].x_list_id;
+        const outposition = response.rows[0].x_position;
+        const outCreatedAt = response.rows[0].x_createdAt;
+        const outUpdatedAt = response.rows[0].x_updatedAt;
+
+        res.json({listName:listName, outlistId:outlistId, 
+            outposition:outposition, outCreatedAt:outCreatedAt,
+            outUpdatedAt:outUpdatedAt }); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){
         console.error(err);

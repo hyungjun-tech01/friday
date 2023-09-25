@@ -2,8 +2,9 @@
 import {useEffect} from 'react';
  import {ICard, defaultCard, IModifyCard, defaultModifyCard} from "../atoms/atomCard";
  import {IModifyBoard, defaultModifyBoard, } from "../atoms/atomsBoard";
+ import {IModifyList, defaultModifyList} from "../atoms/atomsList";
  import {apiModifyCard} from "../api/card";
-import { apiGetCurrentBoards, apiModifyBoard } from '../api/board';
+import {  apiModifyList } from '../api/list';
 import {useRecoilValue} from "recoil";
 import {listSelector} from "../atoms/atomsBoard";
  // cardId, userId는 반드시 들어가야 함. 
@@ -23,18 +24,26 @@ import {listSelector} from "../atoms/atomsBoard";
     //    labelColor : 'red',
     //    //
     //  };
-     const card : IModifyCard = {...defaultModifyCard, 
+    //  const card : IModifyCard = {...defaultModifyCard, 
+    //   boardId:'1016265084713829473', 
+    //   userId:'967860418955445249',
+    //   cardLabelActionType : 'DELETE',
+    //   labelId : '1027147958514091150',
+    //   cardId :'1027148357342069905',
+
+    //   //
+    // };
+    const list : IModifyList = {...defaultModifyList, 
       boardId:'1016265084713829473', 
       userId:'967860418955445249',
-      cardLabelActionType : 'DELETE',
-      labelId : '1027147958514091150',
-      cardId :'1027148357342069905',
-
-      //
+      listActionType : 'DELETE',
+      listName : '102714795851409',
+      listId : '1077538116836787739'
+           //
     };
-     console.log(card); 
+     console.log(list); 
      // const response = await apiModifyBoard(board);
-     const response = await apiModifyCard(card);
+     const response = await apiModifyList(list);
     // const response = await apiGetCurrentBoards('1016265084713829473');
      console.log('modify response', response);
 
@@ -43,13 +52,13 @@ import {listSelector} from "../atoms/atomsBoard";
 
 
 function SampleTest(){
-  const aa  = useRecoilValue(listSelector); 
-    const list = aa('1071594612235175380');
-    console.log('list', list);
+//  const aa  = useRecoilValue(listSelector); 
+//    const list = aa('1071594612235175380');
+//    console.log('list', list);
 
-    // useEffect( ()=>{
-    //     cardModifySample();
-    //  },[]);
+  useEffect( ()=>{
+      cardModifySample();
+   },[]);
 
     return(
         <div>
