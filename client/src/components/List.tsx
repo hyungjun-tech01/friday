@@ -7,6 +7,8 @@ import Card from "./Card";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
 import {useTranslation} from "react-i18next";
 import CardAdd from "./CardAdd";
+import {useRecoilValue} from "recoil";
+import {cardsbyListIdSelector} from "../atoms/atomsBoard";
 
 interface IListProps{
     id:string;
@@ -15,7 +17,7 @@ interface IListProps{
 }
 function List({id, position, name}:IListProps){
     const [t] = useTranslation();
-//    const selectCards = useRecoilValue(cardSelector); // 호출 가능한 함수를 가져옴
+    const selectCards = useRecoilValue(cardsbyListIdSelector); // 호출 가능한 함수를 가져옴
 //    console.log('isCardLoading',isCardLoading);
 //    if(!isCardLoading) 
 //        selectedCards = selectCards(id);
@@ -27,17 +29,22 @@ function List({id, position, name}:IListProps){
     
     const onQueryCards = async () => {
         setIsCardLoading(true);
-        const response = await apiGetCardsbyListId(id);
-        if(response){
-            console.log('카드조회', response);  
-            setCards(response);
-            setIsCardLoading(false);
-            console.log(cards);
-        }
+        setCards(selectCards(id));
+        console.log('list card', id, cards);
+        // const response = await apiGetCardsbyListId(id);
+        // if(response){
+        //     console.log('카드조회', response);  
+        //     setCards(response);
+        //     setIsCardLoading(false);
+        //     console.log(cards);
+        // }
     };
 
     useEffect(
-        () => { onQueryCards(); } ,[id, isCardRequery]
+        () => { setIsCardLoading(true); 
+                onQueryCards();  
+                setIsCardLoading(false);
+            } ,[id, isCardRequery]
     );
 
     

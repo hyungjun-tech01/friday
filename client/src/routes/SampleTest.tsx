@@ -24,15 +24,15 @@ import {listSelector} from "../atoms/atomsBoard";
     //    labelColor : 'red',
     //    //
     //  };
-    //  const card : IModifyCard = {...defaultModifyCard, 
-    //   boardId:'1016265084713829473', 
-    //   userId:'967860418955445249',
-    //   cardLabelActionType : 'DELETE',
-    //   labelId : '1027147958514091150',
-    //   cardId :'1027148357342069905',
+     const card : IModifyCard = {...defaultModifyCard, 
+      boardId:'1016265084713829473', 
+      userId:'967860418955445249',
+      cardAttachmentActionType : 'COVER DELETE',
+      coverAttachmentId : '1027147958514091150',
+      cardId :'1070074530363344303',
 
-    //   //
-    // };
+      //
+    };
     const list : IModifyList = {...defaultModifyList, 
       boardId:'1016265084713829473', 
       userId:'967860418955445249',
@@ -42,8 +42,9 @@ import {listSelector} from "../atoms/atomsBoard";
            //
     };
      console.log(list); 
+     const response = await apiModifyCard(card);
      // const response = await apiModifyBoard(board);
-     const response = await apiModifyList(list);
+    // const response = await apiModifyList(list);
     // const response = await apiGetCurrentBoards('1016265084713829473');
      console.log('modify response', response);
 

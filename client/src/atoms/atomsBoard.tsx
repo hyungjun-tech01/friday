@@ -2,6 +2,7 @@ import {atom, selector, RecoilState} from "recoil";
 import {ILabel} from "./atomLabel";
 import {IList} from "./atomsList";
 import {ICard} from "./atomCard";
+import { composeInitialProps } from "react-i18next";
 
 export interface IBoard{
     boardId : string;
@@ -126,6 +127,7 @@ export const listsSelector = selector ({
             const [InListId, newList] = newValue;
             const board = get(atomCurrentMyBoard); 
             const updatedLists = {...board.lists, newList};
+            console.log('updatedLists', updatedLists);
             const newAtomCurrentMyBoard = {...board,  lists: updatedLists,};
             return set(atomCurrentMyBoard, newAtomCurrentMyBoard);    
         }

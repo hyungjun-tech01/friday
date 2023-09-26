@@ -8,7 +8,7 @@ export interface ICard{
     cardId: string; 
     boardId: string;
     listId: string;
-    converAttachmentId: string | null;
+    coverAttachmentId: string | null;
     cardName: string;
     description: string;
     createdAt: string;
@@ -58,7 +58,7 @@ export interface IComment{
     avatarUrl:string
 }
 export const defaultCard:ICard = {
-    cardId:"" , cardName:"",  converAttachmentId:"", boardId:"", listId:"",
+    cardId:"" , cardName:"",  coverAttachmentId:"", boardId:"", listId:"",
     description:"",  labels:[], createdAt:"", updatedAt:"" , position:"",
     dueDate:"", statusId:"", statusName:"",
     stopwatch:{total:0,startedAt:null }, memberships:[], attachments:[], 
@@ -88,6 +88,7 @@ export interface IModifyCard{
     dueDate :  string |null ;
     position : string |null ;
     stopwatch : IStopwatch;
+    coverAttachmentId : string|null;
     cardMembershipActionType : 'ADD'|'DELETE'|null; 
     cardMembershipId : string |null ;
     cardMembershipUserId : string |null ;
@@ -99,7 +100,7 @@ export interface IModifyCard{
     cardTaskName : string |null ;
     cardTaskIsCompleted : string |null ;
     cardTaskPosition :  string |null ;
-    cardAttachmentActionType : 'ADD'|'UPDATE'|'DELETE'|null; 
+    cardAttachmentActionType : 'ADD'|'UPDATE'|'DELETE'|'COVER ADD'|'COVER DELETE'|null; 
     cardAttachmentId : string |null ;
     cardAttachmentDirname : string |null ;
     cardAttachmentFilename : string |null ;
@@ -123,6 +124,7 @@ export const defaultModifyCard:IModifyCard = {
     dueDate :null, 
     position :null,
     stopwatch : {total:0,startedAt:null},
+    coverAttachmentId: null,
     cardMembershipActionType :null,
     cardMembershipId :null,
     cardMembershipUserId :null,

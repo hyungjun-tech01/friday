@@ -1,11 +1,13 @@
 import styles from "../scss/ListAdd.module.scss";
 import {useForm} from "react-hook-form";
 import {useTranslation} from "react-i18next";
-import { Button, Form } from 'semantic-ui-react';
+import {Button, Form } from 'semantic-ui-react';
 import {useCookies} from "react-cookie";
-import {ICreateList} from "../atoms/atomsList";
-import {apiCreateList} from "../api/list";
+import {IModifyList, defaultModifyList, IList, } from "../atoms/atomsList";
+import {listsSelector} from "../atoms/atomsBoard";
+import {apiModifyList, } from "../api/list";
 import {useRef,useEffect} from "react";
+import {useSetRecoilState} from "recoil";
 
 interface IListAddProp{
     boardId : string;
@@ -14,19 +16,23 @@ interface IListAddProp{
 
 }
 function ListAdd({setShowList, boardId, setIsListAddOpened}:IListAddProp){
+    const setList = useSetRecoilState(listsSelector);
     const {register, handleSubmit,formState:{errors}} = useForm();
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
 
     const onValid = async(data:any) => {
-        const list : ICreateList= {...data, boardId:boardId, userId:cookies.UserId};
+        const list : IModifyList= {...defaultModifyList, ...data, listActionType:'ADD', boardId:boardId, userId:cookies.UserId};
         console.log('create list', data);
-        const response = await apiCreateList(list);
+        const response = await apiModifyList(list);
         if(response.message){
             setShowList(false);
         }else{
             // recoil 변경 
-
+            console.log('addList', response);
+            const newList:IList = {listId:response.outlistId, boardId:boardId, listName:data.listName, position:response.outPosition, createdAt:response.createdAt, updatedAt:"", };
+            console.log('addList', newList);
+            setList([response.outlistId, newList]);
             setShowList(true);
             setIsListAddOpened(false);
         }

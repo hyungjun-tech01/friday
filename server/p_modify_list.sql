@@ -52,9 +52,9 @@ BEGIN
 	   ('{"list_name":"'||vv_list_name||'", "list_id":"'||vv_list_id||'", "board_id":"'||vv_board_id|| '"}')::text::json,
 		now(), now());    
     end if;
-   x_list_id = v_list_id;
-   x_position = v_count + 1;
-   x_updatedAt = v_updated_at;
-   x_createdAt = v_created_at;
+   x_list_id = v_list_id::text;
+   x_position = (v_count + 1)::text;
+   x_updatedAt = v_updated_at::text;
+   x_createdAt = v_created_at::text;
 END;
 $$;

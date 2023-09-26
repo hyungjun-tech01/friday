@@ -13,6 +13,14 @@ app.use(cors());
 app.use(express.json()); 
 app.use(express.urlencoded( {extended : false } ));
 
+
+// 동적요청에 대한 응답을 보낼때 etag 를 생성하지 않도록
+app.set('etag', false);
+
+// 정적요청에 대한 응답을 보낼때 etag 생성을 하지 않도록
+const options = { etag : false };
+
+
 // home  test
 app.get('/', (req, res)=>{
     res.send("Service is started");
@@ -88,8 +96,9 @@ app.post('/boards', async(req, res)=>{
     }
 );
 // get current board info by board id 
-app.post('/currentBoard/', async(req, res)=>{
+app.post('/currentBoard', async(req, res)=>{
     const {boardId, userId} = req.body;
+    console.log('currentboard', boardId);
     try{
         const result = await pool.query(`
         select b.id as "boardId" , bm.role as "canEdit"
@@ -161,7 +170,7 @@ app.post('/currentBoard/', async(req, res)=>{
             let cards;
             if( cardsResults.rows.length > 0 ) {
                 cards = cardsResults.rows;
-                console.log('currentboard', cards.rows);
+            //    console.log('currentboard', cards.rows);
                 /// card labels 
                 for(const card of cards){
                     //console.log('card', card.cardId);
@@ -236,7 +245,7 @@ app.post('/currentBoard/', async(req, res)=>{
             }
 
         res.json(currentBoard);
-        console.log(currentBoard);
+        //console.log(currentBoard);
         res.end();
     }catch(err){
     console.log(err);
@@ -585,12 +594,12 @@ app.post('/list', async(req, res) => {
         null, null, null, null]);
        
         const outlistId = response.rows[0].x_list_id;
-        const outposition = response.rows[0].x_position;
+        const outPosition = response.rows[0].x_position;
         const outCreatedAt = response.rows[0].x_createdAt;
         const outUpdatedAt = response.rows[0].x_updatedAt;
 
         res.json({listName:listName, outlistId:outlistId, 
-            outposition:outposition, outCreatedAt:outCreatedAt,
+            outPosition:outPosition, outCreatedAt:outCreatedAt,
             outUpdatedAt:outUpdatedAt }); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){
@@ -706,6 +715,7 @@ app.post('/modifyCard', async(req, res) => {
         dueDate , 
         position ,
         stopwatch,
+        coverAttachmentId,
         cardMembershipActionType ,
         cardMembershipId ,
         cardMembershipUserId ,
@@ -728,11 +738,12 @@ app.post('/modifyCard', async(req, res) => {
         cardCommentText  ,
         cardStatusActionType ,
         cardStatusId } = req.body;
+        
     try{
         console.log('modify card', req.body);
         // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
-                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44)`,
+                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45)`,
         [cardId,     //  
         userId ,       //  
         cardActionType ,    // 나머지는 모두 string 
@@ -743,6 +754,7 @@ app.post('/modifyCard', async(req, res) => {
         dueDate , 
         position ,
         stopwatch,
+        coverAttachmentId,
         cardMembershipActionType ,
         cardMembershipId ,
         cardMembershipUserId ,

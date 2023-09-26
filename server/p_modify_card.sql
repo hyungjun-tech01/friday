@@ -10,6 +10,7 @@ i_card_name in text,
 i_due_date in text, 
 i_position in text,
 i_stopwatch in jsonb,
+i_cover_attachment_id in text,
 i_card_membership_action_type in text,
 i_card_membership_id in text,
 i_card_membership_user_id in text,
@@ -81,6 +82,7 @@ vv_card_task_created_at timestamp without time zone default null;
 vv_card_task_updated_at timestamp without time zone default null;
 vv_card_attachment_created_at timestamp without time zone default null;
 vv_card_attachment_updatec_at timestamp without time zone default null;
+v_attach_count int;
 BEGIN
 	if(i_card_action_type is not null) then
 	   if(i_card_action_type = 'ADD') then
@@ -237,6 +239,17 @@ BEGIN
 			select now() into vv_card_attachment_created_at;
 			insert  into attachment(id, card_id, creator_user_id, dirname, filename, name, created_at, updated_at, image)
 			values(vv_attachment_id , i_card_id::bigint, i_user_id::bigint, i_card_attachment_dirname, i_card_attachment_filename, i_card_attachment_name, vv_card_attachment_created_at, now(), i_card_attachment_image::text::json);
+			--카드의 cover_attachment_id 를 update, 첫번째  filename .jpg, .png 일떄 
+			select count(*) into v_attach_count from attachment 
+			where card_id = i_card_id::bigint
+			and (position('.JPG' in upper(filename)) > 0 OR 
+			       position('.PNG' in upper(filename)) > 0);
+			if v_attach_count = 1 then
+			update card t
+			set t.cover_attachment_id = vv_attachment_id
+			where id = i_card_id::bigint;	   
+			end if;
+
 		elseif 	(i_card_attachment_action_type = 'UPDATE') then
 			select now() into vv_card_attachment_updatec_at;
 		   update attachment 
@@ -246,6 +259,14 @@ BEGIN
 		elseif (i_card_attachment_action_type = 'DELETE') then
 		   delete from attachment
 		   where id = i_card_attachment_id::bigint;
+		elseif (i_card_attachment_action_type = 'COVER ADD') then
+			update card 
+			set cover_attachment_id = i_cover_attachment_id::bigint
+			where id = i_card_id::bigint;	   
+		elseif (i_card_attachment_action_type = 'COVER DELETE') then
+			update card
+			set cover_attachment_id = null
+			where id = i_card_id::bigint;	 
 		end if;
 		
 		select COALESCE(i_card_attachment_dirname, ' '), COALESCE(i_card_attachment_filename, ' '), COALESCE(i_card_attachment_name, ' '), COALESCE(i_card_attachment_image, ' ')

@@ -23,9 +23,11 @@ export const apiGetBoards = async (project:IQueryBoard) => {
 export const apiGetCurrentBoards = async (checkAuth:ICheckBoardEditAuth) => {
     console.log("apiGetCurrentBoards", checkAuth.boardId);
     if(checkAuth.boardId === null || checkAuth.boardId === ''){
+        console.log("apiGetCurrentBoards null?", checkAuth.boardId);
         return(null);
     }
     try{
+        console.log("apiGetCurrentBoards try", checkAuth.boardId);
         const response = await fetch(`${BASE_PATH}/currentBoard`, {
         method: "POST", 
         headers:{'Content-Type':'application/json'},
