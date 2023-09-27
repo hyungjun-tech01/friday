@@ -7,7 +7,7 @@ import {IModifyList, defaultModifyList, IList, } from "../atoms/atomsList";
 import {listsSelector} from "../atoms/atomsBoard";
 import {apiModifyList, } from "../api/list";
 import {useRef,useEffect} from "react";
-import {useSetRecoilState} from "recoil";
+import {useSetRecoilState, useRecoilValue} from "recoil";
 
 interface IListAddProp{
     boardId : string;
@@ -29,9 +29,7 @@ function ListAdd({setShowList, boardId, setIsListAddOpened}:IListAddProp){
             setShowList(false);
         }else{
             // recoil 변경 
-            console.log('addList', response);
-            const newList:IList = {listId:response.outlistId, boardId:boardId, listName:data.listName, position:response.outPosition, createdAt:response.createdAt, updatedAt:"", };
-            console.log('addList', newList);
+            const newList:IList = {listId:response.outlistId, boardId:boardId, listName:data.listName, position:response.outPosition, createdAt:response.outCreatedAt, updatedAt:"", };
             setList([response.outlistId, newList]);
             setShowList(true);
             setIsListAddOpened(false);

@@ -7,6 +7,8 @@ import {useEffect} from 'react';
 import {  apiModifyList } from '../api/list';
 import {useRecoilValue} from "recoil";
 import {listSelector} from "../atoms/atomsBoard";
+import Paths from "../constants/Paths";
+const BASE_PATH = Paths.BASE_PATH; 
  // cardId, userId는 반드시 들어가야 함. 
  // 필요에 따라 Actiontype 과 값들을 적절하게 세팅하여 호출 : 아래는 descriptipon 변경 방법
 
@@ -58,12 +60,16 @@ function SampleTest(){
 //    console.log('list', list);
 
   useEffect( ()=>{
-      cardModifySample();
+    //  cardModifySample();
    },[]);
 
     return(
         <div>
-            Sample Test
+        <form id="form" action="http://localhost:37000/upload"  method="post" encType="multipart/form-data">
+          <input type="file" name="image" />
+          <input type="text" name="title" />
+        <button type="submit">업로드</button>
+         </form>
         </div>
     );
 }

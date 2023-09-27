@@ -4,6 +4,31 @@ const pool = require('./db');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+// multer 미들웨어 사용
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+
+
+try {
+  fs.readdirSync('uploads');
+} catch (error) {
+  console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
+  fs.mkdirSync('uploads');
+}
+
+const upload = multer({
+    storage: multer.diskStorage({
+      destination(req, file, done) {
+        done(null, 'uploads/');
+      },
+      filename(req, file, done) {
+        const ext = path.extname(file.originalname);
+        done(null, path.basename(file.originalname, ext)+ ext);
+      },
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 
 
@@ -20,6 +45,11 @@ app.set('etag', false);
 // 정적요청에 대한 응답을 보낼때 etag 생성을 하지 않도록
 const options = { etag : false };
 
+app.post('/upload', upload.single('image'), (req, res) => {
+    console.log(req.file);
+    res.send('ok');
+  });
+  
 
 // home  test
 app.get('/', (req, res)=>{

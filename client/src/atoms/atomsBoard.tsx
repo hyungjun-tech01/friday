@@ -126,8 +126,7 @@ export const listsSelector = selector ({
         if (Array.isArray(newValue) && newValue.length === 2) {
             const [InListId, newList] = newValue;
             const board = get(atomCurrentMyBoard); 
-            const updatedLists = {...board.lists, newList};
-            console.log('updatedLists', updatedLists);
+            const updatedLists = board.lists.concat(newList);
             const newAtomCurrentMyBoard = {...board,  lists: updatedLists,};
             return set(atomCurrentMyBoard, newAtomCurrentMyBoard);    
         }
