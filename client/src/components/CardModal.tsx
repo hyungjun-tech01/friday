@@ -37,6 +37,8 @@ import Stopwatch from './Stopwatch';
 import StopwatchEdit from './StopwatchEdit';
 import Label from './Label';
 import LabelsPopup from './LabelsPopup';
+import Attachments from './Attachments';
+import AttachmentAddPopup from './AttachmentAddPopup';
 
 import classNames from 'classnames';
 import styles from '../scss/CardModal.module.scss';
@@ -59,6 +61,8 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [stopwatch, setStopwatch] = useState<IStopwatch | null>(null);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
+
+  const isGalleryOpened = useRef(false);
 
   const { isLoading, data, isSuccess } = useQuery<any>(
     ['getInfoByCardId', currentCard.cardId],
@@ -371,7 +375,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               labelId: result.outLabelId,
               labelName: data.name ? data.name : '',
               color: data.color,
-              position:"",
+              position: '',
             };
             const newLabels = currentCard.labels.concat(newLabel);
             const updatedCard = {
@@ -693,6 +697,48 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
     },
     [tasks, cookies.UserId, currentCard.cardId]
   );
+
+  //------------------Attachment Functions------------------
+  const handleAttachmentCreate = useCallback((data: any) => {
+    console.log("handleAttachmentCreate");
+    const modifiedCard: IModifyCard = {
+      ...defaultModifyCard,
+      cardId: currentCard.cardId,
+      userId: cookies.UserId,
+      cardAttachmentActionType: 'ADD',
+      cardAttachmentFilename: data.file.name,
+    };
+    const response = apiModifyCard(modifiedCard);
+      response
+        .then((result) => {
+          console.log('Succeed to create attachment', result);
+        })
+        .catch((message) => {
+          console.log('Fail to delete task of card', message);
+        });
+
+  }, []);
+  const handleAttachmentUpdate = useCallback(() => {
+    console.log('handleAttachmentUpdate');
+  }, []);
+
+  const handleAttachmentDelete = useCallback(() => {
+    console.log('handleAttachmentDelete');
+  }, []);
+
+  const handleCoverUpdate = useCallback(() => {
+    console.log('handleCoverUpdate');
+  }, []);
+
+  const handleGalleryOpen = useCallback(() => {
+    console.log('handleGalleryOpen');
+    isGalleryOpened.current = true;
+  }, []);
+
+  const handleGalleryClose = useCallback(() => {
+    console.log('handleGalleryClose');
+    isGalleryOpened.current = false;
+  }, []);
 
   //------------------Comment Functions------------------
   const handleCommentsCreate = useCallback(
@@ -1044,6 +1090,25 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               </div>
             </div>
           )}
+          {currentCard.attachments.length > 0 && (
+            <div className={styles.contentModule}>
+              <div className={styles.moduleWrapper}>
+                <Icon name="attach" className={styles.moduleIcon} />
+                <div className={styles.moduleHeader}>
+                  {t('common.attachments')}
+                </div>
+                <Attachments
+                  items={currentCard.attachments}
+                  canEdit={canEdit}
+                  onUpdate={handleAttachmentUpdate}
+                  onDelete={handleAttachmentDelete}
+                  onCoverUpdate={handleCoverUpdate}
+                  onGalleryOpen={handleGalleryOpen}
+                  onGalleryClose={handleGalleryClose}
+                />
+              </div>
+            </div>
+          )}
           <Activities
             items={comments}
             //isDetailsVisible={isDetailsVisible}
@@ -1106,14 +1171,16 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   {t('common.stopwatch')}
                 </Button>
               </StopwatchEdit>
-              <Button fluid className={styles.actionButton}>
-                <Icon name="attach" className={styles.actionIcon} />
-                {t('common.attachment')}
-              </Button>
+              <AttachmentAddPopup onCreate={handleAttachmentCreate}>
+                <Button fluid className={styles.actionButton}>
+                  <Icon name="attach" className={styles.actionIcon} />
+                  {t('common.attachment')}
+                </Button>
+              </AttachmentAddPopup>
             </div>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('common.actions')}</span>
-              <Button
+              {/* <Button
                 fluid
                 className={styles.actionButton}
                 //onClick={handleToggleSubscriptionClick}
@@ -1123,11 +1190,11 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   className={styles.actionIcon}
                 />
                 {
-                  /*isSubscribed ? t('action.unsubscribe') : */ t(
+                  isSubscribed ? t('action.unsubscribe') :  t(
                     'action.subscribe'
                   )
                 }
-              </Button>
+              </Button> */}
               <Button
                 fluid
                 className={styles.actionButton}

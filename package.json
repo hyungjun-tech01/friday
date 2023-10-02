@@ -4,6 +4,10 @@
     "easymde": "^2.18.0",
     "i18next-browser-languagedetector": "^7.1.0",
     "photoswipe": "^5.3.7",
-    "react-datepicker": "^4.14.1"
+    "react-datepicker": "^4.14.1",
+    "react-dropzone": "^14.2.3",
+    "react-markdown": "^8.0.7",
+    "react-photoswipe-gallery": "^2.2.7",
+    "semantic-ui-css": "^2.5.0"
   }
 }

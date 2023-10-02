@@ -20,7 +20,7 @@ export interface ICard{
     stopwatch : IStopwatch|null;
     labels: ILabel[];
     memberships : ICardUser[];
-    attachments : IAttachemnt[];
+    attachments : IAttachment[];
     tasks : ITask[];
     comments : IComment[];
 }
@@ -35,7 +35,7 @@ export interface ICardUser{
     userName:string;
     avatarUrl:string;
 }
-export interface IAttachemnt{
+export interface IAttachment{
     cardAttachementId : string;
     cardId : string;
     creatorUserId : string;
@@ -46,6 +46,10 @@ export interface IAttachemnt{
     createdAt : string;
     updatedAt : string;
     image : IImage;
+    url : string;
+    coverUrl : string;
+    isCover : boolean;
+    isPersisted : boolean;
 }
 export interface IComment{
     commentId:string

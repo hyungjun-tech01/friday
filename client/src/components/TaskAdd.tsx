@@ -1,4 +1,4 @@
-import { ReactNode, cloneElement, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { cloneElement, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Button, Form, TextArea } from 'semantic-ui-react';
@@ -14,7 +14,6 @@ const TaskAdd = forwardRef(({ children, onCreate }:ITaskAddProps, ref) => {
   const [t] = useTranslation();
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const [data, setData] = useState<string>('');
-  //const [focusNameFieldState, focusNameField] = useToggle();
 
   const nameField = useRef<any>(null);
 

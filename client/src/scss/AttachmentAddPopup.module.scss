@@ -1,0 +1,46 @@
+//:global(#app) {
+  .divider {
+    background: #eee;
+    border: 0;
+    height: 1px;
+    margin-bottom: 8px;
+  }
+
+  .menu {
+    margin: -7px -12px -5px !important;
+    width: calc(100% + 24px) !important;
+  }
+
+  .menuItem {
+    margin: 0 !important;
+    padding-left: 14px !important;
+  }
+
+  .tip {
+    opacity: 0.5;
+  }
+
+  .popupCloseButton {
+    background: transparent !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 10px 12px 10px 8px !important;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    z-index: 2000;
+  }
+
+  .popupWrapper {
+    border-radius: 3px !important;
+    border-width: 0 !important;
+    box-shadow: 0 8px 16px -4px rgba(9, 45, 66, 0.25),
+      0 0 0 1px rgba(9, 45, 66, 0.08) !important;
+    margin-top: 6px !important;
+    max-height: calc(100% - 70px);
+    padding: 0 12px 12px !important;
+    width: 304px;
+  }
+//}
