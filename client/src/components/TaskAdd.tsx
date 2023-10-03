@@ -16,6 +16,7 @@ const TaskAdd = forwardRef(({ children, onCreate }:ITaskAddProps, ref) => {
   const [data, setData] = useState<string>('');
 
   const nameField = useRef<any>(null);
+  const isClosable = useRef<boolean | null>(null);
 
   const open = useCallback(() => {
     setIsOpened(true);
@@ -29,10 +30,10 @@ const TaskAdd = forwardRef(({ children, onCreate }:ITaskAddProps, ref) => {
     const cleanData = data.trim();
 
     if (!cleanData && nameField.current) {
-      nameField.current.select();
+      nameField.current.focus();
       return;
     }
-
+    console.log("TaskAdd / submit - cleanData : ", cleanData);
     onCreate(cleanData);
     setData('');
     nameField.current.focus();
@@ -61,7 +62,9 @@ const TaskAdd = forwardRef(({ children, onCreate }:ITaskAddProps, ref) => {
 
   const handleFieldBlur = useCallback(
     () => {
-      close();
+      if (isClosable.current) {
+        close();
+      }
     }, [close]);
 
   const handleFieldChange = useCallback((event:any) => {
@@ -69,21 +72,26 @@ const TaskAdd = forwardRef(({ children, onCreate }:ITaskAddProps, ref) => {
     setData(newData);
   }, []);
 
-//   const handleControlMouseOver = useCallback(() => {
-//     isClosable.current = false;
-//   }, []);
+  const handleControlMouseOver = useCallback(() => {
+    isClosable.current = false;
+  }, []);
 
-//   const handleControlMouseOut = useCallback(() => {
-//     isClosable.current = true;
-//   }, []);
+  const handleControlMouseOut = useCallback(() => {
+    isClosable.current = true;
+  }, []);
 
   const handleSubmit = useCallback(() => {
+    console.log("handleSubmit");
     submit();
   }, [submit]);
 
   useEffect(() => {
     if (isOpened) {
       nameField.current.focus();
+      isClosable.current = true;
+
+    } else {
+      isClosable.current = null;
     }
   }, [isOpened]);
 
@@ -113,8 +121,9 @@ const TaskAdd = forwardRef(({ children, onCreate }:ITaskAddProps, ref) => {
         <Button
           positive
           content={t('action.addTask')}
-          //onMouseOver={handleControlMouseOver}
-          //onMouseOut={handleControlMouseOut}
+          type='submit'
+          onMouseOver={handleControlMouseOver}
+          onMouseOut={handleControlMouseOut}
         />
       </div>
     </Form>
