@@ -29,14 +29,14 @@
     }
   
     .actionsTitle {
-      color: #8c8c8c;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      margin-top: 16px;
-      text-transform: uppercase;
-      line-height: 20px;
-      margin-bottom: -4px;
+      color: #8c8c8c !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0.04em !important;
+      margin-top: 16px !important;
+      text-transform: uppercase !important;
+      line-height: 20px !important;
+      margin-bottom: -4px !important;
     }
   
     .addAttachment {
@@ -58,7 +58,7 @@
     }
   
     .contentModule {
-      margin-bottom: 24px;
+      margin-bottom: 24px !important;
     }
   
     .contentPadding {
@@ -129,7 +129,7 @@
   
     .grid {
       background: #f5f6f7 !important;
-      margin: 0 !important;
+      margin: 0;
     }
   
     .headerPadding {
@@ -154,7 +154,7 @@
     }
   
     .modalPadding {
-      padding: 0px !important;
+      padding: 0px;
     }
   
     .moduleHeader {
@@ -184,21 +184,21 @@
     }
   
     .sidebarPadding {
-      padding: 8px 16px 0 8px;
+      padding: 8px 16px 0 8px !important;
     }
   
     .text {
-      color: #6b808c;
-      font-size: 12px;
-      font-weight: bold;
-      letter-spacing: 0.3px;
-      line-height: 20px;
-      margin: 0 8px 4px 0;
-      text-transform: uppercase;
+      color: #6b808c !important;
+      font-size: 12px !important;
+      font-weight: bold !important;
+      letter-spacing: 0.3px !important;
+      line-height: 20px !important;
+      margin: 0 8px 4px 0 !important;
+      text-transform: uppercase !important;
     }
   
     .wrapper {
-      width: 880px;
+      width: 880px !important;
     }
   
     @media (max-width: 926px) {
