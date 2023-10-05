@@ -76,18 +76,3 @@ export const apiGetInfosByCardId = async (cardId:string) => {
     }
 };
 
-export const apiUploadAttatchment = async (cardId:string, attachmentFileName:string, attachmentFil:FormData) => {
-    console.log("modify card", BASE_PATH);
-    
-    try{
-        const response = await fetch(`${BASE_PATH}/uploadAttachment/`,{
-            method: "POST", 
-            //headers:{'Content-Type':'application/json'},
-            body:attachmentFil
-           }); 
-           const responseMessage = await response.json();
-           return(responseMessage);
-     }catch(err){
-        console.error(err);
-    }
-};
