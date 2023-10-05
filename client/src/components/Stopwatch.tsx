@@ -5,7 +5,7 @@ import { formatStopwatch } from '../utils/stopwatch';
 
 import styles from '../scss/Stopwatch.module.scss';
 
-type StopWatchSize = "tiny" | "small" | "medium";
+type StopWatchSize = 'tiny' | 'small' | 'medium';
 
 interface IStopwatchProps {
   as?: ElementType;
@@ -16,16 +16,23 @@ interface IStopwatchProps {
   onClick?: () => void;
 }
 
-const Stopwatch = ({ as='button', startedAt=null, total, size="medium"
-  , isDisabled=false, onClick=undefined }:IStopwatchProps) => {
-  const [prevStartedAt, setPrevStartedAt] = useState(startedAt);
+const Stopwatch = ({
+  as = 'button',
+  startedAt = null,
+  total,
+  size = 'medium',
+  isDisabled = false,
+  onClick = undefined,
+}: IStopwatchProps) => {
+  const [prevStartedAt, setPrevStartedAt] = useState<Date | null >(null);
   const [doUpdate, setDoUpdate] = useState(false);
 
-  const forceUpdate = useCallback(()=>{
+  const interval = useRef<any>(null);
+
+  const forceUpdate = useCallback(() => {
     setDoUpdate(!doUpdate);
   }, [doUpdate]);
 
-  const interval = useRef<any>(null);
 
   const start = useCallback(() => {
     interval.current = setInterval(() => {
@@ -38,21 +45,23 @@ const Stopwatch = ({ as='button', startedAt=null, total, size="medium"
   }, []);
 
   useEffect(() => {
+    console.log("useEffect - 0");
     if (prevStartedAt) {
+      console.log("useEffect - 1");
       if (!startedAt) {
+        console.log("useEffect - 2");
         stop();
       }
     } else if (startedAt) {
+      console.log("useEffect - 3");
       start();
     }
   }, [startedAt, prevStartedAt, start, stop]);
 
-  useEffect(
-    () => () => {
-      stop();
-    },
-    [stop],
-  );
+  useEffect(() => () => {
+    console.log("useEffect - 4");
+    stop();
+  }, [stop]);
 
   const contentNode = (
     <span
@@ -60,7 +69,7 @@ const Stopwatch = ({ as='button', startedAt=null, total, size="medium"
         styles.wrapper,
         styles[`wrapper${upperFirst(size)}`],
         startedAt && styles.wrapperActive,
-        onClick && styles.wrapperHoverable,
+        onClick && styles.wrapperHoverable
       )}
     >
       {formatStopwatch({ startedAt, total })}
@@ -70,7 +79,12 @@ const Stopwatch = ({ as='button', startedAt=null, total, size="medium"
   const ElementType = as;
 
   return onClick ? (
-    <ElementType type="button" disabled={isDisabled} className={styles.button} onClick={onClick}>
+    <ElementType
+      type="button"
+      disabled={isDisabled}
+      className={styles.button}
+      onClick={onClick}
+    >
       {contentNode}
     </ElementType>
   ) : (

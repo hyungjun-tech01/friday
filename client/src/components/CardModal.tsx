@@ -70,32 +70,33 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
     {
       onSuccess: (data) => {
         console.log('[CardModal] Called Card Info : ', data);
-        if (data[0].cardMembership) {
-          const newCardMembership: IMembership[] = [...data[0].cardMembership];
+        const cardData = data[0];
+        if (cardData.cardMembership) {
+          const newCardMembership: IMembership[] = [...cardData.cardMembership];
           setCardMemberships(newCardMembership);
           setCardUserIds(newCardMembership.map((user) => user.userId));
         }
-        if (data[0].cardTask) {
-          const newTasks = [...data[0].cardTask];
+        if (cardData.cardTask) {
+          const newTasks = [...cardData.cardTask];
           setTasks(newTasks);
         }
-        if (data[0].dueDate) {
-          const date = new Date(data[0].dueDate);
+        if (cardData.dueDate) {
+          const date = new Date(cardData.dueDate);
           setDueDate(date);
         }
-        if (data[0].stopwatch) {
+        if (cardData.stopwatch && cardData.stopwatch.startedAt) {
           const stopwatch_input: IStopwatch = {
-            total: parseInt(data[0].stopwatch.total),
-            startedAt: new Date(data[0].stopwatch.startedAt),
+            total: parseInt(cardData.stopwatch.total),
+            startedAt: new Date(cardData.stopwatch.startedAt),
           };
           setStopwatch(stopwatch_input);
         }
-        if (data[0].cardComment) {
-          const newCardComment = [...data[0].cardComment];
+        if (cardData.cardComment) {
+          const newCardComment = [...cardData.cardComment];
           setComments(newCardComment);
         }
-        // if(data[0].cardAction) {
-        //   setActions(data[0].cardAction);
+        // if(cardData.cardAction) {
+        //   setActions(cardData.cardAction);
         // };
       },
       refetchOnWindowFocus: false,
