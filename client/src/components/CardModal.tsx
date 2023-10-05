@@ -84,7 +84,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           const date = new Date(cardData.dueDate);
           setDueDate(date);
         }
-        if (cardData.stopwatch && cardData.stopwatch.startedAt) {
+        if (cardData.stopwatch) {
           const stopwatch_input: IStopwatch = {
             total: parseInt(cardData.stopwatch.total),
             startedAt: new Date(cardData.stopwatch.startedAt),
@@ -535,7 +535,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Stopwatch Functions------------------
   const handleStopwatchUpdate = useCallback(
     (stopwatch: IStopwatch | null) => {
-      console.log('Check User id : ', cookies.UserId);
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: currentCard.cardId,

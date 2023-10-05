@@ -1,5 +1,6 @@
 import upperFirst from 'lodash/upperFirst';
 import { ElementType, useCallback, useEffect, useRef, useState } from 'react';
+import usePrevious from '../lib/hook/use-previous';
 import classNames from 'classnames';
 import { formatStopwatch } from '../utils/stopwatch';
 
@@ -24,15 +25,13 @@ const Stopwatch = ({
   isDisabled = false,
   onClick = undefined,
 }: IStopwatchProps) => {
-  const [prevStartedAt, setPrevStartedAt] = useState<Date | null >(null);
   const [doUpdate, setDoUpdate] = useState(false);
-
+  const prevStartedAt = usePrevious(startedAt);
   const interval = useRef<any>(null);
 
   const forceUpdate = useCallback(() => {
-    setDoUpdate(!doUpdate);
-  }, [doUpdate]);
-
+    setDoUpdate((prevState) => !prevState);
+  }, []);
 
   const start = useCallback(() => {
     interval.current = setInterval(() => {
@@ -45,23 +44,21 @@ const Stopwatch = ({
   }, []);
 
   useEffect(() => {
-    console.log("useEffect - 0");
     if (prevStartedAt) {
-      console.log("useEffect - 1");
       if (!startedAt) {
-        console.log("useEffect - 2");
         stop();
       }
     } else if (startedAt) {
-      console.log("useEffect - 3");
       start();
     }
   }, [startedAt, prevStartedAt, start, stop]);
 
-  useEffect(() => () => {
-    console.log("useEffect - 4");
-    stop();
-  }, [stop]);
+  useEffect(
+    () => () => {
+      stop();
+    },
+    [stop]
+  );
 
   const contentNode = (
     <span
