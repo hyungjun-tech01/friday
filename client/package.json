@@ -27,6 +27,7 @@
     "react-hook-form": "^7.45.2",
     "react-i18next": "^13.0.2",
     "react-markdown": "^8.0.7",
+    "react-photoswipe-gallery": "^2.2.7",
     "react-query": "^3.39.3",
     "react-router-dom": "5.3",
     "react-scripts": "5.0.1",
