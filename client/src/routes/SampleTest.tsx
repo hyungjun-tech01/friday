@@ -74,10 +74,13 @@ const onClick = async (e:any) => {
   const formData = new FormData();
   formData.append('cardId', '1061603352028120361');
   formData.append('fileName', fileName);
-  formData.append('fileExt', 'png');
+  formData.append('fileExt', 'txt');
   if(file !== null)
     formData.append('file', file);
 
+  for (const [key, value] of formData.entries()) {
+    console.log(key, ":", value);
+}
 // onChange={(e)=>handleFileChange(e.target.value)}/>
   const response = await apiUploadAttatchment(formData);
 }
@@ -89,8 +92,8 @@ const onClick = async (e:any) => {
     return(
         <div>
           <form id="form" onSubmit={onClick}>
-          <input type="file" name="file"  accept=".png, .jpg, .jpeg, .gif" onChange={handleFileChange}/>
-            <input type="text" name = "fileExt" value="png"/>
+          <input type="file" name="file"  accept=".png, .jpg, .jpeg, .gif, .txt" onChange={handleFileChange}/>
+            <input type="text" name = "fileExt" value="txt"/>
             <input type = "text" name="cardId" value = "1061603352028120361"/>
             <input type="text" name="fileName" value = {fileName} onChange={(e)=>setFileName(e.target.value)}/>
             <button type="submit" >업로드</button>
