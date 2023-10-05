@@ -6,30 +6,39 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 // multer 미들웨어 사용
 const multer = require('multer');
-const fs = require('fs');
+const fsUpper = require('fs');
 const path = require('path');
 
 
+
+//const express = require('express');
+const bodyParser = require('body-parser');
+const fs = require('fs').promises; // fs.promises를 사용하여 비동기 파일 작업을 수행합니다.
+const util = require('util');
+
+
 try {
-  fs.readdirSync('uploads');
+    fsUpper.readdirSync('uploads');
 } catch (error) {
   console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
-  fs.mkdirSync('uploads');
+  fsUpper.mkdirSync('uploads');
 }
 
-const upload = multer({
-    storage: multer.diskStorage({
-      destination(req, file, done) {
-        done(null, 'uploads/');
-      },
-      filename(req, file, done) {
-        const ext = path.extname(file.originalname);
-        done(null, path.basename(file.originalname, ext)+ ext);
-      },
-    }),
-    limits: { fileSize: 5 * 1024 * 1024 },
-});
+// const upload = multer({
+//     storage: multer.diskStorage({
+//       destination(req, file, done) {
+//         done(null, 'uploads/');
+//       },
+//       filename(req, file, done) {
+//         const ext = path.extname(file.originalname);
+//         done(null, path.basename(file.originalname, ext)+ ext);
+//       },
+//     }),
+//     limits: { fileSize: 5 * 1024 * 1024 },
+// });
 
+const storage = multer.memoryStorage(); 
+const upload = multer({ storage: storage });
 
 
 const PORT =  process.env.MYPORT ? process.env.MYPORT:8000;
@@ -39,15 +48,43 @@ app.use(express.json());
 app.use(express.urlencoded( {extended : false } ));
 
 
+// util.promisify를 사용하여 fs.writeFile을 프로미스로 변환합니다.
+const writeFileAsync = util.promisify(fs.writeFile);
+
 // 동적요청에 대한 응답을 보낼때 etag 를 생성하지 않도록
 app.set('etag', false);
 
 // 정적요청에 대한 응답을 보낼때 etag 생성을 하지 않도록
 const options = { etag : false };
 
-app.post('/upload', upload.single('image'), (req, res) => {
-    console.log(req.file);
-    res.send('ok');
+app.post('/upload', upload.single('file'),async (req, res) => {
+    console.log(req.body);
+    const cardId = req.body.cardId;
+    const file_ext = req.body.fileExt;
+    const fileData = req.file.buffer; // 이미지 데이터가 여기에 들어온다고 가정합니다.
+    const fileName = req.body.fileName;
+
+    console.log(fileData);
+    // 카드 id 폴더가 없으면 생성 
+    try {
+        fsUpper.readdirSync(`uploads/${cardId}`);
+    } catch (error) {
+        console.error('uploads/cardid  폴더가 없어 cardid 폴더를 생성합니다.');
+        fsUpper.mkdirSync(`uploads/${cardId}`);
+    }
+
+    // 이미지를 저장할 경로 및 파일 이름
+    const filePath = `uploads/${cardId}/${fileName}.${file_ext}`;
+    console.log(filePath);
+    try {
+    // 이미지 데이터를 바이너리로 변환하여 파일에 저장 (비동기)
+        await writeFileAsync(filePath, fileData, 'binary');
+        console.log('파일 저장 성공:', filePath);
+        res.send('파일 업로드 완료');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('파일 업로드 중 오류가 발생했습니다.');
+    }
   });
   
 
