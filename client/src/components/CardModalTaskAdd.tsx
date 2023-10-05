@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Button, Form, TextArea } from 'semantic-ui-react';
 
-import styles from '../scss/TaskAdd.module.scss';
+import styles from '../scss/CardModalTaskAdd.module.scss';
 
-interface ITaskAddProps {
+interface ICardModalTaskAddProps {
     children: any;
     onCreate: (data:string) => void;
 }
 
-const TaskAdd = forwardRef(({ children, onCreate }:ITaskAddProps, ref) => {
+const CardModalTaskAdd = forwardRef(({ children, onCreate }:ICardModalTaskAddProps, ref) => {
   const [t] = useTranslation();
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const [data, setData] = useState<string>('');
@@ -130,4 +130,4 @@ const TaskAdd = forwardRef(({ children, onCreate }:ITaskAddProps, ref) => {
   );
 });
 
-export default TaskAdd;
+export default CardModalTaskAdd;

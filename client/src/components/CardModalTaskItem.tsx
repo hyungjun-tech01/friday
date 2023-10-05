@@ -1,11 +1,11 @@
-import { useCallback, useState, useRef, Children } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { Button, Checkbox, Icon, Popup, Menu } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import styles from '../scss/TaskItem.module.scss';
+import styles from '../scss/CardModalTaskItem.module.scss';
 import NameEdit from './NameEdit';
 
-interface ITaskItemProps {
+interface ICardModalTaskItemProps {
     id: string;
     index: number;
     name: string;
@@ -16,7 +16,7 @@ interface ITaskItemProps {
     onDelete: () => void;
 };
 
-const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUpdate, onDelete }:ITaskItemProps) => {
+const CardModalTaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUpdate, onDelete }:ICardModalTaskItemProps) => {
   const nameEdit = useRef<any>(null);
   const popupShow = useRef<any>(null);
   const [t] = useTranslation();
@@ -130,4 +130,4 @@ const TaskItem = ({ id, index, name, isCompleted, /*isPersisted,*/ canEdit, onUp
     );
 };
 
-export default TaskItem;
+export default CardModalTaskItem;

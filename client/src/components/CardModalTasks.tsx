@@ -6,12 +6,12 @@ import { Progress } from 'semantic-ui-react';
 import { ITask } from "../atoms/atomTask";
 
 //import DroppableTypes from '../../../constants/DroppableTypes';
-import TaskItem from './TaskItem';
-import TaskAdd from './TaskAdd';
+import CardModalTaskItem from './CardModalTaskItem';
+import CardModalTaskAdd from './CardModalTaskAdd';
 
-import styles from '../scss/Tasks.module.scss';
+import styles from '../scss/CardModalTasks.module.scss';
 
-interface ITasksProps{
+interface ICardModalTasksProps{
     items: ITask[];
     canEdit: boolean;
     onCreate: (data: string) => void;
@@ -20,7 +20,7 @@ interface ITasksProps{
     onDelete: (id: string) => void;
   };
 
-const Tasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }:ITasksProps) => {
+const CardModalTasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }:ICardModalTasksProps) => {
   const [t] = useTranslation();
 
 //   const handleDragStart = useCallback(() => {
@@ -70,7 +70,7 @@ const Tasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }:ITasksPr
           <div {...droppableProps} ref={innerRef}>*/
           <div>
             {items.map((item, index) => (
-              <TaskItem
+              <CardModalTaskItem
                 key={item.taskId}
                 id={item.taskId}
                 index={index}
@@ -83,13 +83,13 @@ const Tasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }:ITasksPr
               />
             ))}
             {canEdit && (
-              <TaskAdd onCreate={onCreate}>
+              <CardModalTaskAdd onCreate={onCreate}>
                 <button type="button" className={styles.taskButton}>
                   <span className={styles.taskButtonText}>
                     {items.length > 0 ? t('action.addAnotherTask') : t('action.addTask')}
                   </span>
                 </button>
-              </TaskAdd>
+              </CardModalTaskAdd>
             )}
           </div>
         /*)*/}
@@ -97,4 +97,4 @@ const Tasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }:ITasksPr
   );
 };
 
-export default Tasks;
+export default CardModalTasks;

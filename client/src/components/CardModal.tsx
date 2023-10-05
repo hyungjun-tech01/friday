@@ -26,7 +26,7 @@ import { IStopwatch } from '../atoms/atomStopwatch';
 import { ILabel } from '../atoms/atomLabel';
 import Activities from './Activities';
 import DescriptionEdit from './DescriptionEdit';
-import Tasks from './Tasks';
+import CardModalTasks from './CardModalTasks';
 import Markdown from './Markdown';
 import CardMembershipPopup from './CardMembershipPopup';
 import NameField from './NameField';
@@ -1079,7 +1079,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   className={styles.moduleIcon}
                 />
                 <div className={styles.moduleHeader}>{t('common.tasks')}</div>
-                <Tasks
+                <CardModalTasks
                   items={tasks}
                   canEdit={canEdit}
                   onCreate={handleTaskCreate}
