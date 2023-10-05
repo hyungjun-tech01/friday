@@ -1,5 +1,5 @@
  ///// api 호출 sample code 
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
  import {ICard, defaultCard, IModifyCard, defaultModifyCard} from "../atoms/atomCard";
  import {IModifyBoard, defaultModifyBoard, } from "../atoms/atomsBoard";
  import {IModifyList, defaultModifyList} from "../atoms/atomsList";
@@ -58,6 +58,33 @@ function SampleTest(){
 //  const aa  = useRecoilValue(listSelector); 
 //    const list = aa('1071594612235175380');
 //    console.log('list', list);
+const [file, setFile] = useState(null);
+const [fileName, setFileName] = useState('');
+// const [fileGroup, setFileGroup] = useState('');
+
+const handleFileChange = (e:any) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+};
+
+const handleFileNameChange = (e:any) => {
+  const fileName = e.target.fileName;
+  setFileName(fileName);
+};
+
+const onClick = (e:any) => {
+  
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.append('cardId', '1061603352028120361');
+  formData.append('fileName', fileName);
+  formData.append('fileExt', 'png');
+//  formData.append('file', file);
+//           <input type="file" name="file" value={file} accept=".png, .jpg, .jpeg, .gif" 
+// onChange={(e)=>handleFileChange(e.target.value)}/>
+//  const response = await apiUploadAttatchment(data);
+}
 
   useEffect( ()=>{
     //  cardModifySample();
@@ -65,10 +92,13 @@ function SampleTest(){
 
     return(
         <div>
-        <form id="form" action="http://localhost:37000/upload"  method="post" encType="multipart/form-data">
-          <input type="file" name="image" />
-          <input type="text" name="title" />
-        <button type="submit">업로드</button>
+        <form id="form" onSubmit={onClick}>
+
+   
+          <input type="text" name = "fileExt" value="png"/>
+          <input type = "text" name="cardId" value = "1061603352028120361"/>
+          <input type="text" name="fileName" value = {fileName} onChange={(e)=>handleFileNameChange(e.target.value)}/>
+        <button type="submit" >업로드</button>
          </form>
         </div>
     );
