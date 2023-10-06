@@ -86,8 +86,8 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         }
         if (cardData.stopwatch) {
           const stopwatch_input: IStopwatch = {
-            total: parseInt(cardData.stopwatch.total),
-            startedAt: new Date(cardData.stopwatch.startedAt),
+            total: cardData.stopwatch.total,
+            startedAt: cardData.stopwatch.startedAt,
           };
           setStopwatch(stopwatch_input);
         }

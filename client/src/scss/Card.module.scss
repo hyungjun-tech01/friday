@@ -66,12 +66,12 @@
     }
   
     .content {
-      display: block;
+      display: block !important;
   
       &:after {
-        content: "";
-        display: table;
-        clear: both;
+        content: "" !important;
+        display: table !important;
+        clear: both !important;
       }
     }
   

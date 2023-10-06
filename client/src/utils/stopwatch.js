@@ -1,6 +1,6 @@
 const getFullSeconds = ({ startedAt, total }) => {
   if (startedAt) {
-    return Math.floor((new Date() - startedAt) / 1000) + total;
+    return Math.floor((new Date() - Date.parse(startedAt)) / 1000) + total;
   }
 
   return total;
@@ -41,7 +41,8 @@ export const getStopwatchParts = (stopwatch) => {
 };
 
 export const formatStopwatch = (stopwatch) => {
+  console.log("formatStopwatch : ", stopwatch.startedAt, stopwatch.total);
   const { hours, minutes, seconds } = getStopwatchParts(stopwatch);
-
+  console.log("H:M:S - ", hours, minutes, seconds);
   return [hours, ...[minutes, seconds].map((part) => (part < 10 ? `0${part}` : part))].join(':');
 };
