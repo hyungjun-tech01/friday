@@ -93,3 +93,19 @@ export const apiUploadAttatchment = async (data:FormData) => {
         console.error(err);
     }
 };
+
+export const apiDeleteAttatchment = async (data:any) => {
+    console.log("delete attachment", BASE_PATH, data);
+    
+    try{
+        const response = await fetch(`${BASE_PATH}/deleteFile`,{
+            method: "POST", 
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(data),
+        }); 
+        const json = await response.json()
+        return json;
+    }catch(err){
+        console.error(err);
+    }
+};

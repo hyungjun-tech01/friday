@@ -24,22 +24,8 @@ try {
   fsUpper.mkdirSync('uploads');
 }
 
-// const upload = multer({
-//     storage: multer.diskStorage({
-//       destination(req, file, done) {
-//         done(null, 'uploads/');
-//       },
-//       filename(req, file, done) {
-//         const ext = path.extname(file.originalname);
-//         done(null, path.basename(file.originalname, ext)+ ext);
-//       },
-//     }),
-//     limits: { fileSize: 5 * 1024 * 1024 },
-// });
-
 const storage = multer.memoryStorage(); 
 const upload = multer({ storage: storage });
-
 
 const PORT =  process.env.MYPORT ? process.env.MYPORT:8000;
 
@@ -47,9 +33,10 @@ app.use(cors());
 app.use(express.json()); 
 app.use(express.urlencoded( {extended : false } ));
 
-
 // util.promisify를 사용하여 fs.writeFile을 프로미스로 변환합니다.
 const writeFileAsync = util.promisify(fs.writeFile);
+// promisify를 사용하여 fs.unlink를 비동기 함수로 변환
+const unlinkAsync = util.promisify(fs.unlink);
 
 // 동적요청에 대한 응답을 보낼때 etag 를 생성하지 않도록
 app.set('etag', false);
@@ -58,14 +45,12 @@ app.set('etag', false);
 const options = { etag : false };
 
 app.post('/upload', upload.single('file'),async (req, res) => {
-    console.log(req.body);
     const cardId = req.body.cardId;
     const file_ext = req.body.fileExt;
     const fileData = req.file.buffer; // 이미지 데이터가 여기에 들어온다고 가정합니다.
     const fileName = req.body.fileName;
 
-    console.log(fileData);
-    // 카드 id 폴더가 없으면 생성 
+    // /카드 id 폴더가 없으면 생성 
     try {
         fsUpper.readdirSync(`uploads/${cardId}`);
     } catch (error) {
@@ -75,18 +60,37 @@ app.post('/upload', upload.single('file'),async (req, res) => {
 
     // 이미지를 저장할 경로 및 파일 이름
     const filePath = `uploads/${cardId}/${fileName}.${file_ext}`;
-    console.log(filePath);
     try {
-    // 이미지 데이터를 바이너리로 변환하여 파일에 저장 (비동기)
-        await writeFileAsync(filePath, fileData, 'binary');
-        console.log('파일 저장 성공:', filePath);
-        res.send('파일 업로드 완료');
+    // 이미지 데이터를 바이너리로 변환하여 파일에 저장 (동기) -> 앞에 await를 붙히면 프로세스가 안 끝남.
+        writeFileAsync(filePath, fileData, 'binary');
+        console.log('파일 저장 성공:', filePath); 
+        res.json({fileName:fileName, filePath:filePath});
     } catch (err) {
         console.error(err);
         res.status(500).send('파일 업로드 중 오류가 발생했습니다.');
+    }finally{
+        res.end();
+        console.log('final:', filePath); 
     }
-  });
-  
+});
+
+app.post('/deleteFile', async (req, res) => {
+    const {cardId, fileExt, fileName} = req.body;
+
+    // 이미지를 삭제할 경로 및 파일 이름
+    const filePath = `uploads/${cardId}/${fileName}.${fileExt}`;
+    try {
+        unlinkAsync(filePath);   // sync 밖에 안됨. 왜 안되는지 모르겠음 await넣으면 진행 안됨.
+        console.log('파일 삭제 성공:', filePath); 
+        res.json({fileName:fileName, filePath:filePath});
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('파일 삭제 성공 중 오류가 발생했습니다.');
+    }finally{
+        res.end();
+        console.log('final:', filePath); 
+    }
+});
 
 // home  test
 app.get('/', (req, res)=>{
