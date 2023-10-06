@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
  import {ICard, defaultCard, IModifyCard, defaultModifyCard} from "../atoms/atomCard";
  import {IModifyBoard, defaultModifyBoard, } from "../atoms/atomsBoard";
  import {IModifyList, defaultModifyList} from "../atoms/atomsList";
- import {apiModifyCard, apiUploadAttatchment} from "../api/card";
+ import {apiModifyCard, apiUploadAttatchment, apiDeleteAttatchment} from "../api/card";
 import {  apiModifyList } from '../api/list';
 import {useRecoilValue} from "recoil";
 import {listSelector} from "../atoms/atomsBoard";
@@ -74,7 +74,7 @@ const onClick = async (e:any) => {
   const formData = new FormData();
   formData.append('cardId', '1061603352028120361');
   formData.append('fileName', fileName);
-  formData.append('fileExt', 'txt');
+  formData.append('fileExt', 'png');
   if(file !== null)
     formData.append('file', file);
 
@@ -83,8 +83,24 @@ const onClick = async (e:any) => {
 }
 // onChange={(e)=>handleFileChange(e.target.value)}/>
   const response = await apiUploadAttatchment(formData);
+
+  if(response)
+    if(response.status === 500)
+      console.log('파일 업로드시 에러 발생');
+    else
+      console.log(response.fileName, response.filePath);
 }
 
+const onDelete = async()=>{
+  const deleteCard = {cardId:'1061603352028120361', fileExt:'png', fileName:'4444444'};
+  const response = await apiDeleteAttatchment(deleteCard);
+
+  if(response)
+    if(response.status === 500)
+      console.log('파일 업로드시 에러 발생');
+    else
+      console.log(response.fileName, response.filePath);
+}
   useEffect( ()=>{
     //  cardModifySample();
    },[]);
@@ -93,11 +109,11 @@ const onClick = async (e:any) => {
         <div>
           <form id="form" onSubmit={onClick}>
           <input type="file" name="file"  accept=".png, .jpg, .jpeg, .gif, .txt" onChange={handleFileChange}/>
-            <input type="text" name = "fileExt" value="txt"/>
             <input type = "text" name="cardId" value = "1061603352028120361"/>
             <input type="text" name="fileName" value = {fileName} onChange={(e)=>setFileName(e.target.value)}/>
             <button type="submit" >업로드</button>
           </form>
+          <input type="button" value="삭제" onClick={onDelete}/> 
         </div>
     );
 }

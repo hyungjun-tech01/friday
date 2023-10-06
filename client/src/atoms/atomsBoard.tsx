@@ -175,8 +175,8 @@ export const cardsbyListIdSelector = selector({
 
 
 // 특정 cardId를  가진 Card를 selecting 하고 set을 통해서 변경 
-export const cardSelector = selector({
-    key:"cardSelector",
+export const cardSelectorCardId = selector({
+    key:"cardSelectorCardId",
     get:( {get}) => {
         const board = get(atomCurrentMyBoard); 
         return (InCardId:string) => {
