@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
-import { useSetRecoilState } from 'recoil';
-import { ICard, atomCurrentCard } from '../atoms/atomCard';
+import { useCallback, useEffect } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { cardSelectorCardId } from '../atoms/atomsBoard';
+import { atomCurrentCard, ICard } from '../atoms/atomCard';
 import Label from './Label';
 import CardTasks from './CardTasks';
 import User from './User';
@@ -10,20 +11,25 @@ import classNames from 'classnames';
 import styles from '../scss/Card.module.scss';
 
 interface ICardProps {
-  card: ICard;
+  cardId: string;
 }
 
-function Card({ card }: ICardProps) {
+function Card({ cardId }: ICardProps) {
+  const [card, setCard] = useRecoilState(cardSelectorCardId(cardId));
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
-  const handleCardClick = useCallback(() => {
-    console.log('Card is clicked : ', card.cardId);
-    // if (document.activeElement) {
-    //     (document.activeElement as HTMLElement).blur();;
-    // };
-    if (card) setCurrentCard(card);
-  }, [card, setCurrentCard]);
 
-  const contentNode = (
+  const handleCardClick = useCallback(() => {
+    if (card) {
+      console.log('Card is clicked : ', card.cardId);
+      setCurrentCard(card);
+    }
+  }, [setCurrentCard, card]);
+
+  useEffect(() => {
+    console.log("CardModal / useEffect : 1");
+  }, []);
+
+  const contentNode = card ? (
     <>
       <div className={styles.details}>
         {card.labels.length > 0 && (
@@ -41,25 +47,29 @@ function Card({ card }: ICardProps) {
         <div className={styles.name}>{card.cardName}</div>
         {card.tasks.length > 0 && <CardTasks items={card.tasks} />}
         {(card.dueDate || card.stopwatch) && (
-            <span className={styles.attachments}>
-              {card.dueDate && (
-                <span className={classNames(styles.attachment, styles.attachmentLeft)}>
-                  <DueDate value={new Date(card.dueDate)} size="tiny" />
-                </span>
-              )}
-              {card.stopwatch && (
-                <span className={classNames(styles.attachment, styles.attachmentLeft)}>
-                  <Stopwatch
-                    as="span"
-                    startedAt={card.stopwatch.startedAt}
-                    total={card.stopwatch.total}
-                    size="tiny"
-                    //onClick={canEdit ? handleToggleStopwatchClick : undefined}
-                  />
-                </span>
-              )}
-            </span>
-          )}
+          <span className={styles.attachments}>
+            {card.dueDate && (
+              <span
+                className={classNames(styles.attachment, styles.attachmentLeft)}
+              >
+                <DueDate value={new Date(card.dueDate)} size="tiny" />
+              </span>
+            )}
+            {card.stopwatch && (
+              <span
+                className={classNames(styles.attachment, styles.attachmentLeft)}
+              >
+                <Stopwatch
+                  as="span"
+                  startedAt={card.stopwatch.startedAt}
+                  total={card.stopwatch.total}
+                  size="tiny"
+                  //onClick={canEdit ? handleToggleStopwatchClick : undefined}
+                />
+              </span>
+            )}
+          </span>
+        )}
         {card.memberships.length > 0 && (
           <span
             className={classNames(styles.attachments, styles.attachmentsRight)}
@@ -83,9 +93,9 @@ function Card({ card }: ICardProps) {
         )}
       </div>
     </>
-  );
+  ) : null;
 
-  return (
+  return card ? (
     <div className={styles.wrapper}>
       <div className={styles.card}>
         <div className={styles.content}>
@@ -99,7 +109,7 @@ function Card({ card }: ICardProps) {
         </div>
       </div>
     </div>
-  );
+  ) : null;
 }
 
 export default Card;

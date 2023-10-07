@@ -19,6 +19,7 @@ import {
   ICurrent,
   IModifyBoard,
   defaultModifyBoard,
+  cardSelectorCardId,
 } from '../atoms/atomsBoard';
 import { ITask, defaultTask } from '../atoms/atomTask';
 import { IMembership } from '../atoms/atomsUser';
@@ -61,6 +62,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [stopwatch, setStopwatch] = useState<IStopwatch | null>(null);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
+  const updateCard = useSetRecoilState(cardSelectorCardId(currentCard.cardId));
 
   const isGalleryOpened = useRef(false);
 
@@ -105,8 +107,9 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   );
 
   const handleOnCloseCardModel = useCallback(() => {
+    updateCard(currentCard);
     setCurrentCard(defaultCard);
-  }, [setCurrentCard]);
+  }, [currentCard, setCurrentCard, updateCard]);
 
   //------------------Membership Functions------------------
   const handleUserAdd = useCallback(
@@ -146,6 +149,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
               const newCardUserIds = cardUserIds.concat(id);
               setCardUserIds(newCardUserIds);
+
+              const newCurrentCard = {
+                ...currentCard,
+                cardMemberships: newCardMembership,
+              };
+              setCurrentCard(newCurrentCard);
             }
           })
           .catch((message) => {
@@ -153,7 +162,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           });
       }
     },
-    [board, currentCard.cardId, cardMemberships, cardUserIds, cookies.UserId]
+    [board.users, currentCard, cookies.UserId, cardMemberships, cardUserIds, setCurrentCard]
   );
 
   const handleUserRemove = useCallback(
@@ -199,6 +208,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 ...cardUserIds.slice(userId_index + 1),
               ];
               setCardUserIds(newCardUserIds);
+
+              const newCurrentCard = {
+                ...currentCard,
+                cardMemberships: newCardMembership,
+              };
+              setCurrentCard(newCurrentCard);
             }
           })
           .catch((message) => {
@@ -206,7 +221,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           });
       }
     },
-    [currentCard.cardId, cardMemberships, cardUserIds, cookies.UserId]
+    [cardMemberships, currentCard, cookies.UserId, cardUserIds, setCurrentCard]
   );
 
   //------------------Name Functions------------------
@@ -535,19 +550,20 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Stopwatch Functions------------------
   const handleStopwatchUpdate = useCallback(
     (stopwatch: IStopwatch | null) => {
+      const newStopwatch : IStopwatch = {
+        total: stopwatch ? stopwatch.total : -1,
+        startedAt: stopwatch
+          ? stopwatch.startedAt
+            ? stopwatch.startedAt
+            : null
+          : null,
+      }
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: currentCard.cardId,
         userId: cookies.UserId,
         cardActionType: 'UPDATE',
-        stopwatch: {
-          total: stopwatch ? stopwatch.total : -1,
-          startedAt: stopwatch
-            ? stopwatch.startedAt
-              ? stopwatch.startedAt
-              : null
-            : null,
-        },
+        stopwatch: newStopwatch,
       };
       console.log('check value : ', modifiedCard.stopwatch);
       const response = apiModifyCard(modifiedCard);
@@ -557,12 +573,13 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             console.log('Fail to update stopwatch of card', result.message);
           } else {
             console.log('Succeed to update stopwatch of card', result);
+            
             const updatedCard = {
               ...currentCard,
-              stopwatch: stopwatch,
+              stopwatch: newStopwatch,
             };
             setCurrentCard(updatedCard);
-            setStopwatch(stopwatch);
+            setStopwatch(newStopwatch);
           }
         })
         .catch((message) => {
@@ -604,13 +621,19 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             };
             const newTasks = tasks.concat(newTask);
             setTasks(newTasks);
+
+            const updatedCard = {
+              ...currentCard,
+              tasks: newTasks,
+            };
+            setCurrentCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Failed to get response', message);
         });
     },
-    [tasks, cookies.UserId, currentCard.cardId]
+    [currentCard, cookies.UserId, tasks, setCurrentCard]
   );
 
   const handleTaskUpdate = useCallback(
@@ -661,12 +684,18 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             ...tasks.slice(index + 1),
           ];
           setTasks(newTasks);
+
+          const updatedCard = {
+            ...currentCard,
+            tasks: newTasks,
+          }
+          setCurrentCard(updatedCard);
         })
         .catch((message) => {
           console.log('Fail to update task of card', message);
         });
     },
-    [tasks, cookies.UserId, currentCard.cardId]
+    [currentCard, cookies.UserId, tasks, setCurrentCard]
   );
 
   const handleTaskDelete = useCallback(
@@ -690,12 +719,18 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             ...tasks.slice(index + 1),
           ];
           setTasks(newTasks);
+
+          const updatedCard = {
+            ...currentCard,
+            tasks: newTasks,
+          }
+          setCurrentCard(updatedCard);
         })
         .catch((message) => {
           console.log('Fail to delete task of card', message);
         });
     },
-    [tasks, cookies.UserId, currentCard.cardId]
+    [currentCard, cookies.UserId, tasks, setCurrentCard]
   );
 
   //------------------Attachment Functions------------------
@@ -718,6 +753,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         });
 
   }, []);
+
   const handleAttachmentUpdate = useCallback(() => {
     console.log('handleAttachmentUpdate');
   }, []);
@@ -767,13 +803,19 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             };
             const newComments = [newComment, ...comments];
             setComments(newComments);
+
+            const updatedCard = {
+              ...currentCard,
+              comments: newComments,
+            };
+            setCurrentCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Failed to get response', message);
         });
     },
-    [currentCard.cardId, cookies, comments]
+    [currentCard, cookies.UserId, cookies.UserName, comments, setCurrentCard]
   );
 
   const handleCommentsUpdate = useCallback(
@@ -808,12 +850,18 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             ...comments.slice(index + 1),
           ];
           setComments(newComments);
+
+          const updatedCard = {
+            ...currentCard,
+            comments: newComments,
+          };
+          setCurrentCard(updatedCard);
         })
         .catch((message) => {
           console.log('Fail to update task of card', message);
         });
     },
-    [currentCard.cardId, cookies.UserId, comments]
+    [currentCard, cookies.UserId, comments, setCurrentCard]
   );
 
   const handleCommentsDelete = useCallback(
@@ -834,12 +882,18 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             (comment) => comment.commentId !== id
           );
           setComments(newComments);
+
+          const updatedCard = {
+            ...currentCard,
+            comments: newComments,
+          };
+          setCurrentCard(updatedCard);
         })
         .catch((message) => {
           console.log('Fail to delete task of card', message);
         });
     },
-    [currentCard.cardId, cookies.UserId, comments]
+    [currentCard, cookies.UserId, comments, setCurrentCard]
   );
 
   useEffect(() => {

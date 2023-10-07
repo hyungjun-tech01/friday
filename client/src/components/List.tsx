@@ -61,7 +61,7 @@ function List({id, position, name}:IListProps){
             <div className={`${styles.cardsInnerWrapper} ${styles.cardsInnerWrapperFull}`}>
             <div className={styles.cardsOuterWrapper}>
                 <div className={styles.cards}>
-                    {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} card={card}/>))}
+                    {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} cardId={card.cardId}/>))}
                     {isCardAddOpened&&<CardAdd listId={id} setIsCardAddOpened={setIsCardAddOpened} isCardRequery={isCardRequery} setIsCardRequery={setIsCardRequery}/>}
                     {!isCardAddOpened&&(
                         <button

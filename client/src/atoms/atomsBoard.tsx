@@ -1,8 +1,7 @@
-import {atom, selector, RecoilState} from "recoil";
+import {atom, selector, RecoilState, selectorFamily} from "recoil";
 import {ILabel} from "./atomLabel";
 import {IList} from "./atomsList";
 import {ICard} from "./atomCard";
-import { composeInitialProps } from "react-i18next";
 
 export interface IBoard{
     boardId : string;
@@ -175,29 +174,45 @@ export const cardsbyListIdSelector = selector({
 
 
 // 특정 cardId를  가진 Card를 selecting 하고 set을 통해서 변경 
-export const cardSelectorCardId = selector({
+export const cardSelectorCardId = selectorFamily({
     key:"cardSelectorCardId",
-    get:( {get}) => {
-        const board = get(atomCurrentMyBoard); 
-        return (InCardId:string) => {
-            return (board.cards.filter((card)=> card.cardId === InCardId)
-                );
-        };
+    // get:({get}) => {
+    //     const board = get(atomCurrentMyBoard); 
+    //     return (InCardId:string) => {
+    //         return (board.cards.filter((card)=> card.cardId === InCardId)
+    //             );
+    //     };
+    // },
+    get: (cardId) => ({ get }) => {
+        const board = get(atomCurrentMyBoard);
+        return board.cards.filter((card: any) => card.cardId === cardId)[0];
     },
-    set:({set, get}, newValue )=>{
-        if (Array.isArray(newValue) && newValue.length === 2) {
-        const [InCardId, newCard] = newValue;
-        const board = get(atomCurrentMyBoard); 
-        const updatedCards = board.cards.map((card:any) => {
-            if(card.cardId === InCardId){
-                return{...card, ...newCard};
-            }
-            return card;
-        })
-        const newAtomCurrentMyBoard = {...board,  cards: updatedCards,};
+    // set:  ({set, get}, newValue)=>{
+    //     if (Array.isArray(newValue) && newValue.length === 2) {
+    //         const [InCardId, newCard] = newValue;
+    //         const board = get(atomCurrentMyBoard); 
+    //         const updatedCards = board.cards.map((card:any) => {
+    //             if(card.cardId === InCardId){
+    //                 return{...card, ...newCard};
+    //             }
+    //             return card;
+    //         })
+    //         const newAtomCurrentMyBoard = {...board,  cards: updatedCards,};
 
-        return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
-    }
+    //         return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+    //     }
+    // }
+    set: (cardId) => ({set, get}, newValue)=>{
+            const board = get(atomCurrentMyBoard);
+            const updatedCards = board.cards.map((card:any) => {
+                if(card.cardId === cardId) {
+                    return{...card, ...newValue};
+                }
+                return card;
+            })
+            const newAtomCurrentMyBoard = {...board,  cards: updatedCards,};
+
+            return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
     }
 });
 
