@@ -25,7 +25,7 @@ const FilePicker = ({ children, accept, onSelect }: FilePickerProps) => {
     //   },
     //   [onSelect],
     // );
-    ({target }: any) => {
+    ({ target }: any) => {
       console.log('FilePicker / handleFieldchange / target : ', target );
       if (target.files[0]) {
         console.log('FilePicker / handleFieldchange / target : ', target.files[0] );

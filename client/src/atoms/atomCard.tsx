@@ -44,8 +44,8 @@ export interface IAttachment{
     fileName : string;
     cardAttachmentName : string;
     createdAt : string;
-    updatedAt : string;
-    image : IImage;
+    updatedAt : string | null;
+    image : IImage | null;
     url : string;
     coverUrl : string;
     isCover : boolean;

@@ -5,7 +5,11 @@ import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useQuery } from 'react-query';
 import { apiModifyBoard } from '../api/board';
-import { apiGetInfosByCardId, apiModifyCard } from '../api/card';
+import {
+  apiGetInfosByCardId,
+  apiModifyCard,
+  apiUploadAttatchment,
+} from '../api/card';
 import { IComment, defaultComment } from '../atoms/atomAction';
 import {
   ICard,
@@ -13,6 +17,7 @@ import {
   defaultCard,
   IModifyCard,
   defaultModifyCard,
+  IAttachment,
 } from '../atoms/atomCard';
 import {
   atomCurrentMyBoard,
@@ -162,7 +167,14 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           });
       }
     },
-    [board.users, currentCard, cookies.UserId, cardMemberships, cardUserIds, setCurrentCard]
+    [
+      board.users,
+      currentCard,
+      cookies.UserId,
+      cardMemberships,
+      cardUserIds,
+      setCurrentCard,
+    ]
   );
 
   const handleUserRemove = useCallback(
@@ -550,14 +562,14 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Stopwatch Functions------------------
   const handleStopwatchUpdate = useCallback(
     (stopwatch: IStopwatch | null) => {
-      const newStopwatch : IStopwatch = {
+      const newStopwatch: IStopwatch = {
         total: stopwatch ? stopwatch.total : -1,
         startedAt: stopwatch
           ? stopwatch.startedAt
             ? stopwatch.startedAt
             : null
           : null,
-      }
+      };
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: currentCard.cardId,
@@ -573,7 +585,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             console.log('Fail to update stopwatch of card', result.message);
           } else {
             console.log('Succeed to update stopwatch of card', result);
-            
+
             const updatedCard = {
               ...currentCard,
               stopwatch: newStopwatch,
@@ -688,7 +700,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           const updatedCard = {
             ...currentCard,
             tasks: newTasks,
-          }
+          };
           setCurrentCard(updatedCard);
         })
         .catch((message) => {
@@ -723,7 +735,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           const updatedCard = {
             ...currentCard,
             tasks: newTasks,
-          }
+          };
           setCurrentCard(updatedCard);
         })
         .catch((message) => {
@@ -734,25 +746,57 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   );
 
   //------------------Attachment Functions------------------
-  const handleAttachmentCreate = useCallback((data: any) => {
-    console.log("handleAttachmentCreate");
-    const modifiedCard: IModifyCard = {
-      ...defaultModifyCard,
-      cardId: currentCard.cardId,
-      userId: cookies.UserId,
-      cardAttachmentActionType: 'ADD',
-      cardAttachmentFilename: data.file.name,
-    };
-    const response = apiModifyCard(modifiedCard);
+  const handleAttachmentCreate = useCallback(
+    (file: any) => {
+      console.log('handleAttachmentCreate : ', file);
+      const fileName = file.file.name;
+      const fileNameSplitted = fileName.split('.');
+      const fileExt =
+        fileNameSplitted.length > 1
+          ? fileNameSplitted[fileNameSplitted.length - 1]
+          : '';
+      console.log('handleAttachmentCreate / file name : ', fileName);
+      console.log('handleAttachmentCreate / file ext : ', fileExt);
+
+      const formData = new FormData();
+      formData.append('cardId', currentCard.cardId);
+      formData.append('fileName', fileName);
+      formData.append('fileExt', fileExt);
+      formData.append('file', file.file);
+
+      const response = apiUploadAttatchment(formData);
+      console.log('handleAttachmentCreate / response : ', response);
       response
         .then((result) => {
-          console.log('Succeed to create attachment', result);
+          console.log('handleAttachmentCreate / result : ', result);
+          const newAttachment: IAttachment = {
+            cardAttachementId : "",
+            cardId : currentCard.cardId,
+            creatorUserId : cookies.UserId,
+            creatorUserName : cookies.UserName,
+            dirName : '',
+            fileName : fileName,
+            cardAttachmentName : result.filePath,
+            createdAt : new Date().toISOString(),
+            updatedAt : null,
+            image : null,
+            url : result.filePath,
+            coverUrl : "",
+            isCover : false,
+            isPersisted : false,
+          };
+          const newCurrentCard = {
+            ...currentCard,
+            attachments : currentCard.attachments.concat(newAttachment),
+          };
+          setCurrentCard(newCurrentCard);
         })
         .catch((message) => {
-          console.log('Fail to delete task of card', message);
+          console.log('Failt to upload file');
         });
-
-  }, []);
+    },
+    [currentCard.cardId]
+  );
 
   const handleAttachmentUpdate = useCallback(() => {
     console.log('handleAttachmentUpdate');
