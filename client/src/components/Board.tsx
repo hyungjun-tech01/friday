@@ -31,7 +31,6 @@ function Board({boardId}:IListProps){
    
     const getCurrentBoard = async (id:string) => {
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
-        console.log('static', response);
         if(response ) {
             setCurrentBoard({...currentBoard, ...response});
           // setCurrentBoard({...currentBoard, boardId:id, users:response.users, labels:response.labels});

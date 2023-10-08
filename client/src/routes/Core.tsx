@@ -22,7 +22,6 @@ function Core(){
   const {pathname} = useLocation();
   const IsDetail = pathname.includes('board');
   let IsMaster = pathname.includes('projects');
-  
   const {id} = useParams<ICoreParams>();
 
   const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:"", defaultBoardId:""});
@@ -49,6 +48,7 @@ function Core(){
       }
     }
     if(IsDetail){
+      console.log('Core Detail getCurrentBoard');
       getCurrentBoard(id);
       setCurrent(true);
     }
@@ -65,7 +65,8 @@ function Core(){
   
     const [currentModal, setCurrentModal] = useState(null);
 
-  if(currentProject === undefined ){
+  if(currentProject === undefined || current === false){
+    console.log(currentProject, current);
     return (
       <>
       <Fix setCurrent={setCurrent} projectName={""} />

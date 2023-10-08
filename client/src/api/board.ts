@@ -27,7 +27,6 @@ export const apiGetCurrentBoards = async (checkAuth:ICheckBoardEditAuth) => {
         return(null);
     }
     try{
-        console.log("apiGetCurrentBoards try", checkAuth.boardId);
         const response = await fetch(`${BASE_PATH}/currentBoard`, {
         method: "POST", 
         headers:{'Content-Type':'application/json'},

@@ -19,6 +19,7 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [currentBoard, setCurrentBoard] = useRecoilState(atomCurrentMyBoard);
     const getCurrentBoard = async (id:string) => {
+        console.log('static getCurrentBoard');
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
         console.log('static', response);
         if(response ) {
