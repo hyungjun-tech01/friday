@@ -30,7 +30,7 @@ export interface ICardUser{
     cardId:string;
     userId:string;
     createdAt:string;
-    updatedAt:string;
+    updatedAt:string | null;
     email:string;
     userName:string;
     avatarUrl:string;

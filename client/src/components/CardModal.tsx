@@ -2,15 +2,10 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useTranslation } from 'react-i18next';
 import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
-import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
-import { useQuery } from 'react-query';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { apiModifyBoard } from '../api/board';
-import {
-  apiGetInfosByCardId,
-  apiModifyCard,
-  apiUploadAttatchment,
-} from '../api/card';
-import { IComment, defaultComment } from '../atoms/atomAction';
+import { apiModifyCard, apiUploadAttatchment } from '../api/card';
+import { defaultComment } from '../atoms/atomAction';
 import {
   ICard,
   atomCurrentCard,
@@ -18,6 +13,7 @@ import {
   IModifyCard,
   defaultModifyCard,
   IAttachment,
+  ICardUser,
 } from '../atoms/atomCard';
 import {
   atomCurrentMyBoard,
@@ -26,8 +22,7 @@ import {
   defaultModifyBoard,
   cardSelectorCardId,
 } from '../atoms/atomsBoard';
-import { ITask, defaultTask } from '../atoms/atomTask';
-import { IMembership } from '../atoms/atomsUser';
+import { defaultTask } from '../atoms/atomTask';
 import { IStopwatch } from '../atoms/atomStopwatch';
 import { ILabel } from '../atoms/atomLabel';
 import Activities from './Activities';
@@ -58,63 +53,17 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   // let wrapperRef = useRef<any>(null);
   const [t] = useTranslation();
   const [board, setBoard] = useRecoilState<ICurrent>(atomCurrentMyBoard);
-  const [currentCard, setCurrentCard] = useRecoilState<ICard>(atomCurrentCard);
-  const [cardMemberships, setCardMemberships] = useState<IMembership[]>([]);
+  const [card, setCard] = useRecoilState<ICard>(atomCurrentCard);
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
-  const [tasks, setTasks] = useState<ITask[]>([]);
-  const [comments, setComments] = useState<IComment[]>([]);
-  // const [actions, setActions] = useState<IAction[]>([]);
-  const [dueDate, setDueDate] = useState<Date | null>(null);
-  const [stopwatch, setStopwatch] = useState<IStopwatch | null>(null);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
-  const updateCard = useSetRecoilState(cardSelectorCardId(currentCard.cardId));
+  const updateCard = useSetRecoilState(cardSelectorCardId(card.cardId));
 
   const isGalleryOpened = useRef(false);
 
-  const { isLoading, data, isSuccess } = useQuery<any>(
-    ['getInfoByCardId', currentCard.cardId],
-    () => apiGetInfosByCardId(currentCard.cardId),
-    {
-      onSuccess: (data) => {
-        console.log('[CardModal] Called Card Info : ', data);
-        const cardData = data[0];
-        if (cardData.cardMembership) {
-          const newCardMembership: IMembership[] = [...cardData.cardMembership];
-          setCardMemberships(newCardMembership);
-          setCardUserIds(newCardMembership.map((user) => user.userId));
-        }
-        if (cardData.cardTask) {
-          const newTasks = [...cardData.cardTask];
-          setTasks(newTasks);
-        }
-        if (cardData.dueDate) {
-          const date = new Date(cardData.dueDate);
-          setDueDate(date);
-        }
-        if (cardData.stopwatch) {
-          const stopwatch_input: IStopwatch = {
-            total: cardData.stopwatch.total,
-            startedAt: cardData.stopwatch.startedAt,
-          };
-          setStopwatch(stopwatch_input);
-        }
-        if (cardData.cardComment) {
-          const newCardComment = [...cardData.cardComment];
-          setComments(newCardComment);
-        }
-        // if(cardData.cardAction) {
-        //   setActions(cardData.cardAction);
-        // };
-      },
-      refetchOnWindowFocus: false,
-      enabled: !!currentCard,
-    }
-  );
-
   const handleOnCloseCardModel = useCallback(() => {
-    updateCard(currentCard);
-    setCurrentCard(defaultCard);
-  }, [currentCard, setCurrentCard, updateCard]);
+    updateCard(card);
+    setCard(defaultCard);
+  }, [card, setCard, updateCard]);
 
   //------------------Membership Functions------------------
   const handleUserAdd = useCallback(
@@ -124,7 +73,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       if (addUser) {
         const modifiedCard: IModifyCard = {
           ...defaultModifyCard,
-          cardId: currentCard.cardId,
+          cardId: card.cardId,
           userId: cookies.UserId,
           cardMembershipActionType: 'ADD',
           cardMembershipUserId: id,
@@ -139,9 +88,9 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               );
             } else {
               console.log('Succeed to add new membership', result);
-              const newMembership: IMembership = {
+              const newMembership: ICardUser = {
                 cardMembershipId: result.outCardMembershipId,
-                cardId: currentCard.cardId,
+                cardId: card.cardId,
                 userId: addUser.userId,
                 createdAt: result.outCreatedAt ? result.outCreatedAt : null,
                 updatedAt: null,
@@ -149,17 +98,15 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 userName: addUser.userName,
                 avatarUrl: addUser.avatarUrl,
               };
-              const newCardMembership = cardMemberships.concat(newMembership);
-              setCardMemberships(newCardMembership);
-
+              const newCardMembership = card.memberships.concat(newMembership);
               const newCardUserIds = cardUserIds.concat(id);
               setCardUserIds(newCardUserIds);
 
               const newCurrentCard = {
-                ...currentCard,
-                cardMemberships: newCardMembership,
+                ...card,
+                memberships: newCardMembership,
               };
-              setCurrentCard(newCurrentCard);
+              setCard(newCurrentCard);
             }
           })
           .catch((message) => {
@@ -167,26 +114,19 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           });
       }
     },
-    [
-      board.users,
-      currentCard,
-      cookies.UserId,
-      cardMemberships,
-      cardUserIds,
-      setCurrentCard,
-    ]
+    [board.users, card, cookies.UserId, cardUserIds, setCard]
   );
 
   const handleUserRemove = useCallback(
     (id: string) => {
-      const deleteMember = cardMemberships
+      const deleteMember = card.memberships
         .filter((user) => user.userId === id)
         .at(0);
       if (deleteMember) {
         console.log('handleUserRemove : ', id);
         const modifiedCard: IModifyCard = {
           ...defaultModifyCard,
-          cardId: currentCard.cardId,
+          cardId: card.cardId,
           userId: cookies.UserId,
           cardMembershipActionType: 'DELETE',
           cardMembershipId: deleteMember.cardMembershipId,
@@ -203,15 +143,13 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               );
             } else {
               console.log('Succeed to delete membership', result);
-              const member_index = cardMemberships.findIndex(
+              const member_index = card.memberships.findIndex(
                 (membership) => membership.userId === id
               );
               const newCardMembership = [
-                ...cardMemberships.slice(0, member_index),
-                ...cardMemberships.slice(member_index + 1),
+                ...card.memberships.slice(0, member_index),
+                ...card.memberships.slice(member_index + 1),
               ];
-              setCardMemberships(newCardMembership);
-
               const userId_index = cardUserIds.findIndex(
                 (userId) => userId === id
               );
@@ -222,10 +160,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               setCardUserIds(newCardUserIds);
 
               const newCurrentCard = {
-                ...currentCard,
-                cardMemberships: newCardMembership,
+                ...card,
+                memberships: newCardMembership,
               };
-              setCurrentCard(newCurrentCard);
+              setCard(newCurrentCard);
             }
           })
           .catch((message) => {
@@ -233,7 +171,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           });
       }
     },
-    [cardMemberships, currentCard, cookies.UserId, cardUserIds, setCurrentCard]
+    [card.memberships, card, cookies.UserId, cardUserIds, setCard]
   );
 
   //------------------Name Functions------------------
@@ -242,7 +180,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       console.log('Udate name of card : ', data);
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardName: data,
         cardActionType: 'UPDATE',
@@ -256,17 +194,17 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           } else {
             console.log('Succeed to update name of card', result);
             const updatedCard = {
-              ...currentCard,
+              ...card,
               cardName: data,
             };
-            setCurrentCard(updatedCard);
+            setCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Fail to update name of card', message);
         });
     },
-    [currentCard, cookies, setCurrentCard]
+    [card, cookies, setCard]
   );
 
   //------------------Description Functions------------------
@@ -275,7 +213,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       console.log('Udate description of card : ', data);
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardActionType: 'UPDATE',
         description: data,
@@ -289,17 +227,17 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           } else {
             console.log('Succeed to update description of card', result);
             const updatedCard = {
-              ...currentCard,
+              ...card,
               description: data,
             };
-            setCurrentCard(updatedCard);
+            setCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Fail to update description of card', message);
         });
     },
-    [currentCard, cookies.UserId, setCurrentCard]
+    [card, cookies.UserId, setCard]
   );
 
   //------------------Label Functions------------------
@@ -312,7 +250,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       if (found_label) {
         const modifiedCard: IModifyCard = {
           ...defaultModifyCard,
-          cardId: currentCard.cardId,
+          cardId: card.cardId,
           userId: cookies.UserId,
           cardLabelActionType: 'ADD',
           labelId: id,
@@ -324,12 +262,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               console.log('Fail to update label selection', result.message);
             } else {
               console.log('Succeed to update label selection', result);
-              const newLabels = currentCard.labels.concat(found_label);
+              const newLabels = card.labels.concat(found_label);
               const updatedCard: ICard = {
-                ...currentCard,
+                ...card,
                 labels: newLabels,
               };
-              setCurrentCard(updatedCard);
+              setCard(updatedCard);
             }
           })
           .catch((message) => {
@@ -337,19 +275,19 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           });
       }
     },
-    [currentCard, cookies.UserId, board.labels, setCurrentCard]
+    [card, cookies.UserId, board.labels, setCard]
   );
 
   const handleLabelUnselect = useCallback(
     (id: string) => {
       console.log('Unselect Label');
-      const found_index = currentCard.labels.findIndex(
+      const found_index = card.labels.findIndex(
         (label) => label.labelId === id
       );
       if (found_index !== -1) {
         const modifiedCard: IModifyCard = {
           ...defaultModifyCard,
-          cardId: currentCard.cardId,
+          cardId: card.cardId,
           userId: cookies.UserId,
           cardLabelActionType: 'DELETE',
           labelId: id,
@@ -362,14 +300,14 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             } else {
               console.log('Succeed to update label selection', result);
               const newLabels = [
-                ...currentCard.labels.slice(0, found_index),
-                ...currentCard.labels.slice(found_index + 1),
+                ...card.labels.slice(0, found_index),
+                ...card.labels.slice(found_index + 1),
               ];
               const updatedCard: ICard = {
-                ...currentCard,
+                ...card,
                 labels: newLabels,
               };
-              setCurrentCard(updatedCard);
+              setCard(updatedCard);
             }
           })
           .catch((message) => {
@@ -377,7 +315,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           });
       }
     },
-    [currentCard, cookies.UserId, setCurrentCard]
+    [card, cookies.UserId, setCard]
   );
 
   const handleLabelCreate = useCallback(
@@ -405,24 +343,24 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               color: data.color,
               position: '',
             };
-            const newLabels = currentCard.labels.concat(newLabel);
+            const newLabels = card.labels.concat(newLabel);
             const updatedCard = {
-              ...currentCard,
+              ...card,
               labels: newLabels,
             };
-            setCurrentCard(updatedCard);
+            setCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Fail to add label', message);
         });
     },
-    [board.boardId, currentCard, cookies.UserId, setCurrentCard]
+    [board.boardId, card, cookies.UserId, setCard]
   );
 
   const handleLabelUpdate = useCallback(
     (data: { id: string; name?: string; color?: string }) => {
-      const found_index = currentCard.labels.findIndex(
+      const found_index = card.labels.findIndex(
         (label) => label.labelId === data.id
       );
       if (found_index !== -1) {
@@ -442,19 +380,19 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               console.log('Fail to update label', result.message);
             } else {
               console.log('Succeed to update label', result);
-              let newLabel = currentCard.labels[found_index];
+              let newLabel = card.labels[found_index];
               if (data.name) newLabel.labelName = data.name;
               if (data.color) newLabel.color = data.color;
               const newLabels = [
-                ...currentCard.labels.slice(0, found_index),
+                ...card.labels.slice(0, found_index),
                 newLabel,
-                ...currentCard.labels.slice(found_index + 1),
+                ...card.labels.slice(found_index + 1),
               ];
               const updatedCard = {
-                ...currentCard,
+                ...card,
                 labels: newLabels,
               };
-              setCurrentCard(updatedCard);
+              setCard(updatedCard);
             }
           })
           .catch((message) => {
@@ -462,7 +400,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           });
       }
     },
-    [board.boardId, currentCard, cookies.UserId, setCurrentCard]
+    [board.boardId, card, cookies.UserId, setCard]
   );
 
   const handleLabelDelete = useCallback(
@@ -482,25 +420,25 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             console.log('Fail to delete label', result.message);
           } else {
             console.log('Succeed to delete label', result);
-            const found_index = currentCard.labels.findIndex(
+            const found_index = card.labels.findIndex(
               (label) => label.labelId === id
             );
             const newLabels = [
-              ...currentCard.labels.slice(0, found_index),
-              ...currentCard.labels.slice(found_index + 1),
+              ...card.labels.slice(0, found_index),
+              ...card.labels.slice(found_index + 1),
             ];
             const updatedCard = {
-              ...currentCard,
+              ...card,
               labels: newLabels,
             };
-            setCurrentCard(updatedCard);
+            setCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Fail to delete label', message);
         });
     },
-    [board.boardId, currentCard, cookies.UserId, setCurrentCard]
+    [board.boardId, card, cookies.UserId, setCard]
   );
 
   //------------------Due Date Functions------------------
@@ -531,7 +469,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardActionType: 'UPDATE',
         dueDate: date_string,
@@ -545,18 +483,17 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           } else {
             console.log('Succeed to update due date of card', result);
             const updatedCard = {
-              ...currentCard,
+              ...card,
               dueDate: date ? date_string : null,
             };
-            setCurrentCard(updatedCard);
-            setDueDate(date);
+            setCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Fail to update due date of card', message);
         });
     },
-    [currentCard, cookies.UserId, setCurrentCard]
+    [card, cookies.UserId, setCard]
   );
 
   //------------------Stopwatch Functions------------------
@@ -572,7 +509,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       };
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardActionType: 'UPDATE',
         stopwatch: newStopwatch,
@@ -587,27 +524,26 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             console.log('Succeed to update stopwatch of card', result);
 
             const updatedCard = {
-              ...currentCard,
+              ...card,
               stopwatch: newStopwatch,
             };
-            setCurrentCard(updatedCard);
-            setStopwatch(newStopwatch);
+            setCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Fail to update stopwatch of card', message);
         });
     },
-    [currentCard, cookies.UserId, setCurrentCard]
+    [card, cookies.UserId, setCard]
   );
 
   const handleToggleStopwatchClick = useCallback(() => {
-    if (stopwatch?.startedAt) {
-      handleStopwatchUpdate(stopStopwatch(stopwatch));
+    if (card.stopwatch?.startedAt) {
+      handleStopwatchUpdate(stopStopwatch(card.stopwatch));
     } else {
-      handleStopwatchUpdate(startStopwatch(stopwatch));
+      handleStopwatchUpdate(startStopwatch(card.stopwatch));
     }
-  }, [handleStopwatchUpdate, stopwatch]);
+  }, [handleStopwatchUpdate]);
 
   //------------------Task Functions------------------
   const handleTaskCreate = useCallback(
@@ -615,7 +551,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       console.log('data of new task', data);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardTaskName: data,
         cardTaskPosition: '100000',
@@ -631,21 +567,19 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               taskId: result.outTaskId,
               taskName: data,
             };
-            const newTasks = tasks.concat(newTask);
-            setTasks(newTasks);
-
+            const newTasks = card.tasks.concat(newTask);
             const updatedCard = {
-              ...currentCard,
+              ...card,
               tasks: newTasks,
             };
-            setCurrentCard(updatedCard);
+            setCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Failed to get response', message);
         });
     },
-    [currentCard, cookies.UserId, tasks, setCurrentCard]
+    [card, cookies.UserId, setCard]
   );
 
   const handleTaskUpdate = useCallback(
@@ -653,7 +587,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       console.log('handleTaskUpdate - ', data);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardTaskId: id,
         cardTaskActionType: 'UPDATE',
@@ -673,12 +607,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       response
         .then((result) => {
           console.log('Succeed to update task of card', result);
-          const index = tasks.findIndex((task) => task.taskId === id);
+          const index = card.tasks.findIndex((task) => task.taskId === id);
 
           console.log('found index : ', index);
           if (index < 0) return;
 
-          let newTask = tasks[index];
+          let newTask = card.tasks[index];
           console.log('found task : ', newTask);
 
           if (data.hasOwnProperty('taskName')) {
@@ -691,23 +625,22 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           }
 
           const newTasks = [
-            ...tasks.slice(0, index),
+            ...card.tasks.slice(0, index),
             newTask,
-            ...tasks.slice(index + 1),
+            ...card.tasks.slice(index + 1),
           ];
-          setTasks(newTasks);
 
           const updatedCard = {
-            ...currentCard,
+            ...card,
             tasks: newTasks,
           };
-          setCurrentCard(updatedCard);
+          setCard(updatedCard);
         })
         .catch((message) => {
           console.log('Fail to update task of card', message);
         });
     },
-    [currentCard, cookies.UserId, tasks, setCurrentCard]
+    [card, cookies.UserId, setCard]
   );
 
   const handleTaskDelete = useCallback(
@@ -715,7 +648,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       console.log('Delete task of card / id : ', id);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardTaskId: id,
         cardTaskActionType: 'DELETE',
@@ -724,25 +657,23 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       response
         .then((result) => {
           console.log('Succeed to delete task of card', result);
-          const index = tasks.findIndex((task) => task.taskId === id);
+          const index = card.tasks.findIndex((task) => task.taskId === id);
           console.log('found index : ', index);
           const newTasks = [
-            ...tasks.slice(0, index),
-            ...tasks.slice(index + 1),
+            ...card.tasks.slice(0, index),
+            ...card.tasks.slice(index + 1),
           ];
-          setTasks(newTasks);
-
           const updatedCard = {
-            ...currentCard,
+            ...card,
             tasks: newTasks,
           };
-          setCurrentCard(updatedCard);
+          setCard(updatedCard);
         })
         .catch((message) => {
           console.log('Fail to delete task of card', message);
         });
     },
-    [currentCard, cookies.UserId, tasks, setCurrentCard]
+    [card, cookies.UserId, setCard]
   );
 
   //------------------Attachment Functions------------------
@@ -759,7 +690,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       console.log('handleAttachmentCreate / file ext : ', fileExt);
 
       const formData = new FormData();
-      formData.append('cardId', currentCard.cardId);
+      formData.append('cardId', card.cardId);
       formData.append('fileName', fileName);
       formData.append('fileExt', fileExt);
       formData.append('file', file.file);
@@ -770,32 +701,32 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         .then((result) => {
           console.log('handleAttachmentCreate / result : ', result);
           const newAttachment: IAttachment = {
-            cardAttachementId : "",
-            cardId : currentCard.cardId,
-            creatorUserId : cookies.UserId,
-            creatorUserName : cookies.UserName,
-            dirName : '',
-            fileName : fileName,
-            cardAttachmentName : result.filePath,
-            createdAt : new Date().toISOString(),
-            updatedAt : null,
-            image : null,
-            url : result.filePath,
-            coverUrl : "",
-            isCover : false,
-            isPersisted : false,
+            cardAttachementId: '',
+            cardId: card.cardId,
+            creatorUserId: cookies.UserId,
+            creatorUserName: cookies.UserName,
+            dirName: '',
+            fileName: fileName,
+            cardAttachmentName: result.filePath,
+            createdAt: new Date().toISOString(),
+            updatedAt: null,
+            image: null,
+            url: result.filePath,
+            coverUrl: '',
+            isCover: false,
+            isPersisted: false,
           };
           const newCurrentCard = {
-            ...currentCard,
-            attachments : currentCard.attachments.concat(newAttachment),
+            ...card,
+            attachments: card.attachments.concat(newAttachment),
           };
-          setCurrentCard(newCurrentCard);
+          setCard(newCurrentCard);
         })
         .catch((message) => {
           console.log('Failt to upload file');
         });
     },
-    [currentCard.cardId]
+    [card.cardId]
   );
 
   const handleAttachmentUpdate = useCallback(() => {
@@ -826,7 +757,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       console.log('data of new comment', newText);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardCommentText: newText,
         cardCommentActionType: 'ADD',
@@ -839,27 +770,25 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             const newComment = {
               ...defaultComment,
               commentId: result.outActionId,
-              cardId: currentCard.cardId,
+              cardId: card.cardId,
               userId: cookies.UserId,
               userName: cookies.UserName,
               text: newText,
               createdAt: result.outCommentCreatedAt,
             };
-            const newComments = [newComment, ...comments];
-            setComments(newComments);
-
+            const newComments = [newComment, ...card.comments];
             const updatedCard = {
-              ...currentCard,
+              ...card,
               comments: newComments,
             };
-            setCurrentCard(updatedCard);
+            setCard(updatedCard);
           }
         })
         .catch((message) => {
           console.log('Failed to get response', message);
         });
     },
-    [currentCard, cookies.UserId, cookies.UserName, comments, setCurrentCard]
+    [card, cookies.UserId, cookies.UserName, setCard]
   );
 
   const handleCommentsUpdate = useCallback(
@@ -867,7 +796,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       console.log('handleActionUpdate - ', newText);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardCommentId: id,
         cardCommentText: newText,
@@ -878,34 +807,33 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       response
         .then((result) => {
           console.log('Succeed to update comment of card', result);
-          const index = comments.findIndex(
+          const index = card.comments.findIndex(
             (comment) => comment.commentId === id
           );
 
           if (index < 0) return;
 
-          let newComment = comments[index];
+          let newComment = card.comments[index];
           newComment.text = newText;
           newComment.updatedAt = result.outCommentUpdatedAt;
 
           const newComments = [
-            ...comments.slice(0, index),
+            ...card.comments.slice(0, index),
             newComment,
-            ...comments.slice(index + 1),
+            ...card.comments.slice(index + 1),
           ];
-          setComments(newComments);
 
           const updatedCard = {
-            ...currentCard,
+            ...card,
             comments: newComments,
           };
-          setCurrentCard(updatedCard);
+          setCard(updatedCard);
         })
         .catch((message) => {
           console.log('Fail to update task of card', message);
         });
     },
-    [currentCard, cookies.UserId, comments, setCurrentCard]
+    [card, cookies.UserId, setCard]
   );
 
   const handleCommentsDelete = useCallback(
@@ -913,7 +841,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       console.log('Delete Comment - comment of card / id : ', id);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
-        cardId: currentCard.cardId,
+        cardId: card.cardId,
         userId: cookies.UserId,
         cardCommentId: id,
         cardCommentActionType: 'DELETE',
@@ -922,31 +850,28 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       response
         .then((result) => {
           console.log('Succeed to delete comment of card', result);
-          const newComments = comments.filter(
+          const newComments = card.comments.filter(
             (comment) => comment.commentId !== id
           );
-          setComments(newComments);
 
           const updatedCard = {
-            ...currentCard,
+            ...card,
             comments: newComments,
           };
-          setCurrentCard(updatedCard);
+          setCard(updatedCard);
         })
         .catch((message) => {
           console.log('Fail to delete task of card', message);
         });
     },
-    [currentCard, cookies.UserId, comments, setCurrentCard]
+    [card, cookies.UserId, setCard]
   );
 
   useEffect(() => {
-    console.log('Card Modal Rendering/currentCard :');
-  }, [currentCard]);
+    console.log('Card Modal Rendering/card :');
+  }, [card]);
 
-  const contentNode = isLoading ? (
-    'Now Loading ..... '
-  ) : (
+  const contentNode = (
     <Grid className={styles.grid}>
       <Grid.Row className={styles.headerPadding}>
         <Grid.Column width={canEdit ? 12 : 16} className={styles.headerPadding}>
@@ -955,11 +880,11 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             <div className={styles.headerTitleWrapper}>
               {canEdit ? (
                 <NameField
-                  defaultValue={currentCard.cardName}
+                  defaultValue={card.cardName}
                   onUpdate={handleNameUpdate}
                 />
               ) : (
-                <div className={styles.headerTitle}>{currentCard.cardName}</div>
+                <div className={styles.headerTitle}>{card.cardName}</div>
               )}
             </div>
           </div>
@@ -970,19 +895,19 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           width={canEdit ? 12 : 16}
           className={styles.contentPadding}
         >
-          {(cardMemberships.length > 0 ||
-            currentCard.labels.length > 0 ||
-            dueDate ||
-            stopwatch) && (
+          {(card.memberships.length > 0 ||
+            card.labels.length > 0 ||
+            card.dueDate ||
+            card.stopwatch) && (
             <div className={styles.moduleWrapper}>
-              {cardMemberships.length > 0 && (
+              {card.memberships.length > 0 && (
                 <div className={styles.attachments}>
                   <div className={styles.text}>
                     {t('common.members', {
                       context: 'title',
                     })}
                   </div>
-                  {cardMemberships.map((user) => (
+                  {card.memberships.map((user) => (
                     <span
                       key={user.cardMembershipId}
                       className={styles.attachment}
@@ -1031,14 +956,14 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   )}
                 </div>
               )}
-              {currentCard.labels.length > 0 && (
+              {card.labels.length > 0 && (
                 <div className={styles.attachments}>
                   <div className={styles.text}>
                     {t('common.labels', {
                       context: 'title',
                     })}
                   </div>
-                  {currentCard.labels.map((label) => (
+                  {card.labels.map((label) => (
                     <span key={label.labelId} className={styles.attachment}>
                       {canEdit ? (
                         <LabelsPopup
@@ -1061,7 +986,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   ))}
                 </div>
               )}
-              {dueDate && (
+              {card.dueDate && (
                 <div className={styles.attachments}>
                   <div className={styles.text}>
                     {t('common.dueDate', {
@@ -1071,18 +996,18 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   <span className={styles.attachment}>
                     {canEdit ? (
                       <DueDateEdit
-                        defaultValue={dueDate}
+                        defaultValue={new Date(card.dueDate)}
                         onUpdate={handleDueDateUpdate}
                       >
-                        <DueDate value={dueDate} />
+                        <DueDate value={new Date(card.dueDate)} />
                       </DueDateEdit>
                     ) : (
-                      <DueDate value={dueDate} />
+                      <DueDate value={new Date(card.dueDate)} />
                     )}
                   </span>
                 </div>
               )}
-              {stopwatch && (
+              {card.stopwatch && (
                 <div className={styles.attachments}>
                   <div className={styles.text}>
                     {t('common.stopwatch', {
@@ -1092,18 +1017,18 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   <span className={styles.attachment}>
                     {canEdit ? (
                       <StopwatchEdit
-                        defaultValue={stopwatch}
+                        defaultValue={card.stopwatch}
                         onUpdate={handleStopwatchUpdate}
                       >
                         <Stopwatch
-                          startedAt={stopwatch.startedAt}
-                          total={stopwatch.total}
+                          startedAt={card.stopwatch.startedAt}
+                          total={card.stopwatch.total}
                         />
                       </StopwatchEdit>
                     ) : (
                       <Stopwatch
-                        startedAt={stopwatch.startedAt}
-                        total={stopwatch.total}
+                        startedAt={card.stopwatch.startedAt}
+                        total={card.stopwatch.total}
                       />
                     )}
                   </span>
@@ -1114,7 +1039,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                       className={classNames(styles.attachment, styles.dueDate)}
                     >
                       <Icon
-                        name={stopwatch.startedAt ? 'pause' : 'play'}
+                        name={card.stopwatch.startedAt ? 'pause' : 'play'}
                         size="small"
                         className={styles.addAttachment}
                       />
@@ -1124,7 +1049,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               )}
             </div>
           )}
-          {(currentCard.description || canEdit) && (
+          {(card.description || canEdit) && (
             <div className={styles.contentModule}>
               <div className={styles.moduleWrapper}>
                 <Icon name="align justify" className={styles.moduleIcon} />
@@ -1133,10 +1058,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 </div>
                 {canEdit ? (
                   <DescriptionEdit
-                    defaultValue={currentCard.description}
+                    defaultValue={card.description}
                     onUpdate={handleDescriptionUpdate}
                   >
-                    {currentCard.description ? (
+                    {card.description ? (
                       <button
                         type="button"
                         className={classNames(
@@ -1145,7 +1070,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                         )}
                       >
                         <Markdown linkStopPropagation linkTarget="_blank">
-                          {currentCard.description}
+                          {card.description}
                         </Markdown>
                       </button>
                     ) : (
@@ -1162,14 +1087,14 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 ) : (
                   <div className={styles.descriptionText}>
                     <Markdown linkStopPropagation linkTarget="_blank">
-                      {currentCard.description}
+                      {card.description}
                     </Markdown>
                   </div>
                 )}
               </div>
             </div>
           )}
-          {(tasks.length > 0 || canEdit) && (
+          {(card.tasks.length > 0 || canEdit) && (
             <div className={styles.contentModule}>
               <div className={styles.moduleWrapper}>
                 <Icon
@@ -1178,7 +1103,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 />
                 <div className={styles.moduleHeader}>{t('common.tasks')}</div>
                 <CardModalTasks
-                  items={tasks}
+                  items={card.tasks}
                   canEdit={canEdit}
                   onCreate={handleTaskCreate}
                   onUpdate={handleTaskUpdate}
@@ -1188,7 +1113,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               </div>
             </div>
           )}
-          {currentCard.attachments.length > 0 && (
+          {card.attachments.length > 0 && (
             <div className={styles.contentModule}>
               <div className={styles.moduleWrapper}>
                 <Icon name="attach" className={styles.moduleIcon} />
@@ -1196,7 +1121,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   {t('common.attachments')}
                 </div>
                 <Attachments
-                  items={currentCard.attachments}
+                  items={card.attachments}
                   canEdit={canEdit}
                   onUpdate={handleAttachmentUpdate}
                   onDelete={handleAttachmentDelete}
@@ -1208,7 +1133,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             </div>
           )}
           <Activities
-            items={comments}
+            items={card.comments}
             //isDetailsVisible={isDetailsVisible}
             canEdit={canEdit}
             onCreate={handleCommentsCreate}
@@ -1247,7 +1172,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 </Button>
               </LabelsPopup>
               <DueDateEdit
-                defaultValue={dueDate}
+                defaultValue={card.dueDate ? new Date(card.dueDate) : null}
                 onUpdate={handleDueDateUpdate}
               >
                 <Button fluid className={styles.actionButton}>
@@ -1261,7 +1186,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 </Button>
               </DueDateEdit>
               <StopwatchEdit
-                defaultValue={stopwatch}
+                defaultValue={card.stopwatch}
                 onUpdate={handleStopwatchUpdate}
               >
                 <Button fluid className={styles.actionButton}>
