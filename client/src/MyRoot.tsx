@@ -11,28 +11,7 @@ import 'photoswipe/dist/photoswipe.css';
 import 'easymde/dist/easymde.min.css';
 import './styles.module.scss';
 
-/*
-<div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-
-      <Header />
-
-*/
-function Root() {
+function MyRoot() {
   return (
     <Router>
       <Switch>
@@ -56,4 +35,4 @@ function Root() {
   );
 }
 
-export default Root;
+export default MyRoot;

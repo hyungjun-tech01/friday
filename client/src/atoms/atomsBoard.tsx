@@ -2,7 +2,6 @@ import {atom, selector, RecoilState} from "recoil";
 import {ILabel} from "./atomLabel";
 import {IList} from "./atomsList";
 import {ICard} from "./atomCard";
-import { composeInitialProps } from "react-i18next";
 
 export interface IBoard{
     boardId : string;

@@ -314,7 +314,7 @@ app.post('/currentBoard', async(req, res)=>{
             }else{
                 currentBoard.cards = [];
             }
-
+        console.log('currentboard return', boardId);
         res.json(currentBoard);
         //console.log(currentBoard);
         res.end();

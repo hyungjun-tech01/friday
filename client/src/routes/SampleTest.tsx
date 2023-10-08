@@ -1,7 +1,7 @@
  ///// api 호출 sample code 
 import {useEffect, useState} from 'react';
  import {ICard, defaultCard, IModifyCard, defaultModifyCard} from "../atoms/atomCard";
- import {IModifyBoard, defaultModifyBoard, } from "../atoms/atomsBoard";
+ import {IModifyBoard, defaultModifyBoard,cardSelectorCardId } from "../atoms/atomsBoard";
  import {IModifyList, defaultModifyList} from "../atoms/atomsList";
  import {apiModifyCard, apiUploadAttatchment, apiDeleteAttatchment} from "../api/card";
 import {  apiModifyList } from '../api/list';
@@ -101,6 +101,7 @@ const onDelete = async()=>{
     else
       console.log(response.fileName, response.filePath);
 }
+
   useEffect( ()=>{
     //  cardModifySample();
    },[]);
