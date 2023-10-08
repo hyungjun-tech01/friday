@@ -72,10 +72,12 @@ const AttachmentItem = forwardRef(
     //     </div>
     //   );
     // }
-
-    const filename = url ? url.split('/').pop() : "";
-    const extension = filename ? filename.slice(
-      (Math.max(0, filename.lastIndexOf('.')) || Infinity) + 1
+    // const filename = url ? url.split('/').pop() : "";
+    // const extension = filename ? filename.slice(
+    //   (Math.max(0, filename.lastIndexOf('.')) || Infinity) + 1
+    // ) : "";
+    const extension = name ? name.slice(
+      (Math.max(0, name.lastIndexOf('.')) || Infinity) + 1
     ) : "";
 
     return (
