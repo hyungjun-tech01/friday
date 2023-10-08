@@ -1,7 +1,7 @@
 import { atom, selector } from "recoil";
-import { ILabel, defaultLabel } from "./atomLabel";
-import {IBoardUser} from "./atomsBoard";
-import {ITask} from "./atomTask";
+import { ILabel } from "./atomLabel";
+import { ITask } from "./atomTask";
+import { IComment } from "./atomAction";
 import { IStopwatch } from "./atomStopwatch";
 
 export interface ICard{
@@ -51,16 +51,7 @@ export interface IAttachment{
     isCover : boolean;
     isPersisted : boolean;
 }
-export interface IComment{
-    commentId:string
-    cardId:string
-    userId:string
-    userName:string
-    text:string
-    createdAt:string
-    updatedAt:string
-    avatarUrl:string
-}
+
 export const defaultCard:ICard = {
     cardId:"" , cardName:"",  coverAttachmentId:"", boardId:"", listId:"",
     description:"",  labels:[], createdAt:"", updatedAt:"" , position:"",
