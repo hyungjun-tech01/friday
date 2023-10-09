@@ -11,6 +11,7 @@ const path = require('path');
 
 
 
+
 //const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs').promises; // fs.promises를 사용하여 비동기 파일 작업을 수행합니다.
@@ -28,10 +29,12 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const PORT =  process.env.MYPORT ? process.env.MYPORT:8000;
+const MYHOST  = process.env.MYHOST ? "http://"+process.env.MYHOST+":"+PORT:"http://localhost"+":"+PORT;
 
 app.use(cors());
 app.use(express.json()); 
 app.use(express.urlencoded( {extended : false } ));
+app.use('/uploads', express.static('uploads'));
 
 // util.promisify를 사용하여 fs.writeFile을 프로미스로 변환합니다.
 const writeFileAsync = util.promisify(fs.writeFile);
@@ -292,14 +295,18 @@ app.post('/currentBoard', async(req, res)=>{
 
                     const cardAttachment = await pool.query(`
                     select a.id as "cardAttachementId", a.card_id as "cardId", a.creator_user_id as "creatorUserId", b.name as "creatorUserName",
-                        a.dirname as "dirName", a.filename as "fileName", a.name as "cardAttachmentName", 
+                        a.dirname as "dirName",
+                        $2||'/'||a.dirname as url, 
+                        a.filename as "fileName", a.name as "cardAttachmentName", 
                         a.created_at as "createdAt", a.updated_at as "updatedAt", a.image as "image"
                     from attachment a, user_account b
                     where a.creator_user_id = b.id 
-                    and a.card_id = $1`, [card.cardId]);
+                    and a.card_id = $1`, [card.cardId, MYHOST]);
 
-                    if(cardAttachment.rows.length > 0 )
+                    if(cardAttachment.rows.length > 0 ){
                         card.attachments = cardAttachment.rows;
+                        console.log(card.attachments);
+                    }
                     else
                         card.attachments = [];
                     
@@ -513,11 +520,13 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
 
                     const cardAttachment = await pool.query(`
                     select a.id as "cardAttachementId", a.card_id as "cardId", a.creator_user_id as "creatorUserId", b.name as "creatorUserName",
-                       a.dirname as "dirName", a.filename as "fileName", a.name as "cardAttachmentName", 
+                       a.dirname as "dirName", a.filename as "fileName", 
+                       $2||'/'||a.dirname as url,
+                       a.name as "cardAttachmentName", 
                        a.created_at as "createdAt", a.updated_at as "updatedAt", a.image as "image"
                     from attachment a, user_account b
                     where a.creator_user_id = b.id 
-                    and a.card_id = $1`, [card.cardId]);
+                    and a.card_id = $1`, [card.cardId, MYHOST]);
 
                     if(cardAttachment.rows.length > 0 )
                         card.cardAttachment = cardAttachment.rows;
