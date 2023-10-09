@@ -133,30 +133,46 @@ export const listsSelector = selector ({
 });
 
 // 특정 listId를 가진 List를 get ,  selector 의 set을 통해 변경
-export const listSelector = selector({
+export const listSelector = selectorFamily({
     key:"listSelector",
-    get:( {get}) => {
-        const board = get(atomCurrentMyBoard); 
-        return (InListId:string) => {
-            return (board.lists.filter((list)=> list.listId === InListId)
-                );
-        };
+    get: (listId) => ({ get }) => {
+        const board = get(atomCurrentMyBoard);
+        return board.lists.filter((list: any) => list.listId === listId)[0];
     },
-    set:({set, get}, newValue )=>{
-        if (Array.isArray(newValue) && newValue.length === 2) {
-        const [InListId, newList] = newValue;
-        const board = get(atomCurrentMyBoard); 
+    set: (listId) => ({set, get}, newValue)=>{
+        const board = get(atomCurrentMyBoard);
         const updatedLists = board.lists.map((list:any) => {
-            if(list.listId === InListId){
-                return{...list, ...newList};
+            if(list.listId === listId) {
+                return{...list, ...newValue};
             }
             return list;
         })
         const newAtomCurrentMyBoard = {...board,  lists: updatedLists,};
 
         return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
-    }
-    }
+}
+    // get:( {get}) => {
+    //     const board = get(atomCurrentMyBoard); 
+    //     return (InListId:string) => {
+    //         return (board.lists.filter((list)=> list.listId === InListId)
+    //             );
+    //     };
+    // },
+    // set:({set, get}, newValue )=>{
+    //     if (Array.isArray(newValue) && newValue.length === 2) {
+    //     const [InListId, newList] = newValue;
+    //     const board = get(atomCurrentMyBoard); 
+    //     const updatedLists = board.lists.map((list:any) => {
+    //         if(list.listId === InListId){
+    //             return{...list, ...newList};
+    //         }
+    //         return list;
+    //     })
+    //     const newAtomCurrentMyBoard = {...board,  lists: updatedLists,};
+
+    //     return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+    // }
+    // }
 });
 
 
