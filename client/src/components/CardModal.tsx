@@ -543,7 +543,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
     } else {
       handleStopwatchUpdate(startStopwatch(card.stopwatch));
     }
-  }, [handleStopwatchUpdate]);
+  }, [card.stopwatch, handleStopwatchUpdate]);
 
   //------------------Task Functions------------------
   const handleTaskCreate = useCallback(
