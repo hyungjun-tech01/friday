@@ -68,8 +68,8 @@ export interface ICreateCard{
 
 
 interface IImage {
-    width : string;
-    height : string;
+    width : number;
+    height : number;
     thumbnailsExtension: string;
 }
 export interface IModifyCard{
@@ -100,7 +100,7 @@ export interface IModifyCard{
     cardAttachmentDirname : string |null ;
     cardAttachmentFilename : string |null ;
     cardAttachmentName :  string |null ;
-    cardAttachmentImage : string|null  ;
+    cardAttachmentImage : IImage|null  ;
     cardCommentActionType :   'ADD'|'UPDATE'|'DELETE'|null; 
     cardCommentId :  string |null ;
     cardCommentText  : string |null ;

@@ -75,31 +75,62 @@ const onClick = async (e:any) => {
   formData.append('cardId', '1061603352028120361');
   formData.append('fileName', fileName);
   formData.append('fileExt', 'png');
+  formData.append('userId','1111');
   if(file !== null)
+  {
     formData.append('file', file);
+    // 파일 업로드 인풋 요소에서 파일 가져오기
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement; // 파일 업로드 인풋 요소
+    const fileData = fileInput.files ? fileInput.files[0] : null; // 첫 번째 파일을 가져옴
 
-  for (const [key, value] of formData.entries()) {
-    console.log(key, ":", value);
-}
-// onChange={(e)=>handleFileChange(e.target.value)}/>
-  const response = await apiUploadAttatchment(formData);
+    if (fileData) {
+    // 파일 width height 추출 
+    if (fileData.type.startsWith('image/')) {
+      const image = new Image();
+      image.src = URL.createObjectURL(fileData);
+  
+      image.onload = async () => {
+        const width = image.width ;
+        const height = image.height ;
+  
+        // 너비와 높이를 문자열로 변환하여 FormData에 추가
+        formData.append('width', width.toString());
+        formData.append('height', height.toString());
+  
+        const response = await apiUploadAttatchment(formData);
+      
+        if(response)
+          if(response.message)
+            console.log('파일 업로드시 에러 발생');
+          else
+            console.log(response.fileName, response.filePath, response.outAttachmentId, response.outAttachmentCreatedAt);   
 
-  if(response)
-    if(response.status === 500)
-      console.log('파일 업로드시 에러 발생');
-    else
-      console.log(response.fileName, response.filePath);
+      };
+    }else{
+          
+      const response = await apiUploadAttatchment(formData);
+      
+      if(response)
+        if(response.message)
+          console.log('파일 업로드시 에러 발생');
+        else
+            console.log(response.fileName, response.filePath, response.outAttachmentId, response.outAttachmentCreatedAt);    
+    }
+
+  }
+
+  }
 }
 
 const onDelete = async()=>{
-  const deleteCard = {cardId:'1061603352028120361', fileExt:'png', fileName:'4444444'};
+  const deleteCard = {cardAttachmentId:'1087542108216100425', userId:'1111', cardId:'1061603352028120361', fileExt:'png', fileName:'aaaa'};
   const response = await apiDeleteAttatchment(deleteCard);
 
   if(response)
-    if(response.status === 500)
-      console.log('파일 업로드시 에러 발생');
+    if(response.message)
+      console.log('파일 삭제시 에러 발생');
     else
-      console.log(response.fileName, response.filePath);
+      console.log('파일 삭제', response.fileName, response.filePath);
 }
 
   useEffect( ()=>{
@@ -109,7 +140,7 @@ const onDelete = async()=>{
     return(
         <div>
           <form id="form" onSubmit={onClick}>
-          <input type="file" name="file"  accept=".png, .jpg, .jpeg, .gif, .txt" onChange={handleFileChange}/>
+          <input id="fileInput" type="file" name="file"  accept=".png, .jpg, .jpeg, .gif, .txt" onChange={handleFileChange}/>
             <input type = "text" name="cardId" value = "1061603352028120361"/>
             <input type="text" name="fileName" value = {fileName} onChange={(e)=>setFileName(e.target.value)}/>
             <button type="submit" >업로드</button>

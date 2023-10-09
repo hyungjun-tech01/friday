@@ -26,8 +26,8 @@ i_card_attachment_action_type in text,
 i_card_attachment_id in text,
 i_card_attachment_dirname in text,
 i_card_attachment_filename in text,
- i_card_attachment_name in text, 
-i_card_attachment_image in text,
+i_card_attachment_name in text, 
+i_card_attachment_image in jsonb,
 i_card_comment_action_type in text,  
 i_card_comment_id in text, 
 i_card_comment_text  in text,
@@ -238,20 +238,20 @@ BEGIN
             select next_id() into vv_attachment_id ;
 			select now() into vv_card_attachment_created_at;
 			insert  into attachment(id, card_id, creator_user_id, dirname, filename, name, created_at, updated_at, image)
-			values(vv_attachment_id , i_card_id::bigint, i_user_id::bigint, i_card_attachment_dirname, i_card_attachment_filename, i_card_attachment_name, vv_card_attachment_created_at, now(), i_card_attachment_image::text::json);
+			values(vv_attachment_id , i_card_id::bigint, i_user_id::bigint, i_card_attachment_dirname, i_card_attachment_filename, i_card_attachment_name, vv_card_attachment_created_at, now(), i_card_attachment_image);
 			--카드의 cover_attachment_id 를 update, 첫번째  filename .jpg, .png 일떄 
 			select count(*) into v_attach_count from attachment 
 			where card_id = i_card_id::bigint
 			and (position('.JPG' in upper(filename)) > 0 OR 
 			       position('.PNG' in upper(filename)) > 0);
 			if v_attach_count = 1 then
-			update card t
-			set t.cover_attachment_id = vv_attachment_id
-			where id = i_card_id::bigint;	   
+			   update card
+			   set cover_attachment_id = vv_attachment_id
+			   where id = i_card_id::bigint;	   
 			end if;
 
 		elseif 	(i_card_attachment_action_type = 'UPDATE') then
-			select now() into vv_card_attachment_updatec_at;
+		   select now() into vv_card_attachment_updatec_at;
 		   update attachment 
 		   set name = COALESCE(i_card_attachment_name, name),
 		   updated_at = vv_card_attachment_updatec_at

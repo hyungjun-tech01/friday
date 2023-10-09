@@ -66,7 +66,6 @@ function Core(){
     const [currentModal, setCurrentModal] = useState(null);
 
   if(currentProject === undefined || current === false){
-    console.log(currentProject, current);
     return (
       <>
       <Fix setCurrent={setCurrent} projectName={""} />
