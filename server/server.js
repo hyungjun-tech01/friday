@@ -738,7 +738,7 @@ app.post('/card', async(req, res) => {
         console.log('create card');
         // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
-                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44)`,
+                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48)`,
         [cardId,     //  
         userId ,       //  
         cardActionType ,    // 나머지는 모두 string 
@@ -782,9 +782,17 @@ app.post('/card', async(req, res) => {
         null,
         null,
         null,
+        null,
+        null,
+        null,
+        null,
         null
      ]);
-        res.json({ cardName:cardName }); // 결과 리턴을 해 줌 .  
+     const outCardId = response.rows[0].x_card_id;
+     const outCardPosition = response.rows[0].x_card_position;
+     const outCardCreatedAt = response.rowws[0].x_card_created_at;
+     res.json({ outCardId: outCardId,  outCardPosition:outCardPosition, 
+            outCardCreatedAt:outCardCreatedAt, outCardName:cardName }); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){
         console.error(err);
@@ -833,7 +841,7 @@ app.post('/modifyCard', async(req, res) => {
         console.log('modify card', req.body);
         // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
-                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45)`,
+                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48)`,
         [cardId,     //  
         userId ,       //  
         cardActionType ,    // 나머지는 모두 string 
@@ -878,9 +886,13 @@ app.post('/modifyCard', async(req, res) => {
         null,
         null,
         null,
+        null,
+        null,
+        null,
         null       
      ]);
         // out 매개변수의 값을 확인합니다.
+
         const outCardMembershipId = response.rows[0].x_card_membership_id;
         const outCardLabelId = response.rows[0].x_card_label_id;
         const outTaskId = response.rows[0].x_task_id;

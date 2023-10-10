@@ -33,6 +33,9 @@ i_card_comment_id in text,
 i_card_comment_text  in text,
 i_card_status_action_type in text,
 i_card_status_id in text,
+x_card_id out text,
+x_card_position out text,
+x_card_created_at out text,
 x_card_membership_id out text,
 x_card_label_id out text,
 x_task_id out text,
@@ -77,6 +80,7 @@ v_null_udpate_stopwatch jsonb;
 v_null_udpate_due_date text;
 v_card_count int;
 v_card_id bigint;
+vv_card_created_at timestamp without time zone default null;
 vv_card_membership_created_at timestamp without time zone default null;
 vv_card_task_created_at timestamp without time zone default null;
 vv_card_task_updated_at timestamp without time zone default null;
@@ -93,9 +97,11 @@ BEGIN
 			into v_card_count 
 			from card 
 			where list_id = i_list_id::bigint;
-        
+
+        select now() into vv_card_created_at;
+
 		insert into card(id, board_id, list_id, creator_user_id,name, position, created_at)
-		select v_card_id, board_id, i_list_id::bigint, i_user_id::bigint, i_card_name,v_card_count+1, now()
+		select v_card_id, board_id, i_list_id::bigint, i_user_id::bigint, i_card_name,v_card_count+1, vv_card_created_at
         from list where id= i_list_id::bigint ;
 
 	   elseif(i_card_action_type = 'UPDATE') then 
@@ -316,7 +322,9 @@ BEGIN
 		now(), now());  		
 	end if;
 
-
+	x_card_id = v_card_id::text;
+	x_card_position = (v_card_count + 1) :: text;
+	x_card_created_at = vv_card_created_at :: text;
     x_card_membership_id = vv_card_membership_id::text;
     x_card_label_id = vv_card_label_id::text;
     x_task_id = vv_task_id::text;

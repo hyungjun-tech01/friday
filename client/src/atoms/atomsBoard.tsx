@@ -179,13 +179,21 @@ export const listSelector = selectorFamily({
 // 특정 listId  가진 Cards 를 selecting 
 export const cardsbyListIdSelector = selector({
     key:"cardsbyListIdSelector",
-    get:( {get}) => {
+    get: ({get}) => {
         const board = get(atomCurrentMyBoard); 
-        return (InListId:string) => {
-            return (board.cards.filter((card)=> card.listId === InListId)
-                );
+        return (InListId: string) => {
+            return (board.cards.filter((card) => card.listId === InListId));
         };
     },
+    set: ({set, get}, newValue) => {
+        if (Array.isArray(newValue) && newValue.length === 2) {
+            const [InListId, newCard] = newValue;
+            const board = get(atomCurrentMyBoard); 
+            const updatedCards = board.cards.concat(newCard);
+            const newAtomCurrentMyBoard = {...board, cards: updatedCards};
+            set(atomCurrentMyBoard, newAtomCurrentMyBoard);    
+        }
+    }
 });
 
 

@@ -3,9 +3,11 @@ import styles from "../scss/CardAdd.module.scss";
 import { Button, Form, TextArea } from 'semantic-ui-react';
 import {useTranslation} from "react-i18next";
 import {useForm} from "react-hook-form";
-import {IModifyCard, defaultModifyCard} from "../atoms/atomCard";
+import {IModifyCard, defaultModifyCard, ICard, defaultCard} from "../atoms/atomCard";
+import {cardsbyListIdSelector} from "../atoms/atomsBoard";
 import {useCookies} from "react-cookie";
 import {apiCreateCard} from "../api/card";
+import {useRecoilState} from "recoil";
 
 interface ICardAddProps{
     listId:string;
@@ -17,6 +19,7 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
   const [t] = useTranslation();
   const {register, handleSubmit,formState:{errors}} = useForm();
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
+  const setCard = useRecoilState(cardsbyListIdSelector);
 
   let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
     useEffect(()=>{
@@ -46,6 +49,10 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
       if(response.message){
         setIsCardAddOpened(true);
       }else{
+        // recoil 변경 
+        const newCard:ICard = {...defaultCard, cardId:response.outCardId, listId:listId, 
+               cardName:data.cardtName, position:response.outCardPosition, createdAt:response.outCardCreatedAt, updatedAt:"", };
+        //setCard(listId, newCard);
         setIsCardAddOpened(false);
         setIsCardRequery(!isCardRequery);
       } 
