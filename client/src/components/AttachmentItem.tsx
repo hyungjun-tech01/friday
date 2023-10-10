@@ -1,10 +1,10 @@
 import { useCallback, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon, Label } from 'semantic-ui-react';
+import { Icon, Label, Button } from 'semantic-ui-react';
 //import { usePopup } from '../../../lib/popup';
 
-//import EditStep from './EditStep';
-
+import AttachmentItemEditPopup from './AttachmentItemEditPopup';
+import classNames from 'classnames';
 import styles from '../scss/AttachmentItem.module.scss';
 
 interface IAttachmentItemProps {
@@ -139,8 +139,8 @@ const AttachmentItem = forwardRef(
             </span>
           )}
         </div>
-        {/* {canEdit && (
-          <EditPopup
+        {canEdit && (
+          <AttachmentItemEditPopup
             defaultData={{
               name,
             }}
@@ -150,8 +150,8 @@ const AttachmentItem = forwardRef(
             <Button className={classNames(styles.button, styles.target)}>
               <Icon fitted name="pencil" size="small" />
             </Button>
-          </EditPopup>
-        )} */}
+          </AttachmentItemEditPopup>
+        )}
       </div>
     );
   }

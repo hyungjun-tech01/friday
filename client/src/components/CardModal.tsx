@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { apiModifyBoard } from '../api/board';
-import { apiModifyCard, apiUploadAttatchment } from '../api/card';
+import { apiDeleteAttatchment, apiModifyCard, apiUploadAttatchment } from '../api/card';
 import { defaultComment } from '../atoms/atomAction';
 import {
   ICard,
@@ -44,6 +44,7 @@ import AttachmentAddPopup from './AttachmentAddPopup';
 import classNames from 'classnames';
 import styles from '../scss/CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../utils/stopwatch';
+import { isMissingDeclaration } from 'typescript';
 
 interface ICardModalProps {
   canEdit: boolean;
@@ -678,9 +679,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   //------------------Attachment Functions------------------
   const handleAttachmentCreate = useCallback(
-    (file: any) => {
+    async (file: any) => {
       console.log('handleAttachmentCreate : ', file);
-      const fileName = file.file.name;
+      const fileData = file.file;
+      const fileName = fileData.name;
       const fileNameSplitted = fileName.split('.');
       const fileExt =
         fileNameSplitted.length > 1
@@ -693,25 +695,38 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       formData.append('cardId', card.cardId);
       formData.append('fileName', fileName);
       formData.append('fileExt', fileExt);
-      formData.append('file', file.file);
+      formData.append('userId', cookies.UserId);
+      formData.append('file', fileData);
+      if (fileData.type.startsWith('image/')) {
+        const image = new Image();
+        image.src = URL.createObjectURL(fileData);
+        image.onload = async () => {
+          const width = image.width;
+          const height = image.height;
 
-      const response = apiUploadAttatchment(formData);
-      console.log('handleAttachmentCreate / response : ', response);
-      response
-        .then((result) => {
-          console.log('handleAttachmentCreate / result : ', result);
+          formData.append('width', width.toString());
+          formData.append('height', height.toString());
+        };
+      }
+
+      const response = await apiUploadAttatchment(formData);
+      if(response) {
+        console.log('handleAttachmentCreate / response : ', response);
+        if(response.message) {
+          console.log('Failt to upload file');
+        } else {
           const newAttachment: IAttachment = {
-            cardAttachementId: '',
+            cardAttachementId: response.outAttachmentId,
             cardId: card.cardId,
             creatorUserId: cookies.UserId,
             creatorUserName: cookies.UserName,
-            dirName: '',
+            dirName: 'da24d0d3-157b-4bdc-bf80-45ce90dd9188',
             fileName: fileName,
-            cardAttachmentName: result.filePath,
-            createdAt: new Date().toISOString(),
+            cardAttachmentName: fileName,
+            createdAt: response.outAttachmentCreatedAt,
             updatedAt: null,
             image: null,
-            url: result.filePath,
+            url: response.filePath,
             coverUrl: '',
             isCover: false,
             isPersisted: false,
@@ -721,21 +736,91 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             attachments: card.attachments.concat(newAttachment),
           };
           setCard(newCurrentCard);
-        })
-        .catch((message) => {
-          console.log('Failt to upload file');
-        });
+        }
+      }
     },
-    [card.cardId]
+    [card, cookies.UserId, cookies.UserName, setCard]
   );
 
-  const handleAttachmentUpdate = useCallback(() => {
-    console.log('handleAttachmentUpdate');
-  }, []);
+  const handleAttachmentUpdate = useCallback(
+    (id: string, data: any) => {
+      console.log('handleAttachmentUpdate : ', id, data);
+      // After server side update Process
+      const newAttachment: IAttachment = {
+        cardAttachementId: id,
+        cardId: card.cardId,
+        creatorUserId: cookies.UserId,
+        creatorUserName: cookies.UserName,
+        dirName: 'da24d0d3-157b-4bdc-bf80-45ce90dd9188',
+        fileName: 'fileName',
+        cardAttachmentName: 'fileName',
+        createdAt: new Date().toISOString(),
+        updatedAt: null,
+        image: null,
+        url: 'url',
+        coverUrl: 'coverUrl',
+        isCover: false,
+        isPersisted: false,
+      };
+      const found_idx = card.attachments.findIndex(
+        (item) => item.cardId === id
+      );
+      const newAttachments = {
+        ...card.attachments.slice(0, found_idx),
+        newAttachment,
+        ...card.attachments.slice(found_idx + 1),
+      };
+      const updateCard = {
+        ...card,
+        Attachments: newAttachments,
+      };
+      setCard(updateCard);
+    },
+    [card, cookies.UserId, cookies.UserName, setCard]
+  );
 
-  const handleAttachmentDelete = useCallback(() => {
-    console.log('handleAttachmentDelete');
-  }, []);
+  const handleAttachmentDelete = useCallback(
+    async (id: string) => {
+      console.log('handleAttachmentDelete : ', id);
+      // After server side delete Process
+      const found_idx = card.attachments.findIndex(
+        (item) => item.cardAttachementId === id
+      );
+      if (found_idx !== -1) {
+        const found_card = card.attachments[found_idx];
+        const file_name_splitted = found_card.fileName.split('.');
+        const file_name_splitted_length = file_name_splitted.length;
+        const file_ext =
+          file_name_splitted_length > 1
+            ? file_name_splitted[file_name_splitted_length - 1]
+            : '';
+        const deleteCard = {
+          cardAttachmentId: found_card.cardAttachementId,
+          userId: cookies.UserId,
+          cardId: card.cardId,
+          fileExt: file_ext,
+          fileName: found_card.fileName,
+        };
+        const response = await apiDeleteAttatchment(deleteCard);
+        if(response) {
+          if(response.message)
+            console.log('Fail to delete file');
+          else {
+            console.log('Delete file', response.fileName, response.filePath);
+            const newAttachments = card.attachments.filter(
+              (item) => item.cardAttachementId !== id
+            );
+            const updateCard = {
+              ...card,
+              Attachments: newAttachments,
+            };
+            setCard(updateCard);
+          }
+        }
+      }
+    },
+    [card, cookies.UserId, setCard]
+  );
 
   const handleCoverUpdate = useCallback(() => {
     console.log('handleCoverUpdate');
@@ -868,7 +953,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   );
 
   useEffect(() => {
-    console.log('Card Modal Rendering/card :');
+    console.log('Card Modal Rendering/card : ', card.attachments);
   }, [card]);
 
   const contentNode = (
