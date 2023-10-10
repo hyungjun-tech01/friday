@@ -17,6 +17,8 @@ const bodyParser = require('body-parser');
 const fs = require('fs').promises; // fs.promises를 사용하여 비동기 파일 작업을 수행합니다.
 const util = require('util');
 
+const fsSync = require('fs');
+
 
 try {
     fsUpper.readdirSync('uploads');
@@ -39,7 +41,8 @@ app.use('/uploads', express.static('uploads'));
 // util.promisify를 사용하여 fs.writeFile을 프로미스로 변환합니다.
 const writeFileAsync = util.promisify(fs.writeFile);
 // promisify를 사용하여 fs.unlink를 비동기 함수로 변환
-const unlinkAsync = util.promisify(fs.unlink);
+// const unlinkAsync = util.promisify(fs.unlink);
+const unlinkSync = fs.unlink;
 
 // 동적요청에 대한 응답을 보낼때 etag 를 생성하지 않도록
 app.set('etag', false);
@@ -88,7 +91,8 @@ app.post('/deleteFile', async (req, res) => {
     
         // 파일이 존재할 때만 삭제 수행
         if (fileStats.isFile()) {
-            unlinkAsync(filePath);   // sync 밖에 안됨. 왜 안되는지 모르겠음 await넣으면 진행 안됨.
+            //  unlinkAsync(filePath);   // sync 밖에 안됨. 왜 안되는지 모르겠음 await넣으면 진행 안됨.
+            fsUpper.unlinkSync(filePath);
             console.log('파일 삭제 성공:', filePath); 
             res.json({fileName:fileName, filePath:filePath});
         }else{
