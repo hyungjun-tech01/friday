@@ -275,12 +275,12 @@ BEGIN
 			where id = i_card_id::bigint;	 
 		end if;
 		
-		select COALESCE(i_card_attachment_dirname, ' '), COALESCE(i_card_attachment_filename, ' '), COALESCE(i_card_attachment_name, ' '), COALESCE(i_card_attachment_image, ' ')
-	    into v_card_attatchment_dirname, v_card_attachment_filename, v_card_attachment_name, v_card_attachment_image;
+		select COALESCE(i_card_attachment_dirname, ' '), COALESCE(i_card_attachment_filename, ' '), COALESCE(i_card_attachment_name, ' ')
+	    into v_card_attatchment_dirname, v_card_attachment_filename, v_card_attachment_name;
 
 	  insert into action(id, card_id, user_id, type, data, created_at, updated_at)
 	   values(next_id(), i_card_id::bigint, i_user_id::bigint, 'Card Attachment '||i_card_attachment_action_type, 
-				  ('{"card_id":"'||i_card_id||'", "card_attatchment_dirname":"'||v_card_attatchment_dirname||'", "card_attachment_filename":"'||v_card_attachment_filename||'", "card_attachment_name":"'||v_card_attachment_name|| '"}')::text::json,
+				  ('{"card_id":"'||i_card_id||'", "card_attatchment_dirname":"'||v_card_attatchment_dirname||'", "card_attachment_filename":"'||v_card_attachment_filename|| '"}')::text::json,
 		now(), now());  		
 	end if;	
 	-- 카드 댓글 추가/변경/ 삭제 
