@@ -14,6 +14,7 @@ import {
   defaultModifyCard,
   IAttachment,
   ICardUser,
+  IImage,
 } from '../atoms/atomCard';
 import {
   atomCurrentMyBoard,
@@ -44,7 +45,6 @@ import AttachmentAddPopup from './AttachmentAddPopup';
 import classNames from 'classnames';
 import styles from '../scss/CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../utils/stopwatch';
-import { isMissingDeclaration } from 'typescript';
 
 interface ICardModalProps {
   canEdit: boolean;
@@ -697,6 +697,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       formData.append('fileExt', fileExt);
       formData.append('userId', cookies.UserId);
       formData.append('file', fileData);
+      let imageInfo : (IImage | null) = null;
       if (fileData.type.startsWith('image/')) {
         const image = new Image();
         image.src = URL.createObjectURL(fileData);
@@ -706,6 +707,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
           formData.append('width', width.toString());
           formData.append('height', height.toString());
+
+          imageInfo = {
+            width: width,
+            height: height,
+            thumbnailsExtension: fileExt,
+          }
         };
       }
 
@@ -720,12 +727,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             cardId: card.cardId,
             creatorUserId: cookies.UserId,
             creatorUserName: cookies.UserName,
-            dirName: 'da24d0d3-157b-4bdc-bf80-45ce90dd9188',
+            dirName: '',
             fileName: fileName,
             cardAttachmentName: fileName,
             createdAt: response.outAttachmentCreatedAt,
             updatedAt: null,
-            image: null,
+            image: imageInfo,
             url: response.filePath,
             coverUrl: '',
             isCover: false,

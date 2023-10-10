@@ -39,7 +39,9 @@ const DeletePopup = ({
 
   const handleClick = useCallback((event: any) => {
     event.stopPropagation();
-  }, []);
+    onConfirm();
+    setIsOpened(false);
+  }, [onConfirm]);
 
   const contentNode = (
     <>
@@ -60,7 +62,7 @@ const DeletePopup = ({
       basic
       wide
       ref={popupRef}
-      //on="click"
+      on="click"
       open={isOpened}
       position="bottom left"
       popperModifiers={[

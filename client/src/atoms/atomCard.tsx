@@ -67,7 +67,7 @@ export interface ICreateCard{
 }
 
 
-interface IImage {
+export interface IImage {
     width : number;
     height : number;
     thumbnailsExtension: string;

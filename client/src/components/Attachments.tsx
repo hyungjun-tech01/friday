@@ -5,8 +5,8 @@ import { Gallery, Item as GalleryItem } from 'react-photoswipe-gallery';
 import { Button } from 'semantic-ui-react';
 import { IAttachment } from '../atoms/atomCard';
 import AttachmentItem from './AttachmentItem';
-//import Item from './Item';
 
+import BASE_PATH from '../constants/Paths';
 import styles from '../scss/Attachments.module.scss';
 
 const INITIALLY_VISIBLE = 4;
@@ -74,8 +74,7 @@ const Attachments = ({
   }, [isAllVisible]);
 
   const galleryItemsNode = items.map((item, index) => {
-    //const isPdf = item.url && item.url.endsWith('.pdf');
-    const isPdf = item.fileName && item.fileName.endsWith('.pdf');
+    const isPdf = item.url && item.url.endsWith('.pdf');
 
     let props;
     if (item.image) {
@@ -85,7 +84,7 @@ const Attachments = ({
         content: isPdf ? (
           // eslint-disable-next-line jsx-a11y/alt-text
           <object
-            data={item.url}
+            data={BASE_PATH + "/" + item.url}
             type="application/pdf"
             className={classNames(styles.content, styles.contentPdf)}
           />
@@ -103,7 +102,7 @@ const Attachments = ({
       <GalleryItem
         {...props} // eslint-disable-line react/jsx-props-no-spreading
         key={item.cardAttachementId}
-        original={item.url}
+        original={BASE_PATH + "/" + item.url}
         caption={item.cardAttachmentName}
       >
         {({ ref, open }) =>
@@ -111,7 +110,7 @@ const Attachments = ({
             <AttachmentItem
               ref={ref}
               name={item.cardAttachmentName}
-              url={item.url}
+              url={BASE_PATH + "/" + item.url}
               coverUrl={item.coverUrl}
               createdAt={new Date(item.createdAt)}
               isCover={item.isCover}
