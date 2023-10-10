@@ -103,11 +103,11 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               const newCardUserIds = cardUserIds.concat(id);
               setCardUserIds(newCardUserIds);
 
-              const newCurrentCard = {
+              const updateCard = {
                 ...card,
                 memberships: newCardMembership,
               };
-              setCard(newCurrentCard);
+              setCard(updateCard);
             }
           })
           .catch((message) => {
@@ -160,11 +160,11 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               ];
               setCardUserIds(newCardUserIds);
 
-              const newCurrentCard = {
+              const updateCard = {
                 ...card,
                 memberships: newCardMembership,
               };
-              setCard(newCurrentCard);
+              setCard(updateCard);
             }
           })
           .catch((message) => {
@@ -172,7 +172,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           });
       }
     },
-    [card.memberships, card, cookies.UserId, cardUserIds, setCard]
+    [card, cookies.UserId, cardUserIds, setCard]
   );
 
   //------------------Name Functions------------------
@@ -738,11 +738,11 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             isCover: false,
             isPersisted: false,
           };
-          const newCurrentCard = {
+          const updateCard = {
             ...card,
             attachments: card.attachments.concat(newAttachment),
           };
-          setCard(newCurrentCard);
+          setCard(updateCard);
         }
       }
     },
@@ -817,9 +817,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             const newAttachments = card.attachments.filter(
               (item) => item.cardAttachementId !== id
             );
+            console.log('Delete file 2', newAttachments);
             const updateCard = {
               ...card,
-              Attachments: newAttachments,
+              attachments: newAttachments,
             };
             setCard(updateCard);
           }

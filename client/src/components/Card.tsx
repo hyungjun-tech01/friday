@@ -95,21 +95,6 @@ function Card({ cardId }: ICardProps) {
     </div>
   );
 
-  // return (
-  //   <div className={styles.wrapper}>
-  //     <div className={styles.card}>
-  //       <div className={styles.content}>
-  //         <div
-  //           title={card.cardId}
-  //           className={styles.name}
-  //           onClick={handleCardClick}
-  //         >
-  //           {contentNode}
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>

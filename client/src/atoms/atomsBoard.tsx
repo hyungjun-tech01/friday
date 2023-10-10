@@ -1,4 +1,4 @@
-import {atom, selector, RecoilState, selectorFamily} from "recoil";
+import {atom, selector, selectorFamily} from "recoil";
 import {ILabel} from "./atomLabel";
 import {IList} from "./atomsList";
 import {ICard} from "./atomCard";
@@ -12,7 +12,6 @@ export interface IBoard{
     role : string;
     userId : string;
 }
-
 // default value 1, MyProject 1
 export const atomMyBoard = atom<IBoard[]>({
     key: "myBoard",
@@ -21,7 +20,6 @@ export const atomMyBoard = atom<IBoard[]>({
           boardName:"", createdAt:"", role:"", userId:""},
     ]
 });
-
 export interface IModifyBoard{
     boardActionType:'ADD'|'UPDATE'|'DELETE'|null;
     userId : string;
@@ -58,13 +56,12 @@ export const defaultModifyBoard:IModifyBoard = {
     labelColor : null, 
     labelPosition : null,
 }
-
-
 export interface ICreateBoard{
     projectId : string;
     userId : string;
     boardName : string;
 }
+
 export interface IQueryBoard{
     projectId : string;
     userId : string;
@@ -103,8 +100,8 @@ export const defaultCurrentMyBoard:ICurrent = {
     labels : [],
     lists: [],
     cards:[],
-
 }
+
 export const atomCurrentMyBoard = atom<ICurrent>({
     key : "currentBoard",
     default : defaultCurrentMyBoard
@@ -196,36 +193,13 @@ export const cardsbyListIdSelector = selector({
     }
 });
 
-
 // 특정 cardId를  가진 Card를 selecting 하고 set을 통해서 변경 
 export const cardSelectorCardId = selectorFamily({
     key:"cardSelectorCardId",
-    // get:({get}) => {
-    //     const board = get(atomCurrentMyBoard); 
-    //     return (InCardId:string) => {
-    //         return (board.cards.filter((card)=> card.cardId === InCardId)
-    //             );
-    //     };
-    // },
     get: (cardId) => ({ get }) => {
         const board = get(atomCurrentMyBoard);
         return board.cards.filter((card: any) => card.cardId === cardId)[0];
     },
-    // set:  ({set, get}, newValue)=>{
-    //     if (Array.isArray(newValue) && newValue.length === 2) {
-    //         const [InCardId, newCard] = newValue;
-    //         const board = get(atomCurrentMyBoard); 
-    //         const updatedCards = board.cards.map((card:any) => {
-    //             if(card.cardId === InCardId){
-    //                 return{...card, ...newCard};
-    //             }
-    //             return card;
-    //         })
-    //         const newAtomCurrentMyBoard = {...board,  cards: updatedCards,};
-
-    //         return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
-    //     }
-    // }
     set: (cardId) => ({set, get}, newValue)=>{
             const board = get(atomCurrentMyBoard);
             const updatedCards = board.cards.map((card:any) => {
@@ -235,7 +209,6 @@ export const cardSelectorCardId = selectorFamily({
                 return card;
             })
             const newAtomCurrentMyBoard = {...board,  cards: updatedCards,};
-
             return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
     }
 });
@@ -247,4 +220,3 @@ export interface IBoardMember{
     users : IBoardUser[];
     boardmMemberAllUsers : IBoardUser[];
 }
-

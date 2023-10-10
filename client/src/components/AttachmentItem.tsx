@@ -18,7 +18,7 @@ interface IAttachmentItemProps {
   onClick?: () => void;
   onCoverSelect: () => void;
   onCoverDeselect: () => void;
-  onUpdate: (data:any) => void;
+  onUpdate: (data: any) => void;
   onDelete: () => void;
 }
 
@@ -38,7 +38,7 @@ const AttachmentItem = forwardRef(
       onUpdate,
       onDelete,
     }: IAttachmentItemProps,
-    ref : any
+    ref: any
   ) => {
     const [t] = useTranslation();
 
@@ -76,9 +76,10 @@ const AttachmentItem = forwardRef(
     // const extension = filename ? filename.slice(
     //   (Math.max(0, filename.lastIndexOf('.')) || Infinity) + 1
     // ) : "";
-    const extension = name ? name.slice(
-      (Math.max(0, name.lastIndexOf('.')) || Infinity) + 1
-    ) : "";
+
+    const extension = name
+      ? name.slice((Math.max(0, name.lastIndexOf('.')) || Infinity) + 1)
+      : '';
 
     return (
       <div ref={ref} className={styles.wrapper} onClick={handleClick}>

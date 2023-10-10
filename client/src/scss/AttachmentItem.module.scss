@@ -1,19 +1,19 @@
 //:global(#app) {
   .button {
-    background: transparent;
-    box-shadow: none;
-    line-height: 28px;
-    margin: 0;
-    min-height: auto;
-    opacity: 0;
-    padding: 0;
-    position: absolute;
-    right: 2px;
-    top: 2px;
-    width: 28px;
+    background: transparent !important;
+    box-shadow: none !important;
+    line-height: 28px !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    opacity: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    right: 2px !important;
+    top: 2px !important;
+    width: 28px !important;
 
     &:hover {
-      background: rgba(9, 30, 66, 0.08);
+      background: rgba(9, 30, 66, 0.08) !important;
     }
   }
 
@@ -83,7 +83,7 @@
   }
 
   .thumbnail {
-    border-radius: 3px;
+    border-radius: 3px !important;
     background: rgba(9, 30, 66, 0.04);
     border-radius: 3px;
     height: 80px;
@@ -101,23 +101,23 @@
   }
 
   .wrapper {
-    cursor: pointer;
-    margin-bottom: 8px;
-    min-height: 80px;
-    position: relative;
+    cursor: pointer !important;
+    margin-bottom: 8px !important;
+    min-height: 80px !important;
+    position: relative !important;
 
     &:hover {
       .details {
-        background: rgba(9, 30, 66, 0.04);
+        background: rgba(9, 30, 66, 0.04) !important;
       }
 
       .target {
-        opacity: 1;
+        opacity: 1 !important;
       }
     }
   }
 
-  .wrapperSubmitting {
-    background: rgba(9, 30, 66, 0.04);
-  }
+  // .wrapperSubmitting {
+  //   background: rgba(9, 30, 66, 0.04) !important;
+  // }
 //}

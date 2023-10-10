@@ -90,7 +90,7 @@ function Board({boardId}:IListProps){
                     )}
                     </div>
                 </div>
-            </div>[]
+            </div>
             {(currentCard.cardId !== "") && <CardModal canEdit={true}/>}
       </div>
     )
