@@ -79,26 +79,28 @@ app.post('/upload', upload.single('file'),async (req, res) => {
 
 app.post('/deleteFile', async (req, res) => {
     const {cardId, fileExt, fileName} = req.body;
-
     // 이미지를 삭제할 경로 및 파일 이름
     const filePath = `uploads/${cardId}/${fileName}`;
     try {
         // 파일이 존재하는지 확인
-        const fileStats = await fs.stat(filePath);
+         const fileStats = await fs.stat(filePath);
+        //const fileStats = await fs.promises.stat(filePath); 
     
         // 파일이 존재할 때만 삭제 수행
         if (fileStats.isFile()) {
-
-        unlinkAsync(filePath);   // sync 밖에 안됨. 왜 안되는지 모르겠음 await넣으면 진행 안됨.
-        console.log('파일 삭제 성공:', filePath); 
-        res.json({fileName:fileName, filePath:filePath});
+            unlinkAsync(filePath);   // sync 밖에 안됨. 왜 안되는지 모르겠음 await넣으면 진행 안됨.
+            console.log('파일 삭제 성공:', filePath); 
+            res.json({fileName:fileName, filePath:filePath});
         }else{
             console.error(err);
-            res.status(500).send('파일 삭제 중 오류가 발생했습니다.');
+            console.log('파일 미존재 삭제 성공:', filePath); 
+            res.json({fileName:fileName, filePath:filePath});
         }
     } catch (err) {
         console.error(err);
-        res.status(500).send('파일 삭제 중 오류가 발생했습니다.');
+        console.log('파일 미존재 삭제 성공:', filePath); 
+        res.json({fileName:fileName, filePath:filePath});
+      //  res.status(500).send('파일 삭제 중 오류가 발생했습니다.');
     }finally{
         res.end();
         console.log('final:', filePath); 
