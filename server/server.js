@@ -62,7 +62,7 @@ app.post('/upload', upload.single('file'),async (req, res) => {
     }
 
     // 이미지를 저장할 경로 및 파일 이름
-    const filePath = `uploads/${cardId}/${fileName}.${file_ext}`;
+    const filePath = `uploads/${cardId}/${fileName}`;
     try {
     // 이미지 데이터를 바이너리로 변환하여 파일에 저장 (동기) -> 앞에 await를 붙히면 프로세스가 안 끝남.
         writeFileAsync(filePath, fileData, 'binary');
@@ -81,7 +81,7 @@ app.post('/deleteFile', async (req, res) => {
     const {cardId, fileExt, fileName} = req.body;
 
     // 이미지를 삭제할 경로 및 파일 이름
-    const filePath = `uploads/${cardId}/${fileName}.${fileExt}`;
+    const filePath = `uploads/${cardId}/${fileName}`;
     try {
         // 파일이 존재하는지 확인
         const fileStats = await fs.stat(filePath);

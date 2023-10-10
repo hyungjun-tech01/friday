@@ -121,7 +121,7 @@ export const apiUploadAttatchment = async (data:FormData) => {
                 // 성공시DB 처리 
                 const card:IModifyCard = {...defaultModifyCard, 
                              userId:userId, cardAttachmentDirname:responseMessage.filePath, 
-                             cardAttachmentFilename:responseMessage.fileName+"."+fileExt,
+                             cardAttachmentFilename:responseMessage.fileName,
                              cardAttachmentName:fileName,
                              cardAttachmentImage:cardAttachmentImage,
                              cardId:cardId, cardAttachmentActionType:'ADD'};
