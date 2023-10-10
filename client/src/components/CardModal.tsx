@@ -701,13 +701,13 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         .then((result) => {
           console.log('handleAttachmentCreate / result : ', result);
           const newAttachment: IAttachment = {
-            cardAttachementId: '',
+            cardAttachementId: '1178135071841453795',
             cardId: card.cardId,
             creatorUserId: cookies.UserId,
             creatorUserName: cookies.UserName,
-            dirName: '',
+            dirName: 'da24d0d3-157b-4bdc-bf80-45ce90dd9188',
             fileName: fileName,
-            cardAttachmentName: result.filePath,
+            cardAttachmentName: fileName,
             createdAt: new Date().toISOString(),
             updatedAt: null,
             image: null,
@@ -726,16 +726,52 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           console.log('Failt to upload file');
         });
     },
-    [card.cardId]
+    [card, cookies.UserId, cookies.UserName, setCard]
   );
 
-  const handleAttachmentUpdate = useCallback(() => {
-    console.log('handleAttachmentUpdate');
-  }, []);
+  const handleAttachmentUpdate = useCallback((id: string, data: any) => {
+    console.log('handleAttachmentUpdate : ', id, data);
+    // After server side update Process
+    const newAttachment: IAttachment = {
+      cardAttachementId: id,
+      cardId: card.cardId,
+      creatorUserId: cookies.UserId,
+      creatorUserName: cookies.UserName,
+      dirName: 'da24d0d3-157b-4bdc-bf80-45ce90dd9188',
+      fileName: 'fileName',
+      cardAttachmentName: 'fileName',
+      createdAt: new Date().toISOString(),
+      updatedAt: null,
+      image: null,
+      url: 'url',
+      coverUrl: 'coverUrl',
+      isCover: false,
+      isPersisted: false,
+    };
+    const found_idx = card.attachments.findIndex((item) => item.cardId === id);
+    const newAttachments = {
+      ...card.attachments.slice(0, found_idx),
+      newAttachment,
+      ...card.attachments.slice(found_idx+1),
+    }
+    const updateCard = {
+      ...card,
+      Attachments: newAttachments,
+    }
+    setCard(updateCard);
+  }, [card, cookies.UserId, cookies.UserName, setCard]);
 
-  const handleAttachmentDelete = useCallback(() => {
-    console.log('handleAttachmentDelete');
-  }, []);
+  const handleAttachmentDelete = useCallback((id: string) => {
+    console.log('handleAttachmentDelete : ', id);
+    // After server side delete Process
+    const newAttachments = card.attachments.filter((item) => 
+      item.cardAttachementId !== id);
+    const updateCard = {
+      ...card,
+      Attachments : newAttachments,
+    }
+    setCard(updateCard);
+  }, [card, setCard]);
 
   const handleCoverUpdate = useCallback(() => {
     console.log('handleCoverUpdate');
@@ -868,7 +904,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   );
 
   useEffect(() => {
-    console.log('Card Modal Rendering/card :');
+    console.log('Card Modal Rendering/card : ', card.attachments);
   }, [card]);
 
   const contentNode = (

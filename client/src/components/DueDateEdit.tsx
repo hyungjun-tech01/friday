@@ -5,19 +5,20 @@ import {
   useState,
   useRef,
   cloneElement,
+  ReactElement,
 } from "react";
 import { useTranslation } from "react-i18next";
 import DatePicker from "react-datepicker";
 import { Button, Form, Popup, Input } from "semantic-ui-react";
 import styles from "../scss/DueDateEdit.module.scss";
 import CustomPopupHeader from "../lib/ui/CustomPopupHeader";
-import { ReactElement } from "react";
 
 interface IDueDateEidtProps {
   children: ReactElement;
   defaultValue: Date | null;
   onUpdate: (date: Date | null) => void;
 }
+
 const DueDateEdit = ({
   children,
   defaultValue,
