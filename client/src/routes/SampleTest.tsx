@@ -6,7 +6,6 @@ import {useEffect, useState} from 'react';
  import {apiModifyCard, apiUploadAttatchment, apiDeleteAttatchment} from "../api/card";
 import {  apiModifyList } from '../api/list';
 import {useRecoilValue} from "recoil";
-import {listSelector} from "../atoms/atomsBoard";
 import Paths from "../constants/Paths";
 const BASE_PATH = Paths.BASE_PATH; 
  // cardId, userId는 반드시 들어가야 함. 

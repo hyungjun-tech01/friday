@@ -4,10 +4,10 @@ import { Button, Form, TextArea } from 'semantic-ui-react';
 import {useTranslation} from "react-i18next";
 import {useForm} from "react-hook-form";
 import {IModifyCard, defaultModifyCard, ICard, defaultCard} from "../atoms/atomCard";
-import {cardsbyListIdSelector} from "../atoms/atomsBoard";
+import {cardsSelector} from "../atoms/atomsBoard";
 import {useCookies} from "react-cookie";
 import {apiCreateCard} from "../api/card";
-import {useRecoilState} from "recoil";
+import {useSetRecoilState } from "recoil";
 
 interface ICardAddProps{
     listId:string;
@@ -19,7 +19,7 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
   const [t] = useTranslation();
   const {register, handleSubmit,formState:{errors}} = useForm();
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
-  const setCard = useRecoilState(cardsbyListIdSelector);
+  const setCard = useSetRecoilState(cardsSelector);
 
   let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
     useEffect(()=>{
@@ -50,9 +50,15 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
         setIsCardAddOpened(true);
       }else{
         // recoil 변경 
-        const newCard:ICard = {...defaultCard, cardId:response.outCardId, listId:listId, 
-               cardName:data.cardtName, position:response.outCardPosition, createdAt:response.outCardCreatedAt, updatedAt:"", };
-        //setCard(listId, newCard);
+        const newCard:ICard = {cardId:response.outCardId, listId:listId, 
+               cardName:data.cardName, position:response.outCardPosition, createdAt:response.outCardCreatedAt, updatedAt:"", 
+                coverAttachmentId:"", boardId:"", 
+               description:"",  labels:[], 
+               dueDate:"", statusId:"", statusName:"",
+               stopwatch:{total:0,startedAt:null }, memberships:[], attachments:[], 
+               tasks:[], comments:[], };
+        console.log(newCard);
+        setCard([newCard]);
         setIsCardAddOpened(false);
         setIsCardRequery(!isCardRequery);
       } 

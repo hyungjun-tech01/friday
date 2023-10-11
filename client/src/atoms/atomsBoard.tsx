@@ -129,7 +129,8 @@ export const listsSelector = selector ({
     }
 });
 
-// 특정 listId를 가진 List를 get ,  selector 의 set을 통해 변경
+
+// 특정 listId를 가진 List  get ,  selector 의 set을 통해 변경
 export const listSelector = selectorFamily({
     key:"listSelector",
     get: (listId) => ({ get }) => {
@@ -147,29 +148,7 @@ export const listSelector = selectorFamily({
         const newAtomCurrentMyBoard = {...board,  lists: updatedLists,};
 
         return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
-}
-    // get:( {get}) => {
-    //     const board = get(atomCurrentMyBoard); 
-    //     return (InListId:string) => {
-    //         return (board.lists.filter((list)=> list.listId === InListId)
-    //             );
-    //     };
-    // },
-    // set:({set, get}, newValue )=>{
-    //     if (Array.isArray(newValue) && newValue.length === 2) {
-    //     const [InListId, newList] = newValue;
-    //     const board = get(atomCurrentMyBoard); 
-    //     const updatedLists = board.lists.map((list:any) => {
-    //         if(list.listId === InListId){
-    //             return{...list, ...newList};
-    //         }
-    //         return list;
-    //     })
-    //     const newAtomCurrentMyBoard = {...board,  lists: updatedLists,};
-
-    //     return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
-    // }
-    // }
+    }
 });
 
 
@@ -182,9 +161,19 @@ export const cardsbyListIdSelector = selector({
             return (board.cards.filter((card) => card.listId === InListId));
         };
     },
+  
+});
+
+// 카드 추가 됨,  삭제는 어떻게 하지?
+export const cardsSelector = selector ({
+    key:"cardsSelector",
+    get:({get}) => {
+        const board = get(atomCurrentMyBoard); 
+        return (board.cards);
+    },
     set: ({set, get}, newValue) => {
-        if (Array.isArray(newValue) && newValue.length === 2) {
-            const [InListId, newCard] = newValue;
+        if (Array.isArray(newValue) && newValue.length === 1) {
+            const [newCard] = newValue;
             const board = get(atomCurrentMyBoard); 
             const updatedCards = board.cards.concat(newCard);
             const newAtomCurrentMyBoard = {...board, cards: updatedCards};

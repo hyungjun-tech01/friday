@@ -796,7 +796,7 @@ app.post('/card', async(req, res) => {
      ]);
      const outCardId = response.rows[0].x_card_id;
      const outCardPosition = response.rows[0].x_card_position;
-     const outCardCreatedAt = response.rowws[0].x_card_created_at;
+     const outCardCreatedAt = response.rows[0].x_card_created_at;
      res.json({ outCardId: outCardId,  outCardPosition:outCardPosition, 
             outCardCreatedAt:outCardCreatedAt, outCardName:cardName }); // 결과 리턴을 해 줌 .  
         res.end();
