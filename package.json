@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@juggle/resize-observer": "^3.4.0",
     "date-fns": "^2.30.0",
     "easymde": "^2.18.0",
     "i18next-browser-languagedetector": "^7.1.0",

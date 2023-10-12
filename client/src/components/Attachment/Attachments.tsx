@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react';
-import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Gallery, Item as GalleryItem } from 'react-photoswipe-gallery';
 import { Button } from 'semantic-ui-react';
-import { IAttachment } from '../atoms/atomCard';
+import { IAttachment } from '../../atoms/atomCard';
 import AttachmentItem from './AttachmentItem';
 
-import BASE_PATH from '../constants/Paths';
-import styles from '../scss/Attachments.module.scss';
+import classNames from 'classnames';
+import BASE_PATH from '../../constants/Paths';
+import styles from './Attachments.module.scss';
 
 const INITIALLY_VISIBLE = 4;
 

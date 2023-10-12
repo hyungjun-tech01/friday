@@ -39,9 +39,10 @@ import Stopwatch from './Stopwatch';
 import StopwatchEdit from './StopwatchEdit';
 import Label from './Label';
 import LabelsPopup from './LabelsPopup';
-import Attachments from './Attachments';
-import AttachmentAddPopup from './AttachmentAddPopup';
+import Attachments from './Attachment/Attachments';
+import AttachmentAddPopup from './Attachment/AttachmentAddPopup';
 
+import usePopup from '../lib/hook/use-popup';
 import classNames from 'classnames';
 import styles from '../scss/CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../utils/stopwatch';
@@ -60,6 +61,9 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   const updateCard = useSetRecoilState(cardSelectorCardId(card.cardId));
 
   const isGalleryOpened = useRef(false);
+
+  const CardMembership = usePopup(CardMembershipPopup);
+  const AttachmentAdd = usePopup(AttachmentAddPopup);
 
   const handleOnCloseCardModel = useCallback(() => {
     updateCard(card);
@@ -1239,7 +1243,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           <Grid.Column width={4} className={styles.sidebarPadding}>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('action.addCard')}</span>
-              <CardMembershipPopup
+              <CardMembership
                 items={board.users}
                 currentUserIds={cardUserIds}
                 onUserSelect={handleUserAdd}
@@ -1249,7 +1253,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   <Icon name="user outline" className={styles.actionIcon} />
                   {t('common.members')}
                 </Button>
-              </CardMembershipPopup>
+              </CardMembership>
               <LabelsPopup
                 items={board.labels}
                 canEdit={canEdit}
@@ -1288,12 +1292,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   {t('common.stopwatch')}
                 </Button>
               </StopwatchEdit>
-              <AttachmentAddPopup onCreate={handleAttachmentCreate}>
+              <AttachmentAdd onCreate={handleAttachmentCreate}>
                 <Button fluid className={styles.actionButton}>
                   <Icon name="attach" className={styles.actionIcon} />
                   {t('common.attachment')}
                 </Button>
-              </AttachmentAddPopup>
+              </AttachmentAdd>
             </div>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('common.actions')}</span>
