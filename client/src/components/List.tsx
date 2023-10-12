@@ -97,6 +97,7 @@ function List({id, position, name, canEdit}:IListProps){
                 <div className={styles.headerName}>
                     <NameField
                         defaultValue={list.listName}
+                        size='Small'
                         onUpdate={handleNameUpdate}
                     />
                 </div>

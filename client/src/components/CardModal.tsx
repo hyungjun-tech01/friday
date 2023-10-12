@@ -974,6 +974,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               {canEdit ? (
                 <NameField
                   defaultValue={card.cardName}
+                  size='Normal'
                   onUpdate={handleNameUpdate}
                 />
               ) : (

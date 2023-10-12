@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { TextArea } from 'semantic-ui-react';
+import upperFirst from 'lodash/upperFirst';
 
 import styles from '../scss/NameField.module.scss';
 
 interface INameFieldProps {
     defaultValue: string;
+    size : 'Normal'|'Small';
     onUpdate: (name:string) => void;
   };
 
-const NameField = ({ defaultValue, onUpdate }:INameFieldProps) => {
+const NameField = ({ defaultValue, size, onUpdate }:INameFieldProps) => {
     const [prevValue, setPrevValue] = useState(defaultValue);
     const [value, setValue] = useState(defaultValue);
     
@@ -55,7 +57,7 @@ const NameField = ({ defaultValue, onUpdate }:INameFieldProps) => {
         as={TextareaAutosize}
         value={value}
         spellCheck={false}
-        className={styles.field}
+        className={styles[`field${upperFirst(size)}`] }
         onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         onChange={handleChange}
