@@ -24,10 +24,10 @@ function Board({boardId}:IListProps){
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [t] = useTranslation();
     const [showList, setShowList] = useState(false);
-    //board id로 리스트를 가지고 올것.
-    const lists: IList[]  = useRecoilValue(listsSelector); 
     //const [lists, setLists] = useRecoilState<IList[]>(atomMyList);
     const [currentBoard, setCurrentBoard] = useRecoilState(atomCurrentMyBoard);
+    //board id로 리스트를 가지고 올것.
+    const lists: IList[]  = useRecoilValue(listsSelector); 
    
     const getCurrentBoard = async (id:string) => {
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
@@ -67,8 +67,8 @@ function Board({boardId}:IListProps){
         <div>
             <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`}>
                 <div className={`${styles.lists} ${styles.wrapperFlex}`}>
-                    {lists.length > 0 && lists.map((list:any) => (
-                            <List key={list.listId} id={list.listId} position={list.position} name={list.listName} />
+                    {currentBoard && lists.length > 0 && lists.map((list:any) => (
+                            <List key={list.listId} id={list.listId} position={list.position} name={list.listName} canEdit={currentBoard.canEdit}/>
                             ))}
 
                     <div data-drag-scroller className={styles.list}>

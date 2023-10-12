@@ -1,26 +1,30 @@
-import NameEdit from "./NameEdit";
-import styles from "../scss/List.module.scss";
-import {ICard} from "../atoms/atomCard";
-import {apiGetCardsbyListId} from "../api/card";
-import {useState, useEffect} from "react";
-import Card from "./Card";
+import {useState, useEffect, useCallback} from "react";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
 import {useTranslation} from "react-i18next";
+import {useRecoilValue, useSetRecoilState} from "recoil";
+import styles from "../scss/List.module.scss";
+import { useCookies } from 'react-cookie';
+
+import {ICard} from "../atoms/atomCard";
+import {IModifyList, defaultModifyList, IList} from "../atoms/atomsList";
+import Card from "./Card";
 import CardAdd from "./CardAdd";
-import {useRecoilValue} from "recoil";
-import {cardsbyListIdSelector} from "../atoms/atomsBoard";
+import {cardsbyListIdSelector, listSelector} from "../atoms/atomsBoard";
+import NameField from "../components/NameField";
+import {apiModifyList} from "../api/list";
 
 interface IListProps{
     id:string;
     position:number;
     name : string;
+    canEdit : string;
 }
-function List({id, position, name}:IListProps){
+function List({id, position, name, canEdit}:IListProps){
+    const list = useRecoilValue(listSelector(id));
+    const setList = useSetRecoilState(listSelector(id));
     const [t] = useTranslation();
+    const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
     const selectCards = useRecoilValue(cardsbyListIdSelector); // 호출 가능한 함수를 가져옴
-//    console.log('isCardLoading',isCardLoading);
-//    if(!isCardLoading) 
-//        selectedCards = selectCards(id);
     
     const [isCardLoading, setIsCardLoading] = useState(true);
     const [cards, setCards] = useState<ICard[]>();
@@ -52,11 +56,53 @@ function List({id, position, name}:IListProps){
         console.log('addcard');
         setIsCardAddOpened(true);
      };
+
+     const handleNameUpdate = useCallback(
+        (data: string) => {
+          console.log('Udate name of list : ', data);
+          const modifiedList: IModifyList = {
+            ...defaultModifyList,
+            listId:list.listId,
+            userId: cookies.UserId,
+            listName: data,
+            listActionType: 'UPDATE',
+          };
+    
+          const response = apiModifyList(modifiedList);
+          response
+            .then((result) => {
+              if (result.message) {
+                console.log('Fail to update name of card', result.message);
+              } else {
+                console.log('Succeed to update name of card', result);
+                const updatedList = {
+                  ...list,
+                  listName: data,
+                };
+                setList(updatedList);
+              }
+            })
+            .catch((message) => {
+              console.log('Fail to update name of card', message);
+            });
+        },
+        [list, cookies, setList]
+      );
+    
     return(
         <div className={styles.innerWrapper}>
         <div className={styles.outerWrapper}>
             <div className={styles.header}>
-                <div className={styles.headerName}>{name}</div>
+                {canEdit === "editor" ? (
+                <div className={styles.headerName}>
+                    <NameField
+                        defaultValue={list.listName}
+                        onUpdate={handleNameUpdate}
+                    />
+                </div>
+              ) : (
+                <div className={styles.headerName}>{list.listName}</div>
+              )}
             </div>
             <div className={`${styles.cardsInnerWrapper} ${styles.cardsInnerWrapperFull}`}>
             <div className={styles.cardsOuterWrapper}>
