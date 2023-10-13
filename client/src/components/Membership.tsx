@@ -16,7 +16,7 @@ import { getRoles } from "@testing-library/react";
 
 interface IMembershipProps {
     boardId: string;
-    canEdit : string;
+    canEdit : boolean;
     members?: IBoardUser[];
     isMemberLoading : boolean;
     setIsMemberLoading: (value:boolean) => void;
@@ -27,7 +27,7 @@ interface IboardMemberActionUserId{
     avatarUrl:string;
     userEmail:string;
     role : string;
-    canEdit:string;
+    canEdit:boolean;
     positionX:number;
     positionY:number;
 }
@@ -43,12 +43,12 @@ function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoadi
     }
     const [onAddPopup, setOnAddPopup] = useState(false);
     // userId 와 현재 클릭한 포지션 획득 
-    const [boardMemberActionUserId, setBoardMemberActionUserId] = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"",role:"", positionX:-1, positionY:-1 });
+    const [boardMemberActionUserId, setBoardMemberActionUserId] = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:canEdit,role:"", positionX:-1, positionY:-1 });
     // board member 권한 및 삭제 
     const [boardMemberAction, setBoardMemberAction] = useState(false);
     // 사용자 삭제 Modal 
     const [deleteStep, setDeleteStep]  = useState(false);
-    const [boardMemeberPermissionUserId, setBoardMemeberPermissionUserId]  = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"",role:"", positionX:-1, positionY:-1 });
+    const [boardMemeberPermissionUserId, setBoardMemeberPermissionUserId]  = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:canEdit,role:"", positionX:-1, positionY:-1 });
     const handleDeleteClick = () => { 
         // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
         console.log('handleDeleteClick');
@@ -83,7 +83,7 @@ function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoadi
     };     
     const onMemberBack = () => {
         setOnAddPopup(true);
-        setBoardMemeberPermissionUserId({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:"", role:"", positionX:-1, positionY:-1 });
+        setBoardMemeberPermissionUserId({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:canEdit, role:"", positionX:-1, positionY:-1 });
     } 
     const onMemberConfirm = () => {
         //db 처리 
@@ -101,7 +101,7 @@ function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoadi
                             userName={user.userName} 
                             userEmail={user.userEmail}
                             avatarUrl={user.avatarUrl}
-                            canEdit = {user.role}/>
+                            canEdit = {user.canEdit}/>
                         {user.userName}
                     </span> 
                 ))}
@@ -118,7 +118,7 @@ function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoadi
                     </div>
         }            
                 {/* Add Borad Member 기능  */}
-                {canEdit==="editor" && 
+                {canEdit  && 
                 <Button icon="add user" onClick={onAddMemberPopup} style={{backgroundColor:'rgba(0, 0, 0, 0.24)',
                     borderRadius: '50%',
                     boxShadow: 'none',

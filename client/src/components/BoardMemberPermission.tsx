@@ -11,10 +11,10 @@ interface IBoardMemberPermission{
     title : string;
     content : string;
     buttonContent : string;
-    addMember : {userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, positionX:number, positionY:number};
+    addMember : {userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:boolean, positionX:number, positionY:number};
     onMemberConfirm : ()=>void;
     onBack : () => void;
-    setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, role:string, positionX:number, positionY:number}) =>void;    
+    setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:boolean, role:string, positionX:number, positionY:number}) =>void;    
 }
 const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.currentTarget.style.background = '#9e3f08';

@@ -9,10 +9,10 @@ interface IUserProps{
     userName:string;
     userEmail?:string;
     avatarUrl : string | null;
-    canEdit?: string;
+    canEdit?: boolean;
     size ?: UserSize;
     onClick ?: ()=>void | undefined;
-    showAnotherPopup? : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, role:string, positionX:number, positionY:number}) => void;
+    showAnotherPopup? : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:boolean, role:string, positionX:number, positionY:number}) => void;
 }
 
 type UserSize = "tiny" | 'small' | 'medium' | 'large' | 'massive';

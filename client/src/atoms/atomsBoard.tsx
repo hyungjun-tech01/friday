@@ -74,7 +74,8 @@ export interface ICheckBoardEditAuth{
 // 보드를 찍었을 때 보드 안에 있는 모든 데이터를 가지고 온다. currentBoard 
 export interface ICurrent{
     boardId : string;
-    canEdit : string;
+    canEdit : boolean;
+    role : string;
     users : IBoardUser[];
     labels : ILabel[];
     lists : IList[];
@@ -89,13 +90,14 @@ export interface IBoardUser{
     role:string;
     avatarUrl:string;
     userEmail:string;
-    canEdit:string;
+    canEdit:boolean;
     canComment:string;
 }
 
 export const defaultCurrentMyBoard:ICurrent = {
     boardId:"", 
-    canEdit:"",
+    canEdit:false,
+    role : "",
     users:[],
     labels : [],
     lists: [],

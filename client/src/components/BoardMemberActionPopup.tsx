@@ -9,14 +9,14 @@ import EditPermissions from "./EditPermissions";
 
 interface IBoardMemberActionPopupProps{
     boardId : string;
-    currentUserCanEdit : string;
+    currentUserCanEdit : boolean;
     currentUserId : string;
     userId: string;
     userName : string;
     userEmail : string;
-    canEdit : string;
+    canEdit : boolean;
     avatarUrl : string;
-    showPopUp:(value:{userId:string, userName:string,  userEmail:string, avatarUrl:string, canEdit:string, role:string, positionX:number, positionY:number}) =>  void;
+    showPopUp:(value:{userId:string, userName:string,  userEmail:string, avatarUrl:string, canEdit:boolean, role:string, positionX:number, positionY:number}) =>  void;
     handleDeleteClick : (value:boolean) => void;
 }
 function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, userId, userEmail, userName, avatarUrl, canEdit, showPopUp, handleDeleteClick}:IBoardMemberActionPopupProps){
@@ -33,7 +33,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
             wrapperRef.current &&
             !wrapperRef.current.contains(event.target)) {
           console.log('close modal');
-          showPopUp({userId:"", userName:"", userEmail:"", avatarUrl:"", canEdit:"", role:"", positionX:-1, positionY:-1 });
+          showPopUp({userId:"", userName:"", userEmail:"", avatarUrl:"", canEdit:currentUserCanEdit, role:"", positionX:-1, positionY:-1 });
         }
       }     
     
@@ -73,7 +73,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
                 <div className={styles.email}>{userEmail}</div>
               </span>
               </span>
-        {currentUserCanEdit === "editor" && (
+        {currentUserCanEdit  && (
           <Button
             fluid
             content={t('action.editPermissions')}
@@ -114,7 +114,7 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
                 onClick={()=> handleDeleteClick(true)}
               />
             )
-          : currentUserCanEdit === "editor" && (
+          : currentUserCanEdit  && (
               <Button
                 fluid
                 content={t('action.deleteButtonContent')}

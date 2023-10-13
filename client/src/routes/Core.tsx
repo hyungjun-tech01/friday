@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import {projectSelector, IProject } from '../atoms/atomsProject';
-import {atomCurrentMyBoard, ICheckBoardEditAuth} from "../atoms/atomsBoard";
+import {atomCurrentMyBoard, } from "../atoms/atomsBoard";
 import {apiGetCurrentBoards} from "../api/board";
 import {useCookies} from "react-cookie";
 

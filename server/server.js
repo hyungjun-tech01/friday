@@ -191,7 +191,11 @@ app.post('/currentBoard', async(req, res)=>{
     console.log('currentboard', boardId);
     try{
         const result = await pool.query(`
-        select b.id as "boardId" , bm.role as "canEdit"
+        select b.id as "boardId" , bm.role as "role", 
+		case when role = 'editor' then true 
+		     when role = 'viewer' then false 
+			 else false
+			 end as "canEdit"
         from board b, board_membership bm, user_account u
         where b.id = bm.board_id  
         and bm.user_id = u.id
@@ -209,7 +213,10 @@ app.post('/currentBoard', async(req, res)=>{
                 t1.avatar as "avatarUrl",
                 t1.email as "userEmail",
                 t.role as "role",
-                t.role as "canEdit"
+                case when role = 'editor' then true 
+                when role = 'viewer' then false 
+                else false
+                end as "canEdit"
             from board_membership t, user_account t1
             where t.user_id = t1.id
             and t.board_id = $1`, [boardId]);

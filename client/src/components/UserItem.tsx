@@ -6,8 +6,8 @@ interface IUserItemProp{
     userId : string;
     userName:string;
     avatarUrl : string;
-    canEdit : string;
-    onSelect: (value: { userId: string; canEdit: string }) => void; // Corrected the parameter type
+    canEdit : boolean;
+    onSelect: (value: { userId: string; canEdit: boolean }) => void; // Corrected the parameter type
 }
 function UserItem({userName, userId, avatarUrl, canEdit, onSelect}:IUserItemProp){
     const isActive = canEdit === null ? false:true;

@@ -11,9 +11,9 @@ import BoardMemberPermission from "./BoardMemberPermission";
 
 interface IBoardmemberAddProps{
     members?: IBoardUser[];
-    canEdit:string;
+    canEdit:boolean;
     setOnAddPopup:(value:boolean) => void;
-    setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:string, role:string, positionX:number, positionY:number}) =>void;
+    setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:boolean, role:string, positionX:number, positionY:number}) =>void;
 }
 function BoardMemeberAdd({members, canEdit,setOnAddPopup, setBoardMemeberPermissionUserId}:IBoardmemberAddProps){
     const allUsers = useRecoilValue(atomAllUser);
@@ -50,7 +50,7 @@ function BoardMemeberAdd({members, canEdit,setOnAddPopup, setBoardMemeberPermiss
         setOnAddPopup(false);
       }
     }     
-    const handleUserSelect = (userId:string, canEdit:string) => {
+    const handleUserSelect = (userId:string, canEdit:boolean) => {
       if(canEdit === null){
         console.log('add user');
         setOnAddPopup(false);

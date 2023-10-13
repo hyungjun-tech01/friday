@@ -1,7 +1,7 @@
 interface IEditPermissionsProp{
     boardId: string;
     userId: string;
-    canEdit:string;
+    canEdit:boolean;
 }
 function EditPermissions({boardId, userId, canEdit}:IEditPermissionsProp){
     return (

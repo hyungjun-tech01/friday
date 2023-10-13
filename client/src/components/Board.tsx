@@ -91,7 +91,7 @@ function Board({boardId}:IListProps){
                     </div>
                 </div>
             </div>
-            {(currentCard.cardId !== "") && <CardModal canEdit={true}/>}
+            {(currentCard.cardId !== "") && <CardModal canEdit={currentBoard.canEdit}/>}
       </div>
     )
 }

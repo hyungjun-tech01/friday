@@ -52,7 +52,7 @@ function Login(){
 
   const [currentUser, setCurrentUser] = useRecoilState<IUser>(atomMyUser);
   const [allUser, setAllUser] = useRecoilState<IUser[]>(atomAllUser);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
     const [cookies, setCookie, removeCookie] = useCookies(['UserId', 'UserName','AuthToken']);
 
     const history = useHistory();

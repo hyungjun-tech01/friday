@@ -17,7 +17,7 @@ interface IListProps{
     id:string;
     position:number;
     name : string;
-    canEdit : string;
+    canEdit : boolean;
 }
 function List({id, position, name, canEdit}:IListProps){
     const list = useRecoilValue(listSelector(id));
@@ -93,7 +93,7 @@ function List({id, position, name, canEdit}:IListProps){
         <div className={styles.innerWrapper}>
         <div className={styles.outerWrapper}>
             <div className={styles.header}>
-                {canEdit === "editor" ? (
+                {canEdit  ? (
                 <div className={styles.headerName}>
                     <NameField
                         defaultValue={list.listName}
