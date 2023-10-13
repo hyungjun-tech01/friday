@@ -1,11 +1,11 @@
 //:global(#app) {
   .menu {
-    margin: 8px auto 0;
-    max-height: 60vh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    width: 100%;
+    margin: 8px auto 0 !important;
+    max-height: 60vh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin !important;
+    width: 100% !important;
 
     &::-webkit-scrollbar {
       width: 5px;
@@ -18,28 +18,5 @@
     &::-webkit-scrollbar-thumb {
       border-radius: 3px;
     }
-  }
-
-  .popupCloseButton {
-    background: transparent !important;
-    box-shadow: none !important;
-    margin: 0 !important;
-    padding: 10px 12px 10px 8px !important;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 40px;
-    z-index: 2000;
-  }
-
-  .popupWrapper {
-    border-radius: 3px !important;
-    border-width: 0 !important;
-    box-shadow: 0 8px 16px -4px rgba(9, 45, 66, 0.25),
-      0 0 0 1px rgba(9, 45, 66, 0.08) !important;
-    margin-top: 6px !important;
-    max-height: calc(100% - 70px);
-    padding: 0 12px 12px !important;
-    width: 304px;
   }
 //}

@@ -42,6 +42,8 @@ BEGIN
             updated_At = v_updated_at
             where id = i_list_id::bigint;
         elsif(i_list_action_type = 'DELETE')  then
+            delete from card 
+            where list_id = i_list_id::biging;
             delete from list 
             where id = i_list_id::bigint;
         end if;

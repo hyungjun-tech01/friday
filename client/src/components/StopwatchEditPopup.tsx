@@ -1,31 +1,24 @@
-import { dequal } from "dequal";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  ReactElement,
-  cloneElement,
-} from "react";
-import { useTranslation } from "react-i18next";
-import { Button, Form, Popup, Input } from "semantic-ui-react";
+import { dequal } from 'dequal';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Form, Popup, Input } from 'semantic-ui-react';
 import {
   createStopwatch,
   getStopwatchParts,
   startStopwatch,
   stopStopwatch,
   updateStopwatch,
-} from "../utils/stopwatch";
-import CustomPopupHeader from "../lib/ui/CustomPopupHeader";
-import styles from "../scss/StopwatchEdit.module.scss";
-import { IStopwatch } from "../atoms/atomStopwatch";
+} from '../utils/stopwatch';
+import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
+import styles from '../scss/StopwatchEditPopup.module.scss';
+import { IStopwatch } from '../atoms/atomStopwatch';
 
 const createData = (stopwatch: IStopwatch | null) => {
   if (!stopwatch) {
     return {
-      hours: "0",
-      minutes: "0",
-      seconds: "0",
+      hours: '0',
+      minutes: '0',
+      seconds: '0',
     };
   }
   const { hours, minutes, seconds } = getStopwatchParts(stopwatch);
@@ -38,46 +31,17 @@ const createData = (stopwatch: IStopwatch | null) => {
 };
 
 interface IStopwatchEditProps {
-  children: ReactElement;
   defaultValue: IStopwatch | null;
   onUpdate: (data: IStopwatch | null) => void;
-}
+  onClose: () => void;
+};
 
 const StopwatchEdit = ({
-  children,
   defaultValue,
   onUpdate,
+  onClose,
 }: IStopwatchEditProps) => {
-  // Popup Control Part ---------------------
   const [t] = useTranslation();
-  const popupRef = useRef<any>(null);
-  const [isOpened, setIsOpened] = useState(false);
-
-  // const handleOpen = useCallback(() => {
-  //   setIsOpened(true);
-  // }, []);
-
-  const handleClose = useCallback(() => {
-    setIsOpened(false);
-  }, []);
-
-  const handleMouseDown = useCallback((event:any) => {
-    event.stopPropagation();
-  }, []);
-
-  const handleClick = useCallback((event:any) => {
-    event.stopPropagation();
-  }, []);
-
-  const handleTriggerClick = useCallback(() => {
-    setIsOpened(!isOpened);
-  }, [isOpened]);
-
-  const trigger = cloneElement(children as ReactElement<any>, {
-    onClick: handleTriggerClick,
-  });
-
-  // Stopwatch Properties ---------------------
   const [data, setData] = useState(() => createData(defaultValue));
   const [isEditing, setIsEditing] = useState(false);
 
@@ -87,8 +51,8 @@ const StopwatchEdit = ({
 
   const handleStartClick = useCallback(() => {
     onUpdate(startStopwatch(defaultValue));
-    setIsOpened(false);
-  }, [defaultValue, onUpdate]);
+    onClose();
+  }, [defaultValue, onUpdate, onClose]);
 
   const handleStopClick = useCallback(() => {
     onUpdate(stopStopwatch(defaultValue));
@@ -98,8 +62,8 @@ const StopwatchEdit = ({
     if (defaultValue) {
       onUpdate(null);
     }
-    setIsOpened(false);
-  }, [defaultValue, onUpdate]);
+    onClose();
+  }, [defaultValue, onUpdate, onClose]);
 
   const handleToggleEditingClick = useCallback(() => {
     setData(createData(defaultValue));
@@ -112,11 +76,6 @@ const StopwatchEdit = ({
       [event.target.name]: event.target.value,
     }));
   }, []);
-
-  const handleOpenPopup = useCallback(() => {
-    setData(createData(defaultValue));
-    setIsOpened(true);
-  }, [defaultValue]);
 
   const handleSubmit = useCallback(() => {
     const parts = {
@@ -147,8 +106,8 @@ const StopwatchEdit = ({
     } else {
       onUpdate(createStopwatch(parts));
     }
-    setIsOpened(false);
-  }, [defaultValue, onUpdate, data]);
+    onClose();
+  }, [defaultValue, onUpdate, data, onClose]);
 
   useEffect(() => {
     if (isEditing) {
@@ -156,18 +115,18 @@ const StopwatchEdit = ({
     }
   }, [isEditing]);
 
-  const contents = (
+  return (
     <>
       <CustomPopupHeader>
-        {t("common.editStopwatch", {
-          context: "title",
+        {t('common.editStopwatch', {
+          context: 'title',
         })}
       </CustomPopupHeader>
       <Popup.Content>
         <Form onSubmit={handleSubmit}>
           <div className={styles.fieldWrapper}>
             <div className={styles.fieldBox}>
-              <div className={styles.text}>{t("common.hours")}</div>
+              <div className={styles.text}>{t('common.hours')}</div>
               <Input
                 ref={hoursField}
                 name="hours"
@@ -179,7 +138,7 @@ const StopwatchEdit = ({
               />
             </div>
             <div className={styles.fieldBox}>
-              <div className={styles.text}>{t("common.minutes")}</div>
+              <div className={styles.text}>{t('common.minutes')}</div>
               <Input
                 ref={minutesField}
                 name="minutes"
@@ -191,7 +150,7 @@ const StopwatchEdit = ({
               />
             </div>
             <div className={styles.fieldBox}>
-              <div className={styles.text}>{t("common.seconds")}</div>
+              <div className={styles.text}>{t('common.seconds')}</div>
               <Input
                 ref={secondsField}
                 name="seconds"
@@ -204,73 +163,37 @@ const StopwatchEdit = ({
             </div>
             <Button
               type="button"
-              icon={isEditing ? "close" : "edit"}
+              icon={isEditing ? 'close' : 'edit'}
               className={styles.iconButton}
               onClick={handleToggleEditingClick}
             />
           </div>
-          {isEditing && <Button positive content={t("action.save")} />}
+          {isEditing && <Button positive content={t('action.save')} />}
         </Form>
         {!isEditing &&
           (defaultValue && defaultValue.startedAt ? (
             <Button
               positive
-              content={t("action.stop")}
+              content={t('action.stop')}
               icon="pause"
               onClick={handleStopClick}
             />
           ) : (
             <Button
               positive
-              content={t("action.start")}
+              content={t('action.start')}
               icon="play"
               onClick={handleStartClick}
             />
           ))}
         <Button
           negative
-          content={t("action.remove")}
+          content={t('action.remove')}
           className={styles.deleteButton}
           onClick={handleClearClick}
         />
       </Popup.Content>
     </>
-  );
-
-  return (
-    <Popup
-      basic
-      wide
-      ref={popupRef}
-      trigger={trigger}
-      on="click"
-      open={isOpened}
-      position="bottom left"
-      popperModifiers={[
-        {
-          name: "preventOverflow",
-          enabled: true,
-          options: {
-            altAxis: true,
-            padding: 20,
-          },
-        },
-      ]}
-      className={styles.popupWrapper}
-      onOpen={handleOpenPopup}
-      onClose={handleClose}
-      onMouseDown={handleMouseDown}
-      onClick={handleClick}
-    >
-      <div>
-        <Button
-          icon="close"
-          onClick={handleClose}
-          className={styles.popupCloseButton}
-        />
-        {contents}
-      </div>
-    </Popup>
   );
 };
 

@@ -4,56 +4,25 @@ import {
   useMemo,
   useState,
   useRef,
-  cloneElement,
-  ReactElement,
 } from "react";
 import { useTranslation } from "react-i18next";
 import DatePicker from "react-datepicker";
 import { Button, Form, Popup, Input } from "semantic-ui-react";
-import styles from "../scss/DueDateEdit.module.scss";
+import styles from "../scss/DueDateEditPopup.module.scss";
 import CustomPopupHeader from "../lib/ui/CustomPopupHeader";
 
 interface IDueDateEidtProps {
-  children: ReactElement;
   defaultValue: Date | null;
   onUpdate: (date: Date | null) => void;
+  onClose: () => void;
 }
 
-const DueDateEdit = ({
-  children,
+const DueDateEditPopup = ({
   defaultValue,
   onUpdate,
+  onClose,
 }: IDueDateEidtProps) => {
-  // Popup Control Part ---------------------
   const [t] = useTranslation();
-  const popupRef = useRef<any>(null);
-  const [isOpened, setIsOpened] = useState(false);
-
-  const handleOpen = useCallback(() => {
-    setIsOpened(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setIsOpened(false);
-  }, []);
-
-  const handleMouseDown = useCallback((event:any) => {
-    event.stopPropagation();
-  }, []);
-
-  const handleClick = useCallback((event:any) => {
-    event.stopPropagation();
-  }, []);
-
-  const handleTriggerClick = useCallback(() => {
-    setIsOpened(!isOpened);
-  }, [isOpened]);
-
-  const trigger = cloneElement(children as ReactElement<any>, {
-    onClick: handleTriggerClick,
-  });
-
-  // DueDateEdit Properties ---------------------
   const dateField = useRef<any>(null);
   const timeField = useRef<any>(null);
 
@@ -90,8 +59,8 @@ const DueDateEdit = ({
       onUpdate(null);
     }
 
-    setIsOpened(false);
-  }, [defaultValue, onUpdate]);
+    onClose();
+  }, [defaultValue, onUpdate, onClose]);
 
   const handleDatePickerChange = useCallback(
     (date: Date) => {
@@ -134,8 +103,8 @@ const DueDateEdit = ({
       onUpdate(value);
     }
 
-    setIsOpened(false);
-  }, [data.date, data.time, defaultValue, nullableDate, onUpdate, t]);
+    onClose();
+  }, [data.date, data.time, defaultValue, nullableDate, onUpdate, t, onClose]);
 
   const handleFieldChange = useCallback(
     (event: any) => {
@@ -153,7 +122,7 @@ const DueDateEdit = ({
     }
   }, []);
 
-  const contents = (
+  return (
     <>
       <CustomPopupHeader>
         {t("common.editDueDate", {
@@ -199,43 +168,6 @@ const DueDateEdit = ({
       </Popup.Content>
     </>
   );
-
-  return (
-    <Popup
-      basic
-      wide
-      ref={popupRef}
-      trigger={trigger}
-      on="click"
-      open={isOpened}
-      position="bottom left"
-      popperModifiers={[
-        {
-          name: "preventOverflow",
-          enabled: true,
-          options: {
-            altAxis: true,
-            padding: 20,
-          },
-        },
-      ]}
-      className={styles.popupWrapper}
-      onOpen={handleOpen}
-      onClose={handleClose}
-      onMouseDown={handleMouseDown}
-      onClick={handleClick}
-    >
-      <div>
-        {/* <div ref={handleContentRef}> */}
-        <Button
-          icon="close"
-          onClick={handleClose}
-          className={styles.popupCloseButton}
-        />
-        {contents}
-      </div>
-    </Popup>
-  );
 };
 
-export default DueDateEdit;
+export default DueDateEditPopup;

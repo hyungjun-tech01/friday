@@ -6,7 +6,7 @@ import { Progress } from 'semantic-ui-react';
 import { ITask } from "../atoms/atomTask";
 
 //import DroppableTypes from '../../../constants/DroppableTypes';
-import CardModalTaskItem from './CardModalTaskItem';
+import CardModalTaskItem from './CardModalTask/CardModalTaskItem';
 import CardModalTaskAdd from './CardModalTaskAdd';
 
 import styles from '../scss/CardModalTasks.module.scss';

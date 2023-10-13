@@ -1,11 +1,11 @@
 import { useCallback, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, Label, Button } from 'semantic-ui-react';
-//import { usePopup } from '../../../lib/popup';
+import usePopup from '../../lib/hook/use-popup';
 
-import AttachmentItemEditPopup from './AttachmentItemEditPopup';
+import AttachmentEditPopup from './AttachmentEditPopup';
 import classNames from 'classnames';
-import styles from '../scss/AttachmentItem.module.scss';
+import styles from './AttachmentItem.module.scss';
 
 interface IAttachmentItemProps {
   name: string;
@@ -63,7 +63,7 @@ const AttachmentItem = forwardRef(
       [isCover, onCoverSelect, onCoverDeselect]
     );
 
-    //const EditPopup = usePopup(EditStep);
+    const EditPopup = usePopup(AttachmentEditPopup);
 
     // if (!isPersisted) {
     //   return (
@@ -141,7 +141,7 @@ const AttachmentItem = forwardRef(
           )}
         </div>
         {canEdit && (
-          <AttachmentItemEditPopup
+          <EditPopup
             defaultData={{
               name,
             }}
@@ -151,7 +151,7 @@ const AttachmentItem = forwardRef(
             <Button className={classNames(styles.button, styles.target)}>
               <Icon fitted name="pencil" size="small" />
             </Button>
-          </AttachmentItemEditPopup>
+          </EditPopup>
         )}
       </div>
     );
