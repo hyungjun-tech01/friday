@@ -145,7 +145,7 @@ BEGIN
 	   end if;
 
 	  -- if name, desc, due_date = null," " 로 대체해서 입력 : data에  
-	 select COALESCE(i_card_name, ' '), COALESCE(i_description, ' ') , COALESCE(i_due_date, ' '),COALESCE(i_position, ' ')
+	 select COALESCE(i_card_name, ' '), COALESCE(regexp_replace(i_description, '[\n\r]+', ' ', 'g' ), ' ') , COALESCE(i_due_date, ' '),COALESCE(i_position, ' ')
 	    into v_card_name, v_description, v_due_date, v_position;
 		
 	  insert into action(id, card_id, user_id, type, data, created_at, updated_at)
@@ -230,7 +230,7 @@ BEGIN
 			where id = i_card_task_id::bigint;
 		end if;	
 		
-		select COALESCE(i_card_task_name, ' '), COALESCE(i_card_task_is_completed, ' '), COALESCE(i_card_task_position, ' ')
+		select COALESCE(regexp_replace(i_card_task_name, '[\n\r]+', ' ', 'g' ), ' '), COALESCE(i_card_task_is_completed, ' '), COALESCE(i_card_task_position, ' ')
 	    into v_card_task_name, v_card_task_is_completed, v_card_task_position;
 
 	  insert into action(id, card_id, user_id, type, data, created_at, updated_at)
@@ -300,7 +300,7 @@ BEGIN
 			where id = i_card_comment_id::bigint;
 		end if;		
 		
-		select COALESCE(i_card_comment_text, ' ')
+		select COALESCE( regexp_replace(i_card_comment_text, '[\n\r]+', ' ', 'g' ), ' ')
 	    into v_card_comment_text;
 		
 		insert into action(id, card_id, user_id, type, data, created_at, updated_at)
