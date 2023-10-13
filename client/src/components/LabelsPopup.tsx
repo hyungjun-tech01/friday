@@ -5,7 +5,6 @@ import {
   useState,
   useRef,
   ReactElement,
-  cloneElement,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Popup, Input } from 'semantic-ui-react';
@@ -42,37 +41,8 @@ const LabelsPopup = ({
   //onMove,
   onDelete,
 }: ILabelsPopupProps) => {
-  // Popup Control Part ---------------------
   const [t] = useTranslation();
-  const popupRef = useRef<any>(null);
-  const [isOpened, setIsOpened] = useState(false);
 
-  const handleOpen = useCallback(() => {
-    setIsOpened(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setStep(null);
-    setIsOpened(false);
-  }, []);
-
-  const handleMouseDown = useCallback((event: any) => {
-    event.stopPropagation();
-  }, []);
-
-  const handleClick = useCallback((event: any) => {
-    event.stopPropagation();
-  }, []);
-
-  const handleTriggerClick = useCallback(() => {
-    setIsOpened(!isOpened);
-  }, [isOpened]);
-
-  const trigger = cloneElement(children as ReactElement<any>, {
-    onClick: handleTriggerClick,
-  });
-
-  // Step Properties -----------------------
   const [step, setStep] = useState<{
     mode: LabelsPopupChangeMode;
     data?: ILabel;
@@ -157,55 +127,8 @@ const LabelsPopup = ({
     setSelectedLabels(cardLabelIds);
   }, [currentCard]);
 
-  const openStep = useCallback(() => {
-    if (step === null) {
-      return (
-        <>
-          <CustomPopupHeader>
-            {t('common.labels', {
-              context: 'title',
-            })}
-          </CustomPopupHeader>
-          <Popup.Content>
-            <Input
-              fluid
-              ref={searchField}
-              value={search}
-              placeholder={t('common.searchLabels')}
-              icon="search"
-              onChange={handleSearchChange}
-            />
-            {filteredItems.length > 0 && (
-              <div className={styles.items}>
-                {filteredItems.map((item, index) => (
-                  <LabelsPopupItem
-                    key={item.labelId}
-                    id={item.labelId}
-                    index={index}
-                    name={item.labelName}
-                    color={item.color}
-                    //isPersisted={item.isPersisted}
-                    isActive={selectedLabels.includes(item.labelId)}
-                    canEdit={canEdit}
-                    onSelect={() => handleSelect(item.labelId)}
-                    onDeselect={() => handleDeselect(item.labelId)}
-                    onEdit={() => handleEdit(item)}
-                  />
-                ))}
-              </div>
-            )}
-            {canEdit && (
-              <Button
-                fluid
-                content={t('action.createNewLabel')}
-                className={styles.addButton}
-                onClick={handleAddClick}
-              />
-            )}
-          </Popup.Content>
-        </>
-      );
-    } else if (step.mode === 'ADD') {
+  if(step) {
+    if (step.mode === 'ADD') {
       return (
         <LabelsPopupChange
           mode={step.mode}
@@ -224,58 +147,53 @@ const LabelsPopup = ({
         />
       );
     }
-  }, [
-    canEdit,
-    filteredItems,
-    handleAddClick,
-    handleBack,
-    handleCreate,
-    handleDelete,
-    handleDeselect,
-    handleEdit,
-    handleSearchChange,
-    handleSelect,
-    handleUpdate,
-    search,
-    selectedLabels,
-    step,
-    t,
-  ]);
-
-  const contents = openStep();
+  };
 
   return (
-    <Popup
-      basic
-      wide
-      ref={popupRef}
-      trigger={trigger}
-      on="click"
-      open={isOpened}
-      position="bottom left"
-      popperModifiers={[
-        {
-          name: 'preventOverflow',
-          enabled: true,
-          options: {
-            altAxis: true,
-            padding: 20,
-          },
-        },
-      ]}
-      className={styles.popupWrapper}
-      onOpen={handleOpen}
-      onClose={handleClose}
-      onMouseDown={handleMouseDown}
-      onClick={handleClick}
-    >
-      <Button
-        icon="close"
-        onClick={handleClose}
-        className={styles.popupCloseButton}
-      />
-      <div>{contents}</div>
-    </Popup>
+    <>
+      <CustomPopupHeader>
+        {t('common.labels', {
+          context: 'title',
+        })}
+      </CustomPopupHeader>
+      <Popup.Content>
+        <Input
+          fluid
+          ref={searchField}
+          value={search}
+          placeholder={t('common.searchLabels')}
+          icon="search"
+          onChange={handleSearchChange}
+        />
+        {filteredItems.length > 0 && (
+          <div className={styles.items}>
+            {filteredItems.map((item, index) => (
+              <LabelsPopupItem
+                key={item.labelId}
+                id={item.labelId}
+                index={index}
+                name={item.labelName}
+                color={item.color}
+                //isPersisted={item.isPersisted}
+                isActive={selectedLabels.includes(item.labelId)}
+                canEdit={canEdit}
+                onSelect={() => handleSelect(item.labelId)}
+                onDeselect={() => handleDeselect(item.labelId)}
+                onEdit={() => handleEdit(item)}
+              />
+            ))}
+          </div>
+        )}
+        {canEdit && (
+          <Button
+            fluid
+            content={t('action.createNewLabel')}
+            className={styles.addButton}
+            onClick={handleAddClick}
+          />
+        )}
+      </Popup.Content>
+    </>
   );
 };
 

@@ -34,15 +34,14 @@ import CardMembershipPopup from './CardMembershipPopup';
 import NameField from './NameField';
 import User from './User';
 import DueDate from './DueDate';
-import DueDateEdit from './DueDateEdit';
+import DueDateEditPopup from './DueDateEditPopup';
 import Stopwatch from './Stopwatch';
-import StopwatchEdit from './StopwatchEdit';
+import StopwatchEditPopup from './StopwatchEditPopup';
 import Label from './Label';
 import LabelsPopup from './LabelsPopup';
-import Attachments from './Attachment/Attachments';
-import AttachmentAddPopup from './Attachment/AttachmentAddPopup';
+import { Attachments, AttachmentAddPopup} from './Attachment';
 
-import usePopup from '../lib/hook/use-popup';
+import { usePopup } from '../lib/hook';
 import classNames from 'classnames';
 import styles from '../scss/CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../utils/stopwatch';
@@ -62,8 +61,19 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const isGalleryOpened = useRef(false);
 
-  const CardMembership = usePopup(CardMembershipPopup);
+  const CardMembershipEdit = usePopup(CardMembershipPopup);
+  const LabelsEdit = usePopup(LabelsPopup);
+  const DueDateEdit = usePopup(DueDateEditPopup);
+  const StopwatchEdit = usePopup(StopwatchEditPopup);
   const AttachmentAdd = usePopup(AttachmentAddPopup);
+  
+  useEffect(() => {
+    console.log('Card Modal Rendering/card : ', card.memberships);
+    if(card.memberships){
+      const member_ids = card.memberships.map((member) => member.userId);
+      setCardUserIds(member_ids);
+    }
+  }, [card]);
 
   const handleOnCloseCardModel = useCallback(() => {
     updateCard(card);
@@ -527,10 +537,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             console.log('Fail to update stopwatch of card', result.message);
           } else {
             console.log('Succeed to update stopwatch of card', result);
-
+            
             const updatedCard = {
               ...card,
-              stopwatch: newStopwatch,
+              stopwatch: stopwatch ? newStopwatch : null,
             };
             setCard(updatedCard);
           }
@@ -612,13 +622,14 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       response
         .then((result) => {
           console.log('Succeed to update task of card', result);
+          
           const index = card.tasks.findIndex((task) => task.taskId === id);
-
           console.log('found index : ', index);
-          if (index < 0) return;
 
-          let newTask = card.tasks[index];
-          console.log('found task : ', newTask);
+          if (index < 0) return;
+          console.log('found task : ', card.tasks[index]);
+
+          let newTask = { ...card.tasks[index]};
 
           if (data.hasOwnProperty('taskName')) {
             console.log('update task name : ', data.taskName);
@@ -964,10 +975,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
     [card, cookies.UserId, setCard]
   );
 
-  useEffect(() => {
-    console.log('Card Modal Rendering/card : ', card.attachments);
-  }, [card]);
-
   const contentNode = (
     <Grid className={styles.grid}>
       <Grid.Row className={styles.headerPadding}>
@@ -1011,7 +1018,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                       className={styles.attachment}
                     >
                       {canEdit ? (
-                        <CardMembershipPopup
+                        <CardMembershipEdit
                           items={board.users}
                           currentUserIds={cardUserIds}
                           onUserSelect={handleUserAdd}
@@ -1021,7 +1028,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                             userName={user.userName}
                             avatarUrl={user.avatarUrl}
                           />
-                        </CardMembershipPopup>
+                        </CardMembershipEdit>
                       ) : (
                         <User
                           userName={user.userName}
@@ -1031,7 +1038,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                     </span>
                   ))}
                   {canEdit && (
-                    <CardMembershipPopup
+                    <CardMembershipEdit
                       items={board.users}
                       currentUserIds={cardUserIds}
                       onUserSelect={handleUserAdd}
@@ -1050,7 +1057,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                           className={styles.addAttachment}
                         />
                       </button>
-                    </CardMembershipPopup>
+                    </CardMembershipEdit>
                   )}
                 </div>
               )}
@@ -1064,7 +1071,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   {card.labels.map((label) => (
                     <span key={label.labelId} className={styles.attachment}>
                       {canEdit ? (
-                        <LabelsPopup
+                        <LabelsEdit
                           key={label.labelId}
                           items={board.labels}
                           canEdit={canEdit}
@@ -1076,7 +1083,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                           onDelete={handleLabelDelete}
                         >
                           <Label name={label.labelName} color={label.color} />
-                        </LabelsPopup>
+                        </LabelsEdit>
                       ) : (
                         <Label name={label.labelName} color={label.color} />
                       )}
@@ -1243,7 +1250,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           <Grid.Column width={4} className={styles.sidebarPadding}>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('action.addCard')}</span>
-              <CardMembership
+              <CardMembershipEdit
                 items={board.users}
                 currentUserIds={cardUserIds}
                 onUserSelect={handleUserAdd}
@@ -1253,8 +1260,8 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   <Icon name="user outline" className={styles.actionIcon} />
                   {t('common.members')}
                 </Button>
-              </CardMembership>
-              <LabelsPopup
+              </CardMembershipEdit>
+              <LabelsEdit
                 items={board.labels}
                 canEdit={canEdit}
                 onSelect={handleLabelSelect}
@@ -1268,7 +1275,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   <Icon name="bookmark outline" className={styles.actionIcon} />
                   {t('common.labels')}
                 </Button>
-              </LabelsPopup>
+              </LabelsEdit>
               <DueDateEdit
                 defaultValue={card.dueDate ? new Date(card.dueDate) : null}
                 onUpdate={handleDueDateUpdate}

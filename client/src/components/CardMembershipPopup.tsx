@@ -4,7 +4,6 @@ import {
   useMemo,
   useRef,
   useState,
-  ReactElement,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Menu, Popup } from 'semantic-ui-react';
@@ -14,7 +13,6 @@ import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
 import styles from '../scss/CardMembershipPopup.module.scss';
 
 interface ICardMembershipProps {
-  children: ReactElement;
   items: IBoardUser[];
   currentUserIds: string[];
   title?: string;
@@ -23,7 +21,6 @@ interface ICardMembershipProps {
 }
 
 const CardMembershipPopup = ({
-  children,
   items,
   currentUserIds,
   title = 'common.members',
