@@ -16,15 +16,14 @@ import { ICard, atomCurrentCard } from "../atoms/atomCard";
 import CardModal from "./CardModal";
 import {useCookies} from "react-cookie";
 
-
 interface IListProps{
     boardId:string;
 }
+
 function Board({boardId}:IListProps){
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [t] = useTranslation();
     const [showList, setShowList] = useState(false);
-    //const [lists, setLists] = useRecoilState<IList[]>(atomMyList);
     const [currentBoard, setCurrentBoard] = useRecoilState(atomCurrentMyBoard);
     //board id로 리스트를 가지고 올것.
     const lists: IList[]  = useRecoilValue(listsSelector); 
@@ -33,25 +32,14 @@ function Board({boardId}:IListProps){
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
         if(response ) {
             setCurrentBoard({...currentBoard, ...response});
-          // setCurrentBoard({...currentBoard, boardId:id, users:response.users, labels:response.labels});
         }
-      };
-
+    };
 
     //board id가 바뀔때마다 showList 를 변경 
     useEffect(() => {
         getCurrentBoard(boardId);
-         setShowList(true);
+        setShowList(true);
     }, [boardId]);
-
-//    const {isLoading, data } = useQuery<IList[]>(["myBoardLists", boardId], ()=>apiGetLists(boardId),{
-//        onSuccess: data => {
-//            setLists(data);   // use Query 에서 atom에 set 
-//            setShowList(false);
-//        },
-//        enabled : showList
-//      }
-//    );
 
     const [isListAddOpened, setIsListAddOpened] = useState(false);
     const hasEditMembershipforBoard = useCallback(() => {
@@ -63,7 +51,7 @@ function Board({boardId}:IListProps){
     // Card ------------------------
     const currentCard = useRecoilValue<ICard>(atomCurrentCard);
 
-    return(
+    return (
         <div>
             <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`}>
                 <div className={`${styles.lists} ${styles.wrapperFlex}`}>
@@ -93,7 +81,7 @@ function Board({boardId}:IListProps){
             </div>
             {(currentCard.cardId !== "") && <CardModal canEdit={currentBoard.canEdit}/>}
       </div>
-    )
+    );
 }
 
 export default Board;

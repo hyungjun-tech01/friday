@@ -7,7 +7,7 @@ import { useCookies } from 'react-cookie';
 
 import {ICard} from "../atoms/atomCard";
 import {IModifyList, defaultModifyList, IList} from "../atoms/atomsList";
-import Card from "./Card";
+import Card from "./Card/Card";
 import CardAdd from "./CardAdd";
 import {cardsbyListIdSelector, listSelector} from "../atoms/atomsBoard";
 import NameField from "../components/NameField";
@@ -30,6 +30,10 @@ function List({id, position, name, canEdit}:IListProps){
     const [cards, setCards] = useState<ICard[]>();
     const [isCardAddOpened, setIsCardAddOpened] = useState(false);
     const [isCardRequery, setIsCardRequery] = useState(false);
+
+    const onCardDelete = useCallback((id:string) => {
+      console.log("delete card - id : ", id);
+    }, []);
     
     const onQueryCards = async () => {
         setIsCardLoading(true);
@@ -108,7 +112,7 @@ function List({id, position, name, canEdit}:IListProps){
             <div className={`${styles.cardsInnerWrapper} ${styles.cardsInnerWrapperFull}`}>
             <div className={styles.cardsOuterWrapper}>
                 <div className={styles.cards}>
-                    {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} cardId={card.cardId}/>))}
+                    {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} cardId={card.cardId} canEdit={canEdit} onDelete={onCardDelete}/>))}
                     {isCardAddOpened&&<CardAdd listId={id} setIsCardAddOpened={setIsCardAddOpened} isCardRequery={isCardRequery} setIsCardRequery={setIsCardRequery}/>}
                     {!isCardAddOpened&&(
                         <button

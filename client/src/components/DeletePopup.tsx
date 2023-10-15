@@ -19,7 +19,6 @@ const DeletePopup = ({
   onConfirm,
   onBack,
 }: IDeletePopupProps) => {
-  // Popup Control Part ---------------------
   const [t] = useTranslation();
 
   return (

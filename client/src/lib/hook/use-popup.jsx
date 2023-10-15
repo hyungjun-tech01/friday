@@ -1,7 +1,7 @@
 import { ResizeObserver } from '@juggle/resize-observer';
 import { cloneElement, useCallback, useMemo, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import { Button, Popup} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 import styles from './Popup.module.css';
 
 const usePopup = (Step, props) => {
@@ -36,10 +36,12 @@ const usePopup = (Step, props) => {
         (event) => {
           event.stopPropagation();
 
-          const { onClick } = children;
+          if(children) {
+            const { onClick } = children;
 
-          if (onClick) {
-            onClick(event);
+            if (onClick) {
+              onClick(event);
+            }
           }
         },
         [children]
@@ -68,9 +70,9 @@ const usePopup = (Step, props) => {
         resizeObserver.current.observe(element);
       }, []);
 
-      const tigger = cloneElement(children, {
+      const tigger = children ? cloneElement(children, {
         onClick: handleTriggerClick,
-      });
+      }) : null;
 
       return (
         <Popup
@@ -112,11 +114,12 @@ const usePopup = (Step, props) => {
     };
 
     CustomPopup.propTypes = {
-      children: PropTypes.node.isRequired,
+      children: PropTypes.node,
       onClose: PropTypes.func,
     };
 
     CustomPopup.defaultProps = {
+      children: undefined,
       onClose: undefined,
     };
 

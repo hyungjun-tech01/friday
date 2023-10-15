@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useTranslation } from 'react-i18next';
 import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import { apiModifyBoard } from '../api/board';
 import { apiDeleteAttatchment, apiModifyCard, apiUploadAttatchment } from '../api/card';
 import { defaultComment } from '../atoms/atomAction';
@@ -30,7 +30,7 @@ import Activities from './Activities';
 import DescriptionEdit from './DescriptionEdit';
 import CardModalTasks from './CardModalTasks';
 import Markdown from './Markdown';
-import CardMembershipPopup from './CardMembershipPopup';
+import CardMembershipEditPopup from './CardMembershipEditPopup';
 import NameField from './NameField';
 import User from './User';
 import DueDate from './DueDate';
@@ -38,9 +38,10 @@ import DueDateEditPopup from './DueDateEditPopup';
 import Stopwatch from './Stopwatch';
 import StopwatchEditPopup from './StopwatchEditPopup';
 import Label from './Label';
-import LabelsPopup from './LabelsPopup';
+import LabelsEditPopup from './LabelsEditPopup';
 import { Attachments, AttachmentAddPopup} from './Attachment';
 
+import { getDateStringForDB } from '../utils/date';
 import { usePopup } from '../lib/hook';
 import classNames from 'classnames';
 import styles from '../scss/CardModal.module.scss';
@@ -53,7 +54,7 @@ interface ICardModalProps {
 const CardModal = ({ canEdit }: ICardModalProps) => {
   // let wrapperRef = useRef<any>(null);
   const [t] = useTranslation();
-  const [board, setBoard] = useRecoilState<ICurrent>(atomCurrentMyBoard);
+  const board = useRecoilValue<ICurrent>(atomCurrentMyBoard);
   const [card, setCard] = useRecoilState<ICard>(atomCurrentCard);
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
@@ -61,8 +62,8 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const isGalleryOpened = useRef(false);
 
-  const CardMembershipEdit = usePopup(CardMembershipPopup);
-  const LabelsEdit = usePopup(LabelsPopup);
+  const CardMembershipEdit = usePopup(CardMembershipEditPopup);
+  const LabelsEdit = usePopup(LabelsEditPopup);
   const DueDateEdit = usePopup(DueDateEditPopup);
   const StopwatchEdit = usePopup(StopwatchEditPopup);
   const AttachmentAdd = usePopup(AttachmentAddPopup);
@@ -459,28 +460,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Due Date Functions------------------
   const handleDueDateUpdate = useCallback(
     (date: Date | null) => {
-      let date_string = '-1';
-
-      if (date) {
-        const t_M = date.getMonth();
-        const t_d = date.getDate();
-        const t_h = date.getHours();
-        const t_m = date.getMinutes();
-        const t_s = date.getSeconds();
-
-        date_string =
-          date.getFullYear() +
-          '-' +
-          (t_M < 10 ? '0' + t_M : t_M) +
-          '-' +
-          (t_d < 10 ? '0' + t_d : t_d) +
-          ' ' +
-          (t_h < 10 ? '0' + t_h : t_h) +
-          ':' +
-          (t_m < 10 ? '0' + t_m : t_m) +
-          ':' +
-          (t_s < 10 ? '0' + t_s : t_s);
-      }
+      const date_string = getDateStringForDB(date);
 
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
