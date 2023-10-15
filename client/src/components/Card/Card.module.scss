@@ -1,25 +1,25 @@
 /* :global(#app) { */
 .actionsButton {
-  background: none;
-  box-shadow: none;
-  border-radius: 3px;
-  box-sizing: content-box;
-  color: #798d99;
-  display: inline-block;
-  margin: 0;
-  min-height: auto;
-  opacity: 0;
-  outline: none;
-  padding: 4px;
-  position: absolute;
-  right: 2px;
-  top: 2px;
-  transition: background 85ms ease;
-  width: 20px;
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 3px !important;
+  box-sizing: content-box !important;
+  color: #798d99 !important;
+  display: inline-block !important;
+  margin: 0 !important;
+  min-height: auto !important;
+  opacity: 0 !important;
+  outline: none !important;
+  padding: 4px !important;
+  position: absolute !important;
+  right: 2px !important;
+  top: 2px !important;
+  transition: background 85ms ease !important;
+  width: 20px !important;
 
   &:hover {
-    background: #ebeef0;
-    color: #516b7a;
+    background: #ebeef0 !important;
+    color: #516b7a !important;
   }
 }
 
@@ -60,7 +60,7 @@
     border-bottom-color: rgba(9, 30, 66, 0.25);
 
     .target {
-      opacity: 1;
+      opacity: 1 !important;
     }
   }
 }

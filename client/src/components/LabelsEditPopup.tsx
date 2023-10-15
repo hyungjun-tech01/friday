@@ -16,10 +16,9 @@ import LabelsPopupChange from './LabelsPopupChange';
 import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
 import styles from '../scss/LabelsPopup.module.scss';
 
-type LabelsPopupChangeMode = 'ADD' | 'EDIT';
+type LabelsEditPopupChangeMode = 'ADD' | 'EDIT';
 
-interface ILabelsPopupProps {
-  children: ReactElement;
+interface ILabelsEditPopupProps {
   items: ILabel[];
   canEdit: boolean;
   onSelect: (id: string) => void;
@@ -30,8 +29,7 @@ interface ILabelsPopupProps {
   onDelete: (id: string) => void;
 }
 
-const LabelsPopup = ({
-  children,
+const LabelsEditPopup = ({
   items,
   canEdit,
   onSelect,
@@ -40,11 +38,11 @@ const LabelsPopup = ({
   onUpdate,
   //onMove,
   onDelete,
-}: ILabelsPopupProps) => {
+}: ILabelsEditPopupProps) => {
   const [t] = useTranslation();
 
   const [step, setStep] = useState<{
-    mode: LabelsPopupChangeMode;
+    mode: LabelsEditPopupChangeMode;
     data?: ILabel;
   } | null>(null);
 
@@ -197,4 +195,4 @@ const LabelsPopup = ({
   );
 };
 
-export default LabelsPopup;
+export default LabelsEditPopup;

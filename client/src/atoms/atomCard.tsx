@@ -66,12 +66,12 @@ export interface ICreateCard{
     cardName:string;
 }
 
-
 export interface IImage {
     width : number;
     height : number;
     thumbnailsExtension: string;
 }
+
 export interface IModifyCard{
    cardId : string ;     // number 
     userId : string;       // number 
@@ -143,7 +143,6 @@ export const defaultModifyCard:IModifyCard = {
     cardStatusActionType :null,
     cardStatusId : null,
 }
-
 
 // allMmyCards  : 보드에 포함된 리스트에 포함된 모든 카드 
 export const atomMyCards = atom<ICard[]>({

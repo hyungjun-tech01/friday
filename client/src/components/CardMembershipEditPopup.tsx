@@ -10,9 +10,9 @@ import { Input, Menu, Popup } from 'semantic-ui-react';
 import { IBoardUser } from '../atoms/atomsBoard';
 import CardMembershipItem from './CardMembershipItem';
 import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
-import styles from '../scss/CardMembershipPopup.module.scss';
+import styles from '../scss/CardMembershipEditPopup.module.scss';
 
-interface ICardMembershipProps {
+interface ICardMembershipEditProps {
   items: IBoardUser[];
   currentUserIds: string[];
   title?: string;
@@ -20,13 +20,13 @@ interface ICardMembershipProps {
   onUserDeselect: (id: string) => void;
 }
 
-const CardMembershipPopup = ({
+const CardMembershipEditPopup = ({
   items,
   currentUserIds,
   title = 'common.members',
   onUserSelect,
   onUserDeselect,
-}: ICardMembershipProps) => {
+}: ICardMembershipEditProps) => {
   const [t] = useTranslation();
 
   const [search, setSearch] = useState('');
@@ -104,4 +104,4 @@ const CardMembershipPopup = ({
   );
 };
 
-export default CardMembershipPopup;
+export default CardMembershipEditPopup;
