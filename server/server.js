@@ -188,7 +188,7 @@ app.post('/boards', async(req, res)=>{
 // get current board info by board id 
 app.post('/currentBoard', async(req, res)=>{
     const {boardId, userId} = req.body;
-    console.log('currentboard', boardId);
+    //console.log('currentboard', boardId);
     try{
         const result = await pool.query(`
         select b.id as "boardId" , bm.role as "role", 

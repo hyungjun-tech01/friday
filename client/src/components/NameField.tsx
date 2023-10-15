@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState , forwardRef} from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { TextArea } from 'semantic-ui-react';
 import upperFirst from 'lodash/upperFirst';
@@ -11,7 +11,7 @@ interface INameFieldProps {
     onUpdate: (name:string) => void;
   };
 
-const NameField = ({ defaultValue, size, onUpdate }:INameFieldProps) => {
+const NameField = forwardRef(({  defaultValue, size, onUpdate }:INameFieldProps, ref) => {
     const [prevValue, setPrevValue] = useState(defaultValue);
     const [value, setValue] = useState(defaultValue);
     
@@ -52,7 +52,9 @@ const NameField = ({ defaultValue, size, onUpdate }:INameFieldProps) => {
         }
     }, [defaultValue, prevValue, setValue]);
 
+
     return (
+        <div>
         <TextArea
         as={TextareaAutosize}
         value={value}
@@ -63,7 +65,8 @@ const NameField = ({ defaultValue, size, onUpdate }:INameFieldProps) => {
         onChange={handleChange}
         onBlur={handleBlur}
         />
+        </div>
     );
-};
+});
 
 export default NameField;

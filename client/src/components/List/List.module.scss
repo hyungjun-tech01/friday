@@ -128,5 +128,37 @@
       border-radius: 3px;
       overflow: hidden;
     }
+    .button {
+      background: transparent !important;
+      box-shadow: none !important;
+      line-height: 28px !important;
+      margin: 0 !important;
+      min-height: auto !important;
+      opacity: 0;
+      padding: 0 !important;
+      position: absolute !important;
+      right: 2px !important;
+      top: 2px !important;
+      width: 28px !important;
+    
+      &:hover {
+        background: rgba(9, 30, 66, 0.08) !important;
+      }
+    }
+.text {
+  background: transparent;
+  border-radius: 3px;
+  color: #17394d;
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 32px;
+  width: 100%;
+}
+
+.textEditable {
+  cursor: pointer;
+}
+
   /* } */
   
