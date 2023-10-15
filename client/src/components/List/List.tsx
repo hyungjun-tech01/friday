@@ -2,7 +2,7 @@ import {useState, useEffect, useCallback} from "react";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
 import {useTranslation} from "react-i18next";
 import {useRecoilValue, useSetRecoilState} from "recoil";
-import styles from "../scss/List.module.scss";
+import styles from "./List.module.scss";
 import { useCookies } from 'react-cookie';
 
 import {ICard} from "../../atoms/atomCard";
