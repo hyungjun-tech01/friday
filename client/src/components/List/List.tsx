@@ -1,21 +1,17 @@
-import {useState, useEffect, useCallback, useRef} from "react";
-import { ReactComponent as PlusMathIcon } from '../../image/plus-math-icon.svg';
+import {useState, useEffect, useCallback} from "react";
+import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
 import {useTranslation} from "react-i18next";
 import {useRecoilValue, useSetRecoilState} from "recoil";
-import styles from "./List.module.scss";
+import styles from "../scss/List.module.scss";
 import { useCookies } from 'react-cookie';
-import classNames from 'classnames';
-import { Button,  Icon,  } from 'semantic-ui-react';
 
 import {ICard} from "../../atoms/atomCard";
 import {IModifyList, defaultModifyList, IList} from "../../atoms/atomsList";
-import Card from "../Card";
+import Card from "../Card/Card";
 import CardAdd from "../CardAdd";
 import {cardsbyListIdSelector, listSelector} from "../../atoms/atomsBoard";
-import NameEdit from "./NameEdit";
+import NameField from "../../components/NameField";
 import {apiModifyList} from "../../api/list";
-import usePopup from '../../lib/hook/use-popup';
-import ActionsStep from './ActionsStep';
 
 interface IListProps{
     id:string;
@@ -34,8 +30,6 @@ function List({id, position, name, canEdit}:IListProps){
     const [cards, setCards] = useState<ICard[]>();
     const [isCardAddOpened, setIsCardAddOpened] = useState(false);
     const [isCardRequery, setIsCardRequery] = useState(false);
-    const nameEdit = useRef<any>(null);
-    const ActionsPopup = usePopup(ActionsStep);
     
     const onQueryCards = async () => {
         setIsCardLoading(true);
@@ -94,45 +88,18 @@ function List({id, position, name, canEdit}:IListProps){
         },
         [list, cookies, setList]
       );
-    const onDelete = ()=>{
-
-    }
-    const handleCardAdd = ()=>{
-
-    }
-    const handleNameEdit = useCallback(() => {
-      console.log('handleNameEdit');
-      if (nameEdit.current) {
-        nameEdit.current.open();
-      }
-    }, []);
-
-    const handleHeaderClick = useCallback(() => {
-      if (canEdit) {
-        nameEdit.current.open();
-      }
-    }, [canEdit]);
+    
     return(
         <div className={styles.innerWrapper}>
         <div className={styles.outerWrapper}>
             <div className={styles.header}>
                 {canEdit  ? (
-                <div className={styles.headerName} onClick={handleHeaderClick}>
-                    <NameEdit ref={nameEdit} 
+                <div className={styles.headerName}>
+                    <NameField
                         defaultValue={list.listName}
                         size='Small'
-                        onUpdate={handleNameUpdate} >
-                          <div className={styles.headerName}>{list.listName}</div>
-                    </NameEdit>
-                    <ActionsPopup
-                        onNameEdit={handleNameEdit}
-                        onCardAdd={handleCardAdd}
-                        onDelete={onDelete}
-                      >
-                      <Button className={classNames(styles.button, styles.target)}>
-                        <Icon fitted name="pencil" size="small" />
-                      </Button>
-                    </ActionsPopup>                      
+                        onUpdate={handleNameUpdate}
+                    />
                 </div>
               ) : (
                 <div className={styles.headerName}>{list.listName}</div>
