@@ -116,6 +116,8 @@ const core = {
       editStopwatch: '타이머 편집',
       editTitle: '제목 편집',
       leaveButtonContent: '보드에서 나가기',
+      listNameEdit: '리스트 이름 편집',
+      listDelete :'리스트 삭제',
       move: '이동',
       moveCard: 'Card 이동',
       pause: '일시정지',

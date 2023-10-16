@@ -212,6 +212,8 @@ const core = {
       import: 'Import',
       leaveBoard: 'Leave board',
       leaveProject: 'Leave project',
+      listNameEdit: 'List Name Edit',
+      listDelete :'List Delete',      
       logOut_title: 'Log Out',
       makeCover_title: 'Make Cover',
       move: 'Move',

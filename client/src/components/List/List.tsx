@@ -1,17 +1,22 @@
-import {useState, useEffect, useCallback} from "react";
+import {useState, useEffect, useCallback, useRef} from "react";
 import { ReactComponent as PlusMathIcon } from '../../image/plus-math-icon.svg';
 import {useTranslation} from "react-i18next";
 import {useRecoilValue, useSetRecoilState} from "recoil";
-import styles from "./List.module.scss";
 import { useCookies } from 'react-cookie';
+import {Button, Icon} from "semantic-ui-react";
+import classNames from 'classnames';
 
+import styles from "./List.module.scss";
 import {ICard} from "../../atoms/atomCard";
 import {IModifyList, defaultModifyList, IList} from "../../atoms/atomsList";
 import Card from "../Card/Card";
 import CardAdd from "../CardAdd";
 import {cardsbyListIdSelector, listSelector} from "../../atoms/atomsBoard";
-import NameField from "../../components/NameField";
+import NameEdit from "./NameEdit";
 import {apiModifyList} from "../../api/list";
+import { usePopup } from '../../lib/hook';
+import ActionsStep from './ActionsStep';
+
 
 interface IListProps{
     id:string;
@@ -30,6 +35,8 @@ function List({id, position, name, canEdit}:IListProps){
     const [cards, setCards] = useState<ICard[]>();
     const [isCardAddOpened, setIsCardAddOpened] = useState(false);
     const [isCardRequery, setIsCardRequery] = useState(false);
+    const nameEdit = useRef<any>(null);
+    const ActionsPopup = usePopup(ActionsStep);
     
     const onQueryCards = async () => {
         setIsCardLoading(true);
@@ -59,6 +66,13 @@ function List({id, position, name, canEdit}:IListProps){
     const onCardDelete = useCallback((id:string) => {
       console.log("delete card - id : ", id);
     }, []);
+
+    const handleHeaderClick = useCallback(() => {
+      if (canEdit) {
+        if(nameEdit.current)
+          nameEdit.current.open();
+      }
+    }, [ canEdit]);
 
      const handleNameUpdate = useCallback(
         (data: string) => {
@@ -91,18 +105,38 @@ function List({id, position, name, canEdit}:IListProps){
         },
         [list, cookies, setList]
       );
-    
+      const handleNameEdit = useCallback(() => {
+        nameEdit.current.open();
+      }, []);
+
+      const handleListDelete = useCallback(() => {
+       console.log('delete');
+      }, []);
+  
+      const handleCardAdd = useCallback(() => {
+        console.log('card add');
+      }, []);    
     return(
         <div className={styles.innerWrapper}>
         <div className={styles.outerWrapper}>
-            <div className={styles.header}>
+            <div className={styles.header} >
                 {canEdit  ? (
-                <div className={styles.headerName}>
-                    <NameField
+                <div className={styles.headerName} onClick={handleHeaderClick}>
+                    <NameEdit  ref={nameEdit} 
                         defaultValue={list.listName}
                         size='Small'
-                        onUpdate={handleNameUpdate}
-                    />
+                        onUpdate={handleNameUpdate}>
+                      <div className={styles.headerName}>{name}</div>                          
+                    </NameEdit>
+                    <ActionsPopup
+                      onNameEdit={handleNameEdit}
+                      onCardAdd={handleCardAdd}
+                      onDelete={handleListDelete}
+                    >
+                    <Button className={classNames(styles.headerButton, styles.target)}>
+                      <Icon fitted name="pencil" size="small" />
+                    </Button>
+                  </ActionsPopup>
                 </div>
               ) : (
                 <div className={styles.headerName}>{list.listName}</div>

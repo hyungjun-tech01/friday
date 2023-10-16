@@ -25,7 +25,11 @@ function ActionsStep({ onNameEdit, onCardAdd, onDelete, onClose }:IActionsStep){
       onNameEdit();
       onClose();
     }, [onNameEdit, onClose]);
-  
+    const handleAddAnotherCard = useCallback(() => {
+      onCardAdd();
+      onClose();
+    }, [onCardAdd, onClose]);
+ 
     const handleDeleteClick = useCallback(() => {
       setStep(StepTypes.DELETE);
     }, [setStep]);
@@ -56,12 +60,17 @@ function ActionsStep({ onNameEdit, onCardAdd, onDelete, onClose }:IActionsStep){
         <Popup.Content>
           <Menu secondary vertical className={styles.menu}>
             <Menu.Item className={styles.menuItem} onClick={handleEditNameClick}>
-              {t('action.editDescription', {
+              {t('action.listNameEdit', {
                 context: 'title',
               })}
             </Menu.Item>
+            <Menu.Item className={styles.menuItem} onClick={handleAddAnotherCard}>
+              {t('action.addAnotherCard', {
+                context: 'title',
+              })}
+            </Menu.Item>            
             <Menu.Item className={styles.menuItem} onClick={handleDeleteClick}>
-              {t('action.deleteTask', {
+              {t('action.listDelete', {
                 context: 'title',
               })}
             </Menu.Item>
