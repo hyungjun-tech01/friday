@@ -1,5 +1,5 @@
 import {useState, useEffect, useCallback} from "react";
-import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
+import { ReactComponent as PlusMathIcon } from '../../image/plus-math-icon.svg';
 import {useTranslation} from "react-i18next";
 import {useRecoilValue, useSetRecoilState} from "recoil";
 import styles from "./List.module.scss";
@@ -56,6 +56,9 @@ function List({id, position, name, canEdit}:IListProps){
         console.log('addcard');
         setIsCardAddOpened(true);
      };
+    const onCardDelete = useCallback((id:string) => {
+      console.log("delete card - id : ", id);
+    }, []);
 
      const handleNameUpdate = useCallback(
         (data: string) => {
@@ -108,7 +111,7 @@ function List({id, position, name, canEdit}:IListProps){
             <div className={`${styles.cardsInnerWrapper} ${styles.cardsInnerWrapperFull}`}>
             <div className={styles.cardsOuterWrapper}>
                 <div className={styles.cards}>
-                    {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} cardId={card.cardId}/>))}
+                    {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} cardId={card.cardId} canEdit={canEdit} onDelete={onCardDelete}/>))}
                     {isCardAddOpened&&<CardAdd listId={id} setIsCardAddOpened={setIsCardAddOpened} isCardRequery={isCardRequery} setIsCardRequery={setIsCardRequery}/>}
                     {!isCardAddOpened&&(
                         <button
