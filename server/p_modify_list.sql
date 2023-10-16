@@ -43,7 +43,7 @@ BEGIN
             where id = i_list_id::bigint;
         elsif(i_list_action_type = 'DELETE')  then
             delete from card 
-            where list_id = i_list_id::biging;
+            where list_id = i_list_id::bigint;
             delete from list 
             where id = i_list_id::bigint;
         end if;

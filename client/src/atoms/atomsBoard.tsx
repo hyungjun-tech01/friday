@@ -153,6 +153,20 @@ export const listSelector = selectorFamily({
     }
 });
 
+export const listDeletor = selectorFamily({
+    key:"listDeletor",
+    get: (listId) => ({ get }) => {
+        const board = get(atomCurrentMyBoard);
+        return board.lists.filter((list: any) => list.listId === listId)[0];
+    },
+    set: (listId) => ({set, get}, newValue)=>{
+        const board = get(atomCurrentMyBoard);
+        const deleteddLists = board.lists.filter( (list) => list.listId !== listId);
+        const newAtomCurrentMyBoard = {...board,  lists: deleteddLists,};
+
+        return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+    }
+});
 
 // 특정 listId  가진 Cards 를 selecting 
 export const cardsbyListIdSelector = selector({

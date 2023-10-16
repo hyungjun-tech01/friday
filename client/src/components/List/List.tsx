@@ -11,7 +11,7 @@ import {ICard} from "../../atoms/atomCard";
 import {IModifyList, defaultModifyList, IList} from "../../atoms/atomsList";
 import Card from "../Card/Card";
 import CardAdd from "../CardAdd";
-import {cardsbyListIdSelector, listSelector} from "../../atoms/atomsBoard";
+import {cardsbyListIdSelector, listSelector, listDeletor} from "../../atoms/atomsBoard";
 import NameEdit from "./NameEdit";
 import {apiModifyList} from "../../api/list";
 import { usePopup } from '../../lib/hook';
@@ -27,6 +27,7 @@ interface IListProps{
 function List({id, position, name, canEdit}:IListProps){
     const list = useRecoilValue(listSelector(id));
     const setList = useSetRecoilState(listSelector(id));
+    const deleteList = useSetRecoilState(listDeletor(id));
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
     const selectCards = useRecoilValue(cardsbyListIdSelector); // 호출 가능한 함수를 가져옴
@@ -76,7 +77,7 @@ function List({id, position, name, canEdit}:IListProps){
 
      const handleNameUpdate = useCallback(
         (data: string) => {
-          console.log('Udate name of list : ', data);
+          console.log('Update name of list : ', data);
           const modifiedList: IModifyList = {
             ...defaultModifyList,
             listId:list.listId,
@@ -109,12 +110,34 @@ function List({id, position, name, canEdit}:IListProps){
         nameEdit.current.open();
       }, []);
 
-      const handleListDelete = useCallback(() => {
+      const handleListDelete = useCallback(
+        (data: string) => {
+          console.log('delete list : ', data);
+          const modifiedList: IModifyList = {
+            ...defaultModifyList,
+            listId:list.listId,
+            userId: cookies.UserId,
+            listActionType: 'DELETE',
+          };
+          const response = apiModifyList(modifiedList);
+          response
+            .then((result) => {
+              if (result.message) {
+                console.log('Fail to delete list', result.message);
+              } else {
+                console.log('Succeed to delete list', result);
+                deleteList(list);
+              }
+            })
+            .catch((message) => {
+              console.log('Fail to update name of card', message);
+            });  
        console.log('delete');
-      }, []);
+      }, [list, cookies, deleteList]);
   
       const handleCardAdd = useCallback(() => {
         console.log('card add');
+        handleAddCardClick();
       }, []);    
     return(
         <div className={styles.innerWrapper}>

@@ -41,9 +41,9 @@ function ActionsStep({ onNameEdit, onCardAdd, onDelete, onClose }:IActionsStep){
     if (step === StepTypes.DELETE) {
       return (
         <DeletePopup
-          title="common.deleteTask"
-          content="common.areYouSureYouWantToDeleteThisTask"
-          buttonContent="action.deleteTask"
+          title="common.listDelete"
+          content="common.areYouSureYouWantToDeleteThisList"
+          buttonContent="action.listDelete"
           onConfirm={onDelete}
           onBack={handleBack}
         />

@@ -66,6 +66,7 @@ const core = {
       leaveBoardTitle:'보드탈퇴',
       leaveBoardContent : '보드에서 나가겠습니까?', 
       listAction:'리스트 편집',
+      listDelete:'리스트 삭제',
       Login: '로그인',
       members: '팀원',
       minutes: '분',
