@@ -4,7 +4,6 @@ import {
   useMemo,
   useState,
   useRef,
-  ReactElement,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Popup, Input } from 'semantic-ui-react';
@@ -19,25 +18,29 @@ import styles from '../scss/LabelsPopup.module.scss';
 type LabelsEditPopupChangeMode = 'ADD' | 'EDIT';
 
 interface ILabelsEditPopupProps {
-  items: ILabel[];
-  canEdit: boolean;
-  onSelect: (id: string) => void;
-  onDeselect: (id: string) => void;
-  onCreate: (data: { name: string | null; color: string }) => void;
-  onUpdate: (data: { id: string; name?: string; color?: string }) => void;
-  // onMove: () => void;
-  onDelete: (id: string) => void;
+  items: ILabel[],
+  canEdit: boolean,
+  currentIds: string[],
+  onSelect: (id: string) => void,
+  onDeselect: (id: string) => void,
+  onCreate: (data: { name: string | null; color: string }) => void,
+  onUpdate: (data: { id: string; name?: string; color?: string }) => void,
+  // onMove: () => void,
+  onDelete: (id: string) => void,
+  onBack?: () => void,
 }
 
 const LabelsEditPopup = ({
   items,
   canEdit,
+  currentIds,
   onSelect,
   onDeselect,
   onCreate,
   onUpdate,
   //onMove,
   onDelete,
+  onBack,
 }: ILabelsEditPopupProps) => {
   const [t] = useTranslation();
 
@@ -59,8 +62,7 @@ const LabelsEditPopup = ({
   }, []);
 
   // Labels Properties ---------------------
-  const currentCard = useRecoilValue<ICard>(atomCurrentCard);
-  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  // const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [search, setSearch] = useState('');
   const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
   const filteredItems = useMemo(
@@ -121,9 +123,7 @@ const LabelsEditPopup = ({
         preventScroll: true,
       });
     }
-    const cardLabelIds = currentCard.labels.map((label) => label.labelId);
-    setSelectedLabels(cardLabelIds);
-  }, [currentCard]);
+  }, []);
 
   if(step) {
     if (step.mode === 'ADD') {
@@ -149,7 +149,7 @@ const LabelsEditPopup = ({
 
   return (
     <>
-      <CustomPopupHeader>
+      <CustomPopupHeader onBack={onBack}>
         {t('common.labels', {
           context: 'title',
         })}
@@ -173,7 +173,7 @@ const LabelsEditPopup = ({
                 name={item.labelName}
                 color={item.color}
                 //isPersisted={item.isPersisted}
-                isActive={selectedLabels.includes(item.labelId)}
+                isActive={currentIds.includes(item.labelId)}
                 canEdit={canEdit}
                 onSelect={() => handleSelect(item.labelId)}
                 onDeselect={() => handleDeselect(item.labelId)}

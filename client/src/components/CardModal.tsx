@@ -57,6 +57,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   const board = useRecoilValue<ICurrent>(atomCurrentMyBoard);
   const [card, setCard] = useRecoilState<ICard>(atomCurrentCard);
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
+  const [selectedLabelIds, setSeletedLabelIds] = useState<string[]>([]);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
   const updateCard = useSetRecoilState(cardSelectorCardId(card.cardId));
 
@@ -73,6 +74,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
     if(card.memberships){
       const member_ids = card.memberships.map((member) => member.userId);
       setCardUserIds(member_ids);
+    };
+    if(card.labels){
+      const label_ids = card.labels.map((label) => label.labelId);
+      setSeletedLabelIds(label_ids);
     }
   }, [card]);
 
@@ -1055,6 +1060,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                           key={label.labelId}
                           items={board.labels}
                           canEdit={canEdit}
+                          currentIds={selectedLabelIds}
                           onSelect={handleLabelSelect}
                           onDeselect={handleLabelUnselect}
                           onCreate={handleLabelCreate}

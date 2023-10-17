@@ -18,6 +18,7 @@ interface ICardMembershipEditProps {
   title?: string;
   onUserSelect: (id: string) => void;
   onUserDeselect: (id: string) => void;
+  onBack?: () => void;
 }
 
 const CardMembershipEditPopup = ({
@@ -26,6 +27,7 @@ const CardMembershipEditPopup = ({
   title = 'common.members',
   onUserSelect,
   onUserDeselect,
+  onBack,
 }: ICardMembershipEditProps) => {
   const [t] = useTranslation();
 
@@ -71,7 +73,7 @@ const CardMembershipEditPopup = ({
 
   return (
     <>
-      <CustomPopupHeader>
+      <CustomPopupHeader onBack={onBack}>
         {t(title, {
           context: 'title',
         })}

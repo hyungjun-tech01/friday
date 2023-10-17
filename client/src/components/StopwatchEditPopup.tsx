@@ -31,15 +31,17 @@ const createData = (stopwatch: IStopwatch | null) => {
 };
 
 interface IStopwatchEditProps {
-  defaultValue: IStopwatch | null;
-  onUpdate: (data: IStopwatch | null) => void;
-  onClose: () => void;
+  defaultValue: IStopwatch | null,
+  onUpdate: (data: IStopwatch | null) => void,
+  onClose?: () => void,
+  onBack?: () => void,
 };
 
 const StopwatchEdit = ({
   defaultValue,
   onUpdate,
   onClose,
+  onBack,
 }: IStopwatchEditProps) => {
   const [t] = useTranslation();
   const [data, setData] = useState(() => createData(defaultValue));
@@ -51,8 +53,9 @@ const StopwatchEdit = ({
 
   const handleStartClick = useCallback(() => {
     onUpdate(startStopwatch(defaultValue));
-    onClose();
-  }, [defaultValue, onUpdate, onClose]);
+    if(onClose) onClose();
+    else if(onBack) onBack();
+  }, [defaultValue, onUpdate, onClose, onBack]);
 
   const handleStopClick = useCallback(() => {
     onUpdate(stopStopwatch(defaultValue));
@@ -62,8 +65,9 @@ const StopwatchEdit = ({
     if (defaultValue) {
       onUpdate(null);
     }
-    onClose();
-  }, [defaultValue, onUpdate, onClose]);
+    if(onClose) onClose();
+    else if(onBack) onBack();
+  }, [defaultValue, onUpdate, onClose, onBack]);
 
   const handleToggleEditingClick = useCallback(() => {
     setData(createData(defaultValue));
@@ -106,8 +110,9 @@ const StopwatchEdit = ({
     } else {
       onUpdate(createStopwatch(parts));
     }
-    onClose();
-  }, [defaultValue, onUpdate, data, onClose]);
+    if(onClose) onClose();
+    else if(onBack) onBack();
+  }, [defaultValue, onUpdate, data, onClose, onBack]);
 
   useEffect(() => {
     if (isEditing) {
@@ -117,7 +122,7 @@ const StopwatchEdit = ({
 
   return (
     <>
-      <CustomPopupHeader>
+      <CustomPopupHeader onBack={onBack}>
         {t('common.editStopwatch', {
           context: 'title',
         })}

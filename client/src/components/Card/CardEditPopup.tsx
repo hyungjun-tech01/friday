@@ -1,11 +1,10 @@
 // import pick from 'lodash/pick';
-import { useCallback, useState, useEffect } from 'react';
+import { ReactNode, useCallback, useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useRecoilValue } from 'recoil';
 import { useTranslation } from 'react-i18next';
 import { Menu, Popup } from 'semantic-ui-react';
 import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';
-import { usePopup } from '../../lib/hook';
 import CardMembershipEditPopup from '../CardMembershipEditPopup';
 import LabelsEditPopup from '../LabelsEditPopup';
 import DueDateEditPopup from '../DueDateEditPopup';
@@ -37,6 +36,7 @@ const StepTypes = {
 };
 
 interface ICardEditPopupProps {
+  children: ReactNode;
   card: ICard;
   setCard: (data: ICard) => void;
   onNameEdit: () => void;
@@ -45,6 +45,7 @@ interface ICardEditPopupProps {
 }
 
 const CardEditPopup = ({
+  children,
   card,
   setCard,
   onNameEdit,
@@ -57,12 +58,6 @@ const CardEditPopup = ({
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
   const [cardLabelsIds, setCardLabelsIds] = useState<string[]>([]);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
-
-  const CardMembershipEdit = usePopup(CardMembershipEditPopup);
-  const LabelsEdit = usePopup(LabelsEditPopup);
-  const DueDateEdit = usePopup(DueDateEditPopup);
-  const StopwatchEdit = usePopup(StopwatchEditPopup);
-  const DeleteEdit = usePopup(DeletePopup);
 
   const handleBack = useCallback(() => {
     setStep(null);
@@ -276,7 +271,7 @@ const CardEditPopup = ({
       .catch((message) => {
         console.log('Fail to update stopwatch of card', message);
       });
-  }, []);
+  }, [card, cookies.UserId, setCard]);
 
   //------------------Label Functions------------------
   const handleLabelSelect = useCallback(
@@ -494,21 +489,21 @@ const CardEditPopup = ({
   if (step) {
     switch (step) {
       case StepTypes.USERS:
+        console.log("CardEditPopup - USERS Step", step);
         return (
-          <CardMembershipEdit
+          <CardMembershipEditPopup
             items={board.users}
             currentUserIds={cardUserIds}
             onUserSelect={handleUserAdd}
             onUserDeselect={handleUserRemove}
             onBack={handleBack}
-          >
-            {}
-          </CardMembershipEdit>
+          />
         );
       case StepTypes.LABELS:
         return (
-          <LabelsEdit
+          <LabelsEditPopup
             items={board.labels}
+            canEdit={true}
             currentIds={cardLabelsIds}
             onSelect={handleLabelSelect}
             onDeselect={handleLabelUnselect}
@@ -517,25 +512,23 @@ const CardEditPopup = ({
             //onMove={onLabelMove}
             onDelete={handleLabelDelete}
             onBack={handleBack}
-          >
-            {}
-          </LabelsEdit>
+          />
         );
       case StepTypes.EDIT_DUE_DATE:
         return (
-          <DueDateEdit
-            defaultValue={card.dueDate}
+          <DueDateEditPopup
+            defaultValue={card.dueDate ? new Date(card.dueDate) : null}
             onUpdate={handleDueDateUpdate}
             onBack={handleBack}
-          >{}</DueDateEdit>
+          />
         );
       case StepTypes.EDIT_STOPWATCH:
         return (
-          <StopwatchEdit
+          <StopwatchEditPopup
             defaultValue={card.stopwatch}
             onUpdate={handleStopwatchUpdate}
             onBack={handleBack}
-          >{}</StopwatchEdit>
+          />
         );
       // case StepTypes.MOVE:
       //   return (
@@ -551,15 +544,14 @@ const CardEditPopup = ({
       //   );
       case StepTypes.DELETE:
         return (
-          <DeleteEdit
+          <DeletePopup
             title="common.deleteCard"
             content="common.areYouSureYouWantToDeleteThisCard"
             buttonContent="action.deleteCard"
             onConfirm={onDelete}
             onBack={handleBack}
-          >{}</DeleteEdit>
+          />
         );
-      default:
     }
   }
 

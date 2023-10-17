@@ -12,15 +12,17 @@ import styles from "../scss/DueDateEditPopup.module.scss";
 import CustomPopupHeader from "../lib/ui/CustomPopupHeader";
 
 interface IDueDateEidtProps {
-  defaultValue: Date | null;
-  onUpdate: (date: Date | null) => void;
-  onClose: () => void;
+  defaultValue: Date | null,
+  onUpdate: (date: Date | null) => void,
+  onClose?: () => void,
+  onBack?: () => void,
 }
 
 const DueDateEditPopup = ({
   defaultValue,
   onUpdate,
   onClose,
+  onBack,
 }: IDueDateEidtProps) => {
   const [t] = useTranslation();
   const dateField = useRef<any>(null);
@@ -59,8 +61,9 @@ const DueDateEditPopup = ({
       onUpdate(null);
     }
 
-    onClose();
-  }, [defaultValue, onUpdate, onClose]);
+    if(onClose) onClose();
+    else if(onBack) onBack();
+  }, [defaultValue, onUpdate, onClose, onBack]);
 
   const handleDatePickerChange = useCallback(
     (date: Date) => {
@@ -103,8 +106,9 @@ const DueDateEditPopup = ({
       onUpdate(value);
     }
 
-    onClose();
-  }, [data.date, data.time, defaultValue, nullableDate, onUpdate, t, onClose]);
+    if(onClose) onClose();
+    else if(onBack) onBack();
+  }, [data.date, data.time, defaultValue, nullableDate, onUpdate, t, onClose, onBack]);
 
   const handleFieldChange = useCallback(
     (event: any) => {
@@ -124,7 +128,7 @@ const DueDateEditPopup = ({
 
   return (
     <>
-      <CustomPopupHeader>
+      <CustomPopupHeader onBack={onBack}>
         {t("common.editDueDate", {
           context: "title",
         })}

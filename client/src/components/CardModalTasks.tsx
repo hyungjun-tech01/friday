@@ -78,7 +78,7 @@ const CardModalTasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }
                 isCompleted={item.isCompleted}
                 //isPersisted={item.isPersisted}
                 canEdit={canEdit}
-                onUpdate={(data) => handleUpdate(item.taskId, data)}
+                onUpdate={(data:any) => handleUpdate(item.taskId, data)}
                 onDelete={() => handleDelete(item.taskId)}
               />
             ))}
