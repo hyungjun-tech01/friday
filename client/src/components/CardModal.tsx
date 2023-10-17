@@ -70,7 +70,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   const AttachmentAdd = usePopup(AttachmentAddPopup);
   
   useEffect(() => {
-    console.log('Card Modal Rendering/card : ', card.memberships);
+    console.log('Card Modal Rendering/ Attachment : ', card.attachments);
     if(card.memberships){
       const member_ids = card.memberships.map((member) => member.userId);
       setCardUserIds(member_ids);
@@ -1250,6 +1250,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               <LabelsEdit
                 items={board.labels}
                 canEdit={canEdit}
+                currentIds={selectedLabelIds}
                 onSelect={handleLabelSelect}
                 onDeselect={handleLabelUnselect}
                 onCreate={handleLabelCreate}
