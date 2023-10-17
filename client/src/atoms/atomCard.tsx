@@ -59,7 +59,7 @@ export const defaultCard:ICard = {
     stopwatch:{total:0,startedAt:null }, memberships:[], attachments:[], 
     tasks:[], comments:[],
 }
-
+    
 export interface ICreateCard{
     listId:string;
     userId:string;

@@ -139,7 +139,7 @@ BEGIN
 		delete from card_label t where t.card_id = i_card_id::bigint;
 		delete from card_membership t where t.card_id = i_card_id::bigint;
 		delete from comment  t where t.card_id = i_card_id::bigint;
-		delete from attachement  t where t.card_id =i_card_id::bigint;
+		delete from attachment  t where t.card_id =i_card_id::bigint;
 		delete from task t where t.card_id =i_card_id::bigint;
 		delete from card t  where t.card_id =i_card_id::bigint;
 	   end if;
