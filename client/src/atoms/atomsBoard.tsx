@@ -77,6 +77,7 @@ export interface ICurrent{
     canEdit : boolean;
     role : string;
     users : IBoardUser[];
+    usersPool : IBoardUser[];
     labels : ILabel[];
     lists : IList[];
     cards : ICard[];
@@ -99,6 +100,7 @@ export const defaultCurrentMyBoard:ICurrent = {
     canEdit:false,
     role : "",
     users:[],
+    usersPool:[],
     labels : [],
     lists: [],
     cards:[],

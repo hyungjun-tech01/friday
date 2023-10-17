@@ -2,7 +2,7 @@ import {useRef, useMemo, useEffect, useState} from "react";
 import { useTranslation } from 'react-i18next';
 import styles from '../scss//BoardMemberAdd.module.scss';
 import {IBoardUser} from "../atoms/atomsBoard";
-import {atomAllUser} from "../atoms/atomsUser";
+import {atomCurrentMyBoard} from "../atoms/atomsBoard";
 import {Input} from "semantic-ui-react";
 import UserItem from "./UserItem";
 import {useRecoilValue} from "recoil";
@@ -16,10 +16,10 @@ interface IBoardmemberAddProps{
     setBoardMemeberPermissionUserId : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:boolean, role:string, positionX:number, positionY:number}) =>void;
 }
 function BoardMemeberAdd({members, canEdit,setOnAddPopup, setBoardMemeberPermissionUserId}:IBoardmemberAddProps){
-    const allUsers = useRecoilValue(atomAllUser);
+    const currentBoard = useRecoilValue(atomCurrentMyBoard);
     const [t] = useTranslation();
     let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
-    const users = members !== undefined ? allUsers:null;
+    const users = members !== undefined ? currentBoard.usersPool:null;
     const [search, handleSearchChange] = useState('');
     const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
     const searchField = useRef(null);
@@ -75,7 +75,7 @@ function BoardMemeberAdd({members, canEdit,setOnAddPopup, setBoardMemeberPermiss
             {filteredUsers&&(
               <div className={styles.users}>
                 {filteredUsers.map((user)=>(
-                  <UserItem key={user.userId} userId={user.userId} userName={user.userName} avatarUrl={user.avatar} canEdit={canEdit} onSelect={() => handleUserSelect(user.userId, canEdit)}/>
+                  <UserItem key={user.userId} userId={user.userId} userName={user.userName} avatarUrl={user.avatarUrl} canEdit={canEdit} onSelect={() => handleUserSelect(user.userId, canEdit)}/>
                 ))}
               </div>
             )}

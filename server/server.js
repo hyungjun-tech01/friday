@@ -223,6 +223,21 @@ app.post('/currentBoard', async(req, res)=>{
          if( users.rows.length > 0 ) {
                 currentBoard.users = users.rows;
          }
+         const usersPool = await pool.query(`
+            select t1.id as "userId", 
+                t1.name as "userName",
+                t1.avatar as "avatarUrl",
+                t1.email as "userEmail",
+                (select role from board_membership t where t.user_id = t1.id and t.board_id = $1) as "role",
+                (select case when role = 'editor' then true 
+                             when role = 'viewer' then false 
+                        else false
+                        end 
+                    from board_membership t where t.user_id = t1.id and t.board_id = $1) as "canEdit"
+            from user_account t1`, [boardId]);
+         if( usersPool.rows.length > 0 ) {
+                currentBoard.usersPool = usersPool.rows;
+         }
         const labels = await pool.query(`
             select id as "labelId",
             name as "labelName",
