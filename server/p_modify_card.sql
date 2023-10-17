@@ -141,7 +141,7 @@ BEGIN
 		delete from comment  t where t.card_id = i_card_id::bigint;
 		delete from attachment  t where t.card_id =i_card_id::bigint;
 		delete from task t where t.card_id =i_card_id::bigint;
-		delete from card t  where t.card_id =i_card_id::bigint;
+		delete from card t  where t.id =i_card_id::bigint;
 	   end if;
 
 	  -- if name, desc, due_date = null," " 로 대체해서 입력 : data에  
