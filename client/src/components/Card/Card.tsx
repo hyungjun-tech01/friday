@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { Link } from 'react-router-dom';
 import { Button, Icon } from 'semantic-ui-react';
-import { cardSelectorCardId } from '../../atoms/atomsBoard';
+import { cardDeleter, cardSelectorCardId } from '../../atoms/atomsBoard';
 import { atomCurrentCard, defaultModifyCard, ICard, IModifyCard } from '../../atoms/atomCard';
 import NameEdit from '../NameEdit';
 import Label from '../Label';
@@ -21,11 +21,11 @@ import styles from './Card.module.scss';
 interface ICardProps {
   cardId: string,
   canEdit: boolean,
-  onDelete: (id:string) => void,
 };
 
-function Card({ cardId, canEdit, onDelete }: ICardProps) {
+function Card({ cardId, canEdit }: ICardProps) {
   const [card, setCard] = useRecoilState(cardSelectorCardId(cardId));
+  const deleteCard = useSetRecoilState(cardDeleter(cardId));
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
 
@@ -87,8 +87,27 @@ function Card({ cardId, canEdit, onDelete }: ICardProps) {
   [card, cookies, setCard]);
 
   const handleCardDelete = useCallback(() => {
-    onDelete(cardId);
-  }, []);
+      console.log('delete card : ', cardId);
+      const updateCard: IModifyCard = {
+        ...defaultModifyCard,
+        cardId: cardId,
+        userId: cookies.UserId,
+        cardActionType: 'DELETE',
+      };
+      const response = apiModifyCard(updateCard);
+      response
+        .then((result) => {
+          if (result.message) {
+            console.log('Fail to delete card', result.message);
+          } else {
+            console.log('Succeed to delete card', result);
+            deleteCard(card);
+          };
+        })
+        .catch((message) => {
+          console.log('Fail to update name of card', message);
+        });  
+  }, [card, cardId, cookies.UserId, deleteCard]);
 
   const contentNode = (
     <div className={styles.details}>

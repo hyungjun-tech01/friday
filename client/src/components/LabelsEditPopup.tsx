@@ -7,8 +7,6 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Popup, Input } from 'semantic-ui-react';
-import { useRecoilValue } from 'recoil';
-import { ICard, atomCurrentCard } from '../atoms/atomCard';
 import { ILabel } from '../atoms/atomLabel';
 import LabelsPopupItem from './LabelsPopupItem';
 import LabelsPopupChange from './LabelsPopupChange';
@@ -62,7 +60,6 @@ const LabelsEditPopup = ({
   }, []);
 
   // Labels Properties ---------------------
-  // const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [search, setSearch] = useState('');
   const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
   const filteredItems = useMemo(

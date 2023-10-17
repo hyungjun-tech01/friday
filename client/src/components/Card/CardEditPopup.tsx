@@ -45,7 +45,6 @@ interface ICardEditPopupProps {
 }
 
 const CardEditPopup = ({
-  children,
   card,
   setCard,
   onNameEdit,

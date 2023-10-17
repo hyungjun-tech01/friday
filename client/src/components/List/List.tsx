@@ -11,7 +11,7 @@ import {ICard} from "../../atoms/atomCard";
 import {IModifyList, defaultModifyList, IList} from "../../atoms/atomsList";
 import Card from "../Card/Card";
 import CardAdd from "../CardAdd";
-import {cardsbyListIdSelector, listSelector, listDeletor} from "../../atoms/atomsBoard";
+import {cardsbyListIdSelector, listSelector, listDeleter} from "../../atoms/atomsBoard";
 import NameEdit from "./NameEdit";
 import {apiModifyList} from "../../api/list";
 import { usePopup } from '../../lib/hook';
@@ -27,7 +27,7 @@ interface IListProps{
 function List({id, position, name, canEdit}:IListProps){
     const list = useRecoilValue(listSelector(id));
     const setList = useSetRecoilState(listSelector(id));
-    const deleteList = useSetRecoilState(listDeletor(id));
+    const deleteList = useSetRecoilState(listDeleter(id));
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
     const selectCards = useRecoilValue(cardsbyListIdSelector); // 호출 가능한 함수를 가져옴
@@ -64,9 +64,6 @@ function List({id, position, name, canEdit}:IListProps){
         console.log('addcard');
         setIsCardAddOpened(true);
      };
-    const onCardDelete = useCallback((id:string) => {
-      console.log("delete card - id : ", id);
-    }, []);
 
     const handleHeaderClick = useCallback(() => {
       if (canEdit) {
@@ -168,7 +165,7 @@ function List({id, position, name, canEdit}:IListProps){
             <div className={`${styles.cardsInnerWrapper} ${styles.cardsInnerWrapperFull}`}>
             <div className={styles.cardsOuterWrapper}>
                 <div className={styles.cards}>
-                    {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} cardId={card.cardId} canEdit={canEdit} onDelete={onCardDelete}/>))}
+                    {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} cardId={card.cardId} canEdit={canEdit}/>))}
                     {isCardAddOpened&&<CardAdd listId={id} setIsCardAddOpened={setIsCardAddOpened} isCardRequery={isCardRequery} setIsCardRequery={setIsCardRequery}/>}
                     {!isCardAddOpened&&(
                         <button
