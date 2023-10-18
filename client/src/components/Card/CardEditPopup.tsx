@@ -11,8 +11,9 @@ import DueDateEditPopup from '../DueDateEditPopup';
 import StopwatchEditPopup from '../StopwatchEditPopup';
 // import CardMoveStep from '../CardMoveStep';
 import DeletePopup from '../DeletePopup';
-import { atomCurrentMyBoard, defaultModifyBoard, ICurrent } from '../../atoms/atomsBoard';
+import { atomCurrentMyBoard, cardsSelector, defaultModifyBoard, ICurrent } from '../../atoms/atomsBoard';
 import {
+  defaultCard,
   defaultModifyCard,
   ICard,
   ICardUser,
@@ -37,22 +38,22 @@ const StepTypes = {
 
 interface ICardEditPopupProps {
   children: ReactNode;
-  card: ICard;
-  setCard: (data: ICard) => void;
+  cardId: string;
   onNameEdit: () => void;
   onDelete: () => void,
   onClose: () => void;
 }
 
 const CardEditPopup = ({
-  card,
-  setCard,
+  cardId,
   onNameEdit,
   onDelete,
   onClose,
 }: ICardEditPopupProps) => {
   const [t] = useTranslation();
   const board = useRecoilValue<ICurrent>(atomCurrentMyBoard);
+  const cards = useRecoilValue(cardsSelector);
+  const [card, setCard] = useState<ICard>(defaultCard);
   const [step, setStep] = useState<string | null>(null);
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
   const [cardLabelsIds, setCardLabelsIds] = useState<string[]>([]);
@@ -90,6 +91,11 @@ const CardEditPopup = ({
   const handleDeleteClick = useCallback(() => {
     setStep(StepTypes.DELETE);
   }, [setStep]);
+
+  const handleCardDelete = useCallback(() => {
+    onDelete();
+    onClose();
+  }, [onClose, onDelete]);
 
   //------------------Membership Functions------------------
   const handleUserAdd = useCallback(
@@ -474,16 +480,19 @@ const CardEditPopup = ({
   );
 
   useEffect(() => {
-    console.log('Card Rendering : ');
-    if (card.memberships) {
-      const member_ids = card.memberships.map((member) => member.userId);
+    console.log('CardEditPopup -');
+    const found_card = cards.filter((card) => card.cardId === cardId)[0];
+    setCard(found_card);
+
+    if (found_card.memberships) {
+      const member_ids = found_card.memberships.map((member) => member.userId);
       setCardUserIds(member_ids);
     }
-    if (card.labels) {
-      const label_ids = card.labels.map((label) => label.labelId);
+    if (found_card.labels) {
+      const label_ids = found_card.labels.map((label) => label.labelId);
       setCardLabelsIds(label_ids);
     }
-  }, [card]);
+  }, [cards, cardId]);
 
   if (step) {
     switch (step) {
@@ -547,7 +556,7 @@ const CardEditPopup = ({
             title="common.deleteCard"
             content="common.areYouSureYouWantToDeleteThisCard"
             buttonContent="action.deleteCard"
-            onConfirm={onDelete}
+            onConfirm={handleCardDelete}
             onBack={handleBack}
           />
         );

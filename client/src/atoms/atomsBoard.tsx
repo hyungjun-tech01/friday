@@ -133,7 +133,6 @@ export const listsSelector = selector ({
     }
 });
 
-
 // 특정 listId를 가진 List  get ,  selector 의 set을 통해 변경
 export const listSelector = selectorFamily({
     key:"listSelector",
@@ -179,7 +178,6 @@ export const cardsbyListIdSelector = selector({
             return (board.cards.filter((card) => card.listId === InListId));
         };
     },
-  
 });
 
 // [ CARD ] ---------------------------------------------------------

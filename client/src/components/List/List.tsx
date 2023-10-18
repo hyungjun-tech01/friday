@@ -1,18 +1,19 @@
 import {useState, useEffect, useCallback, useRef} from "react";
 import { ReactComponent as PlusMathIcon } from '../../image/plus-math-icon.svg';
 import {useTranslation} from "react-i18next";
-import {useRecoilValue, useSetRecoilState} from "recoil";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import { useCookies } from 'react-cookie';
 import {Button, Icon} from "semantic-ui-react";
 import classNames from 'classnames';
 
 import styles from "./List.module.scss";
-import {ICard} from "../../atoms/atomCard";
-import {IModifyList, defaultModifyList, IList} from "../../atoms/atomsList";
+import {ICard, IModifyCard, defaultModifyCard} from "../../atoms/atomCard";
+import {IModifyList, defaultModifyList} from "../../atoms/atomsList";
 import Card from "../Card/Card";
 import CardAdd from "../CardAdd";
-import {cardsbyListIdSelector, listSelector, listDeleter} from "../../atoms/atomsBoard";
+import {cardsbyListIdSelector, listSelector, listDeleter, cardsSelector} from "../../atoms/atomsBoard";
 import NameEdit from "./NameEdit";
+import {apiModifyCard} from "../../api/card";
 import {apiModifyList} from "../../api/list";
 import { usePopup } from '../../lib/hook';
 import ActionsStep from './ActionsStep';
@@ -30,33 +31,36 @@ function List({id, position, name, canEdit}:IListProps){
     const deleteList = useSetRecoilState(listDeleter(id));
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
-    const selectCards = useRecoilValue(cardsbyListIdSelector); // 호출 가능한 함수를 가져옴
+    //const selectCards = useRecoilValue(cardsbyListIdSelector); // 호출 가능한 함수를 가져옴
+    const [currentCards, setCurrentCards] = useRecoilState(cardsSelector);
     
     const [isCardLoading, setIsCardLoading] = useState(true);
-    const [cards, setCards] = useState<ICard[]>();
+    const [cards, setCards] = useState<ICard[]>([]);
     const [isCardAddOpened, setIsCardAddOpened] = useState(false);
     const [isCardRequery, setIsCardRequery] = useState(false);
     const nameEdit = useRef<any>(null);
     const ActionsPopup = usePopup(ActionsStep);
     
-    const onQueryCards = async () => {
-        setIsCardLoading(true);
-        setCards(selectCards(id));
-        console.log('list card', id, cards);
-        // const response = await apiGetCardsbyListId(id);
-        // if(response){
-        //     console.log('카드조회', response);  
-        //     setCards(response);
-        //     setIsCardLoading(false);
-        //     console.log(cards);
-        // }
-    };
+    // const onQueryCards = async () => {
+    //     setIsCardLoading(true);
+    //     setCards(selectCards(id));
+    //     console.log('list card', id, cards);
+    //     // const response = await apiGetCardsbyListId(id);
+    //     // if(response){
+    //     //     console.log('카드조회', response);  
+    //     //     setCards(response);
+    //     //     setIsCardLoading(false);
+    //     //     console.log(cards);
+    //     // }
+    // };
 
     useEffect(
         () => { setIsCardLoading(true); 
-                onQueryCards();  
+                //onQueryCards();
+                const updatedCards = currentCards.filter(card => card.listId === id);
+                setCards(updatedCards);
                 setIsCardLoading(false);
-            } ,[id, isCardRequery]
+            } ,[id, isCardRequery, currentCards]
     );
 
     
@@ -136,7 +140,34 @@ function List({id, position, name, canEdit}:IListProps){
         console.log('card add');
         handleAddCardClick();
       }, []);    
-    return(
+
+      const handleCardDelete = useCallback((cardId:string) => {
+        console.log('delete card : ', cardId);
+        const updateCard: IModifyCard = {
+          ...defaultModifyCard,
+          cardId: cardId,
+          userId: cookies.UserId,
+          cardActionType: 'DELETE',
+        };
+        const response = apiModifyCard(updateCard);
+        response
+          .then((result) => {
+            if (result.message) {
+              console.log('Fail to delete card', result.message);
+            } else {
+              console.log('Succeed to delete card', result);
+              setIsCardLoading(true);
+
+              const updatedCurrentCards = currentCards.filter(card => card.cardId !== cardId);
+              setCurrentCards(updatedCurrentCards);
+            };
+          })
+          .catch((message) => {
+            console.log('Fail to update name of card', message);
+          });
+        }, []);
+
+    return (
         <div className={styles.innerWrapper}>
         <div className={styles.outerWrapper}>
             <div className={styles.header} >
@@ -165,7 +196,7 @@ function List({id, position, name, canEdit}:IListProps){
             <div className={`${styles.cardsInnerWrapper} ${styles.cardsInnerWrapperFull}`}>
             <div className={styles.cardsOuterWrapper}>
                 <div className={styles.cards}>
-                    {!isCardLoading&&cards?.map((card)=>(<Card key={card.cardId} cardId={card.cardId} canEdit={canEdit}/>))}
+                    {!isCardLoading && cards && cards.map((card)=>(<Card key={card.cardId} card={card} canEdit={canEdit} onDelete={handleCardDelete}/>))}
                     {isCardAddOpened&&<CardAdd listId={id} setIsCardAddOpened={setIsCardAddOpened} isCardRequery={isCardRequery} setIsCardRequery={setIsCardRequery}/>}
                     {!isCardAddOpened&&(
                         <button

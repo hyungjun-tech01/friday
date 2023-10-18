@@ -64,7 +64,6 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
         setIsCardRequery(!isCardRequery);
       } 
     }   
-
   }  
 
   const handleControlMouseOver = () => {
