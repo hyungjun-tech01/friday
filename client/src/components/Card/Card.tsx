@@ -4,7 +4,8 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { Link } from 'react-router-dom';
 import { Button, Icon } from 'semantic-ui-react';
 import { cardSelectorCardId } from '../../atoms/atomsBoard';
-import { atomCurrentCard, defaultModifyCard, ICard, IModifyCard } from '../../atoms/atomCard';
+import { atomCurrentCard, defaultModifyCard, ICard, IModifyCard, defaultCard } from '../../atoms/atomCard';
+import { IStopwatch } from '../../atoms/atomStopwatch';
 import NameEdit from '../NameEdit';
 import Label from '../Label';
 import CardTasks from '../CardTasks';
@@ -14,18 +15,19 @@ import Stopwatch from '../Stopwatch';
 import CardEditPopup from './CardEditPopup';
 import { apiModifyCard } from '../../api/card';
 import { usePopup } from '../../lib/hook';
+import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
 import Paths from '../../constants/Paths';
 import classNames from 'classnames';
 import styles from './Card.module.scss';
 
 interface ICardProps {
-  cardId: string,
+  card: ICard,
   canEdit: boolean,
-  onDelete: (id:string) => void,
+  onDelete: (id:string) => void;
 };
 
-function Card({ cardId, canEdit, onDelete }: ICardProps) {
-  const [card, setCard] = useRecoilState(cardSelectorCardId(cardId));
+function Card({ card, canEdit, onDelete }: ICardProps) {
+  const setCard = useSetRecoilState<ICard>(cardSelectorCardId(card.cardId));
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
 
@@ -38,7 +40,8 @@ function Card({ cardId, canEdit, onDelete }: ICardProps) {
         const parentName = event.target.parentElement.className;
         if (
           parentName.includes('CardTasks_progressWrapper') ||
-          parentName.includes('CardTasks_button')
+          parentName.includes('CardTasks_button') ||
+          parentName.includes('Stopwatch_button')
         ) {
           return;
         }
@@ -84,15 +87,60 @@ function Card({ cardId, canEdit, onDelete }: ICardProps) {
         console.log('Fail to update name of card', message);
       });
   },
-  [card, cookies, setCard]);
+  [card, cookies.UserId, setCard]);
+
+  const handleStopwatchUpdate = useCallback((stopwatch: IStopwatch | null) => {
+    const newStopwatch: IStopwatch = {
+      total: stopwatch ? stopwatch.total : -1,
+      startedAt: stopwatch
+        ? stopwatch.startedAt
+          ? stopwatch.startedAt
+          : null
+        : null,
+    };
+    const modifiedCard: IModifyCard = {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      cardActionType: 'UPDATE',
+      stopwatch: newStopwatch,
+    };
+    console.log('check value : ', modifiedCard.stopwatch);
+    const response = apiModifyCard(modifiedCard);
+    response
+      .then((result) => {
+        if (result.message) {
+          console.log('Fail to update stopwatch of card', result.message);
+        } else {
+          console.log('Succeed to update stopwatch of card', result);
+
+          const updatedCard = {
+            ...card,
+            stopwatch: stopwatch ? newStopwatch : null,
+          };
+          setCard(updatedCard);
+        }
+      })
+      .catch((message) => {
+        console.log('Fail to update stopwatch of card', message);
+      });
+  }, [card, cookies.UserId, setCard]);
+
+  const handleToggleStopwatchClick = useCallback(() => {
+    if (card.stopwatch?.startedAt) {
+      handleStopwatchUpdate(stopStopwatch(card.stopwatch));
+    } else {
+      handleStopwatchUpdate(startStopwatch(card.stopwatch));
+    }
+  }, [card, handleStopwatchUpdate]);
 
   const handleCardDelete = useCallback(() => {
-    onDelete(cardId);
-  }, []);
+    onDelete(card.cardId);
+  }, [onDelete, card])
 
   const contentNode = (
     <div className={styles.details}>
-      {card.labels.length > 0 && (
+      {card && card.labels && card.labels.length > 0 && (
         <span className={styles.labels}>
           {card.labels.map((label) => (
             <span
@@ -124,7 +172,7 @@ function Card({ cardId, canEdit, onDelete }: ICardProps) {
                 startedAt={card.stopwatch.startedAt}
                 total={card.stopwatch.total}
                 size="tiny"
-                //onClick={canEdit ? handleToggleStopwatchClick : undefined}
+                onClick={canEdit ? handleToggleStopwatchClick : undefined}
               />
             </span>
           )}
@@ -160,14 +208,14 @@ function Card({ cardId, canEdit, onDelete }: ICardProps) {
       >
         <div className={styles.card}>
           <Link
-            to={Paths.CARDS.replace(':id', cardId)}
+            to={Paths.CARDS.replace(':id', card.cardId)}
             className={styles.content}
             onClick={handleCardClick}
           >
             {contentNode}
           </Link>
           {canEdit && (
-            <CardEdit card={card} setCard={setCard} onNameEdit={handleNameEdit} onDelete={handleCardDelete}>
+            <CardEdit cardId={card.cardId} onNameEdit={handleNameEdit} onDelete={handleCardDelete}>
               <Button
                 className={classNames(styles.actionsButton, styles.target)}
               >

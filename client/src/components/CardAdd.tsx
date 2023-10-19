@@ -7,7 +7,7 @@ import {IModifyCard, defaultModifyCard, ICard, defaultCard} from "../atoms/atomC
 import {cardsSelector} from "../atoms/atomsBoard";
 import {useCookies} from "react-cookie";
 import {apiCreateCard} from "../api/card";
-import {useSetRecoilState } from "recoil";
+import {useRecoilState } from "recoil";
 
 interface ICardAddProps{
     listId:string;
@@ -19,7 +19,7 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
   const [t] = useTranslation();
   const {register, handleSubmit,formState:{errors}} = useForm();
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
-  const setCard = useSetRecoilState(cardsSelector);
+  const [cards, setCards] = useRecoilState(cardsSelector);
 
   let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
     useEffect(()=>{
@@ -55,15 +55,15 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
                 coverAttachmentId:"", boardId:"", 
                description:"",  labels:[], 
                dueDate:"", statusId:"", statusName:"",
-               stopwatch:{total:0,startedAt:null }, memberships:[], attachments:[], 
+               stopwatch:null, memberships:[], attachments:[], 
                tasks:[], comments:[], };
         console.log(newCard);
-        setCard([newCard]);
+        const updateCards = [...cards, newCard];
+        setCards(updateCards);
         setIsCardAddOpened(false);
         setIsCardRequery(!isCardRequery);
       } 
     }   
-
   }  
 
   const handleControlMouseOver = () => {

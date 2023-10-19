@@ -1,4 +1,4 @@
-import {atom, selector, selectorFamily} from "recoil";
+import {atom, DefaultValue, selector, selectorFamily} from "recoil";
 import {ILabel} from "./atomLabel";
 import {IList} from "./atomsList";
 import {ICard} from "./atomCard";
@@ -133,7 +133,6 @@ export const listsSelector = selector ({
     }
 });
 
-
 // 특정 listId를 가진 List  get ,  selector 의 set을 통해 변경
 export const listSelector = selectorFamily({
     key:"listSelector",
@@ -155,8 +154,8 @@ export const listSelector = selectorFamily({
     }
 });
 
-export const listDeletor = selectorFamily({
-    key:"listDeletor",
+export const listDeleter = selectorFamily({
+    key:"listDeleter",
     get: (listId) => ({ get }) => {
         const board = get(atomCurrentMyBoard);
         return board.lists.filter((list: any) => list.listId === listId)[0];
@@ -179,10 +178,9 @@ export const cardsbyListIdSelector = selector({
             return (board.cards.filter((card) => card.listId === InListId));
         };
     },
-  
 });
 
-// 카드 추가 됨,  삭제는 어떻게 하지?
+// [ CARD ] ---------------------------------------------------------
 export const cardsSelector = selector ({
     key:"cardsSelector",
     get:({get}) => {
@@ -190,13 +188,12 @@ export const cardsSelector = selector ({
         return (board.cards);
     },
     set: ({set, get}, newValue) => {
-        if (Array.isArray(newValue) && newValue.length === 1) {
-            const [newCard] = newValue;
-            const board = get(atomCurrentMyBoard); 
-            const updatedCards = board.cards.concat(newCard);
+        const board = get(atomCurrentMyBoard); 
+        if (Array.isArray(newValue)) {
+            const updatedCards = [...newValue];
             const newAtomCurrentMyBoard = {...board, cards: updatedCards};
-            set(atomCurrentMyBoard, newAtomCurrentMyBoard);    
-        }
+            set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+        };
     }
 });
 
@@ -217,6 +214,25 @@ export const cardSelectorCardId = selectorFamily({
             })
             const newAtomCurrentMyBoard = {...board,  cards: updatedCards,};
             return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+    }
+});
+
+// 특정 cardId를 가진 card를 삭제
+export const cardDeleter = selectorFamily({
+    key: "cardDeleter",
+    get: (cardId) => ({ get }) => {
+        const cards = get(cardsSelector);
+        return cards.filter((card: any) => card.cardId === cardId)[0];
+    },
+    set: (cardId) => ({set, get}, newValue)=>{
+        //const board = get(atomCurrentMyBoard);
+        //const filteredCards = board.cards.filter((card) => card.cardId !== cardId);
+        //const newAtomCurrentMyBoard = {...board,  cards: filteredCards,};
+
+        //return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+        const cards = get(cardsSelector);
+        const filteredCards = cards.filter((card) => card.cardId !== cardId);
+        set(cardsSelector, filteredCards);
     }
 });
 

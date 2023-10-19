@@ -56,7 +56,7 @@ export const defaultCard:ICard = {
     cardId:"" , cardName:"",  coverAttachmentId:"", boardId:"", listId:"",
     description:"",  labels:[], createdAt:"", updatedAt:"" , position:"",
     dueDate:"", statusId:"", statusName:"",
-    stopwatch:{total:0,startedAt:null }, memberships:[], attachments:[], 
+    stopwatch:null, memberships:[], attachments:[], 
     tasks:[], comments:[],
 }
     
