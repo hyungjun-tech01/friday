@@ -10,7 +10,7 @@ interface IUserItemProp{
     onSelect: (value: { userId: string; canEdit: boolean }) => void; // Corrected the parameter type
 }
 function UserItem({userName, userId, avatarUrl, canEdit, onSelect}:IUserItemProp){
-    const isActive = canEdit === null ? false:true;
+    const isActive = canEdit === null ? false: true;
     const [dummyState, setDummyState]= useState({userId:"", userName:"", userEmail:"", avatarUrl:"", positionX:-1, positionY:-1});
 
     console.log("user Item", userId, userName, canEdit, avatarUrl, isActive);

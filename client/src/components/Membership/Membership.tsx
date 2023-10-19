@@ -1,23 +1,26 @@
-import {IBoardUser, IModifyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
-import styles from "../scss/Membership.module.scss";
-import BoardMemberActionPopup from "./BoardMemberActionPopup";
-import BoardMemberPermission from "./BoardMemberPermission";
+import {IBoardUser, IModifyBoard, defaultModifyBoard} from "../../atoms/atomsBoard";
+import styles from "./Membership.module.scss";
+import BoardMemberActionPopup from "../BoardMemberActionPopup";
+import BoardMemberPermission from "../BoardMemberPermission";
 import {Button} from "semantic-ui-react";
-import User from "./User";
-import BoardMemeberAdd from "./BoardMemeberAdd";
+import User from "../User";
+import BoardMemeberAdd from "../BoardMemeberAdd";
 import {useCallback, useState} from "react";
 import {useCookies} from "react-cookie";
-import DeleteStep from "./DeleteStep";
+import DeleteStep from "../DeleteStep";
 import {useTranslation} from "react-i18next";
-import {apiModifyBoard} from "../api/board";
+import {apiModifyBoard} from "../../api/board";
 import { Value } from "sass";
 import { previousDay } from "date-fns";
 import { getRoles } from "@testing-library/react";
-
+import  usePopup  from '../../lib/hook/use-popup';
+import AddStep from "./AddStep";
+import permissionsSelectStep from "../BoardMembershipPermissionsSelectStep";
 interface IMembershipProps {
     boardId: string;
     canEdit : boolean;
     members?: IBoardUser[];
+    allUsers?:IBoardUser[];
     isMemberLoading : boolean;
     setIsMemberLoading: (value:boolean) => void;
   }
@@ -31,7 +34,7 @@ interface IboardMemberActionUserId{
     positionX:number;
     positionY:number;
 }
-function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoading}:IMembershipProps){
+function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIsMemberLoading}:IMembershipProps){
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [positions, setPositions] = useState({positionX:-1, positionY:-1})
@@ -41,6 +44,7 @@ function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoadi
         setPositions({positionX:event.pageX,  positionY:event.pageY});
         setOnAddPopup(true);
     }
+    const AddPopup = usePopup(AddStep);
     const [onAddPopup, setOnAddPopup] = useState(false);
     // userId 와 현재 클릭한 포지션 획득 
     const [boardMemberActionUserId, setBoardMemberActionUserId] = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:canEdit,role:"", positionX:-1, positionY:-1 });
@@ -55,6 +59,9 @@ function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoadi
         setDeleteStep(true);
         setBoardMemberAction(true);
       }
+    const onCreate = ()=>{
+        console.log('membership boardmember create');
+    }
     const onConfirm = async ()=>{
         // server 처리 
         const board : IModifyBoard= {...defaultModifyBoard, boardMembershipActionType:'DELETE', boardMembershipUserId:boardMemberActionUserId.userId, boardId:boardId, userId:cookies.UserId};
@@ -118,7 +125,7 @@ function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoadi
                     </div>
         }            
                 {/* Add Borad Member 기능  */}
-                {canEdit  && 
+                {/* canEdit  && 
                 <Button icon="add user" onClick={onAddMemberPopup} style={{backgroundColor:'rgba(0, 0, 0, 0.24)',
                     borderRadius: '50%',
                     boxShadow: 'none',
@@ -129,11 +136,22 @@ function Membership({boardId, canEdit, members,isMemberLoading, setIsMemberLoadi
                     transition: 'all 0.1s ease 0s',
                     alignItems: 'center',
                     verticalAlign: 'top',
-                    width: '36px',}} />}
-                {members !== undefined &&onAddPopup&&
+    width: '36px',}} /> */}
+                {/*members !== undefined &&onAddPopup&&
                   <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
                     <BoardMemeberAdd members={members} canEdit={canEdit} setOnAddPopup={setOnAddPopup} setBoardMemeberPermissionUserId={setBoardMemeberPermissionUserId}/>
-                  </div>}
+                </div> */}
+                {canEdit&&
+                    <AddPopup
+                    users={allUsers}
+                    currentUserIds={cookies.UserId}
+                    permissionsSelectStep={permissionsSelectStep}
+                    title={t('common.addBoardMember')}
+                    onCreate={onCreate}
+                >
+                    <Button icon="add user" className={styles.addUser} />
+                </AddPopup>
+                }
                 {boardMemeberPermissionUserId.userId !== "" &&
                   <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
                   <BoardMemberPermission addBoardId={boardId} addMember={boardMemeberPermissionUserId}

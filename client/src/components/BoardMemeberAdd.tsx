@@ -55,6 +55,8 @@ function BoardMemeberAdd({members, canEdit,setOnAddPopup, setBoardMemeberPermiss
         console.log('add user');
         setOnAddPopup(false);
         setBoardMemeberPermissionUserId({userId:userId, userName:"", userEmail:"", avatarUrl:"",  canEdit:canEdit,role:"", positionX:-1, positionY:-1});
+      }else{
+        console.log('modify user');
       }
     }
     return(
@@ -75,7 +77,7 @@ function BoardMemeberAdd({members, canEdit,setOnAddPopup, setBoardMemeberPermiss
             {filteredUsers&&(
               <div className={styles.users}>
                 {filteredUsers.map((user)=>(
-                  <UserItem key={user.userId} userId={user.userId} userName={user.userName} avatarUrl={user.avatarUrl} canEdit={canEdit} onSelect={() => handleUserSelect(user.userId, canEdit)}/>
+                  <UserItem key={user.userId} userId={user.userId} userName={user.userName} avatarUrl={user.avatarUrl} canEdit={user.canEdit} onSelect={() => handleUserSelect(user.userId, user.canEdit)}/>
                 ))}
               </div>
             )}

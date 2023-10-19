@@ -92,7 +92,7 @@ export interface IBoardUser{
     avatarUrl:string;
     userEmail:string;
     canEdit:boolean;
-    canComment:string;
+    canComment:boolean;
 }
 
 export const defaultCurrentMyBoard:ICurrent = {
