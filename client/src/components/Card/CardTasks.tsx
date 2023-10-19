@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import classNames from 'classnames';
 import { Progress } from 'semantic-ui-react';
-import { ITask } from '../atoms/atomTask';
+import { ITask } from '../../atoms/atomTask';
 
-import styles from '../scss/CardTasks.module.scss';
+import styles from './CardTasks.module.scss';
 
 interface ICardTasksProps {
     items: ITask[];

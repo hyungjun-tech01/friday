@@ -1,14 +1,14 @@
 import { useCallback, useRef } from 'react';
 import { useCookies } from 'react-cookie';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { Link } from 'react-router-dom';
 import { Button, Icon } from 'semantic-ui-react';
 import { cardSelectorCardId } from '../../atoms/atomsBoard';
-import { atomCurrentCard, defaultModifyCard, ICard, IModifyCard, defaultCard } from '../../atoms/atomCard';
+import { atomCurrentCard, defaultModifyCard, ICard, IModifyCard } from '../../atoms/atomCard';
 import { IStopwatch } from '../../atoms/atomStopwatch';
 import NameEdit from '../NameEdit';
 import Label from '../Label';
-import CardTasks from '../CardTasks';
+import CardTasks from './CardTasks';
 import User from '../User';
 import DueDate from '../DueDate';
 import Stopwatch from '../Stopwatch';

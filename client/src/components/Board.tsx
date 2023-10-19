@@ -13,7 +13,7 @@ import styles from "../scss/Board.module.scss";
 import ListAdd from "./ListAdd";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
 import { ICard, atomCurrentCard } from "../atoms/atomCard";
-import CardModal from "./CardModal";
+import CardModal from "./CardModal/CardModal";
 import {useCookies} from "react-cookie";
 
 interface IListProps{

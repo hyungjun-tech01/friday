@@ -1,45 +1,46 @@
 import {useEffect, useRef} from "react";
-import styles from "../scss/CardAdd.module.scss";
-import { Button, Form, TextArea } from 'semantic-ui-react';
+import styles from "./CardAdd.module.scss";
+import { Button, Form } from 'semantic-ui-react';
 import {useTranslation} from "react-i18next";
 import {useForm} from "react-hook-form";
-import {IModifyCard, defaultModifyCard, ICard, defaultCard} from "../atoms/atomCard";
-import {cardsSelector} from "../atoms/atomsBoard";
+import {IModifyCard, defaultModifyCard, ICard} from "../../atoms/atomCard";
+import {cardsSelector} from "../../atoms/atomsBoard";
 import {useCookies} from "react-cookie";
-import {apiCreateCard} from "../api/card";
+import {apiCreateCard} from "../../api/card";
 import {useRecoilState } from "recoil";
 
 interface ICardAddProps{
-    listId:string;
-    setIsCardAddOpened:(value:boolean) => void;
-    isCardRequery : boolean;
-    setIsCardRequery : (value:boolean) => void;
+  listId:string;
+  setIsCardAddOpened:(value:boolean) => void;
+  isCardRequery : boolean;
+  setIsCardRequery : (value:boolean) => void;
 }
+
 function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:ICardAddProps){
   const [t] = useTranslation();
-  const {register, handleSubmit,formState:{errors}} = useForm();
+  const {register, handleSubmit, formState:{errors}} = useForm();
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
   const [cards, setCards] = useRecoilState(cardsSelector);
 
   let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
-    useEffect(()=>{
-      document.addEventListener('mousedown', handleClickOutside);
-      return()=>{
-        document.removeEventListener('mousedown', handleClickOutside);
-      }
-    }, []);
 
-    const handleClickOutside=(event:any)=>{
-      if (wrapperRef && 
-          wrapperRef.current &&
-          !wrapperRef.current.contains(event.target)) {
-        console.log('close modal');
-        setIsCardAddOpened(false);
-      }
-    }     
+  useEffect(()=>{  
+    document.addEventListener('mousedown', handleClickOutside);
+    return()=>{
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, []);
+
+  const handleClickOutside=(event:any)=>{
+    if (wrapperRef && 
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target)) {
+      console.log('close modal');
+      setIsCardAddOpened(false);
+    }
+  }     
    
   const onValid = async(data:any) => {
-  
     const card : IModifyCard = {...defaultModifyCard, ...data, cardActionType:'ADD', listId:listId, userId:cookies.UserId };
     console.log('create card', card);
     const response = await apiCreateCard(card);
@@ -64,12 +65,14 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
         setIsCardRequery(!isCardRequery);
       } 
     }   
-  }  
+  };
 
   const handleControlMouseOver = () => {
-  }   
+  };
+
   const handleControlMouseOut = () => {
-  }
+  };
+
   return (
     <div ref={wrapperRef}>
       <Form className={styles.wrapper} onSubmit={handleSubmit(onValid)} >
@@ -97,6 +100,6 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
       </Form>
     </div>
   );
-}
+};
 
 export default CardAdd;

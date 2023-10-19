@@ -44,6 +44,7 @@ const AttachmentItem = forwardRef(
 
     const handleClick = useCallback(() => {
       if (onClick) {
+        console.log("Attachment Open");
         onClick();
       } else {
         window.open(url, '_blank');
@@ -72,14 +73,10 @@ const AttachmentItem = forwardRef(
     //     </div>
     //   );
     // }
-    // const filename = url ? url.split('/').pop() : "";
-    // const extension = filename ? filename.slice(
-    //   (Math.max(0, filename.lastIndexOf('.')) || Infinity) + 1
-    // ) : "";
-
-    const extension = name
-      ? name.slice((Math.max(0, name.lastIndexOf('.')) || Infinity) + 1)
-      : '';
+    const filename = url ? url.split('/').pop() : "";
+    const extension = filename ? filename.slice(
+      (Math.max(0, filename.lastIndexOf('.')) || Infinity) + 1
+    ) : "";
 
     return (
       <div ref={ref} className={styles.wrapper} onClick={handleClick}>

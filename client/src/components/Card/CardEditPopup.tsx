@@ -1,7 +1,7 @@
 // import pick from 'lodash/pick';
 import { ReactNode, useCallback, useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useRecoilState } from 'recoil';
 import { useTranslation } from 'react-i18next';
 import { Menu, Popup } from 'semantic-ui-react';
 import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';
@@ -11,9 +11,8 @@ import DueDateEditPopup from '../DueDateEditPopup';
 import StopwatchEditPopup from '../StopwatchEditPopup';
 // import CardMoveStep from '../CardMoveStep';
 import DeletePopup from '../DeletePopup';
-import { atomCurrentMyBoard, cardsSelector, defaultModifyBoard, ICurrent } from '../../atoms/atomsBoard';
+import { atomCurrentMyBoard, cardSelectorCardId, defaultModifyBoard, ICurrent } from '../../atoms/atomsBoard';
 import {
-  defaultCard,
   defaultModifyCard,
   ICard,
   ICardUser,
@@ -52,8 +51,7 @@ const CardEditPopup = ({
 }: ICardEditPopupProps) => {
   const [t] = useTranslation();
   const board = useRecoilValue<ICurrent>(atomCurrentMyBoard);
-  const cards = useRecoilValue(cardsSelector);
-  const [card, setCard] = useState<ICard>(defaultCard);
+  const [card, setCard] = useRecoilState<ICard>(cardSelectorCardId(cardId));
   const [step, setStep] = useState<string | null>(null);
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
   const [cardLabelsIds, setCardLabelsIds] = useState<string[]>([]);
@@ -481,18 +479,16 @@ const CardEditPopup = ({
 
   useEffect(() => {
     console.log('CardEditPopup -');
-    const found_card = cards.filter((card) => card.cardId === cardId)[0];
-    setCard(found_card);
 
-    if (found_card.memberships) {
-      const member_ids = found_card.memberships.map((member) => member.userId);
+    if (card.memberships) {
+      const member_ids = card.memberships.map((member) => member.userId);
       setCardUserIds(member_ids);
     }
-    if (found_card.labels) {
-      const label_ids = found_card.labels.map((label) => label.labelId);
+    if (card.labels) {
+      const label_ids = card.labels.map((label) => label.labelId);
       setCardLabelsIds(label_ids);
     }
-  }, [cards, cardId]);
+  }, [card]);
 
   if (step) {
     switch (step) {
