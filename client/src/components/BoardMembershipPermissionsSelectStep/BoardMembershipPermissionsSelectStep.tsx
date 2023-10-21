@@ -1,9 +1,10 @@
 import { dequal } from 'dequal';
 import omit from 'lodash/omit';
 import React, { useCallback, useState } from 'react';
-import PropTypes from 'prop-types';
+
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Menu, Radio, Segment, Popup } from 'semantic-ui-react';
+import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';
 
 
 //import { BoardMembershipRoles } from '../../constants/Enums';
@@ -32,20 +33,21 @@ const BoardMembershipPermissionsSelectStep = ({ defaultData, title, buttonConten
     const handleSelectRoleClick = useCallback((role:any) => {
       setData((prevData:any) => ({
         ...prevData,
-        role,
+        role:role,
         canComment: role === "viewer" ? !!prevData.canComment : false,
       }));
     }, []);
 
     const handleSettingChange = useCallback(() => {
       console.log('change');
-      // setData((prevData:any) => ({
-      //   ...prevData,
-      //   [fieldName]: value,
-      // }));
+       setData((prevData:any) => ({
+         ...prevData,
+         canComment: !prevData.canComment,
+       }));
     }, []);
 
     const handleSubmit = useCallback(() => {
+      console.log('member add',data);
       if (!dequal(data, defaultData)) {
         onSelect(data);
       }
@@ -55,15 +57,15 @@ const BoardMembershipPermissionsSelectStep = ({ defaultData, title, buttonConten
 
     return (
       <>
-        <Popup.Header onBack={onBack}>
+        <CustomPopupHeader>
           {t(title, {
             context: 'title',
           })}
-        </Popup.Header>
+        </CustomPopupHeader>
         <Popup.Content>
           <Form onSubmit={handleSubmit}>
             <Menu secondary vertical className={styles.menu}>
-              <Menu.Item
+              <Menu.Item 
                 active={data.role === "editor"}
                 onClick={() => handleSelectRoleClick("editor")}
               >
@@ -72,7 +74,7 @@ const BoardMembershipPermissionsSelectStep = ({ defaultData, title, buttonConten
                   {t('common.canEditContentOfBoard')}
                 </div>
               </Menu.Item>
-              <Menu.Item
+              <Menu.Item 
                 active={data.role === "viewer"}
                 onClick={() => handleSelectRoleClick("viewer")}
               >

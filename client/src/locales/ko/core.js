@@ -16,6 +16,7 @@ const core = {
       actions: '활동',
       addAttachment: '첨부파일 추가',
       addComment: '댓글 추가',
+      addBoardMember:'멤버 추가',
       allChangesWillBeAutomaticallySavedAfterConnectionRestored:
         '다시 연결이 되면 모든 변경 사항이<br />자동적으로 저장됩니다.',
       areYouSureYouWantToDeleteThisAttachment: '이 첨부파일을 삭제할까요?',
@@ -36,7 +37,8 @@ const core = {
       attachments: '첨부파일',
       boardmemberadd_title: '멤버 추가',
       canComment :'코맨트 가능',
-      canOnlyViewBoard : '보드 및 하위 컨텐츠를 볼 수 있습니다.',
+      canEditContentOfBoard : '보드 및 컨테츠를 편집할 수 있습니다.',
+      canOnlyViewBoard : '보드 및 컨텐츠를 볼 수 있습니다.',
       cardActions : 'Card 변경',
       createBoard_title: '보드 명칭을 입력하세요.',
       createLabel: '새 라벨 만들기',

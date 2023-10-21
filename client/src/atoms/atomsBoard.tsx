@@ -95,6 +95,17 @@ export interface IBoardUser{
     canComment:boolean;
 }
 
+// board memebership default 
+export const defaultBoardUser:IBoardUser = {
+    boardId:"",
+    userId: "",
+    userName:"",
+    role:"",
+    avatarUrl:"",
+    userEmail: "",
+    canEdit: true,
+    canComment: true,
+}
 export const defaultCurrentMyBoard:ICurrent = {
     boardId:"", 
     canEdit:false,

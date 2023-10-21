@@ -1,4 +1,4 @@
-import {IBoardUser, IModifyBoard, defaultModifyBoard} from "../../atoms/atomsBoard";
+import {IBoardUser, defaultBoardUser, IModifyBoard, defaultModifyBoard} from "../../atoms/atomsBoard";
 import styles from "./Membership.module.scss";
 import BoardMemberActionPopup from "../BoardMemberActionPopup";
 import BoardMemberPermission from "../BoardMemberPermission";
@@ -38,7 +38,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [positions, setPositions] = useState({positionX:-1, positionY:-1})
-
+    const [addBoardUser, setAddBoardUser] = useState<IBoardUser>(defaultBoardUser);
     const onAddMemberPopup = (event:React.MouseEvent<HTMLButtonElement>)=>{
         console.log('onAddMemberPopup');
         setPositions({positionX:event.pageX,  positionY:event.pageY});
@@ -59,8 +59,11 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         setDeleteStep(true);
         setBoardMemberAction(true);
       }
-    const onCreate = ()=>{
+    const onCreate = (data:IBoardUser)=>{
+        setAddBoardUser({...addBoardUser, ...data});
         console.log('membership boardmember create');
+
+        // server 처기 할 것 .
     }
     const onConfirm = async ()=>{
         // server 처리 

@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
+
 import { useTranslation } from 'react-i18next';
-import { Menu, Popup, Input } from 'semantic-ui-react';
+import { Popup, Input } from 'semantic-ui-react';
 import {useCookies} from "react-cookie";
 
 import UserItem from '../UserItem';
-import {IBoardUser} from "../../atoms/atomsBoard";
+import {IBoardUser, defaultBoardUser} from "../../atoms/atomsBoard";
+import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';
 
 import styles from './AddStep.module.scss';
 
@@ -15,7 +16,7 @@ interface IAddStep{
     currentUserIds: string,
     permissionsSelectStep: any,
     title: string,
-    onCreate: (id:string, canComment:boolean)=>void,
+    onCreate: (data:IBoardUser)=>void,
     onClose: ()=>void,
 }
 const StepTypes = {
@@ -28,6 +29,7 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
     const [search, setSearch] = useState<string>('');
     const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
+    const [defaultData, setDefaultData] = useState<IBoardUser>(defaultBoardUser);
     
   const handleFieldChange = useCallback((event:any) => {
     const newData = event.target.value;
@@ -36,7 +38,8 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
   const handleBack = useCallback(() => {
     setStep(null);
   }, [setStep]);
-    const filteredUsers = useMemo(
+
+  const filteredUsers = useMemo(
       () =>
         users.filter(
           (user) =>
@@ -50,26 +53,36 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
     const searchField = useRef<any>(null);
 
     const handleUserSelect = useCallback(
-      (id:any, canComment:any) => {
+      (id:any) => {
         if (permissionsSelectStep) {
             setStep(StepTypes.SELECT_PERMISSIONS);
+            setDefaultData({...defaultData, 
+              userId:id,}); 
+           console.log('userselect ', defaultData, id);
         } else {
-          onCreate(id,canComment);
-
+          setDefaultData({...defaultData, 
+            userId:id,});
+         // onCreate({...defaultData, userId:id});
+         console.log('userselect ', defaultData);
           onClose();
         }
       },
-      [permissionsSelectStep, onCreate, onClose],
+      [defaultData, permissionsSelectStep, onClose],
     );
 
     const handleRoleSelect = useCallback(
       (data:any) => {
-        onCreate(
-          data.userId,
-          data.canComment
-        );
+        setDefaultData({...defaultData, 
+          userId:data.userId,
+          role:data.role, 
+          canComment: data.canComment});
+        // onCreate({...defaultData, 
+        //   userId:data.userId,
+        //   role:data.role, 
+        //   canComment: data.canComment}
+        // );
       },
-      [onCreate, step],
+      [defaultData],
     );
 
     useEffect(() => {
@@ -88,7 +101,9 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
 
             return (
               <PermissionsSelectStep
-                buttonContent="action.addMember"
+                defaultData={defaultData}
+                title = "common.addBoardMember"
+                buttonContent="common.addBoardMember"
                 onSelect={handleRoleSelect}
                 onBack={handleBack}
                 onClose={onClose}
@@ -106,11 +121,11 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
 
     return (
       <>
-        <Popup.Header>
+        <CustomPopupHeader>
           {t(title, {
             context: 'title',
           })}
-        </Popup.Header>
+        </CustomPopupHeader>
         <Popup.Content>
           <Input
             fluid
@@ -129,7 +144,7 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
                   userName={user.userName}
                   avatarUrl={user.avatarUrl}
                   canEdit={user.canEdit}
-                  onSelect={() => handleUserSelect(user.userId, user.canEdit)}
+                  onSelect={() => handleUserSelect(user.userId)}
                 />
               ))}
             </div>
