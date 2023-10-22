@@ -1,21 +1,22 @@
-import {IBoardUser, defaultBoardUser, IModifyBoard, defaultModifyBoard} from "../../atoms/atomsBoard";
+import {useTranslation} from "react-i18next";
+import {useCookies} from "react-cookie";
+import {Button} from "semantic-ui-react";
+import {useSetRecoilState, useRecoilValue} from "recoil";
+import {useEffect} from "react";
+
+
+import {IBoardUser, usersPoolSelector, IModifyBoard, defaultModifyBoard, usersSelector, atomCurrentMyBoard} from "../../atoms/atomsBoard";
 import styles from "./Membership.module.scss";
 import BoardMemberActionPopup from "../BoardMemberActionPopup";
 import BoardMemberPermission from "../BoardMemberPermission";
-import {Button} from "semantic-ui-react";
 import User from "../User";
-import BoardMemeberAdd from "../BoardMemeberAdd";
 import {useCallback, useState} from "react";
-import {useCookies} from "react-cookie";
 import DeleteStep from "../DeleteStep";
-import {useTranslation} from "react-i18next";
 import {apiModifyBoard} from "../../api/board";
-import { Value } from "sass";
-import { previousDay } from "date-fns";
-import { getRoles } from "@testing-library/react";
 import  usePopup  from '../../lib/hook/use-popup';
 import AddStep from "./AddStep";
 import permissionsSelectStep from "../BoardMembershipPermissionsSelectStep";
+
 interface IMembershipProps {
     boardId: string;
     canEdit : boolean;
@@ -38,7 +39,6 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [positions, setPositions] = useState({positionX:-1, positionY:-1})
-    const [addBoardUser, setAddBoardUser] = useState<IBoardUser>(defaultBoardUser);
     const onAddMemberPopup = (event:React.MouseEvent<HTMLButtonElement>)=>{
         console.log('onAddMemberPopup');
         setPositions({positionX:event.pageX,  positionY:event.pageY});
@@ -53,26 +53,65 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     // 사용자 삭제 Modal 
     const [deleteStep, setDeleteStep]  = useState(false);
     const [boardMemeberPermissionUserId, setBoardMemeberPermissionUserId]  = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:canEdit,role:"", positionX:-1, positionY:-1 });
+
+    const currentBoard = useRecoilValue(atomCurrentMyBoard);
+    const boardUser = useRecoilValue(usersSelector);
+    const setUser = useSetRecoilState(usersSelector);
+
+    const usersPool =  useRecoilValue(usersPoolSelector);
+    const setUsersPool = useSetRecoilState(usersPoolSelector);
+
+   
     const handleDeleteClick = () => { 
         // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
         console.log('handleDeleteClick');
         setDeleteStep(true);
         setBoardMemberAction(true);
       }
-    const onCreate = (data:IBoardUser)=>{
-        setAddBoardUser({...addBoardUser, ...data});
-        console.log('membership boardmember create');
+    const onCreate = async (data:IBoardUser)=>{
+        setBoardMemberAction(true);
 
-        // server 처기 할 것 .
+        // server 처리 할 것 .
+        const board : IModifyBoard= {...defaultModifyBoard, boardMembershipActionType:'ADD', boardMembershipUserId:data.userId, boardMembershipRole:data.role, boardMembershipCanComment:data.canComment?'true':'false',  boardId:boardId, userId:cookies.UserId};
+
+        const response = await apiModifyBoard(board);
+        if(response){
+            if(response.outBoardMembershipId){  // 성공하면 
+                const newuser:IBoardUser = {
+                    boardMembersipId:response.outBoardMembershipId,
+                    boardId:boardId,
+                    userId:data.userId,
+                    userName:data.userName,
+                    role: data.role, 
+                    avatarUrl: data.avatarUrl,
+                    userEmail: data.userEmail,
+                    canEdit: data.canEdit,
+                    canComment: data.canComment
+                }
+            //recoil 추가 
+            setUser([newuser]);
+            setUsersPool([newuser]);
+            //boardUsers = boardUsers.concat(user);
+
+            // state  추가 
+            setIsMemberLoading(!isMemberLoading);
+            setBoardMemberAction(false);
+            }else if(response.message){
+            //    setDeleteStep(true);  // 에러 메세지를 표현 해 주어야 하나??
+            }else{
+            //    setDeleteStep(true);
+            }
+        }        
     }
     const onConfirm = async ()=>{
+        setBoardMemberAction(false);
         // server 처리 
         const board : IModifyBoard= {...defaultModifyBoard, boardMembershipActionType:'DELETE', boardMembershipUserId:boardMemberActionUserId.userId, boardId:boardId, userId:cookies.UserId};
     
         const response = await apiModifyBoard(board);
-        console.log('response', response, response.status);
         if(response){
             if(response.boardId){  // 성공하면 
+                //recoil 삭제 
                 setDeleteStep(false); // 
                 setBoardMemberAction(true);
                 setIsMemberLoading(!isMemberLoading);
@@ -100,11 +139,11 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         //add recoil
         setBoardMemeberPermissionUserId({...boardMemeberPermissionUserId})
     }
-    if (members) {
+    if (boardUser.length > 0) {
         return(
             <span className={styles.users}>
                 {/* 보드에 접근 가능한 사용자 */}``
-                {members.map((user)=>(
+                {!boardMemberAction&& boardUser.map((user)=>(
                     <span key={user.userId} className={styles.user}>
                         <User userId={user.userId} onClick={handleClick} size="small"
                             showAnotherPopup={setBoardMemberActionUserId} 
@@ -118,7 +157,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                 {/*사용자 확인 및 권한 변경 및 보드에서 사용자 삭제 기능 */}
                 { !boardMemberAction&&boardMemberActionUserId.userId !== "" && (
                     <div style = {{top:`${boardMemberActionUserId.positionY}px`, left:`${boardMemberActionUserId.positionX}px` , position:'absolute'}}>
-                        <BoardMemberActionPopup boardId={boardId} currentUserCanEdit={members[0].canEdit} currentUserId={cookies.UserId} userName={boardMemberActionUserId.userName} userEmail={boardMemberActionUserId.userEmail} canEdit= {boardMemberActionUserId.canEdit} avatarUrl = {boardMemberActionUserId.avatarUrl} showPopUp = {setBoardMemberActionUserId} 
+                        <BoardMemberActionPopup boardId={boardId} currentUserCanEdit={currentBoard.canEdit} currentUserId={cookies.UserId} userName={boardMemberActionUserId.userName} userEmail={boardMemberActionUserId.userEmail} canEdit= {boardMemberActionUserId.canEdit} avatarUrl = {boardMemberActionUserId.avatarUrl} showPopUp = {setBoardMemberActionUserId} 
                            userId={boardMemberActionUserId.userId} handleDeleteClick={handleDeleteClick} /> 
                     </div> )
                 }
@@ -146,7 +185,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                 </div> */}
                 {canEdit&&
                     <AddPopup
-                    users={allUsers}
+                    users={usersPool}
                     currentUserIds={cookies.UserId}
                     permissionsSelectStep={permissionsSelectStep}
                     title={t('common.addBoardMember')}

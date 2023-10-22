@@ -24,9 +24,10 @@ interface IBoardMembershipPermissionsSelectStep{
 const BoardMembershipPermissionsSelectStep = ({ defaultData, title, buttonContent, onSelect, onBack, onClose }:IBoardMembershipPermissionsSelectStep) => {
     const [t] = useTranslation();
 
-    const [data, setData] = useState(() => ({
+    const [data, setData] = useState<IBoardUser>(() => ({
       ...defaultData,
       role: "editor",
+      canEdit: true,
       canComment: false,
     }));
 
@@ -34,6 +35,7 @@ const BoardMembershipPermissionsSelectStep = ({ defaultData, title, buttonConten
       setData((prevData:any) => ({
         ...prevData,
         role:role,
+        canEdit:role === "viewer" ? false:true, 
         canComment: role === "viewer" ? !!prevData.canComment : false,
       }));
     }, []);
@@ -47,13 +49,9 @@ const BoardMembershipPermissionsSelectStep = ({ defaultData, title, buttonConten
     }, []);
 
     const handleSubmit = useCallback(() => {
-      console.log('member add',data);
-      if (!dequal(data, defaultData)) {
-        onSelect(data);
-      }
-
+      onSelect(data);
       onClose();
-    }, [defaultData, onSelect, onClose, data]);
+    }, [ onSelect, onClose, data]);
 
     return (
       <>

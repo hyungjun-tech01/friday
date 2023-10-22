@@ -85,22 +85,24 @@ export interface ICurrent{
 
 // board_memebership 대응
 export interface IBoardUser{
+    boardMembersipId:string;
     boardId:string;
     userId:string;
     userName:string;
-    role:string;
+    role: 'editor'|'viewer'|null;
     avatarUrl:string;
     userEmail:string;
     canEdit:boolean;
-    canComment:boolean;
+    canComment:boolean|undefined;
 }
 
 // board memebership default 
 export const defaultBoardUser:IBoardUser = {
+    boardMembersipId:"",
     boardId:"",
     userId: "",
     userName:"",
-    role:"",
+    role: null,
     avatarUrl:"",
     userEmail: "",
     canEdit: true,
@@ -123,6 +125,46 @@ export const atomCurrentMyBoard = atom<ICurrent>({
 });
 
 // users get , set 
+export const usersSelector = selector ({
+    key:"usersSelector",
+    get:({get}) => {
+        const board = get(atomCurrentMyBoard); 
+        return (board.users);
+    },
+    set:({set, get}, newValue )=>{
+        if (Array.isArray(newValue) && newValue.length === 1) {
+            const [ newUser] = newValue;
+            const board = get(atomCurrentMyBoard); 
+            const updatedUsers = board.users.concat(newUser);
+            const newAtomCurrentMyBoard = {...board,  users: updatedUsers,};
+            return set(atomCurrentMyBoard, newAtomCurrentMyBoard);    
+        }
+    }
+});
+
+// uesers pool get/ set 
+export const usersPoolSelector = selector ({
+    key:"usersPoolSelector",
+    get:({get}) => {
+        const board = get(atomCurrentMyBoard); 
+        return (board.usersPool);
+    },
+    set:({set, get}, newValue )=>{
+        if (Array.isArray(newValue) && newValue.length === 1) {
+            const [newUserPool] = newValue;
+            const board = get(atomCurrentMyBoard);
+            const updatedUsersPool = board.usersPool.map((userPool:any) => {
+                if(userPool.userId === newUserPool.userId) {
+                    return{...userPool, ...newUserPool};
+                 }
+                return userPool;
+            })
+            const newAtomCurrentMyBoard = {...board,  usersPool: updatedUsersPool,};
+            return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+        }
+    }
+});
+
 
 // labels get. set
 

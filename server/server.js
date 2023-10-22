@@ -208,7 +208,8 @@ app.post('/currentBoard', async(req, res)=>{
             currentBoard = result.rows[0];
         }    
         const users = await pool.query(`
-            select t.user_id as "userId", 
+            select t.id as "boardMembershipId",
+                t.user_id as "userId", 
                 t1.name as "userName",
                 t1.avatar as "avatarUrl",
                 t1.email as "userEmail",
@@ -224,7 +225,8 @@ app.post('/currentBoard', async(req, res)=>{
                 currentBoard.users = users.rows;
          }
          const usersPool = await pool.query(`
-            select t1.id as "userId", 
+            select 
+                t1.id as "userId", 
                 t1.name as "userName",
                 t1.avatar as "avatarUrl",
                 t1.email as "userEmail",

@@ -3,8 +3,11 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Popup, Input } from 'semantic-ui-react';
 import {useCookies} from "react-cookie";
+import {useRecoilValue} from "recoil";
 
 import UserItem from '../UserItem';
+import {atomCurrentMyBoard} from "../../atoms/atomsBoard";
+
 import {IBoardUser, defaultBoardUser} from "../../atoms/atomsBoard";
 import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';
 
@@ -30,7 +33,6 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
     const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [defaultData, setDefaultData] = useState<IBoardUser>(defaultBoardUser);
-    
   const handleFieldChange = useCallback((event:any) => {
     const newData = event.target.value;
     setSearch(newData);
@@ -53,18 +55,16 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
     const searchField = useRef<any>(null);
 
     const handleUserSelect = useCallback(
-      (id:any) => {
+      (id:any, userName:any, avatarUrl:any, userEmail:any) => {
         if (permissionsSelectStep) {
             setStep(StepTypes.SELECT_PERMISSIONS);
             setDefaultData({...defaultData, 
-              userId:id,}); 
-           console.log('userselect ', defaultData, id);
+              userId:id, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl}); 
         } else {
           setDefaultData({...defaultData, 
-            userId:id,});
-         // onCreate({...defaultData, userId:id});
-         console.log('userselect ', defaultData);
-          onClose();
+            userId:id, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl});
+       
+         onClose();
         }
       },
       [defaultData, permissionsSelectStep, onClose],
@@ -72,17 +72,9 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
 
     const handleRoleSelect = useCallback(
       (data:any) => {
-        setDefaultData({...defaultData, 
-          userId:data.userId,
-          role:data.role, 
-          canComment: data.canComment});
-        // onCreate({...defaultData, 
-        //   userId:data.userId,
-        //   role:data.role, 
-        //   canComment: data.canComment}
-        // );
-      },
-      [defaultData],
+        onCreate(data);
+      }
+      ,[onCreate],
     );
 
     useEffect(() => {
@@ -102,6 +94,7 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
             return (
               <PermissionsSelectStep
                 defaultData={defaultData}
+                setDefaultData={setDefaultData}
                 title = "common.addBoardMember"
                 buttonContent="common.addBoardMember"
                 onSelect={handleRoleSelect}
@@ -144,7 +137,7 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
                   userName={user.userName}
                   avatarUrl={user.avatarUrl}
                   canEdit={user.canEdit}
-                  onSelect={() => handleUserSelect(user.userId)}
+                  onSelect={() => handleUserSelect(user.userId, user.userName, user.avatarUrl, user.userEmail)}
                 />
               ))}
             </div>
