@@ -85,7 +85,7 @@ export interface ICurrent{
 
 // board_memebership 대응
 export interface IBoardUser{
-    boardMembersipId:string;
+    boardMembershipId:string;
     boardId:string;
     userId:string;
     userName:string;
@@ -98,7 +98,7 @@ export interface IBoardUser{
 
 // board memebership default 
 export const defaultBoardUser:IBoardUser = {
-    boardMembersipId:"",
+    boardMembershipId:"",
     boardId:"",
     userId: "",
     userName:"",
@@ -139,6 +139,22 @@ export const usersSelector = selector ({
             const newAtomCurrentMyBoard = {...board,  users: updatedUsers,};
             return set(atomCurrentMyBoard, newAtomCurrentMyBoard);    
         }
+    }
+});
+
+// users deletor 
+export const userDeletor = selectorFamily({
+    key:"userDeletor",
+    get: (boardMembershipId) => ({ get }) => {
+        const board = get(atomCurrentMyBoard);
+        return board.users.filter((user: any) => user.boardMembershipId === boardMembershipId)[0];
+    },
+    set: (boardMembershipId) => ({set, get})=>{
+        const board = get(atomCurrentMyBoard);
+        const deletedUsers = board.users.filter( (user) => user.boardMembershipId !== boardMembershipId);
+        const newAtomCurrentMyBoard = {...board,  users: deletedUsers,};
+
+        return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
     }
 });
 

@@ -5,7 +5,10 @@ import {useSetRecoilState, useRecoilValue} from "recoil";
 import {useEffect} from "react";
 
 
-import {IBoardUser, usersPoolSelector, IModifyBoard, defaultModifyBoard, usersSelector, atomCurrentMyBoard} from "../../atoms/atomsBoard";
+import {IBoardUser, usersPoolSelector, 
+       IModifyBoard, defaultModifyBoard, 
+       usersSelector, atomCurrentMyBoard, 
+       userDeletor} from "../../atoms/atomsBoard";
 import styles from "./Membership.module.scss";
 import BoardMemberActionPopup from "../BoardMemberActionPopup";
 import BoardMemberPermission from "../BoardMemberPermission";
@@ -38,7 +41,8 @@ interface IboardMemberActionUserId{
 function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIsMemberLoading}:IMembershipProps){
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
-    const [positions, setPositions] = useState({positionX:-1, positionY:-1})
+    const [positions, setPositions] = useState({positionX:-1, positionY:-1});
+
     const onAddMemberPopup = (event:React.MouseEvent<HTMLButtonElement>)=>{
         console.log('onAddMemberPopup');
         setPositions({positionX:event.pageX,  positionY:event.pageY});
@@ -61,7 +65,9 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     const usersPool =  useRecoilValue(usersPoolSelector);
     const setUsersPool = useSetRecoilState(usersPoolSelector);
 
-   
+    const deleteboarduser = useRecoilValue(userDeletor(boardMemberActionUserId.userId));
+    const deleteUser = useSetRecoilState(userDeletor(boardMemberActionUserId.userId));
+    
     const handleDeleteClick = () => { 
         // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
         console.log('handleDeleteClick');
@@ -78,7 +84,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         if(response){
             if(response.outBoardMembershipId){  // 성공하면 
                 const newuser:IBoardUser = {
-                    boardMembersipId:response.outBoardMembershipId,
+                    boardMembershipId:response.outBoardMembershipId,
                     boardId:boardId,
                     userId:data.userId,
                     userName:data.userName,
@@ -111,7 +117,10 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         const response = await apiModifyBoard(board);
         if(response){
             if(response.boardId){  // 성공하면 
-                //recoil 삭제 
+                //recoil 삭제 boardUser 삭제, userPool update (check 제거) 
+                console.log('deleteboarduser', deleteboarduser);
+                deleteUser(deleteboarduser);
+
                 setDeleteStep(false); // 
                 setBoardMemberAction(true);
                 setIsMemberLoading(!isMemberLoading);
@@ -150,7 +159,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                             userName={user.userName} 
                             userEmail={user.userEmail}
                             avatarUrl={user.avatarUrl}
-                            canEdit = {user.canEdit}/>
+                            canEdit = {currentBoard.canEdit}/>
                         {user.userName}
                     </span> 
                 ))}
