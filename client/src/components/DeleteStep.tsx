@@ -6,10 +6,12 @@ import { Button , Popup as SemanticUIPopup} from 'semantic-ui-react';
 import styles from '../scss/DeleteStep.module.scss';
 
 interface IDeleteStep{
+    boardId : string;
+    userId : string;
     title : string;
     content : string;
     buttonContent : string;
-    onConfirm : ()=>void;
+    onConfirm : (userId:string, delboardId:string)=>void;
     onBack : () => void;
 }
 const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -22,7 +24,7 @@ const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
     e.currentTarget.style.color = 'white';
   };
   
-function DeleteStep ({ title, content, buttonContent, onConfirm, onBack }:IDeleteStep) {
+function DeleteStep ({ boardId, userId, title, content, buttonContent, onConfirm, onBack }:IDeleteStep) {
     return (
         <div className={styles.overlay} > 
             <div className={styles.modal} >
@@ -44,7 +46,7 @@ function DeleteStep ({ title, content, buttonContent, onConfirm, onBack }:IDelet
                       }} 
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}                      
-                    content={buttonContent} onClick={onConfirm} />
+                    content={buttonContent} onClick={()=>onConfirm(userId, boardId)} />
               </div>
             </div>  
         </div>

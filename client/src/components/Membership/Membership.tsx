@@ -70,7 +70,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     
     const handleDeleteClick = () => { 
         // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
-        console.log('handleDeleteClick');
+        console.log('handleDeleteClick', boardMemberActionUserId.userId);
         setDeleteStep(true);
         setBoardMemberAction(true);
       }
@@ -109,28 +109,33 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
             }
         }        
     }
-    const onConfirm = async ()=>{
-        setBoardMemberAction(false);
+    const handleUserDelete = useCallback(async (userId:string, delboardId:string) => {
+        console.log('delete user : ', userId);
         // server 처리 
-        const board : IModifyBoard= {...defaultModifyBoard, boardMembershipActionType:'DELETE', boardMembershipUserId:boardMemberActionUserId.userId, boardId:boardId, userId:cookies.UserId};
+        const boardAA : IModifyBoard= {...defaultModifyBoard, boardMembershipActionType:'DELETE', 
+            boardMembershipUserId:userId, 
+            boardId:delboardId, userId:cookies.UserId};
     
-        const response = await apiModifyBoard(board);
+        console.log('deleteUser', boardAA);
+        const response = await apiModifyBoard(boardAA);
         if(response){
-            if(response.boardId){  // 성공하면 
-                //recoil 삭제 boardUser 삭제, userPool update (check 제거) 
-                console.log('deleteboarduser', deleteboarduser);
-                deleteUser(deleteboarduser);
-
-                setDeleteStep(false); // 
-                setBoardMemberAction(true);
-                setIsMemberLoading(!isMemberLoading);
+            if(response.boardId){ 
+              const updatedCurrentUsers = boardUser.filter(user => user.userId !== userId);
+              //setCurrentCards(updatedCurrentUsers);
+              console.log('updatedCurrentUsers', updatedCurrentUsers);
+              setDeleteStep(false); // 
+              setBoardMemberAction(true);
+              setIsMemberLoading(!isMemberLoading);
             }else if(response.message){
-                setDeleteStep(true);  // 에러 메세지를 표현 해 주어야 하나??
+                console.log('Fail to delete card', response.message);
+                //    setDeleteStep(true);  // 에러 response 표현 해 주어야 하나??
             }else{
-                setDeleteStep(true);
+                //    setDeleteStep(true);
             }
         }
-    };
+    },[]);
+        
+
     const handleClick = useCallback(()=>{
         console.log("Temporary function");
     }, [])
@@ -172,7 +177,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                 }
                 { deleteStep&&
                     <div style = {{top:`${boardMemberActionUserId.positionY}px`, left:`${boardMemberActionUserId.positionX}px` , position:'absolute'}}>
-                        <DeleteStep title={t('common.leaveBoardTitle')} content={t('common.leaveBoardContent')} buttonContent={t('action.leaveBoardButton')} onConfirm={onConfirm}  onBack={onBack} />
+                        <DeleteStep boardId={boardId} userId={boardMemberActionUserId.userId} title={t('common.leaveBoardTitle')} content={t('common.leaveBoardContent')} buttonContent={t('action.leaveBoardButton')} onConfirm={handleUserDelete}  onBack={onBack} />
                     </div>
         }            
                 {/* Add Borad Member 기능  */}
