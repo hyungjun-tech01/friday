@@ -730,9 +730,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             height: height,
             thumbnailsExtension: fileExt,
           };
-        };
-      }
-
+// 위치 이동 이동 
       const response = await apiUploadAttatchment(formData);
       if (response) {
         console.log('handleAttachmentCreate / response 11: ', response);
@@ -762,7 +760,41 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           updateCard(newCard);
           setCard(newCard);
         }
+      }      
+
+        };
       }
+
+      // const response = await apiUploadAttatchment(formData);
+      // if (response) {
+      //   console.log('handleAttachmentCreate / response 11: ', response);
+      //   if (response.message) {
+      //     console.log('Failt to upload file');
+      //   } else {
+      //     const newAttachment: IAttachment = {
+      //       cardAttachementId: response.outAttachmentId,
+      //       cardId: card.cardId,
+      //       creatorUserId: cookies.UserId,
+      //       creatorUserName: cookies.UserName,
+      //       dirName: response.filePath,
+      //       fileName: fileName,
+      //       cardAttachmentName: fileName,
+      //       createdAt: response.outAttachmentCreatedAt,
+      //       updatedAt: null,
+      //       image: imageInfo,
+      //       url: response.filePath,
+      //       coverUrl: '',
+      //       isCover: false,
+      //       isPersisted: false,
+      //     };
+      //     const newCard = {
+      //       ...card,
+      //       attachments: card.attachments.concat(newAttachment),
+      //     };
+      //     updateCard(newCard);
+      //     setCard(newCard);
+      //   }
+      // }
     },
     [card, cookies.UserId, cookies.UserName, setCard]
   );
