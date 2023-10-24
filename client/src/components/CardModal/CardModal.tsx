@@ -776,7 +776,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           ...defaultModifyCard,
           cardId: card.cardId,
           userId: cookies.UserId,
-          coverAttachmentId: id,
+          cardAttachmentId: id,
           cardAttachmentActionType: 'UPDATE',
           cardAttachmentName: data.name,
         };
