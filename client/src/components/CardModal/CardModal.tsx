@@ -705,8 +705,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         fileNameSplitted.length > 1
           ? fileNameSplitted[fileNameSplitted.length - 1]
           : '';
-      console.log('handleAttachmentCreate / file name : ', fileName);
-      console.log('handleAttachmentCreate / file ext : ', fileExt);
 
       const formData = new FormData();
       formData.append('cardId', card.cardId);
@@ -733,9 +731,8 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 // 위치 이동 이동 
       const response = await apiUploadAttatchment(formData);
       if (response) {
-        console.log('handleAttachmentCreate / response 11: ', response);
         if (response.message) {
-          console.log('Failt to upload file');
+          console.log('Fail to upload file');
         } else {
           const newAttachment: IAttachment = {
             cardAttachementId: response.outAttachmentId,
@@ -748,14 +745,14 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             createdAt: response.outAttachmentCreatedAt,
             updatedAt: null,
             image: imageInfo,
-            url: response.filePath,
+            url: response.outAttachmentUrl,
             coverUrl: '',
             isCover: false,
             isPersisted: false,
           };
           const newCard = {
             ...card,
-            attachments: card.attachments.concat(newAttachment),
+            attachments: [newAttachment, ...card.attachments],
           };
           updateCard(newCard);
           setCard(newCard);

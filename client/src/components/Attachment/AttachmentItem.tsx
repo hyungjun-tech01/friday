@@ -15,7 +15,7 @@ interface IAttachmentItemProps {
   isCover: boolean;
   //isPersisted: boolean;
   canEdit: boolean;
-  onClick?: () => void;
+  onClick?: any;
   onCoverSelect: () => void;
   onCoverDeselect: () => void;
   onUpdate: (data: any) => void;
