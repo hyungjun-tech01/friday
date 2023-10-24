@@ -127,7 +127,9 @@ export const apiUploadAttatchment = async (data:FormData) => {
                              cardId:cardId, cardAttachmentActionType:'ADD'};
                 const result = await apiModifyCard(card);
                 return({fileName:responseMessage.fileName, filePath:responseMessage.filePath, outAttachmentId:result.outAttachmentId,
-                    outAttachmentCreatedAt:result.outAttachmentCreatedAt, outAttachmentUpdatedAt:result.outAttachmentUpdatedAt})
+                    outAttachmentCreatedAt:result.outAttachmentCreatedAt, outAttachmentUpdatedAt:result.outAttachmentUpdatedAt,
+                    outAttachmentUrl:result.outAttachmentUrl
+                })
               }
             else
                 return ({message:'파일 업로드 중 오류가 발생했습니다.'});

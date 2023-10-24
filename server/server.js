@@ -925,23 +925,28 @@ app.post('/modifyCard', async(req, res) => {
 
         const outCardMembershipId = response.rows[0].x_card_membership_id;
         const outCardLabelId = response.rows[0].x_card_label_id;
-        const outTaskId = response.rows[0].x_task_id;
-        const outAttachmentId = response.rows[0].x_attachment_id;
+        
+
         const outCommentId = response.rows[0].x_comment_id;
         const outCommentCreatedAt = response.rows[0].x_comment_created_at;
         const outCommentUpdatedAt = response.rows[0].x_comment_updated_at;
 
         const outMembershipCreatedAt = response.rows[0].x_card_membership_created_at;
+
+        const outTaskId = response.rows[0].x_task_id;
         const outTaskCreatedAt = response.rows[0].x_card_task_created_at;
         const outTaskUpdatedAt = response.rows[0].x_card_task_updated_at;
+
+        const outAttachmentId = response.rows[0].x_attachment_id;
         const outAttachmentCreatedAt = response.rows[0].x_card_attachment_created_at;
         const outAttachmentUpdatedAt = response.rows[0].x_card_attachment_updatec_at;
+        const outAttachmentUrl = MYHOST+'/'+ cardAttachmentDirname;
         
         res.json({ cardId:cardId, outCardMembershipId : outCardMembershipId, outCardLabelId:outCardLabelId,
             outTaskId:outTaskId, outAttachmentId:outAttachmentId, outCommentId:outCommentId, outCommentCreatedAt:outCommentCreatedAt,
             outCommentUpdatedAt:outCommentUpdatedAt, outMembershipCreatedAt:outMembershipCreatedAt, 
             outTaskCreatedAt:outTaskCreatedAt, outTaskUpdatedAt:outTaskUpdatedAt, outAttachmentCreatedAt:outAttachmentCreatedAt,
-            outAttachmentUpdatedAt:outAttachmentUpdatedAt,
+            outAttachmentUpdatedAt:outAttachmentUpdatedAt, outAttachmentUrl:outAttachmentUrl
          }); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){

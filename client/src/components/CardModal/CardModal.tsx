@@ -735,7 +735,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
       const response = await apiUploadAttatchment(formData);
       if (response) {
-        console.log('handleAttachmentCreate / response : ', response);
+        console.log('handleAttachmentCreate / response 11: ', response);
         if (response.message) {
           console.log('Failt to upload file');
         } else {

@@ -115,9 +115,7 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
     return (
       <>
         <CustomPopupHeader>
-          {t(title, {
-            context: 'title',
-          })}
+          {title}
         </CustomPopupHeader>
         <Popup.Content>
           <Input
