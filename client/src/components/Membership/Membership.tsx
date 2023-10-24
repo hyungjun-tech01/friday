@@ -124,7 +124,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
             if(response.boardId){ 
               const updatedCurrentUsers = boardUser.filter(user => user.userId !== userId);
               const delUser = boardUser.filter(user => user.userId === userId)[0];
-              console.log('updatedCurrentUsers', updatedCurrentUsers);
+              console.log('updatedCurrentUsers', boardUser, updatedCurrentUsers, userId);
               setUser(updatedCurrentUsers);
 
               const newuser:IBoardUser = {...delUser, 
