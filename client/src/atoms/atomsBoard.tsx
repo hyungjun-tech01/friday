@@ -92,7 +92,7 @@ export interface IBoardUser{
     role: 'editor'|'viewer'|null;
     avatarUrl:string;
     userEmail:string;
-    canEdit:boolean;
+    canEdit:boolean|null;
     canComment:boolean|undefined;
 }
 
@@ -132,31 +132,16 @@ export const usersSelector = selector ({
         return (board.users);
     },
     set:({set, get}, newValue )=>{
-        if (Array.isArray(newValue) && newValue.length === 1) {
-            const [ newUser] = newValue;
-            const board = get(atomCurrentMyBoard); 
-            const updatedUsers = board.users.concat(newUser);
-            const newAtomCurrentMyBoard = {...board,  users: updatedUsers,};
-            return set(atomCurrentMyBoard, newAtomCurrentMyBoard);    
+        const board = get(atomCurrentMyBoard); 
+        if (Array.isArray(newValue)) {
+            const updatedUsers = [...newValue];
+            console.log('usersSelector', updatedUsers);
+            const newAtomCurrentMyBoard = {...board, users: updatedUsers};
+            set(atomCurrentMyBoard, newAtomCurrentMyBoard);
         }
     }
 });
 
-// users deletor 
-export const userDeletor = selectorFamily({
-    key:"userDeletor",
-    get: (boardMembershipId) => ({ get }) => {
-        const board = get(atomCurrentMyBoard);
-        return board.users.filter((user: any) => user.boardMembershipId === boardMembershipId)[0];
-    },
-    set: (boardMembershipId) => ({set, get})=>{
-        const board = get(atomCurrentMyBoard);
-        const deletedUsers = board.users.filter( (user) => user.boardMembershipId !== boardMembershipId);
-        const newAtomCurrentMyBoard = {...board,  users: deletedUsers,};
-
-        return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
-    }
-});
 
 // uesers pool get/ set 
 export const usersPoolSelector = selector ({

@@ -9,7 +9,7 @@ interface IUserProps{
     userName:string;
     userEmail?:string;
     avatarUrl : string | null;
-    canEdit?: boolean;
+    canEdit?: boolean|null;
     size ?: UserSize;
     onClick ?: ()=>void | undefined;
     showAnotherPopup? : (value:{userId:string, userName:string, userEmail:string, avatarUrl:string, canEdit:boolean, role:string, positionX:number, positionY:number}) => void;
@@ -50,18 +50,17 @@ function User({userId, userName, userEmail, avatarUrl=null, canEdit, size='mediu
         </span>
       );    
     const isDisabled = false;
-    const showPopup  = () => {
-      console.log("another popup");
-    };
+
     const onCreate = (event:React.MouseEvent<HTMLButtonElement>)=> {
       
       if (avatarUrl === null) avatarUrl = '';
       if(userId && userEmail && (avatarUrl==='' || avatarUrl)&& canEdit && showAnotherPopup) {
+        console.log('user showAnotherPopup', userId)
        showAnotherPopup({userId:userId, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl, canEdit:canEdit, role:"", positionX:event.pageX, positionY:event.pageY});
       }
     };
-    return onClick ? (
-      <button type="button" disabled={isDisabled} className={styles.button} onClick={ showAnotherPopup ? onCreate : onClick}>
+    return canEdit ? (
+      <button type="button" disabled={isDisabled} className={styles.button} onClick={ onCreate}>
         {contentNode}
       </button>
     ) : (

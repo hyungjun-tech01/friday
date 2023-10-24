@@ -8,7 +8,7 @@ import {useEffect} from "react";
 import {IBoardUser, usersPoolSelector, 
        IModifyBoard, defaultModifyBoard, 
        usersSelector, atomCurrentMyBoard, 
-       userDeletor} from "../../atoms/atomsBoard";
+       } from "../../atoms/atomsBoard";
 import styles from "./Membership.module.scss";
 import BoardMemberActionPopup from "../BoardMemberActionPopup";
 import BoardMemberPermission from "../BoardMemberPermission";
@@ -65,8 +65,8 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     const usersPool =  useRecoilValue(usersPoolSelector);
     const setUsersPool = useSetRecoilState(usersPoolSelector);
 
-    const deleteboarduser = useRecoilValue(userDeletor(boardMemberActionUserId.userId));
-    const deleteUser = useSetRecoilState(userDeletor(boardMemberActionUserId.userId));
+  //  const deleteboarduser = useRecoilValue(userDeletor(boardMemberActionUserId.userId));
+  //  const deleteUser = useSetRecoilState(userDeletor(boardMemberActionUserId.userId));
     
     const handleDeleteClick = () => { 
         // 보드에서 멤버를 제거하는 Modal 띄움 DeleteStep
@@ -95,7 +95,8 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                     canComment: data.canComment
                 }
             //recoil 추가 
-            setUser([newuser]);
+            const updatedUsers = currentBoard.users.concat(newuser);
+            setUser(updatedUsers);
             setUsersPool([newuser]);
             //boardUsers = boardUsers.concat(user);
 
@@ -111,6 +112,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     }
     const handleUserDelete = useCallback(async (userId:string, delboardId:string) => {
         console.log('delete user : ', userId);
+        setDeleteStep(false); 
         // server 처리 
         const boardAA : IModifyBoard= {...defaultModifyBoard, boardMembershipActionType:'DELETE', 
             boardMembershipUserId:userId, 
@@ -121,13 +123,21 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         if(response){
             if(response.boardId){ 
               const updatedCurrentUsers = boardUser.filter(user => user.userId !== userId);
-              //setCurrentCards(updatedCurrentUsers);
+              const delUser = boardUser.filter(user => user.userId === userId)[0];
               console.log('updatedCurrentUsers', updatedCurrentUsers);
-              setDeleteStep(false); // 
-              setBoardMemberAction(true);
-              setIsMemberLoading(!isMemberLoading);
+              setUser(updatedCurrentUsers);
+
+              const newuser:IBoardUser = {...delUser, 
+                role:null,
+                canEdit:null,
+            }
+            console.log('delUser', newuser);
+              setUsersPool([newuser]);
+              setIsMemberLoading(false);
+              setBoardMemberAction(false);
+              setBoardMemberActionUserId({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:canEdit,role:"", positionX:-1, positionY:-1 });
             }else if(response.message){
-                console.log('Fail to delete card', response.message);
+                console.log('Fail to     delete card', response.message);
                 //    setDeleteStep(true);  // 에러 response 표현 해 주어야 하나??
             }else{
                 //    setDeleteStep(true);
@@ -157,7 +167,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         return(
             <span className={styles.users}>
                 {/* 보드에 접근 가능한 사용자 */}``
-                {!boardMemberAction&& boardUser.map((user)=>(
+                { boardUser.map((user)=>(
                     <span key={user.userId} className={styles.user}>
                         <User userId={user.userId} onClick={handleClick} size="small"
                             showAnotherPopup={setBoardMemberActionUserId} 
@@ -179,7 +189,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                     <div style = {{top:`${boardMemberActionUserId.positionY}px`, left:`${boardMemberActionUserId.positionX}px` , position:'absolute'}}>
                         <DeleteStep boardId={boardId} userId={boardMemberActionUserId.userId} title={t('common.leaveBoardTitle')} content={t('common.leaveBoardContent')} buttonContent={t('action.leaveBoardButton')} onConfirm={handleUserDelete}  onBack={onBack} />
                     </div>
-        }            
+                }            
                 {/* Add Borad Member 기능  */}
                 {/* canEdit  && 
                 <Button icon="add user" onClick={onAddMemberPopup} style={{backgroundColor:'rgba(0, 0, 0, 0.24)',
@@ -208,14 +218,14 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                     <Button icon="add user" className={styles.addUser} />
                 </AddPopup>
                 }
-                {boardMemeberPermissionUserId.userId !== "" &&
+                {/*boardMemeberPermissionUserId.userId !== "" &&
                   <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
                   <BoardMemberPermission addBoardId={boardId} addMember={boardMemeberPermissionUserId}
                  title={t('common.selectPermission')} content={t('common.leaveBoardContent')} buttonContent={t('action.addMember')}  
                  setBoardMemeberPermissionUserId={setBoardMemeberPermissionUserId}
                  onMemberConfirm={onMemberConfirm}  onBack={onMemberBack}  />
                 </div>
-                }  
+            */}  
             </span>    
         );
     }

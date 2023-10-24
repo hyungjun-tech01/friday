@@ -96,15 +96,15 @@ BEGIN
 		and user_id = i_board_membership_user_id::bigint;
 
       elsif (i_board_membership_action_type  = 'DELETE') then
-	     select count(*) into v_board_membership_count
+	     /* select count(*) into v_board_membership_count
 		 from board_membership t
 		 where t.board_id = i_board_id::bigint
 		 and t.role = 'editor';
-		 if(v_board_membership_count>=2) then  -- editor가 1명 이상은 있어야 
+		 if(v_board_membership_count>=2) then  -- editor가 1명 이상은 있어야  */
 			delete from board_membership t
 			where t.board_id = i_board_id::bigint
 			and t.user_id = i_board_membership_user_id::bigint;
-		 end if;
+		 /* end if; */
       end if;
 	   -- action 에 insert
        select COALESCE(i_board_membership_user_id, ' '), COALESCE(i_board_membership_role, ' ') , COALESCE(i_board_id, v_board_id::text), COALESCE(i_board_membership_can_comment, ' '),
