@@ -129,6 +129,7 @@ const core = {
       save: '저장',
       showAllAttachments: '모든 첨부파일 보기 ({{hidden}} 숨기기)',
       showDetails: '자세히 보기',
+      showFewerAttachments: '일부 첨부파일만 보기',
       start: '시작',
       stop: '중지',
       subscribe: '구독',

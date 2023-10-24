@@ -750,7 +750,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             createdAt: response.outAttachmentCreatedAt,
             updatedAt: null,
             image: imageInfo,
-            url: response.filePath,
+            url: response.outAttachmentUrl,
             coverUrl: '',
             isCover: false,
             isPersisted: false,

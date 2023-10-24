@@ -111,11 +111,11 @@ const Attachments = ({
               name={item.cardAttachmentName}
               url={item.url}
               coverUrl={item.coverUrl}
-              createdAt={new Date(item.createdAt)}
+              createdAt={item.updatedAt ? new Date(item.updatedAt) : new Date(item.createdAt)}
               isCover={item.isCover}
               //isPersisted={item.isPersisted}
               canEdit={canEdit}
-              onClick={item.image || isPdf ? () => open : undefined}
+              onClick={item.image || isPdf ? open : undefined}
               onCoverSelect={() => handleCoverSelect(item.cardAttachementId)}
               onCoverDeselect={handleCoverDeselect}
               onUpdate={(data: any) =>
