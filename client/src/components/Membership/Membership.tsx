@@ -18,6 +18,9 @@ import DeleteStep from "../DeleteStep";
 import {apiModifyBoard} from "../../api/board";
 import  usePopup  from '../../lib/hook/use-popup';
 import AddStep from "./AddStep";
+import ActionsStep from "./ActionsStep";
+
+
 import permissionsSelectStep from "../BoardMembershipPermissionsSelectStep";
 
 interface IMembershipProps {
@@ -49,6 +52,8 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         setOnAddPopup(true);
     }
     const AddPopup = usePopup(AddStep);
+    const ActionsPopup = usePopup(ActionsStep);
+
     const [onAddPopup, setOnAddPopup] = useState(false);
     // userId 와 현재 클릭한 포지션 획득 
     const [boardMemberActionUserId, setBoardMemberActionUserId] = useState<IboardMemberActionUserId>({userId:"", userName:"", avatarUrl:"", userEmail:"", canEdit:canEdit,role:"", positionX:-1, positionY:-1 });
@@ -145,6 +150,13 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         }
     },[]);
         
+    const onDelete = useCallback( async(userId:string)=>{
+
+    },[]);
+
+    const onUpdate = useCallback( async(userId:string, data:any)=>{
+
+    },[]);
 
     const handleClick = useCallback(()=>{
         console.log("Temporary function");
@@ -169,12 +181,29 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                 {/* 보드에 접근 가능한 사용자 */}``
                 { boardUser.map((user)=>(
                     <span key={user.userId} className={styles.user}>
+                     <ActionsPopup
+                        membership={user}
+                        permissionsSelectStep={permissionsSelectStep}
+                        leaveButtonContent={t('action.leaveBoard')}
+                        leaveConfirmationTitle={t('common.leaveBoard')}
+                        leaveConfirmationContent={t('common.areYouSureYouWantToLeaveBoard')}
+                        leaveConfirmationButtonContent={t('action.leaveBoard')}
+                        deleteButtonContent={t('action.removeFromBoard')}
+                        deleteConfirmationTitle={t('common.removeMember')}
+                        deleteConfirmationContent={t('common.areYouSureYouWantToRemoveThisMemberFromBoard')}
+                        deleteConfirmationButtonContent={t('action.removeMember')}
+                        canEdit={canEdit}
+                        canLeave={boardUser.length > 1 ? true:false}
+                        onUpdate={(data:any) => onUpdate(user.userId, data)}
+                        onDelete={() => onDelete(user.userId)}
+                     >   
                         <User userId={user.userId} onClick={handleClick} size="small"
                             showAnotherPopup={setBoardMemberActionUserId} 
                             userName={user.userName} 
                             userEmail={user.userEmail}
                             avatarUrl={user.avatarUrl}
                             canEdit = {currentBoard.canEdit}/>
+                    </ActionsPopup>    
                         {user.userName}
                     </span> 
                 ))}
