@@ -137,6 +137,16 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
         {editPermissions&&
         <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
         <EditPermissions boardId={boardId} userId={userId} canEdit={canEdit}/>
+          {/* <PermissionsSelectStep
+                defaultData={defaultData}
+                setDefaultData={setDefaultData}
+                title = "common.addBoardMember"
+                buttonContent="common.addBoardMember"
+                onSelect={handleRoleSelect}
+                onBack={handleBack}
+                onClose={onClose}
+        /> */}
+
         </div>
         }
 

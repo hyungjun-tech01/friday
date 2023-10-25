@@ -696,7 +696,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   //------------------Attachment Functions------------------
   const handleAttachmentCreate = useCallback(
-    async (file: any) => {
+    (file: any) => {
       console.log('handleAttachmentCreate : ', file);
       const fileData = file.file;
       const fileName = fileData.name;
@@ -706,17 +706,50 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           ? fileNameSplitted[fileNameSplitted.length - 1]
           : '';
 
+      const upload = (data:FormData) => {
+        const response = apiUploadAttatchment(data);
+        response
+          .then((result) => {
+            const newAttachment: IAttachment = {
+              cardAttachementId: result.outAttachmentId,
+              cardId: card.cardId,
+              creatorUserId: cookies.UserId,
+              creatorUserName: cookies.UserName,
+              dirName: result.filePath,
+              fileName: fileName,
+              cardAttachmentName: fileName,
+              createdAt: result.outAttachmentCreatedAt,
+              updatedAt: null,
+              image: imageInfo,
+              url: result.outAttachmentUrl,
+              coverUrl: '',
+              isCover: false,
+              isPersisted: false,
+            };
+            const newCard = {
+              ...card,
+              attachments: [newAttachment, ...card.attachments],
+            };
+            updateCard(newCard);
+            setCard(newCard);
+          })
+          .catch((error) => {
+            console.log('Fail to upload file :', error);
+          });
+      }
+
       const formData = new FormData();
       formData.append('cardId', card.cardId);
       formData.append('fileName', fileName);
       formData.append('fileExt', fileExt);
       formData.append('userId', cookies.UserId);
       formData.append('file', fileData);
+
       let imageInfo: IImage | null = null;
       if (fileData.type.startsWith('image/')) {
         const image = new Image();
         image.src = URL.createObjectURL(fileData);
-        image.onload = async () => {
+        image.onload = () => {
           const width = image.width;
           const height = image.height;
 
@@ -728,72 +761,16 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             height: height,
             thumbnailsExtension: fileExt,
           };
-// 위치 이동 이동 
-      const response = await apiUploadAttatchment(formData);
-      if (response) {
-        if (response.message) {
-          console.log('Fail to upload file');
-        } else {
-          const newAttachment: IAttachment = {
-            cardAttachementId: response.outAttachmentId,
-            cardId: card.cardId,
-            creatorUserId: cookies.UserId,
-            creatorUserName: cookies.UserName,
-            dirName: response.filePath,
-            fileName: fileName,
-            cardAttachmentName: fileName,
-            createdAt: response.outAttachmentCreatedAt,
-            updatedAt: null,
-            image: imageInfo,
-            url: response.outAttachmentUrl,
-            coverUrl: '',
-            isCover: false,
-            isPersisted: false,
-          };
-          const newCard = {
-            ...card,
-            attachments: [newAttachment, ...card.attachments],
-          };
-          updateCard(newCard);
-          setCard(newCard);
-        }
-      }      
 
+          upload(formData);
+          URL.revokeObjectURL(image.src);
         };
       }
-
-      // const response = await apiUploadAttatchment(formData);
-      // if (response) {
-      //   console.log('handleAttachmentCreate / response 11: ', response);
-      //   if (response.message) {
-      //     console.log('Failt to upload file');
-      //   } else {
-      //     const newAttachment: IAttachment = {
-      //       cardAttachementId: response.outAttachmentId,
-      //       cardId: card.cardId,
-      //       creatorUserId: cookies.UserId,
-      //       creatorUserName: cookies.UserName,
-      //       dirName: response.filePath,
-      //       fileName: fileName,
-      //       cardAttachmentName: fileName,
-      //       createdAt: response.outAttachmentCreatedAt,
-      //       updatedAt: null,
-      //       image: imageInfo,
-      //       url: response.filePath,
-      //       coverUrl: '',
-      //       isCover: false,
-      //       isPersisted: false,
-      //     };
-      //     const newCard = {
-      //       ...card,
-      //       attachments: card.attachments.concat(newAttachment),
-      //     };
-      //     updateCard(newCard);
-      //     setCard(newCard);
-      //   }
-      // }
+      else {
+        upload(formData);
+      }
     },
-    [card, cookies.UserId, cookies.UserName, setCard]
+    [card, cookies.UserId, cookies.UserName ]
   );
 
   const handleAttachmentUpdate = useCallback(
@@ -816,7 +793,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             const found_idx = card.attachments.findIndex(
               (item) => item.cardAttachementId === id
             );
-            if(found_idx !== -1) {
+            if (found_idx !== -1) {
               const newAttachment: IAttachment = {
                 ...card.attachments[found_idx],
                 cardAttachmentName: data.name,
@@ -833,15 +810,14 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               };
               updateCard(newCard);
               setCard(newCard);
-            }
-            else {
+            } else {
               console.log("Couldn't find attachment");
             }
           })
           .catch((message) => {
             console.log('Fail to update name of attachment', message);
           });
-      };
+      }
     },
     [card, cookies.UserId]
   );
