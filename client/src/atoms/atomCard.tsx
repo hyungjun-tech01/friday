@@ -75,7 +75,7 @@ export interface IImage {
 export interface IModifyCard{
    cardId : string ;     // number 
     userId : string;       // number 
-    cardActionType : 'ADD'|'UPDATE'|'DELETE'|null;    // 나머지는 모두 string 
+    cardActionType : 'ADD'|'UPDATE'|'DELETE'|'MOVE'|null;    // 나머지는 모두 string 
     listId : string | null;
     boardId : string | null;
     description : string |null ;
