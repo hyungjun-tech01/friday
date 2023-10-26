@@ -155,7 +155,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
 
     },[]);
 
-    const onUpdate = useCallback( async(userId:string, data:any)=>{
+    const onUpdate = useCallback( async(boardId:string, userId:string, data:any)=>{
         console.log('membership ', boardId, userId, data);
         // server 처리 할 것 .
         const board : IModifyBoard= {...defaultModifyBoard,
@@ -221,6 +221,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                 { boardUser.map((user)=>(
                     <span key={user.userId} className={styles.user}>
                      <ActionsPopup
+                        boardId={boardId}
                         membership={user}
                         permissionsSelectStep={permissionsSelectStep}
                         leaveButtonContent={t('action.leaveBoard')}
@@ -233,8 +234,8 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                         deleteConfirmationButtonContent={t('action.removeMember')}
                         canEdit={canEdit}
                         canLeave={boardUser.length > 1 ? true:false}
-                        onUpdate={(userId:any, data:any) => onUpdate(user.userId, data)}
-                        onDelete={() => onDelete(user.userId)}
+                        onUpdate={(boardId:any, userId:any, data:any) => onUpdate(boardId, userId, data)}
+                        onDelete={(userId:any, delBoardId:any) => handleUserDelete(userId, delBoardId)}
                      >   
                         <User
                             name={user.userName}
