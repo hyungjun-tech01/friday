@@ -91,7 +91,8 @@ BEGIN
 	  elsif(i_board_membership_action_type  = 'UPDATE') then 			
 	  	update board_membership t 
 		set role = COALESCE(i_board_membership_role,role),
-		    can_comment = COALESCE(i_board_membership_can_comment::boolean, can_comment)
+		    can_comment = COALESCE(i_board_membership_can_comment::boolean, can_comment),
+			updated_at = now()
 		where board_id = i_board_id::bigint 
 		and user_id = i_board_membership_user_id::bigint;
 

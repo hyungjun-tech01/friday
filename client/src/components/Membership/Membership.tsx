@@ -12,7 +12,7 @@ import {IBoardUser, usersPoolSelector,
 import styles from "./Membership.module.scss";
 import BoardMemberActionPopup from "../BoardMemberActionPopup";
 import BoardMemberPermission from "../BoardMemberPermission";
-import User from "../User";
+import User from "./User";
 import {useCallback, useState} from "react";
 import DeleteStep from "../DeleteStep";
 import {apiModifyBoard} from "../../api/board";
@@ -42,6 +42,7 @@ interface IboardMemberActionUserId{
     positionY:number;
 }
 function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIsMemberLoading}:IMembershipProps){
+    console.log('membership board id ', boardId);
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [positions, setPositions] = useState({positionX:-1, positionY:-1});
@@ -155,7 +156,45 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     },[]);
 
     const onUpdate = useCallback( async(userId:string, data:any)=>{
+        console.log('membership ', boardId, userId, data);
+        // server 처리 할 것 .
+        const board : IModifyBoard= {...defaultModifyBoard,
+                    boardMembershipActionType:'UPDATE', 
+                    boardMembershipUserId:userId, 
+                    boardMembershipRole:data.role, 
+                    boardMembershipCanComment:data.canComment?'true':'false',
+                    boardId:boardId, 
+                    userId:cookies.UserId};
 
+        console.log('membership', board);
+        const response = await apiModifyBoard(board);
+        /* if(response){
+            if(response.outBoardMembershipId){  // 성공하면 
+                const newuser:IBoardUser = {
+                    boardMembershipId:response.outBoardMembershipId,
+                    boardId:boardId,
+                    userId:data.userId,
+                    userName:data.userName,
+                    role: data.role, 
+                    avatarUrl: data.avatarUrl,
+                    userEmail: data.userEmail,
+                    canEdit: data.canEdit,
+                    canComment: data.canComment
+                }
+            //recoil 추가 
+            const updatedUsers = currentBoard.users.concat(newuser);
+            setUser(updatedUsers);
+            setUsersPool([newuser]);
+            //boardUsers = boardUsers.concat(user);
+
+            // state  추가 
+            setIsMemberLoading(!isMemberLoading);
+            setBoardMemberAction(false);
+            }else if(response.message){
+            //    setDeleteStep(true);  // 에러 메세지를 표현 해 주어야 하나??
+            }else{
+            //    setDeleteStep(true);
+            }     */   
     },[]);
 
     const handleClick = useCallback(()=>{
@@ -194,26 +233,28 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                         deleteConfirmationButtonContent={t('action.removeMember')}
                         canEdit={canEdit}
                         canLeave={boardUser.length > 1 ? true:false}
-                        onUpdate={(data:any) => onUpdate(user.userId, data)}
+                        onUpdate={(userId:any, data:any) => onUpdate(user.userId, data)}
                         onDelete={() => onDelete(user.userId)}
                      >   
-                        <User userId={user.userId} onClick={handleClick} size="small"
-                            showAnotherPopup={setBoardMemberActionUserId} 
-                            userName={user.userName} 
-                            userEmail={user.userEmail}
+                        <User
+                            name={user.userName}
                             avatarUrl={user.avatarUrl}
-                            canEdit = {currentBoard.canEdit}/>
+                            size="large"
+                            isDisabled={false}
+                            onClick={handleClick}
+                        />
                     </ActionsPopup>    
                         {user.userName}
                     </span> 
                 ))}
                 {/*사용자 확인 및 권한 변경 및 보드에서 사용자 삭제 기능 */}
-                { !boardMemberAction&&boardMemberActionUserId.userId !== "" && (
+                { /* !boardMemberAction&&boardMemberActionUserId.userId !== "" && (
                     <div style = {{top:`${boardMemberActionUserId.positionY}px`, left:`${boardMemberActionUserId.positionX}px` , position:'absolute'}}>
                         <BoardMemberActionPopup boardId={boardId} currentUserCanEdit={currentBoard.canEdit} currentUserId={cookies.UserId} userName={boardMemberActionUserId.userName} userEmail={boardMemberActionUserId.userEmail} canEdit= {boardMemberActionUserId.canEdit} avatarUrl = {boardMemberActionUserId.avatarUrl} showPopUp = {setBoardMemberActionUserId} 
                            userId={boardMemberActionUserId.userId} handleDeleteClick={handleDeleteClick} /> 
                     </div> )
-                }
+
+                */}
                 { deleteStep&&
                     <div style = {{top:`${boardMemberActionUserId.positionY}px`, left:`${boardMemberActionUserId.positionX}px` , position:'absolute'}}>
                         <DeleteStep boardId={boardId} userId={boardMemberActionUserId.userId} title={t('common.leaveBoardTitle')} content={t('common.leaveBoardContent')} buttonContent={t('action.leaveBoardButton')} onConfirm={handleUserDelete}  onBack={onBack} />

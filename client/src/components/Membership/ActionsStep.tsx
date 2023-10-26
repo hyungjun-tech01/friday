@@ -55,6 +55,16 @@ const ActionsStep = ({
     const [step, setStep] = useState<string | null>(null);
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
 
+    const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.currentTarget.style.background = '#9e3f08';
+      e.currentTarget.style.color = 'white';
+    };
+  
+  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.currentTarget.style.background = 'transparent';
+      e.currentTarget.style.color = '#6b808c';
+    };
+
     const handleBack = useCallback(() => {
       setStep(null);
     }, [setStep]);
@@ -70,6 +80,7 @@ const ActionsStep = ({
     const handleRoleSelect = useCallback(
       (data:any) => {
         if (onUpdate) {
+          console.log('onUpdate', data);
           onUpdate(membership.userId, data);
         }
       },
@@ -127,7 +138,19 @@ const ActionsStep = ({
           <Button
             fluid
             content={t('action.editPermissions')}
-            className={styles.button}
+            style={{
+              background: 'transparent',
+              boxShadow: 'none',
+              color:'#6b808c',
+              fontWeight: 'normal',
+              marginTop: '8px',
+              padding: '6px 11px',
+              textAlign: 'left',
+              textDecoration: 'underline',
+              transition: 'none'
+            }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}                      
             onClick={handleEditPermissionsClick}
           />
         )}
@@ -136,15 +159,39 @@ const ActionsStep = ({
               <Button
                 fluid
                 content={t(leaveButtonContent)}
-                className={styles.button}
+                style={{
+                  background: 'transparent',
+                  boxShadow: 'none',
+                  color:'#6b808c',
+                  fontWeight: 'normal',
+                  marginTop: '8px',
+                  padding: '6px 11px',
+                  textAlign: 'left',
+                  textDecoration: 'underline',
+                  transition: 'none'
+                }}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}   
                 onClick={handleDeleteClick}
               />
             )
           : canEdit && (
               <Button
                 fluid
-                content={t(deleteButtonContent)}
-                className={styles.button}
+                content={deleteButtonContent}
+                style={{
+                  background: 'transparent',
+                  boxShadow: 'none',
+                  color:'#6b808c',
+                  fontWeight: 'normal',
+                  marginTop: '8px',
+                  padding: '6px 11px',
+                  textAlign: 'left',
+                  textDecoration: 'underline',
+                  transition: 'none'
+                }}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}   
                 onClick={handleDeleteClick}
               />
             )}

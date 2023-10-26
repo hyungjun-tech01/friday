@@ -8,6 +8,7 @@ import {  useRecoilState} from "recoil";
 import {atomCurrentMyBoard} from "../atoms/atomsBoard";
 import {apiGetCurrentBoards} from "../api/board";
 import {useCookies} from "react-cookie";
+import { useEffect } from "react";
 // project 가 선택되어 지면 board 를 표시 
 // project 가 선택이 안되었으면 모든 프로젝트를 표시 
 interface IStaticProps{
@@ -28,7 +29,6 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
         }
       };
 
-      
     if(defaultBoardId === null ){  //project 를 선택했는데 보드가 해당 프로젝트에 보드가 없을 때 
         return (
             <div className={`${styles.wrapper}`}>

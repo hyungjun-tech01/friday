@@ -1,10 +1,12 @@
-import {useRef, useEffect, useState} from "react";
+import {useRef, useEffect, useState, useCallback} from "react";
 import styles from "../scss/BoardMemberActionPopup.module.scss";
 import User from "./User";
 import classNames from "classnames";
 import {Button} from "semantic-ui-react";
 import {useTranslation} from "react-i18next";
 import EditPermissions from "./EditPermissions";
+import PermissionsSelectStep from "./BoardMembershipPermissionsSelectStep";
+import {IBoardUser, defaultBoardUser} from "../atoms/atomsBoard";
 
 
 interface IBoardMemberActionPopupProps{
@@ -21,6 +23,8 @@ interface IBoardMemberActionPopupProps{
 }
 function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, userId, userEmail, userName, avatarUrl, canEdit, showPopUp, handleDeleteClick}:IBoardMemberActionPopupProps){
     let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
+    const [defaultData, setDefaultData] = useState<IBoardUser>(defaultBoardUser);
+
     useEffect(()=>{
         document.addEventListener('mousedown', handleClickOutside);
         return()=>{
@@ -60,6 +64,20 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
       e.currentTarget.style.color = '#6b808c';
     };
     
+
+    const handleRoleSelect = useCallback(
+      (data:any) => {
+       console.log('role select');
+      }
+      ,[],
+    );
+    const handleBack = useCallback(() => {
+      console.log('back select');
+    }, []);
+
+    const onClose = useCallback(() => {
+      console.log('close');
+    }, []);
 
     return (
         <div className={classNames(styles.overlay)} > 
@@ -134,20 +152,18 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
                 onClick={()=>handleDeleteClick(true)}
               />
           ) }
+        {/*<EditPermissions boardId={boardId} userId={userId} canEdit={canEdit}/> */}          
         {editPermissions&&
-        <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
-        <EditPermissions boardId={boardId} userId={userId} canEdit={canEdit}/>
-          {/* <PermissionsSelectStep
-                defaultData={defaultData}
-                setDefaultData={setDefaultData}
-                title = "common.addBoardMember"
-                buttonContent="common.addBoardMember"
-                onSelect={handleRoleSelect}
-                onBack={handleBack}
-                onClose={onClose}
-        /> */}
-
-        </div>
+          <div style = {{top:`${positions.positionY}px`, left:`${positions.positionX}px` , position:'absolute'}}>
+            <PermissionsSelectStep
+                    defaultData={defaultData}
+                    title = "common.addBoardMember"
+                    buttonContent="common.addBoardMember"
+                    onSelect={handleRoleSelect}
+                    onBack={handleBack}
+                    onClose={onClose}
+            /> 
+          </div>
         }
 
         </div>
