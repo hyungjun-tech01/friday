@@ -6,7 +6,6 @@ import { Button } from 'semantic-ui-react';
 import {useCookies} from "react-cookie";
 
 
-import User from '../User';
 import DeleteStep from '../DeleteStep';
 import {IBoardUser} from "../../atoms/atomsBoard";
 
@@ -135,7 +134,7 @@ const ActionsStep = ({
         <span className={styles.content}>
           <div className={styles.name}>{membership.userName}</div>
           <div className={styles.email}>{membership.userEmail}</div>
-          <div className={styles.role}>{membership.role}</div>
+          <div className={styles.role}>{membership.role} {membership.role === 'viewer'&&membership.canComment ? 'Comment Enable': ''}</div>
         </span>
         {permissionsSelectStep && canEdit && (
           <Button

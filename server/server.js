@@ -209,6 +209,7 @@ app.post('/currentBoard', async(req, res)=>{
         }    
         const users = await pool.query(`
             select t.id as "boardMembershipId",
+                t.board_id as "boardId",
                 t.user_id as "userId", 
                 t1.name as "userName",
                 t1.avatar as "avatarUrl",
@@ -217,7 +218,8 @@ app.post('/currentBoard', async(req, res)=>{
                 case when role = 'editor' then true 
                 when role = 'viewer' then false 
                 else false
-                end as "canEdit"
+                end as "canEdit",
+                t.can_comment as "canComment"
             from board_membership t, user_account t1
             where t.user_id = t1.id
             and t.board_id = $1`, [boardId]);
