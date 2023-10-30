@@ -10,9 +10,6 @@ import {useCookies} from "react-cookie";
 
 import Fix from "../components/Fix";
 import Static from "../components/Static";
-import UsersModal from "../components/UsersModal";
-import UserSettingModal from "../components/UserSettingModal";
-
 
 interface ICoreParams {
     id : string;
