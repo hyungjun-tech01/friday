@@ -1,12 +1,10 @@
 
-import {useEffect, useState, useRef, useCallback} from "react";
+import {useEffect, useState, useCallback} from "react";
 
-import {IList, atomMyList} from "../atoms/atomsList";
+import {IList} from "../atoms/atomsList";
 import {listsSelector, atomCurrentMyBoard} from "../atoms/atomsBoard";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {useTranslation} from "react-i18next";
-import {useQuery} from "react-query";
-import {apiGetLists} from "../api/list";
 import {apiGetCurrentBoards} from "../api/board";
 import List from "./List";
 import styles from "../scss/Board.module.scss";
@@ -26,7 +24,8 @@ function Board({boardId}:IListProps){
     const [showList, setShowList] = useState(false);
     const [currentBoard, setCurrentBoard] = useRecoilState(atomCurrentMyBoard);
     //board id로 리스트를 가지고 올것.
-    const lists: IList[]  = useRecoilValue(listsSelector); 
+    const lists: IList[]  = useRecoilValue(listsSelector);
+    //const [projectsToLists, setProjectsToLists] = useRecoilState(atomProjectsToLists);
    
     const getCurrentBoard = async (id:string) => {
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});

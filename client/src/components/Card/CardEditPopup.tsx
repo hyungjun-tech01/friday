@@ -1,7 +1,7 @@
-// import pick from 'lodash/pick';
+import React from 'react';
 import { ReactNode, useCallback, useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { useTranslation } from 'react-i18next';
 import { Menu, Popup } from 'semantic-ui-react';
 import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';
@@ -9,9 +9,15 @@ import CardMembershipEditPopup from '../CardMembershipEditPopup';
 import LabelsEditPopup from '../LabelsEditPopup';
 import DueDateEditPopup from '../DueDateEditPopup';
 import StopwatchEditPopup from '../StopwatchEditPopup';
-// import CardMoveStep from '../CardMoveStep';
+import CardMovePopup from '../CardMovePopup';
 import DeletePopup from '../DeletePopup';
-import { atomCurrentMyBoard, cardSelectorCardId, defaultModifyBoard, ICurrent } from '../../atoms/atomsBoard';
+import {
+  atomCurrentMyBoard,
+  cardSelectorCardId,
+  defaultModifyBoard,
+  ICurrent,
+  IModifyBoard,
+} from '../../atoms/atomsBoard';
 import {
   defaultModifyCard,
   ICard,
@@ -19,8 +25,8 @@ import {
   IModifyCard,
 } from '../../atoms/atomCard';
 import { IStopwatch } from '../../atoms/atomStopwatch';
-import { IModifyBoard } from '../../atoms/atomsBoard';
 import { ILabel } from '../../atoms/atomLabel';
+import { atomProjectsToLists } from '../../atoms/atomsProject';
 import { apiModifyBoard } from '../../api/board';
 import { apiModifyCard } from '../../api/card';
 import { getDateStringForDB } from '../../utils/date';
@@ -35,13 +41,19 @@ const StepTypes = {
   DELETE: 'DELETE',
 };
 
+interface ICardPathProps {
+  projectId: string | null,
+  boardId: string | null,
+  listId: string | null,
+};
+
 interface ICardEditPopupProps {
   children: ReactNode;
   cardId: string;
   onNameEdit: () => void;
-  onDelete: () => void,
+  onDelete: () => void;
   onClose: () => void;
-}
+};
 
 const CardEditPopup = ({
   cardId,
@@ -50,12 +62,16 @@ const CardEditPopup = ({
   onClose,
 }: ICardEditPopupProps) => {
   const [t] = useTranslation();
-  const board = useRecoilValue<ICurrent>(atomCurrentMyBoard);
+  const [currentBoard, setCurrentBoard] = useRecoilState<ICurrent>(atomCurrentMyBoard);
   const [card, setCard] = useRecoilState<ICard>(cardSelectorCardId(cardId));
   const [step, setStep] = useState<string | null>(null);
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
   const [cardLabelsIds, setCardLabelsIds] = useState<string[]>([]);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
+  const [projectsToLists, setProjectsToLists] = useRecoilState(atomProjectsToLists);
+  const [cardPath, setCardPath] = useState<ICardPathProps>({
+    projectId: null, boardId: null, listId: null
+  });
 
   const handleBack = useCallback(() => {
     setStep(null);
@@ -99,7 +115,7 @@ const CardEditPopup = ({
   const handleUserAdd = useCallback(
     (id: string) => {
       console.log('handleUserAdd : ', id);
-      const addUser = board.users.filter((user) => user.userId === id).at(0);
+      const addUser = currentBoard.users.filter((user) => user.userId === id).at(0);
       if (addUser) {
         const modifiedCard: IModifyCard = {
           ...defaultModifyCard,
@@ -144,7 +160,7 @@ const CardEditPopup = ({
           });
       }
     },
-    [board.users, card, cookies.UserId, cardUserIds, setCard]
+    [currentBoard.users, card, cookies.UserId, cardUserIds, setCard]
   );
 
   const handleUserRemove = useCallback(
@@ -239,48 +255,51 @@ const CardEditPopup = ({
   );
 
   //------------------Stopwatch Functions------------------
-  const handleStopwatchUpdate = useCallback((stopwatch: IStopwatch | null) => {
-    const newStopwatch: IStopwatch = {
-      total: stopwatch ? stopwatch.total : -1,
-      startedAt: stopwatch
-        ? stopwatch.startedAt
+  const handleStopwatchUpdate = useCallback(
+    (stopwatch: IStopwatch | null) => {
+      const newStopwatch: IStopwatch = {
+        total: stopwatch ? stopwatch.total : -1,
+        startedAt: stopwatch
           ? stopwatch.startedAt
-          : null
-        : null,
-    };
-    const modifiedCard: IModifyCard = {
-      ...defaultModifyCard,
-      cardId: card.cardId,
-      userId: cookies.UserId,
-      cardActionType: 'UPDATE',
-      stopwatch: newStopwatch,
-    };
-    console.log('check value : ', modifiedCard.stopwatch);
-    const response = apiModifyCard(modifiedCard);
-    response
-      .then((result) => {
-        if (result.message) {
-          console.log('Fail to update stopwatch of card', result.message);
-        } else {
-          console.log('Succeed to update stopwatch of card', result);
+            ? stopwatch.startedAt
+            : null
+          : null,
+      };
+      const modifiedCard: IModifyCard = {
+        ...defaultModifyCard,
+        cardId: card.cardId,
+        userId: cookies.UserId,
+        cardActionType: 'UPDATE',
+        stopwatch: newStopwatch,
+      };
+      console.log('check value : ', modifiedCard.stopwatch);
+      const response = apiModifyCard(modifiedCard);
+      response
+        .then((result) => {
+          if (result.message) {
+            console.log('Fail to update stopwatch of card', result.message);
+          } else {
+            console.log('Succeed to update stopwatch of card', result);
 
-          const updatedCard = {
-            ...card,
-            stopwatch: stopwatch ? newStopwatch : null,
-          };
-          setCard(updatedCard);
-        }
-      })
-      .catch((message) => {
-        console.log('Fail to update stopwatch of card', message);
-      });
-  }, [card, cookies.UserId, setCard]);
+            const updatedCard = {
+              ...card,
+              stopwatch: stopwatch ? newStopwatch : null,
+            };
+            setCard(updatedCard);
+          }
+        })
+        .catch((message) => {
+          console.log('Fail to update stopwatch of card', message);
+        });
+    },
+    [card, cookies.UserId, setCard]
+  );
 
   //------------------Label Functions------------------
   const handleLabelSelect = useCallback(
     (id: string) => {
       console.log('Select Label');
-      const found_label = board.labels
+      const found_label = currentBoard.labels
         .filter((label) => label.labelId === id)
         .at(0);
       if (found_label) {
@@ -311,7 +330,7 @@ const CardEditPopup = ({
           });
       }
     },
-    [card, cookies.UserId, board.labels, setCard]
+    [card, cookies.UserId, currentBoard.labels, setCard]
   );
 
   const handleLabelUnselect = useCallback(
@@ -359,7 +378,7 @@ const CardEditPopup = ({
       console.log('Label Create');
       const modifiedBoard: IModifyBoard = {
         ...defaultModifyBoard,
-        boardId: board.boardId,
+        boardId: currentBoard.boardId,
         userId: cookies.UserId,
         boardLabelActionType: 'ADD',
         labelName: data.name,
@@ -373,7 +392,7 @@ const CardEditPopup = ({
           } else {
             console.log('Succeed to add label', result);
             const newLabel: ILabel = {
-              boardId: board.boardId,
+              boardId: currentBoard.boardId,
               labelId: result.outLabelId,
               labelName: data.name ? data.name : '',
               color: data.color,
@@ -391,7 +410,7 @@ const CardEditPopup = ({
           console.log('Fail to add label', message);
         });
     },
-    [board.boardId, card, cookies.UserId, setCard]
+    [currentBoard.boardId, card, cookies.UserId, setCard]
   );
 
   const handleLabelUpdate = useCallback(
@@ -402,7 +421,7 @@ const CardEditPopup = ({
       if (found_index !== -1) {
         const modifiedBoard: IModifyBoard = {
           ...defaultModifyBoard,
-          boardId: board.boardId,
+          boardId: currentBoard.boardId,
           userId: cookies.UserId,
           boardLabelActionType: 'UPDATE',
           labelId: data.id,
@@ -436,7 +455,7 @@ const CardEditPopup = ({
           });
       }
     },
-    [board.boardId, card, cookies.UserId, setCard]
+    [currentBoard.boardId, card, cookies.UserId, setCard]
   );
 
   const handleLabelDelete = useCallback(
@@ -444,7 +463,7 @@ const CardEditPopup = ({
       console.log('Label Delete');
       const modifiedBoard: IModifyBoard = {
         ...defaultModifyBoard,
-        boardId: board.boardId,
+        boardId: currentBoard.boardId,
         userId: cookies.UserId,
         boardLabelActionType: 'DELETE',
         labelId: id,
@@ -474,8 +493,68 @@ const CardEditPopup = ({
           console.log('Fail to delete label', message);
         });
     },
-    [board.boardId, card, cookies.UserId, setCard]
+    [currentBoard.boardId, card, cookies.UserId, setCard]
   );
+
+  //------------------Card Functions------------------
+  const handleCardMove = useCallback((newlistId: string) => {
+    const modifiedCard : IModifyCard = {
+      ...defaultModifyCard,
+      userId: cookies.UserId,
+      cardId : cardId,
+      listId : newlistId,
+      cardActionType: 'MOVE',
+    };
+    const response = apiModifyCard(modifiedCard);
+    response
+      .then((result) => {
+        if (result.message) {
+          console.log(
+            'Fail to move card',
+            result.message
+          );
+        } else {
+          console.log('Succeed to move card', result);
+          const found_list_idx = currentBoard.lists.findIndex((list) => list.listId === newlistId);
+          if(found_list_idx === -1) {
+            const found_card_idx = currentBoard.cards.findIndex((card) => card.cardId === cardId);
+            if(found_card_idx !== -1) {
+              const updateCards = [
+                ...currentBoard.cards.slice(0, found_card_idx),
+                ...currentBoard.cards.slice(found_card_idx + 1)
+              ];
+              const updateCurrentBoard = {
+                ...currentBoard,
+                cards : updateCards
+              };
+              setCurrentBoard(updateCurrentBoard);
+            }
+          }
+          else {
+            const found_card_idx = currentBoard.cards.findIndex((card) => card.cardId === cardId);
+            if(found_card_idx !== -1) {
+              const updateCard = {
+                ...currentBoard.cards[found_card_idx],
+                listId: newlistId
+              };
+              const updateCards = [
+                ...currentBoard.cards.slice(0, found_card_idx),
+                updateCard,
+                ...currentBoard.cards.slice(found_card_idx + 1)
+              ];
+              const updateCurrentBoard = {
+                ...currentBoard,
+                cards: updateCards
+              };
+              setCurrentBoard(updateCurrentBoard);
+            };
+          };
+        };
+      })
+      .catch((message) => {
+        console.log('Fail to move card', message);
+      });
+  }, [currentBoard]);
 
   useEffect(() => {
     console.log('CardEditPopup -');
@@ -488,15 +567,32 @@ const CardEditPopup = ({
       const label_ids = card.labels.map((label) => label.labelId);
       setCardLabelsIds(label_ids);
     }
-  }, [card]);
+    if (card.boardId) {
+      console.log("projectsToLists - ", projectsToLists);
+      const foundProject = projectsToLists.filter((project) => {
+        const foundBoard = project.boards.filter((board) => board.id === card.boardId);
+        if(foundBoard.length > 0) return true;
+        else return false;
+      });
+      if(foundProject) {
+        console.log("foundProject - ", foundProject);
+        const updateCardPath = {
+          projectId: foundProject[0].id,
+          boardId: card.boardId,
+          listId: card.listId,
+        };
+        setCardPath(updateCardPath);
+      };
+    }
+  }, [card, projectsToLists]);
 
   if (step) {
     switch (step) {
       case StepTypes.USERS:
-        console.log("CardEditPopup - USERS Step", step);
+        console.log('CardEditPopup - USERS Step', step);
         return (
           <CardMembershipEditPopup
-            items={board.users}
+            items={currentBoard.users}
             currentUserIds={cardUserIds}
             onUserSelect={handleUserAdd}
             onUserDeselect={handleUserRemove}
@@ -506,7 +602,7 @@ const CardEditPopup = ({
       case StepTypes.LABELS:
         return (
           <LabelsEditPopup
-            items={board.labels}
+            items={currentBoard.labels}
             canEdit={true}
             currentIds={cardLabelsIds}
             onSelect={handleLabelSelect}
@@ -534,18 +630,17 @@ const CardEditPopup = ({
             onBack={handleBack}
           />
         );
-      // case StepTypes.MOVE:
-      //   return (
-      //     <CardMoveStep
-      //       projectsToLists={projectsToLists}
-      //       defaultPath={pick(card, ['projectId', 'boardId', 'listId'])}
-      //       onMove={onMove}
-      //       onTransfer={onTransfer}
-      //       onBoardFetch={onBoardFetch}
-      //       onBack={handleBack}
-      //       onClose={onClose}
-      //     />
-      //   );
+      case StepTypes.MOVE:
+        return (
+          <CardMovePopup
+            defaultPath={cardPath}
+            onMove={handleCardMove}
+            // onTransfer={onTransfer}
+            // onBoardFetch={onBoardFetch}
+            onBack={handleBack}
+            onClose={onClose}
+          />
+        );
       case StepTypes.DELETE:
         return (
           <DeletePopup

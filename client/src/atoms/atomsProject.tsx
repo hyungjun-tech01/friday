@@ -1,26 +1,25 @@
 import {atom} from "recoil";
 import {selector} from "recoil";
+import { IBoard } from "./atomsBoard";
+import { IList } from "./atomsList";
 
-export interface IProject{
+export interface IProject {
     projectId : string;
     projectName : string;
     defaultBoardId : string;
 }
 
-export interface INewProject{
+export interface INewProject {
     projectId : string;
     projectName : string;
     userId : string;
     date : Date;
 }
 
-
 // default value 1, MyProject 1
 export const atomMyProject = atom<IProject[]>({
     key:"atomMyProject",
-    default : [
-        { projectId:"" , projectName:"", defaultBoardId:""},
-    ]
+    default : []
 });
 
 // 특정 projectId를 가진 project를 selecting 
@@ -53,4 +52,22 @@ export const getCurrentProject = selector({
     get: ({ get }) => {
         return get(atomCurrentProjectId);
     },
+});
+
+export interface IBoardToLists {
+    id : string,
+    name : string,
+    lists : {id: string, name: string}[],
+    isFetching: boolean | null,
+};
+
+export interface IProjectToBoards {
+    id : string;
+    name : string;
+    boards: IBoardToLists[],
+};
+
+export const atomProjectsToLists = atom<IProjectToBoards[]>({
+    key:'projectsToLists',
+    default : [],
 });
