@@ -1,5 +1,5 @@
 import styles from "../scss/NotiModal.module.scss";
-
+import React from "react";
 // notimodal props interface 정의 
 interface INotiModalProps{
     setShowNoti: (value:boolean) => void;

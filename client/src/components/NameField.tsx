@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState , forwardRef} from 'react';
+import React, { useCallback, useEffect, useRef, useState , forwardRef} from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { TextArea } from 'semantic-ui-react';
 import upperFirst from 'lodash/upperFirst';

@@ -10,7 +10,7 @@ import {IBoardUser, usersPoolSelector,
        } from "../../atoms/atomsBoard";
 import styles from "./Membership.module.scss";
 import User from "./User";
-import {useCallback, useState} from "react";
+import React, {useCallback, useState} from "react";
 import DeleteStep from "../DeleteStep";
 import {apiModifyBoard} from "../../api/board";
 import  usePopup  from '../../lib/hook/use-popup';

@@ -1,5 +1,5 @@
  ///// api 호출 sample code 
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
  import {ICard, defaultCard, IModifyCard, defaultModifyCard} from "../atoms/atomCard";
  import {IModifyBoard, defaultModifyBoard,cardSelectorCardId } from "../atoms/atomsBoard";
  import {IModifyList, defaultModifyList} from "../atoms/atomsList";

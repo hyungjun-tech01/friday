@@ -8,7 +8,7 @@ import {  useRecoilState} from "recoil";
 import {atomCurrentMyBoard} from "../atoms/atomsBoard";
 import {apiGetCurrentBoards} from "../api/board";
 import {useCookies} from "react-cookie";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 // project 가 선택되어 지면 board 를 표시 
 // project 가 선택이 안되었으면 모든 프로젝트를 표시 
 interface IStaticProps{

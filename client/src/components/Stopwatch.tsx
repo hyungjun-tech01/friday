@@ -1,5 +1,5 @@
 import upperFirst from 'lodash/upperFirst';
-import { ElementType, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ElementType, useCallback, useEffect, useRef, useState } from 'react';
 import usePrevious from '../lib/hook/use-previous';
 import classNames from 'classnames';
 import { formatStopwatch } from '../utils/stopwatch';

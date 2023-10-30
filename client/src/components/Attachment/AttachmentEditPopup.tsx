@@ -1,5 +1,5 @@
 import { dequal } from 'dequal';
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Input, Popup } from 'semantic-ui-react';
 import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';

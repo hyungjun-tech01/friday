@@ -1,4 +1,4 @@
-import {useState, useEffect, useCallback, useRef} from "react";
+import React, {useState, useEffect, useCallback, useRef} from "react";
 import { ReactComponent as PlusMathIcon } from '../../image/plus-math-icon.svg';
 import {useTranslation} from "react-i18next";
 import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";

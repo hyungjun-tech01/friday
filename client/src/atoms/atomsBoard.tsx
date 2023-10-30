@@ -2,6 +2,7 @@ import {atom, DefaultValue, selector, selectorFamily} from "recoil";
 import {ILabel} from "./atomLabel";
 import {IList} from "./atomsList";
 import {ICard} from "./atomCard";
+import React from "react";
 
 export interface IBoard{
     boardId : string;

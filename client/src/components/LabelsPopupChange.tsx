@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Popup, Button, Form } from 'semantic-ui-react';
 import { upperFirst, camelCase } from 'lodash';

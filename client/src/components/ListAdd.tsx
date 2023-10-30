@@ -6,7 +6,7 @@ import {useCookies} from "react-cookie";
 import {IModifyList, defaultModifyList, IList, } from "../atoms/atomsList";
 import {listsSelector} from "../atoms/atomsBoard";
 import {apiModifyList, } from "../api/list";
-import {useRef,useEffect} from "react";
+import React, {useRef,useEffect} from "react";
 import {useSetRecoilState, useRecoilValue} from "recoil";
 
 interface IListAddProp{

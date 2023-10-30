@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import styles from "./CardAdd.module.scss";
 import { Button, Form } from 'semantic-ui-react';
 import {useTranslation} from "react-i18next";

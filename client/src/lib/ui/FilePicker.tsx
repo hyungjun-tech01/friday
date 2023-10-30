@@ -1,4 +1,4 @@
-import { cloneElement, ReactElement, useCallback, useRef } from 'react';
+import React, { cloneElement, ReactElement, useCallback, useRef } from 'react';
 
 import styles from './FilePicker.module.css';
 

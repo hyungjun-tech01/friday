@@ -1,4 +1,4 @@
-import {useRef, useEffect, useState, useCallback} from "react";
+import React,  {useRef, useEffect, useState, useCallback} from "react";
 import styles from "../scss/BoardMemberActionPopup.module.scss";
 import User from "./User";
 import classNames from "classnames";

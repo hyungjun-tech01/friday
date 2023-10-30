@@ -1,3 +1,4 @@
+import React from "react";
 export interface IStopwatch {
   total: number;
   startedAt: Date | null;

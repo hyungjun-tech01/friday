@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { Button, Popup } from 'semantic-ui-react';
 import styles from './CustomPopupHeader.module.scss';
 

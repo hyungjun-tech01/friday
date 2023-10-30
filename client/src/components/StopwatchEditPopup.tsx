@@ -1,5 +1,5 @@
 import { dequal } from 'dequal';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Popup, Input } from 'semantic-ui-react';
 import {

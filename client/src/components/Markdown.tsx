@@ -1,4 +1,4 @@
-import { useCallback, ReactNode, ReactElement } from 'react';
+import React, { useCallback, ReactNode, ReactElement } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown'
 import remarkGfm from 'remark-gfm';

@@ -2,7 +2,7 @@ import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 import initials from 'initials';
 import classNames from 'classnames';
-
+import React from "react";
 import styles from './User.module.scss';
 
 const SIZES = {

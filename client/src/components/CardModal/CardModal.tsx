@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useTranslation } from 'react-i18next';
 import { Button, Grid, Icon, Modal } from 'semantic-ui-react';

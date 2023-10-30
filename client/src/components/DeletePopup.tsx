@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button, Popup } from 'semantic-ui-react';
 import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
+import React from "react";
 
 import styles from '../scss/DeletePopup.module.scss';
 
