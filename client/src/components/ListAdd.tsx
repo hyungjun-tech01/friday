@@ -65,7 +65,6 @@ function ListAdd({setShowList, boardId, setIsListAddOpened}:IListAddProp){
             className={styles.field}
           />
           <div className={styles.controls}>
-            {/* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */}
             <Button
               positive
               content={t('action.addList')}
