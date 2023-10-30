@@ -1,6 +1,7 @@
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 import classNames from 'classnames';
+import React from "react";
 //import LabelColors from '../constants/LabelColors';
 
 import styles from '../scss/Label.module.scss';

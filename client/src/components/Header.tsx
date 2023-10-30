@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import Paths from "../constants/Paths";
 import styles from "../scss/Header.module.scss";
 import NotiModal from "./NotiModal";
+import UsersModal from "./UsersModal";
 
 import Path from '../constants/Paths';
 
@@ -16,6 +17,7 @@ function Header({setCurrent, projectName}:any){
     //project id로 보드를 쿼리할 것.
     const [cookies, setCookie, removeCookie] = useCookies(['UserId','UserName', 'AuthToken']);
     const history = useHistory();
+    const [showUsers, setShowUsers] = useState(false);
 
     if(cookies.AuthToken === undefined || cookies.AuthToken === ""){
         history.push(Path.LOGIN);
@@ -47,7 +49,7 @@ function Header({setCurrent, projectName}:any){
                     </Menu.Item>
                 </Menu.Menu>    
                 <Menu.Menu position="right">
-                    <Menu.Item
+                    <Menu.Item onClick={()=>{setShowUsers(!showUsers)}}
                         className={`${styles.item} ${styles.itemHoverable}`}>
                     <Icon fitted name= "users" />
                     </Menu.Item>
@@ -70,6 +72,7 @@ function Header({setCurrent, projectName}:any){
            </Menu>
         </div>
         {showNotif && <NotiModal setShowNoti={setShowNoti}/>}
+        {showUsers && <UsersModal onClose={setShowUsers}/>}
         </>
 
     );

@@ -1,4 +1,4 @@
-import { ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Menu, Popup } from 'semantic-ui-react';
 import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';

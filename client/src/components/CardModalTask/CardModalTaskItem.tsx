@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Button, Checkbox, Icon } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import NameEdit from '../NameEdit';

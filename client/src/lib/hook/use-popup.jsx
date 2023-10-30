@@ -1,5 +1,5 @@
 import { ResizeObserver } from '@juggle/resize-observer';
-import { cloneElement, useCallback, useMemo, useRef, useState } from 'react';
+import React, { cloneElement, useCallback, useMemo, useRef, useState } from 'react';
 import { Button, Popup} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import styles from './Popup.module.css';

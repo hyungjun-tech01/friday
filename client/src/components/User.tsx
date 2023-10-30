@@ -3,6 +3,7 @@ import initials from 'initials';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 import classNames from "classnames";
+import React from "react";
 
 interface IUserProps{
     userId?:string;

@@ -2,7 +2,7 @@ import styles from "../scss/Static.module.scss";
 import classNames from "classnames";
 import {Icon} from "semantic-ui-react";
 import {useTranslation} from "react-i18next";
-
+import React from "react";
 
 function BoardFirstAdd(){
     const [t] = useTranslation();

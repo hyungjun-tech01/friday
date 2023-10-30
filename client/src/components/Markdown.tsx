@@ -1,4 +1,4 @@
-import { useCallback, ReactNode, ReactElement } from 'react';
+import React, { useCallback, ReactNode, ReactElement } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown'
 import remarkGfm from 'remark-gfm';
@@ -20,9 +20,7 @@ const Markdown = ({linkStopPropagation, ...props}:IMarkdownProps) => {
 
   const linkRenderer = useCallback(
     ({ ...linkProps }) => (
-      /* eslint-disable-next-line jsx-a11y/anchor-has-content,
-                                  jsx-a11y/click-events-have-key-events,
-                                  jsx-a11y/no-static-element-interactions */
+      /* eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
       <a
         {...linkProps} // eslint-disable-line react/jsx-props-no-spreading
         rel={

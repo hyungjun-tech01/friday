@@ -1,7 +1,7 @@
 import styles from "../scss/UserItem.module.scss";
 import User from "./User";
 import classNames from "classnames";
-import {useState} from "react";
+import React, {useState} from "react";
 interface IUserItemProp{
     userId : string;
     userName:string;

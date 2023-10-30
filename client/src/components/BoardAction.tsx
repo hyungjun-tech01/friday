@@ -3,7 +3,7 @@ import Membership from "./Membership";
 import {apiCheckEditBoard} from "../api/board";
 import {useRecoilValue, useRecoilState} from "recoil";
 import {ICheckBoardEditAuth, IBoardMember, atomCurrentMyBoard, usersPoolSelector} from "../atoms/atomsBoard";
-import {useState,useEffect} from "react";
+import React, {useState,useEffect} from "react";
 import styles from "../scss/BoardAction.module.scss";
 //import Filters from "./Filters";
 interface IBoardActionProp{

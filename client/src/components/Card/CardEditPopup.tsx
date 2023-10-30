@@ -1,7 +1,6 @@
-import React from 'react';
-import { ReactNode, useCallback, useState, useEffect } from 'react';
+import React, { ReactNode, useCallback, useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { useTranslation } from 'react-i18next';
 import { Menu, Popup } from 'semantic-ui-react';
 import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';
@@ -68,7 +67,7 @@ const CardEditPopup = ({
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
   const [cardLabelsIds, setCardLabelsIds] = useState<string[]>([]);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
-  const [projectsToLists, setProjectsToLists] = useRecoilState(atomProjectsToLists);
+  const projectsToLists = useRecoilValue(atomProjectsToLists);
   const [cardPath, setCardPath] = useState<ICardPathProps>({
     projectId: null, boardId: null, listId: null
   });

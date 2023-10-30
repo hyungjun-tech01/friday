@@ -3,7 +3,7 @@ import {IBoard, IQueryBoard, atomMyBoard, atomCurrentMyBoard} from "../atoms/ato
 import {useQuery} from "react-query";
 import { Button, Icon } from 'semantic-ui-react';
 import {Link} from "react-router-dom";
-import {useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import {useCookies} from "react-cookie";
 import {apiGetBoards} from "../api/board";
 import styles from "../scss/Boards.module.scss";

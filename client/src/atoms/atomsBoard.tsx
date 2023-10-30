@@ -2,6 +2,7 @@ import {atom, DefaultValue, selector, selectorFamily} from "recoil";
 import {ILabel} from "./atomLabel";
 import {IList} from "./atomsList";
 import {ICard} from "./atomCard";
+import React from "react";
 
 export interface IBoard{
     boardId : string;
@@ -135,13 +136,26 @@ export const usersSelector = selector ({
         const board = get(atomCurrentMyBoard); 
         if (Array.isArray(newValue)) {
             const updatedUsers = [...newValue];
-            console.log('usersSelector', updatedUsers);
             const newAtomCurrentMyBoard = {...board, users: updatedUsers};
             set(atomCurrentMyBoard, newAtomCurrentMyBoard);
         }
     }
 });
 
+export const usersDeleter = selectorFamily({
+    key:"usersDeleter",
+    get: (userId) => ({ get }) => {
+        const board = get(atomCurrentMyBoard);
+        return board.users.filter((user: any) => user.userId === userId)[0];
+    },
+    set: (userId:string) => ({set, get}, newValue)=>{
+        const board = get(atomCurrentMyBoard);
+        const deletedUsers = board.users.filter( (user) => user.userId !== userId);
+        const newAtomCurrentMyBoard = {...board,  users: deletedUsers,};
+
+        return set(atomCurrentMyBoard, newAtomCurrentMyBoard);
+    }
+});
 
 // uesers pool get/ set 
 export const usersPoolSelector = selector ({

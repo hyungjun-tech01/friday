@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Comment, Icon } from 'semantic-ui-react';
 import styles from '../scss/Activities.module.scss';

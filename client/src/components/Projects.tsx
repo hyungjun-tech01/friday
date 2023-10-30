@@ -2,7 +2,7 @@
 import { useRecoilState } from "recoil";
 import {useQuery} from "react-query";
 import { Container, Grid } from 'semantic-ui-react';
-import {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import {useCookies} from "react-cookie";
 import {atomMyProject,IProject, atomProjectsToLists} from "../atoms/atomsProject";

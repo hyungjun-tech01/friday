@@ -1,4 +1,5 @@
 import {atom, selector} from "recoil";
+import React from "react";
 
 export interface IUser{
     userId : string;
@@ -15,6 +16,23 @@ export interface IUser{
     deletedAt : string;
     language : string;
     passwordChangeAt :string;
+    avatar : string;
+    detail : string;
+}
+
+export interface IModifyUser{
+    createrId : string; 
+    userActionType : string; 
+    userName : string; 
+    name : string; 
+    userId : string;
+    email : string;
+    isAdmin : boolean; 
+    password : string; 
+    phone : string; 
+    organization : string; 
+    subscribeToOwnCards : boolean;
+    language : string;
     avatar : string;
     detail : string;
 }
@@ -40,6 +58,23 @@ export const atomMyUser = atom<IUser>({
 export const atomAllUser = atom<IUser[]>({
     key:"allUser",
     default : [defaultUser],
+});
+
+// users get , set 
+export const allUserSelector = selector ({
+    key:"allUserSelector",
+    get:({get}) => {
+        const allUsers = get(atomAllUser); 
+        return (allUsers);
+    },
+    set:({set, get}, newValue )=>{
+        //const allUsers = get(atomAllUser); 
+        if (Array.isArray(newValue)) {
+            const updatedUsers = [...newValue];
+            const newAtomAllUsers = updatedUsers;
+            set(atomAllUser, newAtomAllUsers);
+        }
+    }
 });
 
 export interface IMembership {

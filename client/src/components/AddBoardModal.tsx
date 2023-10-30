@@ -5,7 +5,7 @@ import {useForm} from "react-hook-form";
 import {IModifyBoard, defaultModifyBoard} from "../atoms/atomsBoard";
 import {apiModifyBoard} from "../api/board";
 import {useCookies} from "react-cookie";
-import {useState, useRef, useEffect} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import { useHistory } from "react-router-dom"; 
 import Paths from "../constants/Paths";
 

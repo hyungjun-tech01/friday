@@ -1,7 +1,6 @@
 import {atom} from "recoil";
 import {selector} from "recoil";
-import { IBoard } from "./atomsBoard";
-import { IList } from "./atomsList";
+import React from "react";
 
 export interface IProject {
     projectId : string;

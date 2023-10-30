@@ -3,10 +3,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Popup, Input } from 'semantic-ui-react';
 import {useCookies} from "react-cookie";
-import {useRecoilValue} from "recoil";
 
 import UserItem from '../UserItem';
-import {atomCurrentMyBoard} from "../../atoms/atomsBoard";
 
 import {IBoardUser, defaultBoardUser} from "../../atoms/atomsBoard";
 import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';

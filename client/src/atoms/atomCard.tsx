@@ -3,6 +3,7 @@ import { ILabel } from "./atomLabel";
 import { ITask } from "./atomTask";
 import { IComment } from "./atomAction";
 import { IStopwatch } from "./atomStopwatch";
+import React from "react";
 
 export interface ICard{
     cardId: string; 
