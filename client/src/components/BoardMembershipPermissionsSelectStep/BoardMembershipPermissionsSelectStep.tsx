@@ -41,7 +41,6 @@ const BoardMembershipPermissionsSelectStep = ({ defaultData, title, buttonConten
     }, []);
 
     const handleSettingChange = useCallback(() => {
-      console.log('change');
        setData((prevData:any) => ({
          ...prevData,
          canComment: !prevData.canComment,

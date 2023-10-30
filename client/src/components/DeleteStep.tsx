@@ -1,8 +1,15 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React, {useCallback} from 'react';
 import { Button , Popup as SemanticUIPopup} from 'semantic-ui-react';
+import {useSetRecoilState, useRecoilValue} from "recoil";
+import {useCookies} from "react-cookie";
 
+import {IBoardUser, usersPoolSelector, 
+  IModifyBoard, defaultModifyBoard, 
+  atomCurrentMyBoard, 
+  usersDeleter,
+  } from "../atoms/atomsBoard";
 
+  import {apiModifyBoard} from "../api/board";
 import styles from '../scss/DeleteStep.module.scss';
 
 interface IDeleteStep{
@@ -25,6 +32,42 @@ const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
   };
   
 function DeleteStep ({ boardId, userId, title, content, buttonContent, onConfirm, onBack }:IDeleteStep) {
+  const user = useRecoilValue(usersDeleter(userId));
+  const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
+  const currentBoard = useRecoilValue(atomCurrentMyBoard);
+  const boardUser = currentBoard.users;
+  const setUsersPool = useSetRecoilState(usersPoolSelector);
+
+  
+  const deleteUser = useSetRecoilState(usersDeleter(userId));
+
+  const handleUserDelete = useCallback(async (userId:string, delboardId:string) => {
+    console.log('delete user : ', userId, boardUser);
+ 
+    // server 처리 
+    const boardAA : IModifyBoard= {...defaultModifyBoard, boardMembershipActionType:'DELETE', 
+        boardMembershipUserId:userId, 
+        boardId:delboardId, userId:cookies.UserId};
+
+    const response = await apiModifyBoard(boardAA);
+    if(response){
+        if(response.boardId){ 
+          const delUser = boardUser.filter((user:any) => user.userId === userId)[0];
+          deleteUser(user);
+          const newuser:IBoardUser = {...delUser, 
+            role:null,
+            canEdit:null,
+          }
+          setUsersPool([newuser]);
+          onConfirm(userId, boardId);
+        }else if(response.message){
+            console.log('Fail to     delete card', response.message);
+            //    setDeleteStep(true);  // 에러 response 표현 해 주어야 하나??
+        }else{
+            //    setDeleteStep(true);
+        }
+    }
+},[boardId, boardUser, cookies.UserId, deleteUser, onConfirm, setUsersPool, user]);
     return (
         <div className={styles.overlay} > 
             <div className={styles.modal} >
@@ -46,7 +89,7 @@ function DeleteStep ({ boardId, userId, title, content, buttonContent, onConfirm
                       }} 
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}                      
-                    content={buttonContent} onClick={()=>onConfirm(userId, boardId)} />
+                    content={buttonContent} onClick={()=>handleUserDelete(userId, boardId)} />
               </div>
             </div>  
         </div>

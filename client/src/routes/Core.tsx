@@ -63,7 +63,7 @@ function Core(){
   };
 
   
-    const [currentModal, setCurrentModal] = useState(null);
+   
 
   if(currentProject === undefined || current === false){
     return (
@@ -75,11 +75,9 @@ function Core(){
   }else{
     return (
       <>
-          <Fix setCurrent={setCurrent} projectName={current ? currentProject?.projectName:""} />
+          <Fix setCurrent={setCurrent} projectName={current ? currentProject?.projectName:""}/>
           {(!current)? <Static projectId="" boardId="" defaultBoardId=""/> :
             <Static projectId={currentProjectId} boardId={currentBoardId.boardId} defaultBoardId = {currentProject?.defaultBoardId} />}
-          {currentModal === "USERS" && <UsersModal/>}
-          {currentModal === "USER_SETTING" && <UserSettingModal/>}
       </>
     );
   }

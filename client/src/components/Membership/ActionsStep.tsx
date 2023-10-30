@@ -6,7 +6,6 @@ import { Button } from 'semantic-ui-react';
 import {useCookies} from "react-cookie";
 
 
-import User from '../User';
 import DeleteStep from '../DeleteStep';
 import {IBoardUser} from "../../atoms/atomsBoard";
 
@@ -18,6 +17,7 @@ const StepTypes = {
   DELETE: 'DELETE',
 };
 interface IActionStep{
+    boardId:string,
     membership: IBoardUser, // eslint-disable-line react/forbid-prop-types
     permissionsSelectStep: any,
     leaveButtonContent: string,
@@ -30,11 +30,12 @@ interface IActionStep{
     deleteConfirmationButtonContent: string,
     canEdit: boolean,
     canLeave: boolean,
-    onUpdate: (userUd:string, data:any)=>void,
-    onDelete: ()=>void,
+    onUpdate: (boardId:string, userId:string, data:any)=>void,
+    onDelete: (userId:string, delBoardId:string)=>void,
     onClose: ()=>void,
 };
 const ActionsStep = ({
+    boardId,
     membership,
     permissionsSelectStep,
     leaveButtonContent,
@@ -81,10 +82,10 @@ const ActionsStep = ({
       (data:any) => {
         if (onUpdate) {
           console.log('onUpdate', data);
-          onUpdate(membership.userId, data);
+          onUpdate(boardId, membership.userId, data);
         }
       },
-      [membership.userId, onUpdate],
+      [boardId, membership.userId, onUpdate],
     );
 
     if (step) {
@@ -117,7 +118,7 @@ const ActionsStep = ({
                   ? leaveConfirmationButtonContent
                   : deleteConfirmationButtonContent
               }
-              onConfirm={onDelete}
+              onConfirm={()=> onDelete( membership.userId, boardId)}
               onBack={handleBack}
             />
           );
@@ -133,6 +134,7 @@ const ActionsStep = ({
         <span className={styles.content}>
           <div className={styles.name}>{membership.userName}</div>
           <div className={styles.email}>{membership.userEmail}</div>
+          <div className={styles.role}>{membership.role} {membership.role === 'viewer'&&membership.canComment ? 'Comment Enable': ''}</div>
         </span>
         {permissionsSelectStep && canEdit && (
           <Button

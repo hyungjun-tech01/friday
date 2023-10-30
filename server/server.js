@@ -209,6 +209,7 @@ app.post('/currentBoard', async(req, res)=>{
         }    
         const users = await pool.query(`
             select t.id as "boardMembershipId",
+                t.board_id as "boardId",
                 t.user_id as "userId", 
                 t1.name as "userName",
                 t1.avatar as "avatarUrl",
@@ -217,7 +218,8 @@ app.post('/currentBoard', async(req, res)=>{
                 case when role = 'editor' then true 
                 when role = 'viewer' then false 
                 else false
-                end as "canEdit"
+                end as "canEdit",
+                t.can_comment as "canComment"
             from board_membership t, user_account t1
             where t.user_id = t1.id
             and t.board_id = $1`, [boardId]);
@@ -1018,8 +1020,64 @@ app.post('/getuser', async(req, res) => {
     }
 });
 
+//signup 계정 생성 
+app.post('/signup', async(req, res) => {
+    const {createrId , 
+        userActionType , 
+        userName , 
+        name , 
+        userId ,
+        email ,
+        isAdmin,
+        password , 
+        phone , 
+        organization , 
+        subscribeToOwnCards,
+        language ,
+        avatar ,
+        detail ,
+           } = req.body;    
+    const salt = bcrypt.genSaltSync(10);
+    const hashPassword = bcrypt.hashSync(password, salt);
+    try{
+        const signUp = await pool.query(`call p_modify_user($1, $2, $3, $4, 
+            $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, 
+            $19)` ,
+        [createrId , 
+            userActionType , 
+            userName , 
+            name , 
+            userId ,
+            email ,
+            isAdmin,
+            hashPassword , 
+            phone , 
+            organization , 
+            subscribeToOwnCards,
+            language ,
+            avatar ,
+            detail ,
+            null,
+            null,
+            null,
+            null,
+            null
+        ]);
+        const outUserId = signUp.rows[0].x_user_id;
+        const outCreatedAt = signUp.rows[0].x_created_at;
+
+        res.json({outUserId:outUserId, userName:userName, outCreatedAt:outCreatedAt});
+    }catch(err){
+        console.error(err);
+        if(err){
+            res.json({message:err});
+        }
+    }
+});
+
 app.get('/getalluser/:userId', async(req, res) => {
     const userId = req.userId;
+   
     try{
         const users = await pool.query(`
         SELECT t.id as "userId", 
@@ -1040,6 +1098,7 @@ app.get('/getalluser/:userId', async(req, res) => {
         if(!users.rows.length) 
             return res.json({detail:'User does not exist'});
         res.json(users.rows); // 결과 리턴을 해 줌 .
+        console.log('all Users', users.rows);
         res.end();
 
     }catch(err){
