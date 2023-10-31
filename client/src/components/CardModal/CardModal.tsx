@@ -30,6 +30,7 @@ import {
 import { defaultTask } from '../../atoms/atomTask';
 import { IStopwatch } from '../../atoms/atomStopwatch';
 import { ILabel } from '../../atoms/atomLabel';
+import { atomProjectsToLists } from '../../atoms/atomsProject';
 import Activities from '../Activities';
 import DescriptionEdit from '../DescriptionEdit';
 import CardModalTasks from '../CardModalTasks';
@@ -50,6 +51,13 @@ import { usePopup } from '../../lib/hook';
 import classNames from 'classnames';
 import styles from './CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
+import CardMovePopup from '../CardMovePopup';
+
+interface ICardPathProps {
+  projectId: string | null,
+  boardId: string | null,
+  listId: string | null,
+};
 
 interface ICardModalProps {
   canEdit: boolean;
@@ -57,12 +65,17 @@ interface ICardModalProps {
 
 const CardModal = ({ canEdit }: ICardModalProps) => {
   const [t] = useTranslation();
-  const board = useRecoilValue<ICurrent>(atomCurrentMyBoard);
+  const [board, setBoard] = useRecoilState<ICurrent>(atomCurrentMyBoard);
   const [card, setCard] = useRecoilState<ICard>(atomCurrentCard);
   const [cardUserIds, setCardUserIds] = useState<string[]>([]);
   const [selectedLabelIds, setSeletedLabelIds] = useState<string[]>([]);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
   const updateCard = useSetRecoilState(cardSelectorCardId(card.cardId));
+  
+  const projectsToLists = useRecoilValue(atomProjectsToLists);
+  const [cardPath, setCardPath] = useState<ICardPathProps>({
+    projectId: null, boardId: null, listId: null
+  });
 
   const isGalleryOpened = useRef(false);
 
@@ -71,18 +84,36 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   const DueDateEdit = usePopup(DueDateEditPopup);
   const StopwatchEdit = usePopup(StopwatchEditPopup);
   const AttachmentAdd = usePopup(AttachmentAddPopup);
+  const CardMove = usePopup(CardMovePopup);
 
   useEffect(() => {
     console.log('Card Modal Rendering/ Attachment : ', card.attachments);
     if (card.memberships) {
       const member_ids = card.memberships.map((member) => member.userId);
       setCardUserIds(member_ids);
-    }
+    };
     if (card.labels) {
       const label_ids = card.labels.map((label) => label.labelId);
       setSeletedLabelIds(label_ids);
+    };
+    if (card.boardId) {
+      console.log("projectsToLists - ", projectsToLists);
+      const foundProject = projectsToLists.filter((project) => {
+        const foundBoard = project.boards.filter((board) => board.id === card.boardId);
+        if(foundBoard.length > 0) return true;
+        else return false;
+      });
+      if(foundProject) {
+        console.log("foundProject - ", foundProject);
+        const updateCardPath = {
+          projectId: foundProject[0].id,
+          boardId: card.boardId,
+          listId: card.listId,
+        };
+        setCardPath(updateCardPath);
+      };
     }
-  }, [card]);
+  }, [card, projectsToLists]);
 
   const handleOnCloseCardModel = useCallback(() => {
     updateCard(card);
@@ -373,13 +404,13 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               color: data.color,
               position: '',
             };
-            const newLabels = card.labels.concat(newLabel);
-            const newCard = {
-              ...card,
-              labels: newLabels,
+            const newLabels = board.labels.concat(newLabel);
+            console.log('Total labels : ', newLabels);
+            const updateBoard = {
+              ...board,
+              labels: newLabels
             };
-            updateCard(newCard);
-            setCard(newCard);
+            setBoard(updateBoard);
           }
         })
         .catch((message) => {
@@ -706,7 +737,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           ? fileNameSplitted[fileNameSplitted.length - 1]
           : '';
 
-      const upload = (data:FormData) => {
+      const upload = (data: FormData) => {
         const response = apiUploadAttatchment(data);
         response
           .then((result) => {
@@ -736,7 +767,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           .catch((error) => {
             console.log('Fail to upload file :', error);
           });
-      }
+      };
 
       const formData = new FormData();
       formData.append('cardId', card.cardId);
@@ -765,12 +796,11 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           upload(formData);
           URL.revokeObjectURL(image.src);
         };
-      }
-      else {
+      } else {
         upload(formData);
       }
     },
-    [card, cookies.UserId, cookies.UserName ]
+    [card, cookies.UserId, cookies.UserName]
   );
 
   const handleAttachmentUpdate = useCallback(
@@ -998,6 +1028,64 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
     },
     [card, cookies.UserId]
   );
+
+  //------------------Card Functions------------------
+  const handleCardMove = useCallback((newlistId: string) => {
+    const modifiedCard : IModifyCard = {
+      ...defaultModifyCard,
+      userId: cookies.UserId,
+      cardId : card.cardId,
+      listId : newlistId,
+      cardActionType: 'MOVE',
+    };
+    const response = apiModifyCard(modifiedCard);
+    response
+      .then((result) => {
+        if (result.message) {
+          console.log('Fail to move card', result.message);
+        } else {
+          console.log('Succeed to move card', result);
+          const found_list_idx = board.lists.findIndex((list) => list.listId === newlistId);
+          if(found_list_idx === -1) {
+            const found_card_idx = board.cards.findIndex((cardInBoard) => cardInBoard.cardId === card.cardId);
+            if(found_card_idx !== -1) {
+              const updateCards = [
+                ...board.cards.slice(0, found_card_idx),
+                ...board.cards.slice(found_card_idx + 1)
+              ];
+              const updateCurrentBoard = {
+                ...board,
+                cards : updateCards
+              };
+              setBoard(updateCurrentBoard);
+            }
+          }
+          else {
+            const found_card_idx = board.cards.findIndex((cardInBoard) => cardInBoard.cardId === card.cardId);
+            if(found_card_idx !== -1) {
+              const updateCard = {
+                ...board.cards[found_card_idx],
+                listId: newlistId
+              };
+              const updateCards = [
+                ...board.cards.slice(0, found_card_idx),
+                updateCard,
+                ...board.cards.slice(found_card_idx + 1)
+              ];
+              const updateCurrentBoard = {
+                ...board,
+                cards: updateCards
+              };
+              setBoard(updateCurrentBoard);
+              handleOnCloseCardModel();
+            };
+          };
+        };
+      })
+      .catch((message) => {
+        console.log('Fail to move card', message);
+      });
+  }, [board]);
 
   const contentNode = (
     <Grid className={styles.grid}>
@@ -1334,32 +1422,21 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             </div>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('common.actions')}</span>
-              {/* <Button
-                fluid
-                className={styles.actionButton}
-                //onClick={handleToggleSubscriptionClick}
+              <CardMove
+                defaultPath={cardPath}
+                onMove={handleCardMove}
               >
-                <Icon
-                  name="paper plane outline"
-                  className={styles.actionIcon}
-                />
-                {
-                  isSubscribed ? t('action.unsubscribe') :  t(
-                    'action.subscribe'
-                  )
-                }
-              </Button> */}
-              <Button
-                fluid
-                className={styles.actionButton}
-                //onClick={handleToggleSubscriptionClick}
-              >
-                <Icon
-                  name="share square outline"
-                  className={styles.actionIcon}
-                />
-                {t('action.move')}
-              </Button>
+                <Button
+                  fluid
+                  className={styles.actionButton}
+                >
+                  <Icon
+                    name="share square outline"
+                    className={styles.actionIcon}
+                  />
+                  {t('action.move')}
+                </Button>
+              </CardMove>
               <Button
                 fluid
                 className={styles.actionButton}

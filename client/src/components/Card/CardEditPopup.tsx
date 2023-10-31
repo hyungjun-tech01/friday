@@ -398,12 +398,13 @@ const CardEditPopup = ({
               color: data.color,
               position: '',
             };
-            const newLabels = card.labels.concat(newLabel);
-            const updatedCard = {
-              ...card,
-              labels: newLabels,
+            const newLabels = currentBoard.labels.concat(newLabel);
+            console.log('Total labels : ', newLabels);
+            const updateCurrentBoard = {
+              ...currentBoard,
+              labels: newLabels
             };
-            setCard(updatedCard);
+            setCurrentBoard(updateCurrentBoard);
           }
         })
         .catch((message) => {
