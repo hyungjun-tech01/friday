@@ -68,6 +68,7 @@ v_card_attachment_filename text;
 v_card_attachment_name text;
 v_card_attachment_image text;
 v_card_comment_text text;
+v_new_board_id bigint;
 vv_card_membership_id bigint default null;
 vv_card_label_id bigint default null;
 vv_task_id bigint default null;
@@ -143,8 +144,16 @@ BEGIN
 		delete from task t where t.card_id =i_card_id::bigint;
 		delete from card t  where t.id =i_card_id::bigint;
 	   elsif (i_card_action_type = 'MOVE') then
-	     update card
-			set list_id = i_list_id::bigint,
+
+		select board_id 
+		into v_new_board_id 
+		from list t
+		where t.id = i_list_id::bigint
+		limit 1;
+
+	    update card
+		set list_id = i_list_id::bigint,
+		    board_id = v_new_board_id,
 			updated_at = now()
 		where id = i_card_id::bigint;
 	   end if;

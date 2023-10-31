@@ -86,6 +86,7 @@ const CardEditPopup = ({
   }, [setStep]);
 
   const handleLabelsClick = useCallback(() => {
+    console.log('handleLabelsClick');
     setStep(StepTypes.LABELS);
   }, [setStep]);
 
