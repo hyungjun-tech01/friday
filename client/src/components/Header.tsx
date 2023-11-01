@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import {Link, useHistory} from "react-router-dom";
 import { Icon, Menu, Dropdown } from "semantic-ui-react";
 import {useCookies} from "react-cookie";
@@ -27,6 +27,12 @@ function Header({setCurrent, projectName}:any){
     const onSettings = ()=> {
         console.log('setting');
     };
+    const handleProjectSettingsClick = useCallback(() => {
+        console.log('project setting');
+        //if (canEditProject) {
+        //  onProjectSettingsClick();
+        //}
+      }, []);
     const onLogout = ()=> {
         console.log('logout');
         removeCookie('AuthToken');
@@ -44,7 +50,8 @@ function Header({setCurrent, projectName}:any){
             </Link>
             <Menu inverted size="large" className={styles.menu}>
                 <Menu.Menu position="left">
-                    <Menu.Item  className={`${styles.item} ${styles.itemHoverable}`} >
+                    <Menu.Item   onClick={handleProjectSettingsClick}
+                       className={`${styles.item} ${styles.itemHoverable}`} >
                         {projectName}
                     </Menu.Item>
                 </Menu.Menu>    
