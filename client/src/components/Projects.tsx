@@ -47,11 +47,25 @@ function Projects(){
                         if(resBoard.message) {
                             console.log('[Projects] Response has message :', resBoard.message);
                             if(project.projectId !=="") {
-                                setProjectsToLists((prev) => [...prev, {
-                                    id: project.projectId,
-                                    name: project.projectName,
-                                    boards: [],
-                                }]);
+                                const found_idx = projectsToLists.findIndex((proj) => proj.id === project.projectId);
+                                if(found_idx === -1) {
+                                    setProjectsToLists((prev) => [...prev, {
+                                        id: project.projectId,
+                                        name: project.projectName,
+                                        boards: [],
+                                    }]);
+                                } else {
+                                    const updateProjectsToLists = [
+                                        ...projectsToLists.slice(0, found_idx),
+                                        {
+                                            id: project.projectId,
+                                            name: project.projectName,
+                                            boards: [],
+                                        },
+                                        ...projectsToLists.slice(found_idx + 1),
+                                    ];
+                                    setProjectsToLists(updateProjectsToLists);
+                                };
                             }
                         }
                         else {
@@ -62,22 +76,29 @@ function Projects(){
                                 lists: [],
                                 isFetching: null,
                             }));
-                            setProjectsToLists((prev) => [...prev, {
-                                id: project.projectId,
-                                name: project.projectName,
-                                boards: updateBoards,
-                            }]);
+                            const found_idx = projectsToLists.findIndex((proj) => proj.id === project.projectId);
+                                if(found_idx === -1) {
+                                    setProjectsToLists((prev) => [...prev, {
+                                        id: project.projectId,
+                                        name: project.projectName,
+                                        boards: updateBoards,
+                                    }]);
+                                } else {
+                                    const updateProjectsToLists = [
+                                        ...projectsToLists.slice(0, found_idx),
+                                        {
+                                            id: project.projectId,
+                                            name: project.projectName,
+                                            boards: updateBoards,
+                                        },
+                                        ...projectsToLists.slice(found_idx + 1),
+                                    ];
+                                    setProjectsToLists(updateProjectsToLists);
+                                };
                         };
                     })
                     .catch((error) => {
                         console.log('[Projects] Fail to get Boards :', error);
-                        if(project.projectId !=="") {
-                            setProjectsToLists((prev) => [...prev, {
-                                id: project.projectId,
-                                name: project.projectName,
-                                boards: [],
-                            }]);
-                        }
                     });
             });
         }

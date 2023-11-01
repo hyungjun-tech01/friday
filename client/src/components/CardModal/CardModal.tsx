@@ -115,9 +115,10 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
     }
   }, [card, projectsToLists]);
 
-  const handleOnCloseCardModel = useCallback(() => {
+  const handleOnCloseCardModal = useCallback(() => {
     updateCard(card);
     setCard(defaultCard);
+    console.log("CardModal / click! handleOnCloseCardModal");
   }, [card, setCard, updateCard]);
 
   //------------------Membership Functions------------------
@@ -1077,15 +1078,15 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 cards: updateCards
               };
               setBoard(updateCurrentBoard);
-              handleOnCloseCardModel();
             };
           };
         };
+        handleOnCloseCardModal();
       })
       .catch((message) => {
         console.log('Fail to move card', message);
       });
-  }, [board]);
+  }, [board, card.cardId, cookies.UserId, handleOnCloseCardModal, setBoard]);
 
   const contentNode = (
     <Grid className={styles.grid}>
@@ -1461,7 +1462,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       closeIcon
       centered={false}
       className={styles.wrapper}
-      onClose={handleOnCloseCardModel}
+      onClose={handleOnCloseCardModal}
     >
       {contentNode}
     </Modal>

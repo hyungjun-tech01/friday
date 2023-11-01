@@ -399,7 +399,6 @@ const CardEditPopup = ({
               position: '',
             };
             const newLabels = currentBoard.labels.concat(newLabel);
-            console.log('Total labels : ', newLabels);
             const updateCurrentBoard = {
               ...currentBoard,
               labels: newLabels

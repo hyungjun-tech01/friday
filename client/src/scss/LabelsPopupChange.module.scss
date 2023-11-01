@@ -4,46 +4,46 @@
   }
 
   .colorButton {
-    float: left;
-    height: 40px;
-    margin: 4px;
-    padding: 0;
-    position: relative;
-    width: 49.6px;
+    float: left !important;
+    height: 40px !important;
+    margin: 4px !important;
+    padding: 0 !important;
+    position: relative !important;
+    width: 49.6px !important;
 
     &:hover {
-      opacity: 0.9;
+      opacity: 0.9 !important;
     }
   }
 
   .colorButtonActive:before {
-    bottom: 3px;
-    color: #ffffff;
-    content: "Г";
-    font-size: 18px;
-    line-height: 36px;
-    position: absolute;
-    right: 6px;
-    text-align: center;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
-    top: 0;
-    transform: rotate(-135deg);
-    width: 36px;
+    bottom: 3px !important;
+    color: #ffffff !important;
+    content: "Г" !important;
+    font-size: 18px !important;
+    line-height: 36px !important;
+    position: absolute !important;
+    right: 6px !important;
+    text-align: center !important;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2) !important;
+    top: 0 !important;
+    transform: rotate(-135deg) !important;
+    width: 36px !important;
   }
 
   .colorButtons {
-    margin: -4px;
-    padding-bottom: 16px;
+    margin: -4px !important;
+    padding-bottom: 16px !important;
 
     &:after {
-      content: "";
-      display: table;
-      clear: both;
+      content: "" !important;
+      display: table !important;
+      clear: both !important;
     }
   }
 
   .field {
-    margin-bottom: 8px;
+    margin-bottom: 8px !important;
   }
 
   .text {
@@ -51,13 +51,5 @@
     font-size: 12px;
     font-weight: bold;
     padding-bottom: 6px;
-  }
-
-  .popupHeader {
-    color: #444444;
-    font-size: 12px;
-    font-weight: bold;
-    text-align: center;
-    padding: 8px;
   }
 //}

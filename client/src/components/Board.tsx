@@ -25,7 +25,6 @@ function Board({boardId}:IListProps){
     const [currentBoard, setCurrentBoard] = useRecoilState(atomCurrentMyBoard);
     //board id로 리스트를 가지고 올것.
     const lists: IList[]  = useRecoilValue(listsSelector);
-    //const [projectsToLists, setProjectsToLists] = useRecoilState(atomProjectsToLists);
    
     const getCurrentBoard = async (id:string) => {
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});

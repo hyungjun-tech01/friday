@@ -27,7 +27,7 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
         if(response ) {
             setCurrentBoard({...currentBoard, ...response});
-            //--------------------------------------------------
+            // --------------------------------------------------
             for(let i=0; i < projectsToLists.length; i++) {
                 for(let j=0; j <projectsToLists[i].boards.length; j++) {
                     if(projectsToLists[i].boards[j].id === id) {
