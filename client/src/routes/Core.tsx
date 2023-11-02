@@ -21,7 +21,7 @@ function Core(){
   let IsMaster = pathname.includes('projects');
   const {id} = useParams<ICoreParams>();
 
-  const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:"", defaultBoardId:""});
+  const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:"", defaultBoardId:"", members:[], userPools:[]});
   const [current, setCurrent] = useState(false);
   const [currentBoardId, setCurrentBoardId] = useRecoilState(atomCurrentMyBoard);
   //const [currentBoardId, setCurrentBoardId] = useState("");
@@ -65,14 +65,14 @@ function Core(){
   if(currentProject === undefined || current === false){
     return (
       <>
-      <Fix setCurrent={setCurrent} projectName={""} />
+      <Fix setCurrent={setCurrent} projectName={""} projectId={""} />
       <Static projectId="" boardId="" defaultBoardId=""/>
       </>
     );
   }else{
     return (
       <>
-          <Fix setCurrent={setCurrent} projectName={current ? currentProject?.projectName:""}/>
+          <Fix setCurrent={setCurrent} projectName={current ? currentProject?.projectName:""} projectId={current ? currentProject?.projectId:"" }/>
           {(!current)? <Static projectId="" boardId="" defaultBoardId=""/> :
             <Static projectId={currentProjectId} boardId={currentBoardId.boardId} defaultBoardId = {currentProject?.defaultBoardId} />}
       </>

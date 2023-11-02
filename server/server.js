@@ -120,7 +120,7 @@ app.get('/', (req, res)=>{
 app.get('/projects/:userId', async(req, res)=>{
     const userId = req.params.userId;
     try{
-            const projects = await pool.query(`
+            const projectResult = await pool.query(`
             select p.id as "projectId", p.name as "projectName",
             (select id from board b
                 where b.project_id = p.id
@@ -129,8 +129,45 @@ app.get('/projects/:userId', async(req, res)=>{
             from project p, project_manager pm
             where p.id = pm.project_id 
             and pm.user_id = $1`, [userId]);
-            res.json(projects.rows);
-            res.end();
+
+            if( projectResult.rows.length > 0 ) {
+                const projects = projectResult.rows;
+                for(const project of projects){
+                    const managers = await pool.query(`
+                        select 
+                            t.user_id as "userId", 
+                            t1.name as "userName",
+                            t1.avatar as "avatarUrl",
+                            t1.email as "userEmail"
+                        from project_manager t, user_account t1
+                        where t.user_id = t1.id
+                        and t.project_id = $1`, [project.projectId]);
+                    if( managers.rows.length > 0 ) {
+                        project.managers = managers.rows;
+                    }else{
+                        project.managers = [];
+                    }
+                    const userPools = await pool.query(`
+                    select 
+                        t1.id as "userId", 
+                        t1.name as "userName",
+                        t1.avatar as "avatarUrl",
+                        t1.email as "userEmail",
+                        (select 'Manager' from project_manager t where t.user_id = t1.id and t.project_id = $1) as "role"
+                    from user_account t1`, [project.projectId]);
+                    if( userPools.rows.length > 0 ) {
+                        project.userPools = userPools.rows;
+                    }else{
+                        project.userPools = [];
+                    }
+                }
+
+                res.json(projects);
+                res.end();
+            }else{
+                res.json({message:'No Projects'});  
+            }
+
     }catch(err){
         console.log(err);
         res.json({message:err});        
@@ -145,11 +182,28 @@ app.get('/project/:projectId', async(req, res)=>{
     try{
             const project = await pool.query(`
             select p.id as "projectId", p.name as "projectName"
-            from project p, project_manager pm
-            where p.id = pm.project_id 
-            and pm.project_id = $1`, [projectId]);
+            from project p
+            where p.project_id = $1`, [projectId]);
+
+
+            let currentProject;
+            if(project.rows.length > 0 ) {
+                currentProject = project.rows[0];
+            }    
+            const managers = await pool.query(`
+                select 
+                    t.user_id as "userId", 
+                    t1.name as "userName",
+                    t1.avatar as "avatarUrl",
+                    t1.email as "userEmail"
+                from project_manager t, user_account t1
+                where t.user_id = t1.id
+                and t.project_id = $1`, [projectId]);
+             if( managers.rows.length > 0 ) {
+                currentProject.managers = managers.rows;
+             }            
             console.log('single project', project.rows);
-            res.json(project.rows);
+            res.json(currentProject);
             res.end();
     }catch(err){
         console.log(err);
@@ -337,7 +391,6 @@ app.post('/currentBoard', async(req, res)=>{
 
                     if(cardAttachment.rows.length > 0 ){
                         card.attachments = cardAttachment.rows;
-                        console.log(card.attachments);
                     }
                     else
                         card.attachments = [];
@@ -363,9 +416,7 @@ app.post('/currentBoard', async(req, res)=>{
             }else{
                 currentBoard.cards = [];
             }
-        console.log('currentboard return', boardId);
         res.json(currentBoard);
-        //console.log(currentBoard);
         res.end();
     }catch(err){
     console.log(err);
@@ -378,7 +429,6 @@ app.post('/currentBoard', async(req, res)=>{
 // get my lists by board id 
 app.get('/lists/:boardId', async(req, res)=>{
     const boardId = req.params.boardId;
-  //  console.log(boardId);
     try{
             const lists = await pool.query(`
             select id as "listId", board_id as "boardId", name as "listName", 
@@ -398,7 +448,6 @@ app.get('/lists/:boardId', async(req, res)=>{
 // get cards by list id 
 app.get('/cardbylistId/:listId', async(req, res)=>{
     const listId = req.params.listId;
-    console.log('cardbylistid', listId);
     try{
             const cardResult =   await pool.query(`
             select id as "cardId", board_id as "boardId", list_id as "listId", 
@@ -413,7 +462,6 @@ app.get('/cardbylistId/:listId', async(req, res)=>{
             if( cardResult.rows.length > 0 ) {
                 const cards = cardResult.rows;
                 for(const card of cards){
-                    //console.log('card', card.cardId);
                     const labelResult = await pool.query(`
                     select l.id as "labelId", l.board_id as "boardId", l.name as "labelName", l.color as "color"
                     from card_label cl, label l
@@ -426,7 +474,6 @@ app.get('/cardbylistId/:listId', async(req, res)=>{
                         card.labels = [];
                 }
                 res.json(cards);
-//                console.log("queryed card", cards);
                 res.end();
                 
             }
@@ -441,7 +488,6 @@ app.get('/cardbylistId/:listId', async(req, res)=>{
 // get all my card by board id 
 app.get('/cards/:boardId', async(req, res)=>{
     const boardId = req.params.boardId;
-    console.log("card query", boardId);
     let cardsResults = [] ;
     try{    
             const result = await pool.query(`
@@ -453,7 +499,6 @@ app.get('/cards/:boardId', async(req, res)=>{
             if(result.rows.length > 0 ) {
                 const lists = result.rows;
                 for (const list of lists) {
-                    //console.log('list', list.listId);
                     const cardResult = await pool.query(`
                     select id as "cardId", board_id as "boardId", list_id as "listId", 
                     cover_attachment_id as "coverUrl", name as "cardName", description as "description",
@@ -466,7 +511,6 @@ app.get('/cards/:boardId', async(req, res)=>{
                     if( cardResult.rows.length > 0 ) {
                         const cards = cardResult.rows;
                         for(const card of cards){
-                            //console.log('card', card.cardId);
                             const labelResult = await pool.query(`
                             select l.id as "labelId", l.name as "labelName", l.color as "color"
                             from card_label cl, label l
@@ -495,7 +539,6 @@ app.get('/cards/:boardId', async(req, res)=>{
 // get all my card by card id 
 app.get('/cardbyId/:cardId', async(req, res)=>{
     const cardId = req.params.cardId;
-    console.log("card query by cardId", cardId);
     let cards ;
     try{    
             const result = await pool.query(`
@@ -595,7 +638,6 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                 }
                 //console.log(cards.cardLabel);
             }    
-            console.log('cardlabel', cards);
             res.json(cards);
             res.end();
          //   console.log('result', res);
@@ -647,7 +689,6 @@ app.post('/boardAuth', async(req, res) => {
         }
         res.json(boards);
         res.end();
-    //    console.log("res boards", boards);
     }catch(err){
         console.error(err);
         res.json({message:err});
@@ -658,7 +699,6 @@ app.post('/boardAuth', async(req, res) => {
 app.post('/project', async(req, res) => {
     const {projectName, userId} = req.body;
     try{
-        console.log('create new project');
         // insert project 
         const response = await pool.query(`call p_create_project($1, $2)`,
         [userId,projectName]);
@@ -680,7 +720,6 @@ app.post('/board', async(req, res) => {
         boardLabelActionType , labelId , labelName , labelColor , labelPosition 
      } = req.body;
     try{
-        console.log('create new board');
         // insert project 
         const response = await pool.query(`call p_modify_board($1, $2, $3, $4, $5, 
              $6, $7, $8, $9, $10, $11, $12, $13,
@@ -708,7 +747,6 @@ app.post('/board', async(req, res) => {
 app.post('/list', async(req, res) => {
     const {boardId, userId, listActionType, listId,  listName, position} = req.body;
     try{
-        console.log('create new list');
         // insert project 
         const response = await pool.query(`call p_modify_list($1, $2, $3, $4, $5, $6,
             $7, $8, $9, $10)`,
@@ -767,7 +805,6 @@ app.post('/card', async(req, res) => {
         cardStatusActionType ,
         cardStatusId } = req.body;
     try{
-        console.log('create card');
         // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
                                            $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48)`,
@@ -870,7 +907,6 @@ app.post('/modifyCard', async(req, res) => {
         cardStatusId } = req.body;
         
     try{
-        console.log('modify card', req.body);
         // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
                                            $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48)`,
@@ -962,11 +998,9 @@ app.post('/modifyCard', async(req, res) => {
 app.post('/login', async(req, res) => {
     const {email, password} = req.body;
     try{
-        console.log(email, password);
         const users = await pool.query('SELECT * FROM user_account WHERE email = $1', [email]);
         if(!users.rows.length) return res.json({message:'Invalid email or password'});
 
-        console.log(users.rows[0]);
         const success = await bcrypt.compare(password, users.rows[0].password);
         const token = jwt.sign({email}, 'secret', {expiresIn:'1hr'});
         if(success){
@@ -986,7 +1020,6 @@ app.post('/login', async(req, res) => {
 
 //login
 app.post('/getuser', async(req, res) => {
-    console.log("getuser", req);
     const {userId} = req.body;
     try{
         const users = await pool.query(`
@@ -1008,7 +1041,6 @@ app.post('/getuser', async(req, res) => {
         if(!users.rows.length) 
             return res.json({detail:'User does not exist'});
 
-        console.log(users.rows[0]);
 
         res.json(users.rows); // 결과 리턴을 해 줌 .
         res.end();
@@ -1098,7 +1130,6 @@ app.get('/getalluser/:userId', async(req, res) => {
         if(!users.rows.length) 
             return res.json({detail:'User does not exist'});
         res.json(users.rows); // 결과 리턴을 해 줌 .
-        console.log('all Users', users.rows);
         res.end();
 
     }catch(err){

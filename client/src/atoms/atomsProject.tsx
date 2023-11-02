@@ -1,11 +1,21 @@
 import {atom} from "recoil";
-import {selector} from "recoil";
+import {selector, selectorFamily} from "recoil";
 import React from "react";
+import {IBoardUser} from "./atomsBoard";
 
 export interface IProject {
     projectId : string;
     projectName : string;
     defaultBoardId : string;
+    members:IBoardUser[];
+    userPools:IBoardUser[];
+}
+
+export interface IProjectMember{
+    userId:string;
+    name:string;
+    avatar : string;
+    userEmail: string;
 }
 
 export interface INewProject {
@@ -33,11 +43,10 @@ export const projectSelector = selector({
     },
 });
 
-
 export const atomCurrentProject = atom<IProject[]>({
     key:"currentProject",
     default : 
-        [{ projectId:"" , projectName:"", defaultBoardId:""}],
+        [{ projectId:"" , projectName:"", defaultBoardId:"",members:[], userPools:[] }],
 });
 
 export const atomCurrentProjectId = atom<string>({

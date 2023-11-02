@@ -21,12 +21,13 @@ import ActionsStep from "./ActionsStep";
 import permissionsSelectStep from "../BoardMembershipPermissionsSelectStep";
 
 interface IMembershipProps {
-    boardId: string;
+    boardId: string|null;
     canEdit : boolean;
     members?: IBoardUser[];
     allUsers?:IBoardUser[];
     isMemberLoading : boolean;
     setIsMemberLoading: (value:boolean) => void;
+    projectId : string|null; // 프로젝트에서도 멤버 관리 함. ㅠㅠ 
   }
 interface IboardMemberActionUserId{
     userId:string;
@@ -38,7 +39,7 @@ interface IboardMemberActionUserId{
     positionX:number;
     positionY:number;
 }
-function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIsMemberLoading}:IMembershipProps){
+function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIsMemberLoading, projectId}:IMembershipProps){
 
     const [t] = useTranslation();
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
@@ -72,7 +73,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         const board : IModifyBoard= {...defaultModifyBoard, boardMembershipActionType:'ADD', boardMembershipUserId:data.userId, boardMembershipRole:data.role, boardMembershipCanComment:data.canComment?'true':'false',  boardId:boardId, userId:cookies.UserId};
 
         const response = await apiModifyBoard(board);
-        if(response){
+        if(response && boardId){
             if(response.outBoardMembershipId){  // 성공하면 
                 const newuser:IBoardUser = {
                     boardMembershipId:response.outBoardMembershipId,
@@ -139,8 +140,15 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         setDeleteStep(false);
      //   setBoardMemberAction(false);
     };     
+
+    const onProjectUpdate = useCallback( async(boardId:any, userId:any, data:any)=>{}
+    ,[]
+    );
+
+    const handleProjectUserDelete = useCallback( async(userId:any, delProjectId:any) => {}
+    ,[]);
    
-    if (boardUser.length > 0) {
+    if (boardId && boardUser.length > 0) {
         return(
             <span className={styles.users}>
                 {/* 보드에 접근 가능한 사용자 */}``
@@ -199,6 +207,66 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                 }
             </span>    
         );
+    }
+    else if (projectId && boardUser.length > 0) {
+        return(
+            <span className={styles.users}>
+                {/* 보드에 접근 가능한 사용자 */}``
+                { boardUser.map((user)=>(
+                    <span key={user.userId} className={styles.user}>
+                     <ActionsPopup
+                        boardId={projectId}
+                        membership={user}
+                        permissionsSelectStep={permissionsSelectStep}
+                        leaveButtonContent={t('action.leaveBoard')}
+                        leaveConfirmationTitle={t('common.leaveBoard')}
+                        leaveConfirmationContent={t('common.areYouSureYouWantToLeaveBoard')}
+                        leaveConfirmationButtonContent={t('action.leaveBoard')}
+                        deleteButtonContent={t('action.removeFromBoard')}
+                        deleteConfirmationTitle={t('common.removeMember')}
+                        deleteConfirmationContent={t('common.areYouSureYouWantToRemoveThisMemberFromBoard')}
+                        deleteConfirmationButtonContent={t('action.removeMember')}
+                        canEdit={canEdit}
+                        canLeave={boardUser.length > 1 ? true:false}
+                        onUpdate={(projectId:any, userId:any, data:any) => onProjectUpdate(boardId, userId, data)}
+                        onDelete={(userId:any, delProjectId:any) => handleProjectUserDelete(userId, delProjectId)}
+                     >   
+                        <User
+                            name={user.userName}
+                            avatarUrl={user.avatarUrl}
+                            size="large"
+                            isDisabled={false}
+                            onClick={handleClick}
+                        />
+                    </ActionsPopup>    
+                        {user.userName}
+                    </span> 
+                ))}
+                { /* deleteStep&&
+                <DeleteStep boardId={boardId} 
+                            userId={boardMemberActionUserId.userId} 
+                            title={t('common.leaveBoardTitle')} 
+                            content={t('common.leaveBoardContent')} 
+                            buttonContent={t('action.leaveBoardButton')} 
+                            onConfirm={handleUserDelete}  
+                onBack={onBack} />  */}
+              {/*      <div style = {{top:`${boardMemberActionUserId.positionY}px`, left:`${boardMemberActionUserId.positionX}px` , position:'absolute'}}> 
+                        <DeleteStep boardId={boardId} userId={boardMemberActionUserId.userId} title={t('common.leaveBoardTitle')} content={t('common.leaveBoardContent')} buttonContent={t('action.leaveBoardButton')} onConfirm={handleUserDelete}  onBack={onBack} />
+                </div>  */} 
+                    
+                 {canEdit&&
+                    <AddPopup
+                    users={usersPool}
+                    currentUserIds={cookies.UserId}
+                    permissionsSelectStep={permissionsSelectStep}
+                    title={t('common.addBoardMember')}
+                    onCreate={onCreate}
+                >
+                    <Button icon="add user" className={styles.addUser} />
+                </AddPopup>
+                }
+            </span>    
+        );        
     }
     return null; // or some other fallback UI
 }

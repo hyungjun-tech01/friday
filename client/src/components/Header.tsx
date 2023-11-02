@@ -10,9 +10,10 @@ import NotiModal from "./NotiModal";
 import UsersModal from "./UsersModal";
 
 import Path from '../constants/Paths';
+import ProjectSettingsModal from "./ProjectSettingsModal";
 
 
-function Header({setCurrent, projectName}:any){
+function Header({setCurrent, projectName, projectId}:any){
     const { t, i18n } = useTranslation();
     //project id로 보드를 쿼리할 것.
     const [cookies, setCookie, removeCookie] = useCookies(['UserId','UserName', 'AuthToken']);
@@ -24,15 +25,17 @@ function Header({setCurrent, projectName}:any){
     }
     
     const [showNotif, setShowNoti] = useState(false);
+    const [showProjSetting, setShowProjSetting] = useState(false);
     const onSettings = ()=> {
         console.log('setting');
     };
     const handleProjectSettingsClick = useCallback(() => {
-        console.log('project setting');
+        console.log('project setting', projectId);
+        setShowProjSetting(true);
         //if (canEditProject) {
         //  onProjectSettingsClick();
         //}
-      }, []);
+      }, [projectId]);
     const onLogout = ()=> {
         console.log('logout');
         removeCookie('AuthToken');
@@ -52,7 +55,7 @@ function Header({setCurrent, projectName}:any){
                 <Menu.Menu position="left">
                     <Menu.Item   onClick={handleProjectSettingsClick}
                        className={`${styles.item} ${styles.itemHoverable}`} >
-                        {projectName}
+                        {projectName}{projectId}
                     </Menu.Item>
                 </Menu.Menu>    
                 <Menu.Menu position="right">
@@ -80,6 +83,7 @@ function Header({setCurrent, projectName}:any){
         </div>
         {showNotif && <NotiModal setShowNoti={setShowNoti}/>}
         {showUsers && <UsersModal onClose={setShowUsers}/>}
+        {showProjSetting&&<ProjectSettingsModal projectId={projectId} onClose={setShowProjSetting} />}
         </>
 
     );

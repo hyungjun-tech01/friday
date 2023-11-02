@@ -31,7 +31,7 @@ function BoardAction({boardId}:IBoardActionProp){
         <div className={styles.wrapper}>
             <div className={styles.actions}>
                 <div className={styles.action}>
-                    {currentBoard.users !== undefined &&<Membership members={currentBoard.users} allUsers={usersPools} canEdit={currentBoard.canEdit} boardId={boardId} isMemberLoading={isMemberLoading} setIsMemberLoading={setIsMemberLoading}/>}
+                    {currentBoard.users !== undefined &&<Membership members={currentBoard.users} allUsers={usersPools} canEdit={currentBoard.canEdit} boardId={boardId} isMemberLoading={isMemberLoading} setIsMemberLoading={setIsMemberLoading} projectId={null}/>}
             {/*<Filters />*/}
                 </div>
             </div>
