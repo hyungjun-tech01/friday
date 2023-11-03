@@ -32,7 +32,7 @@ const Label = ({
         !name && styles.wrapperNameless,
         styles[`wrapper${upperFirst(size)}`],
         onClick && styles.wrapperHoverable,
-        globalStyles[`background${upperFirst(camelCase(color))}`]
+        `background${upperFirst(camelCase(color))}`
       )}
     >
       {name || '\u00A0'}

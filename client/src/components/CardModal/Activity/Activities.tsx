@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Comment, Icon } from 'semantic-ui-react';
-import styles from '../scss/Activities.module.scss';
-import { IComment } from '../atoms/atomAction';
+import styles from './Activities.module.scss';
+import { IComment } from '../../../atoms/atomAction';
 import CommentAdd from './CommentAdd';
 import CommentItem from './CommentItem'
 

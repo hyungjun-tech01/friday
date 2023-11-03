@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Button, Form, TextArea } from 'semantic-ui-react';
-import styles from '../scss/CommentAdd.module.scss';
+import styles from './CommentAdd.module.scss';
 
 interface ICommentAddProps{
     onCreate: (data:string) => void;

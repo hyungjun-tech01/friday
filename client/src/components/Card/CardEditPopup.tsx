@@ -4,7 +4,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { useTranslation } from 'react-i18next';
 import { Menu, Popup } from 'semantic-ui-react';
 import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';
-import CardMembershipEditPopup from '../CardMembershipEditPopup';
+import CardMembershipEditPopup from '../CardModal/CardMembershipEditPopup';
 import LabelsEditPopup from '../LabelsEditPopup';
 import DueDateEditPopup from '../DueDateEditPopup';
 import StopwatchEditPopup from '../StopwatchEditPopup';
@@ -114,7 +114,6 @@ const CardEditPopup = ({
   //------------------Membership Functions------------------
   const handleUserAdd = useCallback(
     (id: string) => {
-      console.log('handleUserAdd : ', id);
       const addUser = currentBoard.users.filter((user) => user.userId === id).at(0);
       if (addUser) {
         const modifiedCard: IModifyCard = {
@@ -133,7 +132,6 @@ const CardEditPopup = ({
                 result.message
               );
             } else {
-              console.log('Succeed to add new membership', result);
               const newMembership: ICardUser = {
                 cardMembershipId: result.outCardMembershipId,
                 cardId: card.cardId,
@@ -169,7 +167,6 @@ const CardEditPopup = ({
         .filter((user) => user.userId === id)
         .at(0);
       if (deleteMember) {
-        console.log('handleUserRemove : ', id);
         const modifiedCard: IModifyCard = {
           ...defaultModifyCard,
           cardId: card.cardId,
@@ -178,7 +175,6 @@ const CardEditPopup = ({
           cardMembershipId: deleteMember.cardMembershipId,
           cardMembershipUserId: deleteMember.userId,
         };
-        console.log(modifiedCard);
         const response = apiModifyCard(modifiedCard);
         response
           .then((result) => {
@@ -188,7 +184,6 @@ const CardEditPopup = ({
                 result.message
               );
             } else {
-              console.log('Succeed to delete membership', result);
               const member_index = card.memberships.findIndex(
                 (membership) => membership.userId === id
               );
@@ -239,7 +234,6 @@ const CardEditPopup = ({
           if (result.message) {
             console.log('Fail to update due date of card', result.message);
           } else {
-            console.log('Succeed to update due date of card', result);
             const updatedCard = {
               ...card,
               dueDate: date ? date_string : null,
@@ -272,15 +266,12 @@ const CardEditPopup = ({
         cardActionType: 'UPDATE',
         stopwatch: newStopwatch,
       };
-      console.log('check value : ', modifiedCard.stopwatch);
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
           if (result.message) {
             console.log('Fail to update stopwatch of card', result.message);
           } else {
-            console.log('Succeed to update stopwatch of card', result);
-
             const updatedCard = {
               ...card,
               stopwatch: stopwatch ? newStopwatch : null,
@@ -298,7 +289,6 @@ const CardEditPopup = ({
   //------------------Label Functions------------------
   const handleLabelSelect = useCallback(
     (id: string) => {
-      console.log('Select Label');
       const found_label = currentBoard.labels
         .filter((label) => label.labelId === id)
         .at(0);
@@ -316,7 +306,6 @@ const CardEditPopup = ({
             if (result.message) {
               console.log('Fail to update label selection', result.message);
             } else {
-              console.log('Succeed to update label selection', result);
               const newLabels = card.labels.concat(found_label);
               const updatedCard: ICard = {
                 ...card,
@@ -335,7 +324,6 @@ const CardEditPopup = ({
 
   const handleLabelUnselect = useCallback(
     (id: string) => {
-      console.log('Unselect Label');
       const found_index = card.labels.findIndex(
         (label) => label.labelId === id
       );
@@ -353,7 +341,6 @@ const CardEditPopup = ({
             if (result.message) {
               console.log('Fail to update label selection', result.message);
             } else {
-              console.log('Succeed to update label selection', result);
               const newLabels = [
                 ...card.labels.slice(0, found_index),
                 ...card.labels.slice(found_index + 1),
@@ -375,7 +362,6 @@ const CardEditPopup = ({
 
   const handleLabelCreate = useCallback(
     (data: { name: string | null; color: string }) => {
-      console.log('Label Create');
       const modifiedBoard: IModifyBoard = {
         ...defaultModifyBoard,
         boardId: currentBoard.boardId,
@@ -390,7 +376,6 @@ const CardEditPopup = ({
           if (result.message) {
             console.log('Fail to add label', result.message);
           } else {
-            console.log('Succeed to add label', result);
             const newLabel: ILabel = {
               boardId: currentBoard.boardId,
               labelId: result.outLabelId,
@@ -434,7 +419,6 @@ const CardEditPopup = ({
             if (result.message) {
               console.log('Fail to update label', result.message);
             } else {
-              console.log('Succeed to update label', result);
               let newLabel = card.labels[found_index];
               if (data.name) newLabel.labelName = data.name;
               if (data.color) newLabel.color = data.color;
@@ -460,7 +444,6 @@ const CardEditPopup = ({
 
   const handleLabelDelete = useCallback(
     (id: string) => {
-      console.log('Label Delete');
       const modifiedBoard: IModifyBoard = {
         ...defaultModifyBoard,
         boardId: currentBoard.boardId,
@@ -474,7 +457,6 @@ const CardEditPopup = ({
           if (result.message) {
             console.log('Fail to delete label', result.message);
           } else {
-            console.log('Succeed to delete label', result);
             const found_index = card.labels.findIndex(
               (label) => label.labelId === id
             );
@@ -514,7 +496,6 @@ const CardEditPopup = ({
             result.message
           );
         } else {
-          console.log('Succeed to move card', result);
           const found_list_idx = currentBoard.lists.findIndex((list) => list.listId === newlistId);
           if(found_list_idx === -1) {
             const found_card_idx = currentBoard.cards.findIndex((card) => card.cardId === cardId);
@@ -557,8 +538,6 @@ const CardEditPopup = ({
   }, [currentBoard]);
 
   useEffect(() => {
-    console.log('CardEditPopup -');
-
     if (card.memberships) {
       const member_ids = card.memberships.map((member) => member.userId);
       setCardUserIds(member_ids);
@@ -568,14 +547,12 @@ const CardEditPopup = ({
       setCardLabelsIds(label_ids);
     }
     if (card.boardId) {
-      console.log("projectsToLists - ", projectsToLists);
       const foundProject = projectsToLists.filter((project) => {
         const foundBoard = project.boards.filter((board) => board.id === card.boardId);
         if(foundBoard.length > 0) return true;
         else return false;
       });
       if(foundProject) {
-        console.log("foundProject - ", foundProject);
         const updateCardPath = {
           projectId: foundProject[0].id,
           boardId: card.boardId,
@@ -589,7 +566,6 @@ const CardEditPopup = ({
   if (step) {
     switch (step) {
       case StepTypes.USERS:
-        console.log('CardEditPopup - USERS Step', step);
         return (
           <CardMembershipEditPopup
             items={currentBoard.users}

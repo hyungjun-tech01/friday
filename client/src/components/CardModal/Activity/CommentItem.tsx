@@ -1,11 +1,10 @@
 import React, { useCallback, useRef } from 'react'
 import { Comment } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
-import formatDate from 'date-fns/format';
 import classNames from 'classnames';
-import styles from '../scss/CommentItem.module.scss';
-import User from './User';
-import NameEdit from './NameEdit'
+import styles from './CommentItem.module.scss';
+import User from '../../User';
+import NameEdit from '../../NameEdit'
 
 interface ICommentItemProps {
   commentId: string;

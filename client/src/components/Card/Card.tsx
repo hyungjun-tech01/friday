@@ -3,9 +3,18 @@ import { useCookies } from 'react-cookie';
 import { useSetRecoilState } from 'recoil';
 import { Link } from 'react-router-dom';
 import { Button, Icon } from 'semantic-ui-react';
+import { Draggable, Droppable, DragDropContext } from 'react-beautiful-dnd';
+
+import { apiModifyCard } from '../../api/card';
 import { cardSelectorCardId } from '../../atoms/atomsBoard';
-import { atomCurrentCard, defaultModifyCard, ICard, IModifyCard } from '../../atoms/atomCard';
+import {
+  atomCurrentCard,
+  defaultModifyCard,
+  ICard,
+  IModifyCard,
+} from '../../atoms/atomCard';
 import { IStopwatch } from '../../atoms/atomStopwatch';
+
 import NameEdit from '../NameEdit';
 import Label from '../Label';
 import CardTasks from './CardTasks';
@@ -13,7 +22,7 @@ import User from '../User';
 import DueDate from '../DueDate';
 import Stopwatch from '../Stopwatch';
 import CardEditPopup from './CardEditPopup';
-import { apiModifyCard } from '../../api/card';
+
 import { usePopup } from '../../lib/hook';
 import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
 import Paths from '../../constants/Paths';
@@ -21,10 +30,10 @@ import classNames from 'classnames';
 import styles from './Card.module.scss';
 
 interface ICardProps {
-  card: ICard,
-  canEdit: boolean,
-  onDelete: (id:string) => void;
-};
+  card: ICard;
+  canEdit: boolean;
+  onDelete: (id: string) => void;
+}
 
 function Card({ card, canEdit, onDelete }: ICardProps) {
   const setCard = useSetRecoilState<ICard>(cardSelectorCardId(card.cardId));
@@ -59,72 +68,77 @@ function Card({ card, canEdit, onDelete }: ICardProps) {
     nameEdit.current.open();
   }, []);
 
-  const handleNameUpdate = useCallback((data: string) => {
-    console.log('Udate name of card : ', data);
-    const modifiedCard: IModifyCard = {
-      ...defaultModifyCard,
-      cardId: card.cardId,
-      userId: cookies.UserId,
-      cardName: data,
-      cardActionType: 'UPDATE',
-    };
+  const handleNameUpdate = useCallback(
+    (data: string) => {
+      console.log('Udate name of card : ', data);
+      const modifiedCard: IModifyCard = {
+        ...defaultModifyCard,
+        cardId: card.cardId,
+        userId: cookies.UserId,
+        cardName: data,
+        cardActionType: 'UPDATE',
+      };
 
-    const response = apiModifyCard(modifiedCard);
-    response
-      .then((result) => {
-        if (result.message) {
-          console.log('Fail to update name of card', result.message);
-        } else {
-          console.log('Succeed to update name of card', result);
-          const updatedCard = {
-            ...card,
-            cardName: data,
-          };
-          setCard(updatedCard);
-        }
-      })
-      .catch((message) => {
-        console.log('Fail to update name of card', message);
-      });
-  },
-  [card, cookies.UserId, setCard]);
+      const response = apiModifyCard(modifiedCard);
+      response
+        .then((result) => {
+          if (result.message) {
+            console.log('Fail to update name of card', result.message);
+          } else {
+            console.log('Succeed to update name of card', result);
+            const updatedCard = {
+              ...card,
+              cardName: data,
+            };
+            setCard(updatedCard);
+          }
+        })
+        .catch((message) => {
+          console.log('Fail to update name of card', message);
+        });
+    },
+    [card, cookies.UserId, setCard]
+  );
 
-  const handleStopwatchUpdate = useCallback((stopwatch: IStopwatch | null) => {
-    const newStopwatch: IStopwatch = {
-      total: stopwatch ? stopwatch.total : -1,
-      startedAt: stopwatch
-        ? stopwatch.startedAt
+  const handleStopwatchUpdate = useCallback(
+    (stopwatch: IStopwatch | null) => {
+      const newStopwatch: IStopwatch = {
+        total: stopwatch ? stopwatch.total : -1,
+        startedAt: stopwatch
           ? stopwatch.startedAt
-          : null
-        : null,
-    };
-    const modifiedCard: IModifyCard = {
-      ...defaultModifyCard,
-      cardId: card.cardId,
-      userId: cookies.UserId,
-      cardActionType: 'UPDATE',
-      stopwatch: newStopwatch,
-    };
-    console.log('check value : ', modifiedCard.stopwatch);
-    const response = apiModifyCard(modifiedCard);
-    response
-      .then((result) => {
-        if (result.message) {
-          console.log('Fail to update stopwatch of card', result.message);
-        } else {
-          console.log('Succeed to update stopwatch of card', result);
+            ? stopwatch.startedAt
+            : null
+          : null,
+      };
+      const modifiedCard: IModifyCard = {
+        ...defaultModifyCard,
+        cardId: card.cardId,
+        userId: cookies.UserId,
+        cardActionType: 'UPDATE',
+        stopwatch: newStopwatch,
+      };
+      console.log('check value : ', modifiedCard.stopwatch);
+      const response = apiModifyCard(modifiedCard);
+      response
+        .then((result) => {
+          if (result.message) {
+            console.log('Fail to update stopwatch of card', result.message);
+          } else {
+            console.log('Succeed to update stopwatch of card', result);
 
-          const updatedCard = {
-            ...card,
-            stopwatch: stopwatch ? newStopwatch : null,
-          };
-          setCard(updatedCard);
-        }
-      })
-      .catch((message) => {
-        console.log('Fail to update stopwatch of card', message);
-      });
-  }, [card, cookies.UserId, setCard]);
+            const updatedCard = {
+              ...card,
+              stopwatch: stopwatch ? newStopwatch : null,
+            };
+            setCard(updatedCard);
+          }
+        })
+        .catch((message) => {
+          console.log('Fail to update stopwatch of card', message);
+        });
+    },
+    [card, cookies.UserId, setCard]
+  );
 
   const handleToggleStopwatchClick = useCallback(() => {
     if (card.stopwatch?.startedAt) {
@@ -136,7 +150,11 @@ function Card({ card, canEdit, onDelete }: ICardProps) {
 
   const handleCardDelete = useCallback(() => {
     onDelete(card.cardId);
-  }, [onDelete, card])
+  }, [onDelete, card]);
+
+  const handleDragEnd = useCallback(() => {
+    console.log('[Card] handleDragEnd');
+  }, []);
 
   const contentNode = (
     <div className={styles.details}>
@@ -200,32 +218,60 @@ function Card({ card, canEdit, onDelete }: ICardProps) {
   );
 
   return (
-    <div className={styles.wrapper}>
-      <NameEdit
-        ref={nameEdit}
-        defaultValue={card.cardName}
-        onUpdate={handleNameUpdate}
-      >
-        <div className={styles.card}>
-          <Link
-            to={Paths.CARDS.replace(':id', card.cardId)}
-            className={styles.content}
-            onClick={handleCardClick}
-          >
-            {contentNode}
-          </Link>
-          {canEdit && (
-            <CardEdit cardId={card.cardId} onNameEdit={handleNameEdit} onDelete={handleCardDelete}>
-              <Button
-                className={classNames(styles.actionsButton, styles.target)}
-              >
-                <Icon fitted name="pencil" size="small" />
-              </Button>
-            </CardEdit>
-          )}
-        </div>
-      </NameEdit>
-    </div>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId={`card:${card.cardId}`}>
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps}>
+            <Draggable
+              draggableId={`card:${card.cardId}`}
+              index={parseInt(card.cardId)}
+              isDragDisabled={!canEdit}
+            >
+              {({ innerRef, draggableProps, dragHandleProps }) => (
+                <div
+                  {...draggableProps}
+                  {...dragHandleProps}
+                  ref={innerRef}
+                  className={styles.wrapper}
+                >
+                  <NameEdit
+                    ref={nameEdit}
+                    defaultValue={card.cardName}
+                    onUpdate={handleNameUpdate}
+                  >
+                    <div className={styles.card}>
+                      <Link
+                        to={Paths.CARDS.replace(':id', card.cardId)}
+                        className={styles.content}
+                        onClick={handleCardClick}
+                      >
+                        {contentNode}
+                      </Link>
+                      {canEdit && (
+                        <CardEdit
+                          cardId={card.cardId}
+                          onNameEdit={handleNameEdit}
+                          onDelete={handleCardDelete}
+                        >
+                          <Button
+                            className={classNames(
+                              styles.actionsButton,
+                              styles.target
+                            )}
+                          >
+                            <Icon fitted name="pencil" size="small" />
+                          </Button>
+                        </CardEdit>
+                      )}
+                    </div>
+                  </NameEdit>
+                </div>
+              )}
+            </Draggable>
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 }
 
