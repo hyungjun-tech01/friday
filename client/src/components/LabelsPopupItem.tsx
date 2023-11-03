@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import { Button } from 'semantic-ui-react';
 
 import styles from '../scss/LabelsPopupItem.module.scss';
-import globalStyles from '../styles.module.scss';
 
 interface ILabelsPopupItemProps {
   id: string;
@@ -44,7 +43,7 @@ const LabelsPopupItem = ({
         className={classNames(
           styles.name,
           isActive && styles.nameActive,
-          globalStyles[`background${upperFirst(camelCase(color))}`]
+          `background${upperFirst(camelCase(color))}`
         )}
         onClick={handleToggleClick}
       >

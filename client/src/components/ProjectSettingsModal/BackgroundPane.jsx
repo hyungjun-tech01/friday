@@ -12,7 +12,6 @@ import ProjectBackgroundGradients from '../../constants/ProjectBackgroundGradien
 import { ProjectBackgroundTypes } from '../../constants/Enums';
 
 import styles from './BackgroundPane.module.scss';
-import globalStyles from '../../styles.module.scss';
 
 const BackgroundPane = React.memo(
   ({ item, imageCoverUrl, isImageUpdating, onUpdate, onImageUpdate, onImageDelete }) => {
@@ -80,7 +79,7 @@ const BackgroundPane = React.memo(
                   item.type === ProjectBackgroundTypes.GRADIENT &&
                   gradient === item.name &&
                   styles.gradientButtonActive,
-                globalStyles[`background${upperFirst(camelCase(gradient))}`],
+                `background${upperFirst(camelCase(gradient))}`,
               )}
               onClick={handleGradientClick}
             />

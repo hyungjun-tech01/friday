@@ -7,7 +7,6 @@ import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
 import classNames from 'classnames';
 import LabelColors from '../constants/LabelColors';
 import styles from '../scss/LabelsPopupChange.module.scss';
-import globalStyles from '../styles.module.scss';
 
 type LabelsPopupChangeMode = 'ADD' | 'EDIT';
 
@@ -106,7 +105,7 @@ const LabelsPopupChange = ({
                 className={classNames(
                   styles.colorButton,
                   color === data.color && styles.colorButtonActive,
-                  globalStyles[`background${upperFirst(camelCase(color))}`]
+                  `background${upperFirst(camelCase(color))}`
                 )}
                 onClick={handleChange}
               />
