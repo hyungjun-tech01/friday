@@ -7,10 +7,10 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Menu, Popup } from 'semantic-ui-react';
-import { IBoardUser } from '../atoms/atomsBoard';
+import { IBoardUser } from '../../atoms/atomsBoard';
 import CardMembershipItem from './CardMembershipItem';
-import CustomPopupHeader from '../lib/ui/CustomPopupHeader';
-import styles from '../scss/CardMembershipEditPopup.module.scss';
+import CustomPopupHeader from '../../lib/ui/CustomPopupHeader';
+import styles from './CardMembershipEditPopup.module.scss';
 
 interface ICardMembershipEditProps {
   items: IBoardUser[];

@@ -160,6 +160,7 @@ const DueDateEditPopup = ({
             disabledKeyboardNavigation
             selected={nullableDate}
             onChange={handleDatePickerChange}
+            className={'react-datepicker'}
           />
           <Button positive content={t("action.save")} />
         </Form>

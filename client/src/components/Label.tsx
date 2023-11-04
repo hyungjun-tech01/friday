@@ -5,7 +5,6 @@ import React from "react";
 //import LabelColors from '../constants/LabelColors';
 
 import styles from '../scss/Label.module.scss';
-import globalStyles from '../styles.module.scss';
 
 type SIZES = 'tiny' | 'small' | 'medium';
 
@@ -32,7 +31,7 @@ const Label = ({
         !name && styles.wrapperNameless,
         styles[`wrapper${upperFirst(size)}`],
         onClick && styles.wrapperHoverable,
-        globalStyles[`background${upperFirst(camelCase(color))}`]
+        `background${upperFirst(camelCase(color))}`
       )}
     >
       {name || '\u00A0'}

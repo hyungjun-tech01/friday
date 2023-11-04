@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 //import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { Progress } from 'semantic-ui-react';
 //import { closePopup } from '../../../lib/popup';
-import { ITask } from "../atoms/atomTask";
+import { ITask } from "../../../atoms/atomTask";
 
 //import DroppableTypes from '../../../constants/DroppableTypes';
-import CardModalTaskItem from './CardModalTask/CardModalTaskItem';
+import CardModalTaskItem from './CardModalTaskItem';
 import CardModalTaskAdd from './CardModalTaskAdd';
 
-import styles from '../scss/CardModalTasks.module.scss';
+import styles from './CardModalTasks.module.scss';
 
 interface ICardModalTasksProps{
     items: ITask[];
@@ -61,7 +61,7 @@ const CardModalTasks = ({ items, canEdit, onCreate, onUpdate, onMove, onDelete }
           autoSuccess
           value={completedItems.length}
           total={items.length}
-          color="blue"
+          color= "blue"
           size="tiny"
           className={styles.progress}
         />

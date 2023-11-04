@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import { Menu } from 'semantic-ui-react';
-import User from './User';
-import { IBoardUser } from '../atoms/atomsBoard';
+import User from '../User';
+import { IBoardUser } from '../../atoms/atomsBoard';
 import classNames from 'classnames';
-import styles from '../scss/CardMembershipItem.module.scss';
+import styles from './CardMembershipItem.module.scss';
 
 interface ICardMembershipItemProps {
   isActive?: boolean;

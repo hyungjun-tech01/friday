@@ -1,10 +1,10 @@
 import React, { useCallback, useRef } from 'react';
 import { Button, Checkbox, Icon } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
-import NameEdit from '../NameEdit';
+import NameEdit from '../../NameEdit';
 import CardModalTaskItemPopup from './CardModalTaskItemPopup';
 
-import usePopup from '../../lib/hook/use-popup';
+import usePopup from '../../../lib/hook/use-popup';
 import classNames from 'classnames';
 import styles from './CardModalTaskItem.module.scss';
 

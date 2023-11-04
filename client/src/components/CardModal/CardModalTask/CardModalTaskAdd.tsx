@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Button, Form, TextArea } from 'semantic-ui-react';
 
-import styles from '../scss/CardModalTaskAdd.module.scss';
+import styles from './CardModalTaskAdd.module.scss';
 
 interface ICardModalTaskAddProps {
     children: any;

@@ -31,11 +31,11 @@ import { defaultTask } from '../../atoms/atomTask';
 import { IStopwatch } from '../../atoms/atomStopwatch';
 import { ILabel } from '../../atoms/atomLabel';
 import { atomProjectsToLists } from '../../atoms/atomsProject';
-import Activities from '../Activities';
+import Activities from './Activity/Activities';
 import DescriptionEdit from '../DescriptionEdit';
-import CardModalTasks from '../CardModalTasks';
+import CardModalTasks from './CardModalTask/CardModalTasks';
 import Markdown from '../Markdown';
-import CardMembershipEditPopup from '../CardMembershipEditPopup';
+import CardMembershipEditPopup from './CardMembershipEditPopup';
 import NameField from '../NameField';
 import User from '../User';
 import DueDate from '../DueDate';
@@ -87,7 +87,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   const CardMove = usePopup(CardMovePopup);
 
   useEffect(() => {
-    console.log('Card Modal Rendering/ Attachment : ', card.attachments);
     if (card.memberships) {
       const member_ids = card.memberships.map((member) => member.userId);
       setCardUserIds(member_ids);
@@ -97,14 +96,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       setSeletedLabelIds(label_ids);
     };
     if (card.boardId) {
-      console.log("projectsToLists - ", projectsToLists);
       const foundProject = projectsToLists.filter((project) => {
         const foundBoard = project.boards.filter((board) => board.id === card.boardId);
         if(foundBoard.length > 0) return true;
         else return false;
       });
       if(foundProject) {
-        console.log("foundProject - ", foundProject);
         const updateCardPath = {
           projectId: foundProject[0].id,
           boardId: card.boardId,
@@ -118,13 +115,11 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   const handleOnCloseCardModal = useCallback(() => {
     updateCard(card);
     setCard(defaultCard);
-    console.log("CardModal / click! handleOnCloseCardModal");
   }, [card, setCard, updateCard]);
 
   //------------------Membership Functions------------------
   const handleUserAdd = useCallback(
     (id: string) => {
-      console.log('handleUserAdd : ', id);
       const addUser = board.users.filter((user) => user.userId === id).at(0);
       if (addUser) {
         const modifiedCard: IModifyCard = {
@@ -143,7 +138,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 result.message
               );
             } else {
-              console.log('Succeed to add new membership', result);
               const newMembership: ICardUser = {
                 cardMembershipId: result.outCardMembershipId,
                 cardId: card.cardId,
@@ -180,7 +174,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         .filter((user) => user.userId === id)
         .at(0);
       if (deleteMember) {
-        console.log('handleUserRemove : ', id);
         const modifiedCard: IModifyCard = {
           ...defaultModifyCard,
           cardId: card.cardId,
@@ -189,7 +182,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           cardMembershipId: deleteMember.cardMembershipId,
           cardMembershipUserId: deleteMember.userId,
         };
-        console.log(modifiedCard);
         const response = apiModifyCard(modifiedCard);
         response
           .then((result) => {
@@ -199,7 +191,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                 result.message
               );
             } else {
-              console.log('Succeed to delete membership', result);
               const member_index = card.memberships.findIndex(
                 (membership) => membership.userId === id
               );
@@ -235,7 +226,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Name Functions------------------
   const handleNameUpdate = useCallback(
     (data: string) => {
-      console.log('Udate name of card : ', data);
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: card.cardId,
@@ -250,7 +240,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           if (result.message) {
             console.log('Fail to update name of card', result.message);
           } else {
-            console.log('Succeed to update name of card', result);
             const newCard = {
               ...card,
               cardName: data,
@@ -269,7 +258,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Description Functions------------------
   const handleDescriptionUpdate = useCallback(
     (data: string) => {
-      console.log('Udate description of card : ', data);
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: card.cardId,
@@ -284,7 +272,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           if (result.message) {
             console.log('Fail to update description of card', result.message);
           } else {
-            console.log('Succeed to update description of card', result);
             const newCard = {
               ...card,
               description: data,
@@ -303,7 +290,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Label Functions------------------
   const handleLabelSelect = useCallback(
     (id: string) => {
-      console.log('Select Label');
       const found_label = board.labels
         .filter((label) => label.labelId === id)
         .at(0);
@@ -321,7 +307,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             if (result.message) {
               console.log('Fail to update label selection', result.message);
             } else {
-              console.log('Succeed to update label selection', result);
               const newLabels = card.labels.concat(found_label);
               const newCard: ICard = {
                 ...card,
@@ -341,7 +326,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleLabelUnselect = useCallback(
     (id: string) => {
-      console.log('Unselect Label');
       const found_index = card.labels.findIndex(
         (label) => label.labelId === id
       );
@@ -359,7 +343,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             if (result.message) {
               console.log('Fail to update label selection', result.message);
             } else {
-              console.log('Succeed to update label selection', result);
               const newLabels = [
                 ...card.labels.slice(0, found_index),
                 ...card.labels.slice(found_index + 1),
@@ -382,7 +365,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleLabelCreate = useCallback(
     (data: { name: string | null; color: string }) => {
-      console.log('Label Create');
       const modifiedBoard: IModifyBoard = {
         ...defaultModifyBoard,
         boardId: board.boardId,
@@ -397,7 +379,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           if (result.message) {
             console.log('Fail to add label', result.message);
           } else {
-            console.log('Succeed to add label', result);
             const newLabel: ILabel = {
               boardId: board.boardId,
               labelId: result.outLabelId,
@@ -406,7 +387,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
               position: '',
             };
             const newLabels = board.labels.concat(newLabel);
-            console.log('Total labels : ', newLabels);
             const updateBoard = {
               ...board,
               labels: newLabels
@@ -442,7 +422,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
             if (result.message) {
               console.log('Fail to update label', result.message);
             } else {
-              console.log('Succeed to update label', result);
               let newLabel = card.labels[found_index];
               if (data.name) newLabel.labelName = data.name;
               if (data.color) newLabel.color = data.color;
@@ -469,7 +448,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleLabelDelete = useCallback(
     (id: string) => {
-      console.log('Label Delete');
       const modifiedBoard: IModifyBoard = {
         ...defaultModifyBoard,
         boardId: board.boardId,
@@ -483,7 +461,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           if (result.message) {
             console.log('Fail to delete label', result.message);
           } else {
-            console.log('Succeed to delete label', result);
             const found_index = card.labels.findIndex(
               (label) => label.labelId === id
             );
@@ -525,7 +502,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
           if (result.message) {
             console.log('Fail to update due date of card', result.message);
           } else {
-            console.log('Succeed to update due date of card', result);
             const newCard = {
               ...card,
               dueDate: date ? date_string : null,
@@ -559,15 +535,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         cardActionType: 'UPDATE',
         stopwatch: newStopwatch,
       };
-      console.log('check value : ', modifiedCard.stopwatch);
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
           if (result.message) {
             console.log('Fail to update stopwatch of card', result.message);
           } else {
-            console.log('Succeed to update stopwatch of card', result);
-
             const newCard = {
               ...card,
               stopwatch: stopwatch ? newStopwatch : null,
@@ -594,7 +567,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Task Functions------------------
   const handleTaskCreate = useCallback(
     (data: string) => {
-      console.log('data of new task', data);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: card.cardId,
@@ -606,7 +578,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
-          console.log('Succeeded to get response', result);
           if (result.outTaskId) {
             const newTask = {
               ...defaultTask,
@@ -631,7 +602,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleTaskUpdate = useCallback(
     (id: string, data: any) => {
-      console.log('handleTaskUpdate - ', data);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: card.cardId,
@@ -641,11 +611,9 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       };
 
       if (data.hasOwnProperty('taskName')) {
-        console.log('Update task of card / name', data.taskName);
         modifiedCard.cardTaskName = data.taskName;
       }
       if (data.hasOwnProperty('isCompleted')) {
-        console.log('Update task of card / isCompleted', data.isCompleted);
         modifiedCard.cardTaskIsCompleted = data.isCompleted ? 'true' : 'false';
       }
 
@@ -653,31 +621,21 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
-          console.log('Succeed to update task of card', result);
-
           const index = card.tasks.findIndex((task) => task.taskId === id);
-          console.log('found index : ', index);
-
           if (index < 0) return;
-          console.log('found task : ', card.tasks[index]);
 
           let newTask = { ...card.tasks[index] };
-
           if (data.hasOwnProperty('taskName')) {
-            console.log('update task name : ', data.taskName);
             newTask.taskName = data.taskName;
           }
           if (data.hasOwnProperty('isCompleted')) {
-            console.log("update task's isCompleted : ", data.isComplated);
             newTask.isCompleted = data.isCompleted;
           }
-
           const newTasks = [
             ...card.tasks.slice(0, index),
             newTask,
             ...card.tasks.slice(index + 1),
           ];
-
           const newCard = {
             ...card,
             tasks: newTasks,
@@ -694,7 +652,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleTaskDelete = useCallback(
     (id: string) => {
-      console.log('Delete task of card / id : ', id);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: card.cardId,
@@ -705,9 +662,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
-          console.log('Succeed to delete task of card', result);
           const index = card.tasks.findIndex((task) => task.taskId === id);
-          console.log('found index : ', index);
           const newTasks = [
             ...card.tasks.slice(0, index),
             ...card.tasks.slice(index + 1),
@@ -729,7 +684,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Attachment Functions------------------
   const handleAttachmentCreate = useCallback(
     (file: any) => {
-      console.log('handleAttachmentCreate : ', file);
       const fileData = file.file;
       const fileName = fileData.name;
       const fileNameSplitted = fileName.split('.');
@@ -806,7 +760,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleAttachmentUpdate = useCallback(
     (id: string, data: any) => {
-      console.log('handleAttachmentUpdate : ', id, data);
       // After server side update Process
       if (data.hasOwnProperty('name')) {
         const modifiedCard: IModifyCard = {
@@ -820,7 +773,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         const response = apiModifyCard(modifiedCard);
         response
           .then((result) => {
-            console.log('Succeed to update name of attachment', result);
             const found_idx = card.attachments.findIndex(
               (item) => item.cardAttachementId === id
             );
@@ -855,7 +807,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleAttachmentDelete = useCallback(
     async (id: string) => {
-      console.log('handleAttachmentDelete : ', id);
       // After server side delete Process
       const found_idx = card.attachments.findIndex(
         (item) => item.cardAttachementId === id
@@ -879,11 +830,9 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         if (response) {
           if (response.message) console.log('Fail to delete file');
           else {
-            console.log('Delete file', response.fileName, response.filePath);
             const newAttachments = card.attachments.filter(
               (item) => item.cardAttachementId !== id
             );
-            console.log('Delete file 2', newAttachments);
             const newCard = {
               ...card,
               attachments: newAttachments,
@@ -914,7 +863,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   //------------------Comment Functions------------------
   const handleCommentsCreate = useCallback(
     (newText: string) => {
-      console.log('data of new comment', newText);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: card.cardId,
@@ -925,7 +873,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
-          console.log('Succeeded to get response', result);
           if (result.outCommentId) {
             const newComment = {
               ...defaultComment,
@@ -954,7 +901,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleCommentsUpdate = useCallback(
     (id: string, newText: string) => {
-      console.log('handleActionUpdate - ', newText);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: card.cardId,
@@ -967,7 +913,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
-          console.log('Succeed to update comment of card', result);
           const index = card.comments.findIndex(
             (comment) => comment.commentId === id
           );
@@ -1000,7 +945,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleCommentsDelete = useCallback(
     (id: string) => {
-      console.log('Delete Comment - comment of card / id : ', id);
       let modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: card.cardId,
@@ -1011,7 +955,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {
-          console.log('Succeed to delete comment of card', result);
           const newComments = card.comments.filter(
             (comment) => comment.commentId !== id
           );
@@ -1045,7 +988,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         if (result.message) {
           console.log('Fail to move card', result.message);
         } else {
-          console.log('Succeed to move card', result);
           const found_list_idx = board.lists.findIndex((list) => list.listId === newlistId);
           if(found_list_idx === -1) {
             const found_card_idx = board.cards.findIndex((cardInBoard) => cardInBoard.cardId === card.cardId);
