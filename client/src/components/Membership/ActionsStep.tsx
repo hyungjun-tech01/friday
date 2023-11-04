@@ -80,6 +80,11 @@ const ActionsStep = ({
       setStep(StepTypes.DELETE);
     }, [setStep]);
 
+    const handleTempClick = (userId:string, boardId:string) =>{
+      //console.log('handleTempClick');
+      //onConfirm={()=> onDelete( membership.userId, boardId)}
+      onClose();
+    }
     const handleRoleSelect = useCallback(
       (data:any) => {
         if (onUpdate) {
@@ -121,7 +126,7 @@ const ActionsStep = ({
                   ? leaveConfirmationButtonContent
                   : deleteConfirmationButtonContent
               }
-              onConfirm={()=> onDelete( membership.userId, boardId)}
+              onConfirm={()=> handleTempClick( membership.userId, boardId)}
               onBack={handleBack}
             />
           );

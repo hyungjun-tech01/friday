@@ -75,6 +75,7 @@ const core = {
       leaveBoard:'보드에서 나가기',
       leaveBoardTitle:'보드탈퇴',
       leaveBoardContent : '보드에서 나가겠습니까?', 
+      leaveProject:'프로젝트에서 나가기',
       list: '리스트',
       listAction:'리스트 편집',
       listDelete:'리스트 삭제',

@@ -44,10 +44,11 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
   const currentProject = useRecoilValue(atomCurrentProject);
   const projectUsers = currentProject.members;
   const setProjectUsersPool = useSetRecoilState(projectUsersPoolSelector);
-  //const delProject = useRecoilValue(projectUsersDeleter(userId));
-
   
   const deleteUser = useSetRecoilState(usersDeleter(userId));
+
+  const delProject = useRecoilValue(projectUsersDeleter(userId));
+  const deleteUserDeleter = useSetRecoilState(projectUsersDeleter(userId));
 
   const handleUserDelete = useCallback(async (userId:string, delboardId:string) => {
     console.log('delete user : ', userId, boardUser, projectId);
@@ -78,7 +79,6 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
       }
     }else{
       // server 처리 
-      console.log('del user', projectId, userId);
       const projectAA : IModifyProject= 
           {...defaultModifyProject, 
             projectActionType:'DELETE MANAGER', 
@@ -87,11 +87,9 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
             creatorUserId:cookies.UserId};
       const response = await apiPostProjects(projectAA);
       if(response){
-        console.log('del user', response);
         if(response.projectId){ 
-          console.log('del user');
           const delProjectUser = projectUsers.filter((user:any) => user.userId === userId)[0];
-          projectUsersDeleter(userId);
+          deleteUserDeleter(delProject);
           const newuser:IBoardUser = {...delProjectUser, 
             role:null,
             canEdit:null,

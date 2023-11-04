@@ -131,10 +131,10 @@ export const projectUsersDeleter = selectorFamily({
     },
     set: (userId:string) => ({set, get}, newValue)=>{
         const projects = get(atomCurrentProject);
-        const deleteMember = projects.members.filter( (user:any) => user.userId === userId);
+        const deleteMember = projects.members.filter( (user:any) => user.userId !== userId);
 
         const newAtomCurrentMyProject = {...projects,   members:deleteMember,};
-        console.log('delete project', newAtomCurrentMyProject);
+        console.log('projectUsersDeleter', newAtomCurrentMyProject);
         return set(atomCurrentProject, newAtomCurrentMyProject);
     }
 });
