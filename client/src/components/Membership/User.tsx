@@ -36,9 +36,10 @@ interface IMembershipUser{
   avatarUrl: string,
   size: string,
   isDisabled: boolean,
-  onClick: ()=> void,
+  onClick: ()=>void|undefined,
 }
 const User = ({ name, avatarUrl, size, isDisabled, onClick }:IMembershipUser) => {
+
   const contentNode = (
     <span
       title={name}

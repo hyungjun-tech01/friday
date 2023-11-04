@@ -8,11 +8,14 @@ import {IBoardUser, usersPoolSelector,
        IModifyBoard, defaultModifyBoard, 
        usersSelector, atomCurrentMyBoard
        } from "../../atoms/atomsBoard";
+import {IModifyProject, defaultModifyProject, atomCurrentProject, 
+    projectUsersPoolSelector, projectUsersSelector} from "../../atoms/atomsProject";
 import styles from "./Membership.module.scss";
 import User from "./User";
 import React, {useCallback, useState} from "react";
 import DeleteStep from "../DeleteStep";
 import {apiModifyBoard} from "../../api/board";
+import {apiPostProjects} from "../../api/project";
 import  usePopup  from '../../lib/hook/use-popup';
 import AddStep from "./AddStep";
 import ActionsStep from "./ActionsStep";
@@ -66,6 +69,13 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     const usersPool =  useRecoilValue(usersPoolSelector);
     const setUsersPool = useSetRecoilState(usersPoolSelector);
 
+    // project 
+    const selectProject = useRecoilValue(atomCurrentProject); 
+    const projectUsersPool =  selectProject.userPools; // useRecoilValue(projectUsersPoolSelector);
+    const projectUsers =  useRecoilValue(projectUsersSelector); // selectProject.members; // useRecoilValue(projectUsersPoolSelector);
+    const projectSetUsersPool = useSetRecoilState(projectUsersPoolSelector);
+    const projectSetUsers = useSetRecoilState(projectUsersSelector);
+
     const onCreate = async (data:IBoardUser)=>{
       //  setBoardMemberAction(true);
 
@@ -103,6 +113,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         }        
     }
     const handleUserDelete = useCallback(async (userId:string, delboardId:string) => {
+        console.log('handleUserDelete');
         setDeleteStep(false); 
         
     },[]);
@@ -147,6 +158,46 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
 
     const handleProjectUserDelete = useCallback( async(userId:any, delProjectId:any) => {}
     ,[]);
+
+    const handleProjectUserCreate = useCallback( async(data:IBoardUser) => {
+        // proeject manager 관리 db 처리 실행, 
+        const addProjectMember:IModifyProject = {...defaultModifyProject, 
+        creatorUserId:cookies.UserId, projectActionType:'ADD MANAGER', 
+        managerId:data.userId, projectId:projectId};
+        try{
+            const response:any = await apiPostProjects(addProjectMember);
+
+            if(response){
+                if(!response.message){
+                // state  추가 
+                setIsMemberLoading(!isMemberLoading);
+                // 현재 project atom 추가 변경 
+                const newuser:IBoardUser = {
+                    boardMembershipId:"",
+                    boardId:"",
+                    userId:data.userId,
+                    userName:data.userName,
+                    role: data.role, 
+                    avatarUrl: data.avatarUrl,
+                    userEmail: data.userEmail,
+                    canEdit: true,
+                    canComment: data.canComment
+                }
+                    //recoil 추가 
+                    projectSetUsers([newuser]);
+                    projectSetUsersPool([newuser]);
+
+                }else{
+                    console.log("response", response.message);
+                }
+            }
+            
+          }catch(err){
+            console.error(err);
+          }
+    }
+    ,[]);
+   
    
     if (boardId && boardUser.length > 0) {
         return(
@@ -156,6 +207,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                     <span key={user.userId} className={styles.user}>
                      <ActionsPopup
                         boardId={boardId}
+                        projectId={""}
                         membership={user}
                         permissionsSelectStep={permissionsSelectStep}
                         leaveButtonContent={t('action.leaveBoard')}
@@ -179,7 +231,6 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                             onClick={handleClick}
                         />
                     </ActionsPopup>    
-                        {user.userName}
                     </span> 
                 ))}
                 { /* deleteStep&&
@@ -208,26 +259,26 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
             </span>    
         );
     }
-    else if (projectId && boardUser.length > 0) {
+    else if (projectId && projectUsers && projectUsers.length > 0) {
         return(
             <span className={styles.users}>
-                {/* 보드에 접근 가능한 사용자 */}``
-                { boardUser.map((user)=>(
+                { projectUsers.map((user)=>(
                     <span key={user.userId} className={styles.user}>
                      <ActionsPopup
-                        boardId={projectId}
+                        boardId={""}
+                        projectId={projectId}
                         membership={user}
-                        permissionsSelectStep={permissionsSelectStep}
-                        leaveButtonContent={t('action.leaveBoard')}
-                        leaveConfirmationTitle={t('common.leaveBoard')}
-                        leaveConfirmationContent={t('common.areYouSureYouWantToLeaveBoard')}
-                        leaveConfirmationButtonContent={t('action.leaveBoard')}
-                        deleteButtonContent={t('action.removeFromBoard')}
+                        permissionsSelectStep={null}
+                        leaveButtonContent={t('action.leaveProject')}
+                        leaveConfirmationTitle={t('common.leaveProject')}
+                        leaveConfirmationContent={t('common.areYouSureYouWantToLeaveProject')}
+                        leaveConfirmationButtonContent={t('action.leaveProject')}
+                        deleteButtonContent={t('action.removeFromProject')}
                         deleteConfirmationTitle={t('common.removeMember')}
-                        deleteConfirmationContent={t('common.areYouSureYouWantToRemoveThisMemberFromBoard')}
-                        deleteConfirmationButtonContent={t('action.removeMember')}
+                        deleteConfirmationContent={t('common.areYouSureYouWantToRemoveThisManagerFromProject')}
+                        deleteConfirmationButtonContent={t('action.removeFromProject')}
                         canEdit={canEdit}
-                        canLeave={boardUser.length > 1 ? true:false}
+                        canLeave={projectUsers.length > 1 ? true:false}
                         onUpdate={(projectId:any, userId:any, data:any) => onProjectUpdate(boardId, userId, data)}
                         onDelete={(userId:any, delProjectId:any) => handleProjectUserDelete(userId, delProjectId)}
                      >   
@@ -239,7 +290,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                             onClick={handleClick}
                         />
                     </ActionsPopup>    
-                        {user.userName}
+                       
                     </span> 
                 ))}
                 { /* deleteStep&&
@@ -256,13 +307,13 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                     
                  {canEdit&&
                     <AddPopup
-                    users={usersPool}
+                    users={projectUsersPool}
                     currentUserIds={cookies.UserId}
-                    permissionsSelectStep={permissionsSelectStep}
-                    title={t('common.addBoardMember')}
-                    onCreate={onCreate}
+                    permissionsSelectStep={null}
+                    title={t('common.addMember')}
+                    onCreate={handleProjectUserCreate}
                 >
-                    <Button icon="add user" className={styles.addUser} />
+                    <Button icon="add user" className={styles.addUser} />   
                 </AddPopup>
                 }
             </span>    

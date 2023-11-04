@@ -30,7 +30,6 @@ function Header({setCurrent, projectName, projectId}:any){
         console.log('setting');
     };
     const handleProjectSettingsClick = useCallback(() => {
-        console.log('project setting', projectId);
         setShowProjSetting(true);
         //if (canEditProject) {
         //  onProjectSettingsClick();
@@ -55,7 +54,7 @@ function Header({setCurrent, projectName, projectId}:any){
                 <Menu.Menu position="left">
                     <Menu.Item   onClick={handleProjectSettingsClick}
                        className={`${styles.item} ${styles.itemHoverable}`} >
-                        {projectName}{projectId}
+                        {projectName}
                     </Menu.Item>
                 </Menu.Menu>    
                 <Menu.Menu position="right">

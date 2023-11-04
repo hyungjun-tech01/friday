@@ -9,7 +9,7 @@ interface IUserItemProp{
     canEdit : boolean|null;
     onSelect: (value: { userId: string; canEdit: boolean|null }) => void; // Corrected the parameter type
 }
-function UserItem({userName, userId, avatarUrl, canEdit, onSelect}:IUserItemProp){
+function  UserItem({userName, userId, avatarUrl, canEdit, onSelect}:IUserItemProp){
     const isActive = canEdit === null ? false: true;
     const [dummyState, setDummyState]= useState({userId:"", userName:"", userEmail:"", avatarUrl:"", positionX:-1, positionY:-1});
 

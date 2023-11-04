@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {INewProject} from "../atoms/atomsProject";
+import {IModifyProject} from "../atoms/atomsProject";
 import { apiPostProjects } from "../api/project";
 import styles from "../scss/ProjectAddModal.module.scss";
 import { useCookies } from "react-cookie";
@@ -21,7 +21,7 @@ function ProjectAddModal({setShowProjectAddModal}:IProjectAddModalProps){
     
     const onValid = async (data:any) =>{
       setIsSubmitting(true);
-      const project : INewProject= {...data, userId:cookies.UserId};
+      const project : IModifyProject= {...data, projectActionType:'ADD', creatorUserId:cookies.UserId};
       console.log('create project', project);
       try{
         const response:any = await apiPostProjects(project);

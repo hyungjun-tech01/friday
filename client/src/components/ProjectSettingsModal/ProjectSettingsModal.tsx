@@ -1,8 +1,11 @@
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Tab } from 'semantic-ui-react';
-import {useRecoilValue} from 'recoil';
+import {useRecoilState} from 'recoil';
+import {useQuery} from 'react-query';
+
+import {apiGetProjectbyId} from "../../api/project";
+import {  IProject, atomCurrentProject } from '../../atoms/atomsProject';
 
 import ManagersPane from './ManagersPane';
 import BackgroundPane from './BackgroundPane';
@@ -10,7 +13,8 @@ import GeneralPane from './GeneralPane';
 
 import {IUser, allUserSelector} from "../../atoms/atomsUser";
 import { defaultBoardUser, IBoardUser } from '../../atoms/atomsBoard';
-import {  IProject, projectSelector } from '../../atoms/atomsProject';
+
+
 import userEvent from '@testing-library/user-event';
 
 interface  IProjectSettingsModal{
@@ -46,11 +50,20 @@ const ProjectSettingsModal =
     const [t] = useTranslation();
     //const allUsers = useRecoilValue(allUserSelector);
     //const allUsersTransferToBoardUsers = allUsers.map(user=>({...defaultBoardUser, userId:user.userId, userName:user.userName, userEmail:user.email, avatarUrl:user.avatar}));
-    const selectProject = useRecoilValue(projectSelector); 
-    const currentProject = selectProject(projectId)[0];
-    //console.log('ProjectSeetingModal',projectId, currentProject, allUsersTransferToBoardUsers);
-    //const managersTransferToBoardUsers = currentProject.members.map(user=>({...defaultBoardUser, userId:user.userId, userName:user.name, userEmail:user.userEmail, avatarUrl:user.avatar}));
-    //console.log('managersTransferToBoardUsers',managersTransferToBoardUsers);
+    const [currentProject, setCurrentProject] = useRecoilState(atomCurrentProject);
+
+    const [projectQuery, setProejctQuery] = useState(false);
+    useEffect(()=>{
+      setProejctQuery(true);
+    },[projectId, setCurrentProject]);
+  
+    const {isLoading, data, isSuccess} = useQuery<IProject>(["currentMyProject", projectId], ()=>apiGetProjectbyId(projectId),{
+      onSuccess: data => {
+         setCurrentProject(data);   // use Query 에서 atom에 set
+      },
+      enabled : projectQuery
+    }
+  );
     const handleBackgroundUpdate = useCallback(
        (newBackground:any) => {
       //   onUpdate({
@@ -90,6 +103,7 @@ const ProjectSettingsModal =
         }),
         render: () => (
           <ManagersPane
+            projectId = {projectId}
             managers={currentProject.members}
             allUsers={currentProject.userPools}
             onCreate={onManagerCreate}

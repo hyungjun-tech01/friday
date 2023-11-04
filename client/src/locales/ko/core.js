@@ -18,6 +18,7 @@ const core = {
       addComment: '댓글 추가',
       addBoardMember:'멤버 추가',
       addUser:'사용자추가',
+      addMember : '관리자 추가',
       administrator:'시스템관리자',
       allChangesWillBeAutomaticallySavedAfterConnectionRestored:
         '다시 연결이 되면 모든 변경 사항이<br />자동적으로 저장됩니다.',
@@ -82,6 +83,7 @@ const core = {
       minutes: '분',
       name:'이름',
       moveCard: 'Card 이동',
+      managers:'프로젝트 관리자',
       noBoards: '보드 없음',
       noLists: '리스트 없음',
       openBoard:'보드 열기',
@@ -91,6 +93,7 @@ const core = {
       project: '프로젝트',
       projectManagement: '프로젝트 매니지먼트',
       removeMember:'보드에서 제거',
+      removeFromProject : '프로젝트에서 제거',
       searchLabels: '라벨을 검색합니다.',
       searchMembers: '회원을 검색합니다.',
       searchUsers: '아이디로 검색하세요',
@@ -119,6 +122,7 @@ const core = {
       addCard: '항목 추가',
       addComment: '댓글 추가',
       addList: '리스트 추가',
+      addMember : '관리자 추가',
       addTask:'업무 추가',
       addUser:'사용자 추가',
       addMoreDetailedDescription: '자세한 설명 추가',
@@ -139,6 +143,7 @@ const core = {
       editTitle: '제목 편집',
       leaveButtonContent: '보드에서 나가기',
       leaveBoard:'보드에서 나가기',
+      leaveProject:'프로젝트에서 나가기',
       listNameEdit: '리스트 이름 편집',
       listDelete :'리스트 삭제',
       move: '이동',
@@ -147,6 +152,7 @@ const core = {
       remove: '삭제',
       removeFromBoard:'보드에서 제거',
       removeMember:'보드에서 제거',
+      removeFromProject:'프로젝트에서 제거',
       save: '저장',
       showAllAttachments: '모든 첨부파일 보기 ({{hidden}} 숨기기)',
       showDetails: '자세히 보기',
@@ -156,7 +162,7 @@ const core = {
       subscribe: '구독',
       unsubscribe: '구독 취소',
       leaveBoardButton: '보드에서 나가기',
-      addMember : '멤버 추가',
+
     }
   },
 };

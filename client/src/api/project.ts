@@ -1,4 +1,4 @@
-import {INewProject} from "../atoms/atomsProject";
+import {IModifyProject} from "../atoms/atomsProject";
 import Paths from "../constants/Paths";
 
 
@@ -39,7 +39,7 @@ export const apiGetProjectbyId = async (projectId:string) => {
 };
 
 
-export async function  apiPostProjects(project:INewProject) {
+export async function  apiPostProjects(project:IModifyProject) {
     console.log("post project", project);
     try{
         const response = await fetch(`${BASE_PATH}/project`,{
@@ -48,7 +48,8 @@ export async function  apiPostProjects(project:INewProject) {
             body:JSON.stringify(project)
            }); 
 
-           return(response);
+           const json = await response.json()
+           return json;
     }catch(err){
         console.error(err);
         return(err);

@@ -58,14 +58,19 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
             setStep(StepTypes.SELECT_PERMISSIONS);
             setDefaultData({...defaultData, 
               userId:id, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl}); 
-        } else {
+        } else if(permissionsSelectStep === null){
+          const AddProjectUser = {...defaultBoardUser, userId:id, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl};
+          onCreate(AddProjectUser);
+          onClose();
+        }
+          else {
           setDefaultData({...defaultData, 
             userId:id, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl});
        
          onClose();
         }
       },
-      [defaultData, permissionsSelectStep, onClose],
+      [defaultData, permissionsSelectStep, onClose,onCreate],
     );
 
     const handleRoleSelect = useCallback(

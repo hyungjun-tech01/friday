@@ -18,6 +18,7 @@ const StepTypes = {
 };
 interface IActionStep{
     boardId:string,
+    projectId:string,
     membership: IBoardUser, // eslint-disable-line react/forbid-prop-types
     permissionsSelectStep: any,
     leaveButtonContent: string,
@@ -36,6 +37,7 @@ interface IActionStep{
 };
 const ActionsStep = ({
     boardId,
+    projectId,
     membership,
     permissionsSelectStep,
     leaveButtonContent,
@@ -108,6 +110,7 @@ const ActionsStep = ({
           return (
             <DeleteStep
               boardId ={membership.boardId}
+              projectId={projectId}
               userId = {membership.userId}
               title={membership.userId === cookies.UserId  ? leaveConfirmationTitle : deleteConfirmationTitle}
               content={

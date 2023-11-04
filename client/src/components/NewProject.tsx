@@ -1,23 +1,21 @@
 import React, {useState} from "react";
-import {INewProject} from "../atoms/atomsProject";
+import {IModifyProject, defaultModifyProject} from "../atoms/atomsProject";
 import { apiPostProjects } from "../api/project";
 import {useCookies} from "react-cookie";
 
 function NewProject({setshowNewProject}:any) {
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
-    const [data, setData] = useState<INewProject>(
+    const [data, setData] = useState<IModifyProject>(
         {
-          projectId: ""  ,  // : ''  // cookies.Email,
-          projectName : "" , // editMode ? task.title : "",
-          userId : cookies.UserId,
-          date: new Date()
+          ...defaultModifyProject, creatorUserId:cookies.UserId
         });
     
     const handleChange = (e : React.ChangeEvent<HTMLInputElement>)=>{
       const {value} = e.target;
       setData(data => ({
         ...data, 
-        projectName : value
+        projectName : value,
+        projectActionType:"ADD",
       }))
     };    
     const postData = async (e : React.MouseEvent<HTMLElement>) => {
@@ -47,7 +45,7 @@ function NewProject({setshowNewProject}:any) {
             maxLength = {50}
             placeholder = "Your project goes here"
             name = "projectName"
-            value = {data.projectName}
+            value = {data.projectName !== null ? data.projectName:""}
             onChange={handleChange}/>
           <br/>
           <input type="submit" onClick={postData}/>

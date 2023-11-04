@@ -25,6 +25,21 @@ export interface INewProject {
     date : Date;
 }
 
+export interface IModifyProject{
+    creatorUserId : string;
+    projectActionType : 'ADD'|'UPDATE'|'DELETE'|'ADD MANAGER'|'DELETE MANAGER'|'';
+    projectName : string|null;
+    projectId: string|null ;
+    managerId : string|null;
+}
+export const defaultModifyProject:IModifyProject={
+    creatorUserId:"",
+    projectActionType:"",
+    projectName:null,
+    projectId:null,
+    managerId:null
+}
+
 // default value 1, MyProject 1
 export const atomMyProject = atom<IProject[]>({
     key:"atomMyProject",
@@ -43,10 +58,10 @@ export const projectSelector = selector({
     },
 });
 
-export const atomCurrentProject = atom<IProject[]>({
-    key:"currentProject",
+export const atomCurrentProject = atom<IProject>({
+    key:"atomCurrentProject",
     default : 
-        [{ projectId:"" , projectName:"", defaultBoardId:"",members:[], userPools:[] }],
+        { projectId:"" , projectName:"", defaultBoardId:"",members:[], userPools:[] },
 });
 
 export const atomCurrentProjectId = atom<string>({
@@ -61,6 +76,69 @@ export const getCurrentProject = selector({
         return get(atomCurrentProjectId);
     },
 });
+
+// Project userPool 변경 
+export const projectUsersPoolSelector = selector({
+    key:"projectUsersPoolSelector",
+    get: ({ get }) => {
+        const projects = get(atomCurrentProject);
+        return projects.userPools; 
+    },
+    set: ({set, get}, newValue)=>{
+        if (Array.isArray(newValue) && newValue.length === 1) {
+            const [newUserPool] = newValue;
+        const projects = get(atomCurrentProject);
+        const updatedUserPool = projects.userPools.map((userPool:any) => {
+            if(userPool.userId === newUserPool.userId) {
+                return{...userPool, ...newUserPool};
+             }
+            return userPool;
+        })
+        console.log('project uer pool', updatedUserPool);
+        const newAtomCurrentMyProject = {...projects,   userPools:updatedUserPool,};
+        console.log('newproject', newAtomCurrentMyProject);
+        return set(atomCurrentProject, newAtomCurrentMyProject);
+    }
+    }
+});
+
+
+// project members 추가 
+export const projectUsersSelector = selector({
+    key:"projectUsersSelector",
+    get: ({ get }) => {
+        const projects = get(atomCurrentProject);
+        return projects.members; 
+    },
+    set: ({set, get}, newValue)=>{
+        const projects = get(atomCurrentProject);
+        if (Array.isArray(newValue)) {
+            const updatedUsers = [...newValue];
+            const updatedMembers = projects.members.concat(updatedUsers);
+            const newAtomCurrentMyProject = {...projects,   members:updatedMembers,};
+            console.log('newproject', newAtomCurrentMyProject);
+            return set(atomCurrentProject, newAtomCurrentMyProject);
+        }
+    }
+});
+
+// project members 삭제
+export const projectUsersDeleter = selectorFamily({
+    key:"projectUsersDeleter",
+    get: (userId) => ({ get }) => {
+        const project = get(atomCurrentProject);
+        return project.members.filter((user: any) => user.userId === userId)[0];
+    },
+    set: (userId:string) => ({set, get}, newValue)=>{
+        const projects = get(atomCurrentProject);
+        const deleteMember = projects.members.filter( (user:any) => user.userId === userId);
+
+        const newAtomCurrentMyProject = {...projects,   members:deleteMember,};
+        console.log('delete project', newAtomCurrentMyProject);
+        return set(atomCurrentProject, newAtomCurrentMyProject);
+    }
+});
+
 
 export interface IBoardToLists {
     id : string,

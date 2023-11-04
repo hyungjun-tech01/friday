@@ -133,7 +133,7 @@ app.get('/projects/:userId', async(req, res)=>{
             if( projectResult.rows.length > 0 ) {
                 const projects = projectResult.rows;
                 for(const project of projects){
-                    const managers = await pool.query(`
+                    const members = await pool.query(`
                         select 
                             t.user_id as "userId", 
                             t1.name as "userName",
@@ -142,10 +142,10 @@ app.get('/projects/:userId', async(req, res)=>{
                         from project_manager t, user_account t1
                         where t.user_id = t1.id
                         and t.project_id = $1`, [project.projectId]);
-                    if( managers.rows.length > 0 ) {
-                        project.managers = managers.rows;
+                    if( members.rows.length > 0 ) {
+                        project.members = members.rows;
                     }else{
-                        project.managers = [];
+                        project.members = [];
                     }
                     const userPools = await pool.query(`
                     select 
@@ -153,7 +153,8 @@ app.get('/projects/:userId', async(req, res)=>{
                         t1.name as "userName",
                         t1.avatar as "avatarUrl",
                         t1.email as "userEmail",
-                        (select 'Manager' from project_manager t where t.user_id = t1.id and t.project_id = $1) as "role"
+                        (select 'Manager' from project_manager t where t.user_id = t1.id and t.project_id = $1) as "role",
+                        (select true from project_manager t where t.user_id = t1.id and t.project_id = $1) as "canEdit"
                     from user_account t1`, [project.projectId]);
                     if( userPools.rows.length > 0 ) {
                         project.userPools = userPools.rows;
@@ -183,26 +184,41 @@ app.get('/project/:projectId', async(req, res)=>{
             const project = await pool.query(`
             select p.id as "projectId", p.name as "projectName"
             from project p
-            where p.project_id = $1`, [projectId]);
+            where p.id = $1`, [projectId]);
 
 
             let currentProject;
             if(project.rows.length > 0 ) {
                 currentProject = project.rows[0];
             }    
-            const managers = await pool.query(`
-                select 
-                    t.user_id as "userId", 
-                    t1.name as "userName",
-                    t1.avatar as "avatarUrl",
-                    t1.email as "userEmail"
-                from project_manager t, user_account t1
-                where t.user_id = t1.id
-                and t.project_id = $1`, [projectId]);
-             if( managers.rows.length > 0 ) {
-                currentProject.managers = managers.rows;
-             }            
-            console.log('single project', project.rows);
+            const members = await pool.query(`
+                        select 
+                            t.user_id as "userId", 
+                            t1.name as "userName",
+                            t1.avatar as "avatarUrl",
+                            t1.email as "userEmail"
+                        from project_manager t, user_account t1
+                        where t.user_id = t1.id
+                        and t.project_id = $1`, [projectId]);
+                    if( members.rows.length > 0 ) {
+                        currentProject.members = members.rows;
+                    }else{
+                        currentProject.members = [];
+                    }         
+                    const userPools = await pool.query(`
+                    select 
+                        t1.id as "userId", 
+                        t1.name as "userName",
+                        t1.avatar as "avatarUrl",
+                        t1.email as "userEmail",
+                        (select 'Manager' from project_manager t where t.user_id = t1.id and t.project_id = $1) as "role",
+                        (select true from project_manager t where t.user_id = t1.id and t.project_id = $1) as "canEdit"
+                    from user_account t1`, [projectId]);
+                    if( userPools.rows.length > 0 ) {
+                        currentProject.userPools = userPools.rows;
+                    }else{
+                        projeccurrentProjectt.userPools = [];
+                    }                    
             res.json(currentProject);
             res.end();
     }catch(err){
@@ -695,15 +711,19 @@ app.post('/boardAuth', async(req, res) => {
         res.end();
     }
 });
-// create project 
+// create or Modify project 
 app.post('/project', async(req, res) => {
-    const {projectName, userId} = req.body;
+    const {creatorUserId, projectActionType, 
+        projectName, projectId, 
+        managerId} = req.body;
+
     try{
         // insert project 
-        const response = await pool.query(`call p_create_project($1, $2)`,
-        [userId,projectName]);
+        const response = await pool.query(`call p_modify_project($1, $2, $3, $4, $5, $6)`,
+        [creatorUserId,projectActionType, projectName, projectId, managerId, null]);
        
-        res.json(response); // 결과 리턴을 해 줌 .  
+        const outProjectId = response.rows[0].x_project_id;
+        res.json({outProjectId:outProjectId, projectId:projectId}); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){
         console.error(err);
