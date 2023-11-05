@@ -245,7 +245,20 @@ app.post('/boards', async(req, res)=>{
             and b.project_id = p.id
             and bm.user_id = $1
 			and b.project_id = $2
-            order by position`, [userId, projectId]);
+            union 			
+            select b.id as "boardId", b.name as "boardName", 
+                        b.project_id as "projectId", p.name as "projectName", 
+                        b.created_at as "createdAt",
+                        bm.user_id as "userId", 'editor' as "role",
+                        true as "canComment"		
+            from board b, project_manager bm, project p		
+            where b.project_id = p.id
+            and p.id = bm.project_id
+            and bm.user_id = $1
+            and b.project_id = $2
+            and not exists (select 1 from board_membership pm 
+                                    where pm.user_id = $1
+                                    and pm.board_id =b.id)`, [userId, projectId]);
             res.json(boards.rows);
             res.end();
     }catch(err){
@@ -271,6 +284,16 @@ app.post('/currentBoard', async(req, res)=>{
         and bm.user_id = u.id
         and b.id = $1
         and u.id = $2
+        union 
+        select b.id as "boardId", 'editor' as "role", true as "canEdit"
+        from board b, project_manager bm, project p		
+        where b.project_id = p.id
+        and p.id = bm.project_id
+        and bm.user_id = $2
+        and b.id  = $1
+        and not exists (select 1 from board_membership pm 
+                                   where pm.user_id = $2
+                                   and pm.board_id =b.id)        
         LIMIT 1`, [boardId, userId]);
 
         let currentBoard;
