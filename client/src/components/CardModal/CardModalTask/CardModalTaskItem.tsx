@@ -1,6 +1,8 @@
 import React, { useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { Button, Checkbox, Icon } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+import { Draggable } from 'react-beautiful-dnd';
 import NameEdit from '../../NameEdit';
 import CardModalTaskItemPopup from './CardModalTaskItemPopup';
 
@@ -61,48 +63,69 @@ const CardModalTaskItem = ({
   const TaskItemPopup = usePopup(CardModalTaskItemPopup);
 
   return (
-    //{({ innerRef, draggableProps, dragHandleProps }, { isDragging }) => {
-    //  const contentNode = (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    //    <div {...draggableProps} {...dragHandleProps} ref={innerRef} className={styles.wrapper}>
-    <div className={styles.wrapper}>
-      <span className={styles.checkboxWrapper}>
-        <Checkbox
-          checked={isCompleted}
-          disabled={/*!isPersisted ||*/ !canEdit}
-          className={styles.checkbox}
-          onChange={handleToggleChange}
-        />
-      </span>
-      <NameEdit ref={nameEdit} defaultValue={name} type={'task'} onUpdate={handleNameUpdate}>
-        <div className={classNames(canEdit && styles.contentHoverable)}>
-          <span
-            className={classNames(styles.text, canEdit && styles.textEditable)}
-            onClick={handleClick}
+    <Draggable draggableId={id} index={index} isDragDisabled={!canEdit}>
+      {({ innerRef, draggableProps, dragHandleProps }, { isDragging }) => {
+        const contentNode = (
+          //eslint-disable-next-line react/jsx-props-no-spreading
+          <div
+            {...draggableProps}
+            {...dragHandleProps}
+            ref={innerRef}
+            className={styles.wrapper}
           >
-            <span
-              className={classNames(
-                styles.task,
-                isCompleted && styles.taskCompleted
-              )}
-            >
-              {name}
+            <span className={styles.checkboxWrapper}>
+              <Checkbox
+                checked={isCompleted}
+                disabled={/*!isPersisted ||*/ !canEdit}
+                className={styles.checkbox}
+                onChange={handleToggleChange}
+              />
             </span>
-          </span>
-          {canEdit && (
-            <TaskItemPopup onNameEdit={handleNameEdit} onDelete={onDelete}>
-              <Button className={classNames(styles.button, styles.target)}>
-                <Icon fitted name="pencil" size="small" />
-              </Button>
-            </TaskItemPopup>
-          )}
-        </div>
-      </NameEdit>
-    </div>
-    //);
+            <NameEdit
+              ref={nameEdit}
+              defaultValue={name}
+              type={'task'}
+              onUpdate={handleNameUpdate}
+            >
+              <div className={classNames(canEdit && styles.contentHoverable)}>
+                <span
+                  className={classNames(
+                    styles.text,
+                    canEdit && styles.textEditable
+                  )}
+                  onClick={handleClick}
+                >
+                  <span
+                    className={classNames(
+                      styles.task,
+                      isCompleted && styles.taskCompleted
+                    )}
+                  >
+                    {name}
+                  </span>
+                </span>
+                {canEdit && (
+                  <TaskItemPopup
+                    onNameEdit={handleNameEdit}
+                    onDelete={onDelete}
+                  >
+                    <Button
+                      className={classNames(styles.button, styles.target)}
+                    >
+                      <Icon fitted name="pencil" size="small" />
+                    </Button>
+                  </TaskItemPopup>
+                )}
+              </div>
+            </NameEdit>
+          </div>
+        );
 
-    //return isDragging ? ReactDOM.createPortal(contentNode, document.body) : contentNode;
-    //}}
+        return isDragging
+          ? ReactDOM.createPortal(contentNode, document.body)
+          : contentNode;
+      }}
+    </Draggable>
   );
 };
 
