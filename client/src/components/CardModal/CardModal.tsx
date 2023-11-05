@@ -27,7 +27,7 @@ import {
   defaultModifyBoard,
   cardSelectorCardId,
 } from '../../atoms/atomsBoard';
-import { defaultTask } from '../../atoms/atomTask';
+import { defaultTask, ITask } from '../../atoms/atomTask';
 import { IStopwatch } from '../../atoms/atomStopwatch';
 import { ILabel } from '../../atoms/atomLabel';
 import { atomProjectsToLists } from '../../atoms/atomsProject';
@@ -110,6 +110,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         setCardPath(updateCardPath);
       };
     }
+    console.log('CardModal : tasks - ', card.tasks);
   }, [card, projectsToLists]);
 
   const handleOnCloseCardModal = useCallback(() => {
@@ -649,6 +650,23 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
     },
     [card, cookies.UserId]
   );
+
+  const handleTaskMove = useCallback((pick:string, idx:number) => {
+    console.log('CardModal: handleTaskMove / ', pick, idx);
+    // Need to update positon of dragging card at first
+    const pickingCard = card.tasks.filter((task:ITask) => task.taskId === pick)[0];
+    const remainingCard = card.tasks.filter((task:ITask) => task.taskId !== pick);
+    const updateTasks = [
+      ...remainingCard.slice(0, idx),
+      pickingCard,
+      ...remainingCard.slice(idx)
+    ];
+    const updateCard = {
+      ...card,
+      tasks : updateTasks
+    };
+    setCard(updateCard);
+  }, [card, setCard]);
 
   const handleTaskDelete = useCallback(
     (id: string) => {
@@ -1268,7 +1286,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   canEdit={canEdit}
                   onCreate={handleTaskCreate}
                   onUpdate={handleTaskUpdate}
-                  //onMove={onTaskMove}
+                  onMove={handleTaskMove}
                   onDelete={handleTaskDelete}
                 />
               </div>
