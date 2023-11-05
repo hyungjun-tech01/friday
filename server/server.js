@@ -217,7 +217,7 @@ app.get('/project/:projectId', async(req, res)=>{
                     if( userPools.rows.length > 0 ) {
                         currentProject.userPools = userPools.rows;
                     }else{
-                        projeccurrentProjectt.userPools = [];
+                        currentProject.userPools = [];
                     }                    
             res.json(currentProject);
             res.end();
@@ -276,7 +276,7 @@ app.post('/currentBoard', async(req, res)=>{
         let currentBoard;
         if(result.rows.length > 0 ) {
             currentBoard = result.rows[0];
-        }    
+        }
         const users = await pool.query(`
             select t.id as "boardMembershipId",
                 t.board_id as "boardId",
@@ -295,6 +295,8 @@ app.post('/currentBoard', async(req, res)=>{
             and t.board_id = $1`, [boardId]);
          if( users.rows.length > 0 ) {
                 currentBoard.users = users.rows;
+         }else {
+            currentBoard.users = [];
          }
          const usersPool = await pool.query(`
             select 
