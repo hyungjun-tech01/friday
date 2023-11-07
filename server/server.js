@@ -165,8 +165,6 @@ app.get('/projects/:userId', async(req, res)=>{
 
                 res.json(projects);
                 res.end();
-            }else{
-                res.json({message:'No Projects'});  
             }
 
     }catch(err){

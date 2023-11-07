@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Tab } from 'semantic-ui-react';
-import {useRecoilState} from 'recoil';
+import {useRecoilState, useRecoilValue} from 'recoil';
 import {useQuery} from 'react-query';
 
 import {apiGetProjectbyId} from "../../api/project";
-import {  IProject, atomCurrentProject } from '../../atoms/atomsProject';
+import {  IProject, atomCurrentProject, projectSelector } from '../../atoms/atomsProject';
 
 import ManagersPane from './ManagersPane';
 import BackgroundPane from './BackgroundPane';
@@ -51,7 +51,8 @@ const ProjectSettingsModal =
     //const allUsers = useRecoilValue(allUserSelector);
     //const allUsersTransferToBoardUsers = allUsers.map(user=>({...defaultBoardUser, userId:user.userId, userName:user.userName, userEmail:user.email, avatarUrl:user.avatar}));
     const [currentProject, setCurrentProject] = useRecoilState(atomCurrentProject);
-
+    const currentProject1 = useRecoilValue(projectSelector);
+    const currentProject2 = currentProject1(projectId)[0];
     const [projectQuery, setProejctQuery] = useState(false);
     useEffect(()=>{
       setProejctQuery(true);
@@ -86,17 +87,23 @@ const ProjectSettingsModal =
     const onManagerDelete  = useCallback(() => {
     },[]); 
 
+    const onProjectDelete  = useCallback(() => {
+    },[]); 
+
+    const onProjectUpdate  = useCallback(() => {
+    },[]); 
+
     const onHandleClose  = useCallback(() => {
       onClose(false);
     },[]); 
     
     const panes = [
-      // {
-      //   menuItem: t('common.general', {
-      //     context: 'title',
-      //   }),
-      //   render: () => <GeneralPane name={name} onUpdate={onUpdate} onDelete={onDelete} />,
-      // },
+      {
+        menuItem: t('common.general', {
+          context: 'title',
+        }),
+        render: () => <GeneralPane name={currentProject2?.projectName} onUpdate={onProjectUpdate} onDelete={onProjectDelete} />,
+      },
       {
         menuItem: t('common.managers', {
           context: 'title',
@@ -104,8 +111,8 @@ const ProjectSettingsModal =
         render: () => (
           <ManagersPane
             projectId = {projectId}
-            managers={currentProject.members}
-            allUsers={currentProject.userPools}
+            managers={currentProject2.members}
+            allUsers={currentProject2.userPools}
             onCreate={onManagerCreate}
             onDelete={onManagerDelete}
           />

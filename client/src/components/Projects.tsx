@@ -36,6 +36,7 @@ function Projects(){
         setShowProjectAddModal(true);
     }
 
+    console.log('Project', projects);
     useEffect(() => {
         if(projects) {
             const realProject = projects.filter((project) => project.projectId !== "");
@@ -109,7 +110,7 @@ function Projects(){
             Project
             <Container className={styles.cardsWrapper}>
                 <Grid className={styles.gridFix}>
-                    {projects.map( (item) => (
+                    {projects &&  projects.map( (item) => (
                         <Grid.Column key={item.projectId} mobile={8} computer={4}>
                             <Link to={ Paths.PROJECTS.replace(':id', item.projectId) }>
                             <div className={`${styles.open} ${styles.card}`}>
@@ -118,7 +119,7 @@ function Projects(){
                             </Link>
                         </Grid.Column>
                     )
-                    )}
+                    ) }
                     <Grid.Column mobile={8} computer={4}>
                         <button type="button" className={`${styles.card}, ${styles.add}`} onClick={onAdd}>
                           <div className={styles.addTitleWrapper}>
