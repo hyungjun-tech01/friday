@@ -25,8 +25,8 @@ function ProjectAddModal({setShowProjectAddModal}:IProjectAddModalProps){
       console.log('create project', project);
       try{
         const response:any = await apiPostProjects(project);
-        // console.log("response", response.status);
-        if(response.status === 200){
+      //   console.log("response", response);
+        if(response.outProjectId){
           setShowProjectAddModal(false);
   
         }else{
