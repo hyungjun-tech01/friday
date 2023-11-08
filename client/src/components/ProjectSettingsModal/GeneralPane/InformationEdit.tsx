@@ -14,28 +14,32 @@ interface IInformation {
 const InformationEdit = React.memo(({ defaultData, onUpdate }:IInformation) => {
   const [t] = useTranslation();
   const {register, handleSubmit,formState:{errors}} = useForm();
-  const onValid = ()=>{
-    console.log('Information Edit');
-   // onUpdate(data.projectName);
+  const onValid = (data:any)=>{
+    console.log('Information Edit', data);
+   onUpdate(data);
   }
   
 
-  const [data, setData] = useState({ projectName: defaultData.name });
+  const [projectName, setProjectName] = useState(defaultData.name );
 
   const handleFieldChange = (e : React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target;
-    setData({ projectName: value });
+    setProjectName(value);
   };
   
-  const cleanData = useMemo(
-    () => ({
-      ...data,
-      projectName: data.projectName?.trim(),
-    }),
-    [data],
-  );
+  // const cleanData = useMemo(
+  //   () => ({
+  //     ...projectName,
+  //     projectName: projectName.projectName?.trim(),
+  //   }),
+  //   [projectName],
+  // );
 
-  const nameField = useRef(null);
+  // const nameField = useRef(null);
+  // value={data.projectName}
+  // disabled={dequal(cleanData, defaultData)}
+  //         onChange={handleFieldChange}
+
 
   // const handleSubmit1 = useCallback(() => {
   //   if (!cleanData.name) {
@@ -53,14 +57,14 @@ const InformationEdit = React.memo(({ defaultData, onUpdate }:IInformation) => {
         {...register("projectName", {
           required:"project name is required."
         })}
-        ref={nameField}
         name="projectName"
-        value={data.projectName}
+        type="text"
+        value={projectName}
         style={{marginBottom: '8px'}}
         className={styles.field}
         onChange={handleFieldChange}
       />
-      <Button positive disabled={dequal(cleanData, defaultData)} content={t('action.save')} />
+      <Button positive  content={t('action.save')} />
     </Form>
   );
 });
