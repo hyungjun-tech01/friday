@@ -16,6 +16,10 @@ DECLARE
     vv_project_name text;
     vv_project_id text;
     vv_manager_id text;
+    x_board_id text;
+    x_board_membership_id  text;
+    x_label_id  text;
+    TARGET_CURSOR record;
 BEGIN
    if(i_project_action_type is not null) then
     if(i_project_action_type = 'ADD') then
@@ -33,6 +37,34 @@ BEGIN
         where id = i_project_id::bigint;
 
     elsif(i_project_action_type = 'DELETE') then
+        -- 프로젝트에 속한 보드를 삭제 
+        FOR TARGET_CURSOR IN
+            SELECT    id  
+            FROM     board
+            WHERE    project_id= i_project_id::bigint
+            LOOP
+                RAISE NOTICE 'TARGET ID %', TARGET_CURSOR;
+                call p_modify_board('DELETE', 
+                     i_creator_user_id, 
+                     null,
+                     null,
+                     null, 
+                    TARGET_CURSOR.id::text,
+				    null,
+                    null,
+                    null, 
+                    null,
+                    null,
+                    null, 
+                    null,
+                    null,
+                    null, 
+                    null,
+                    x_board_id,
+                    x_board_membership_id,
+                    x_label_id);
+            END LOOP;
+       
         delete from project_manager 
         where project_id = i_project_id::bigint;
 

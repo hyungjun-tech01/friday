@@ -23,6 +23,22 @@ DECLARE
    vv_list_name text;
    vv_list_id text;
    vv_board_id text;
+   TARGET_CURSOR record;
+ x_card_id text;                    
+ x_card_position text;              
+ x_card_created_at text;            
+ x_card_membership_id text;         
+ x_card_label_id text;              
+ x_task_id text;                    
+ x_attachment_id text;              
+ x_comment_id text;                 
+ x_comment_created_at text;         
+ x_comment_updated_at text;         
+ x_card_membership_created_at text; 
+ x_card_task_created_at text;       
+ x_card_task_updated_at text;       
+ x_card_attachment_created_at text; 
+ x_card_attachment_updatec_at text;   
 BEGIN
    if(i_list_action_type is not null) then
         if(i_list_action_type = 'ADD') then 
@@ -42,8 +58,67 @@ BEGIN
             updated_At = v_updated_at
             where id = i_list_id::bigint;
         elsif(i_list_action_type = 'DELETE')  then
+            FOR TARGET_CURSOR IN
+                SELECT    id  
+                FROM     card
+                WHERE    list_id= i_list_id::bigint
+            LOOP
+                RAISE NOTICE 'TARGET ID %', TARGET_CURSOR;
+                call p_modify_card(
+                TARGET_CURSOR.id::text, 
+                i_user_id, 
+                'DELETE', 
+                null,  
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                null, 
+                x_card_id , 
+                x_card_position , 
+                x_card_created_at , 
+                x_card_membership_id , 
+                x_card_label_id , 
+                x_task_id , 
+                x_attachment_id , 
+                x_comment_id , 
+                x_comment_created_at , 
+                x_comment_updated_at , 
+                x_card_membership_created_at , 
+                x_card_task_created_at , 
+                x_card_task_updated_at , 
+                x_card_attachment_created_at , 
+                x_card_attachment_updatec_at );
+            
+            END LOOP;        
+
             delete from card 
             where list_id = i_list_id::bigint;
+            
             delete from list 
             where id = i_list_id::bigint;
         end if;

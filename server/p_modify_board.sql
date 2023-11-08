@@ -24,23 +24,28 @@ x_label_id out text)
 LANGUAGE plpgsql
 AS $$
 DECLARE
-     v_board_id bigint default null;
-	 v_board_membership_id bigint default null;
-     v_board_name text;
-     v_board_position text;
-     v_project_id text;
-     v_board_membership_user_id text;
-     v_board_membership_role text;
-     vv_board_id text;
-     v_board_membership_can_comment text;
-     vv_board_membership_id text;
-	 v_board_count double precision default 0;
-	 v_board_membership_count int default 0;
-	 v_label_id bigint default null;
-	 v_label_position int default 0;
-	 vv_label_id text;
-	 v_label_name text;
-	 v_label_color text;
+	v_board_id bigint default null;
+	v_board_membership_id bigint default null;
+	v_board_name text;
+	v_board_position text;
+	v_project_id text;
+	v_board_membership_user_id text;
+	v_board_membership_role text;
+	vv_board_id text;
+	v_board_membership_can_comment text;
+	vv_board_membership_id text;
+	v_board_count double precision default 0;
+	v_board_membership_count int default 0;
+	v_label_id bigint default null;
+	v_label_position int default 0;
+	vv_label_id text;
+	v_label_name text;
+	v_label_color text;
+	x_list_id text;
+	x_position text;
+	x_createdAt text;
+	x_updatedAt  text;
+	TARGET_CURSOR record;
 BEGIN
    if (i_board_action_type is not null) then
 	   if (i_board_action_type  = 'ADD') then
@@ -66,6 +71,25 @@ BEGIN
 	      where t.id = i_board_id::bigint ; 
 	
 	   elsif (i_board_action_type  = 'DELETE') then
+		-- 보드에 속한 리스트 삭제 
+	   	FOR TARGET_CURSOR IN
+                SELECT    id  
+                FROM     list
+                WHERE    board_id= i_board_id::bigint
+            LOOP
+                RAISE NOTICE 'TARGET ID %', TARGET_CURSOR;
+				call p_modify_list(i_board_id, 
+				i_user_id, 
+				'DELETE', 
+				TARGET_CURSOR.id::text , 
+				  null,
+				  null,
+				  x_list_id,
+				  x_position,
+				  x_createdAt,
+				  x_updatedAt);
+			END LOOP;	
+
 		  delete from board t
 		  where t.id = i_board_id::bigint ; 
 
