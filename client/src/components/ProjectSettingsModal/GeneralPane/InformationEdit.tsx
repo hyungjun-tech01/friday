@@ -1,5 +1,4 @@
 import { dequal } from 'dequal';
-import pickBy from 'lodash/pickBy';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Form,}  from 'semantic-ui-react';
@@ -10,13 +9,14 @@ import styles from './InformationEdit.module.scss';
 
 interface IInformation {
   defaultData: any; 
-  onUpdate: ()=>void;
+  onUpdate: (name:any)=>void;
 }
 const InformationEdit = React.memo(({ defaultData, onUpdate }:IInformation) => {
   const [t] = useTranslation();
   const {register, handleSubmit,formState:{errors}} = useForm();
   const onValid = ()=>{
-    
+    console.log('Information Edit');
+   // onUpdate(data.projectName);
   }
   
 

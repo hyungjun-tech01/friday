@@ -10,7 +10,7 @@ import styles from './GeneralPane.module.scss';
 
 interface IGeneralPane {
   name: string;
-  onUpdate: ()=>void;
+  onUpdate: (name:any)=>void;
   onDelete: ()=>void;
 }
 const GeneralPane = React.memo(({ name, onUpdate, onDelete }:IGeneralPane) => {
@@ -24,7 +24,7 @@ const GeneralPane = React.memo(({ name, onUpdate, onDelete }:IGeneralPane) => {
         defaultData={{
           name,
         }}
-        onUpdate={onUpdate}
+        onUpdate={(name)=>onUpdate(name)}
       />
       <Divider horizontal section>
         <Header as="h4">

@@ -90,7 +90,8 @@ const ProjectSettingsModal =
     const onProjectDelete  = useCallback(() => {
     },[]); 
 
-    const onProjectUpdate  = useCallback(() => {
+    const onProjectUpdate  = useCallback((name:any) => {
+      console.log('onProjectUpdate', projectId, name);    
     },[]); 
 
     const onHandleClose  = useCallback(() => {
