@@ -36,7 +36,6 @@ function Projects(){
         setShowProjectAddModal(true);
     }
 
-    console.log('Project1', projects);
     useEffect(() => {
         if(projects) {
             const realProject = projects.filter((project) => project.projectId !== "");

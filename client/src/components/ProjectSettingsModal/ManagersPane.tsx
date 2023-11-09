@@ -19,7 +19,6 @@ interface IManagersPane{
 
 const ManagersPane = ({ projectId, managers, allUsers, onCreate, onDelete }:IManagersPane) => {
   const [isMemberLoading, setIsMemberLoading] = useState(true); 
-
   return (
     <Tab.Pane attached={false} className={styles.wrapper}>
       <Membership 

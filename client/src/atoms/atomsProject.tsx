@@ -74,6 +74,28 @@ export const projectSelector = selector({
     }
 });
 
+
+// 특정 projectId를 가진 project를 Setting
+export const projectSetter = selector({
+    key:"projectSetter",
+    get:( {get}) => {
+        return get(atomMyProject); 
+    },
+    set: ({set, get}, newValue)=>{
+        if (Array.isArray(newValue) && newValue.length === 1) {
+            const [updatedProject] = newValue;
+            const projects_ = get(atomMyProject);
+            const updatedProjects = projects_.map((project) => {
+            if(project.projectId === updatedProject.projectId) {
+                return{...project, ...updatedProject};
+             }
+            return project;
+        })
+        return set(atomMyProject, updatedProjects);
+    }
+    }
+});
+
 export const atomCurrentProject = atom<IProject>({
     key:"atomCurrentProject",
     default : 
@@ -127,9 +149,7 @@ export const projectUsersPoolSelector = selector({
              }
             return userPool;
         })
-        console.log('project uer pool', updatedUserPool);
         const newAtomCurrentMyProject = {...projects,   userPools:updatedUserPool,};
-        console.log('newproject', newAtomCurrentMyProject);
         return set(atomCurrentProject, newAtomCurrentMyProject);
     }
     }

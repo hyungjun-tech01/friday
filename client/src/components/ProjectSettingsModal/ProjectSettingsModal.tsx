@@ -7,7 +7,7 @@ import {useCookies} from "react-cookie";
 
 import {apiGetProjectbyId} from "../../api/project";
 import {  IProject, atomCurrentProject, projectSelector, 
-        IModifyProject, defaultModifyProject } from '../../atoms/atomsProject';
+        IModifyProject, defaultModifyProject , projectSetter} from '../../atoms/atomsProject';
 import {apiPostProjects} from "../../api/project";
 import ManagersPane from './ManagersPane';
 import BackgroundPane from './BackgroundPane';
@@ -51,30 +51,28 @@ const ProjectSettingsModal =
     onClose,
   }:IProjectSettingsModal) => {
     const [t] = useTranslation();
-    //const allUsers = useRecoilValue(allUserSelector);
-    //const allUsersTransferToBoardUsers = allUsers.map(user=>({...defaultBoardUser, userId:user.userId, userName:user.userName, userEmail:user.email, avatarUrl:user.avatar}));
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [currentProject, setCurrentProject] = useRecoilState(atomCurrentProject);
 
 
-    const currentProject1 = useRecoilValue(projectSelector);
-    const currentSetProject1 = useSetRecoilState(projectSelector);
-    const currentProject2 = currentProject1(projectId)[0];
+    const currentProject1 = useRecoilValue(projectSelector);  // 내 전체 프로젝트 중에 
+    const currentSetProject1 = useSetRecoilState(projectSetter);
+    const currentProject2 = currentProject1(projectId)[0];    // 지금 프로젝트를 가지고 옴.
 
     const [projectQuery, setProejctQuery] = useState(false);
-    useEffect(()=>{
-     //setProejctQuery(true);
-      setCurrentProject(currentProject2);
-      console.log('currentProject', currentProject);
-    },[projectId, setCurrentProject]);
+
+     // atomCurrentProject 세팅 , 이후에 Membership에서 사용
+     useEffect(()=>{
+      setProejctQuery(true);
+     },[projectId, currentProject2, currentProject, setCurrentProject]);
   
-    const {isLoading, data, isSuccess} = useQuery<IProject>(["currentMyProject", projectId], ()=>apiGetProjectbyId(projectId),{
-      onSuccess: data => {
-         setCurrentProject(data);   // use Query 에서 atom에 set
-      },
-      enabled : projectQuery
-    }
-  );
+     const {isLoading, data, isSuccess} = useQuery<IProject>(["currentProject", projectId], ()=>apiGetProjectbyId(projectId),{
+       onSuccess: data => {
+          setCurrentProject(data);   // use Query 에서 atom에 set
+       },
+       enabled : projectQuery
+     }
+   );
     const handleBackgroundUpdate = useCallback(
        (newBackground:any) => {
       //   onUpdate({
@@ -101,7 +99,6 @@ const ProjectSettingsModal =
     },[]); 
 
     const onProjectUpdate  = useCallback(async (name:any) => {
-      console.log('onProjectUpdate', projectId, name);    
 
       const moddifyProject:IModifyProject = {...defaultModifyProject, 
         creatorUserId:cookies.UserId, projectActionType:'UPDATE', 
@@ -113,11 +110,8 @@ const ProjectSettingsModal =
                 if(!response.message){
                   onClose(false);
                   //recoil 추가 
-                  const updatedProject = {...currentProject, projectName:name.projectName};
-                  setCurrentProject(updatedProject);
-                 // projectSetUsers([newuser]);
-                 // projectSetUsersPool([newuser]);
-                 console.log("success", response);
+                  const updatedProject:IProject = {...currentProject2, projectName:name.projectName};
+                  currentSetProject1([updatedProject])
                 }else{
                     console.log("response", response.message);
                 }
@@ -139,7 +133,7 @@ const ProjectSettingsModal =
         menuItem: t('common.general', {
           context: 'title',
         }),
-        render: () => <GeneralPane name={currentProject?.projectName} onUpdate={onProjectUpdate} onDelete={onProjectDelete} />,
+        render: () => <GeneralPane name={currentProject2?.projectName} onUpdate={onProjectUpdate} onDelete={onProjectDelete} />,
       },
       {
         menuItem: t('common.managers', {
@@ -148,8 +142,8 @@ const ProjectSettingsModal =
         render: () => (
           <ManagersPane
             projectId = {projectId}
-            managers={currentProject2.members}
-            allUsers={currentProject2.userPools}
+            managers={currentProject2?.members}
+            allUsers={currentProject2?.userPools}
             onCreate={onManagerCreate}
             onDelete={onManagerDelete}
           />
@@ -171,7 +165,7 @@ const ProjectSettingsModal =
       //   ),
       // },
     ];
-
+    if (currentProject2.projectId === projectId) {
     return (
       <Modal open closeIcon size="small" centered={false} onClose={onHandleClose}>
         <Modal.Content>
@@ -184,7 +178,9 @@ const ProjectSettingsModal =
           />
         </Modal.Content>
       </Modal>
-    );
+    );}else{
+      return null;
+    }
   }
 
 export default ProjectSettingsModal;

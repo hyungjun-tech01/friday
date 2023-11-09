@@ -13,9 +13,8 @@ interface IGeneralPane {
   onUpdate: (name:any)=>void;
   onDelete: ()=>void;
 }
-const GeneralPane = React.memo(({ name, onUpdate, onDelete }:IGeneralPane) => {
+const GeneralPane = ({ name, onUpdate, onDelete }:IGeneralPane) => {
   const [t] = useTranslation();
-  console.log('General Pane', name);
   const DeletePopup = usePopup(DeleteStep);
 
   return (
@@ -49,7 +48,7 @@ const GeneralPane = React.memo(({ name, onUpdate, onDelete }:IGeneralPane) => {
       </div>
     </Tab.Pane>
   );
-});
+};
 
 
 
