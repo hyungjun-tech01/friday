@@ -56,6 +56,22 @@ export const projectSelector = selector({
                 );
         };
     },
+    set: ({set, get}, newValue)=>{
+        if (Array.isArray(newValue) && newValue.length === 1) {
+            const [updatedProject] = newValue;
+            const projects_ = get(atomMyProject);
+            const updatedProjects = projects_.map((project) => {
+            if(project.projectId === updatedProject.projectId) {
+                return{...project, ...updatedProject};
+             }
+            return project;
+        })
+        console.log('upated project ', updatedProjects);
+        const newAtomCurrentMyProject = {...projects_,   ...updatedProjects};
+        console.log('newproject', newAtomCurrentMyProject);
+        return set(atomMyProject, newAtomCurrentMyProject);
+    }
+    }
 });
 
 export const atomCurrentProject = atom<IProject>({
@@ -76,6 +92,23 @@ export const getCurrentProject = selector({
         return get(atomCurrentProjectId);
     },
 });
+
+// Project Seletor 프로젝트 Name 변경 
+export const getCurrentProjectSelector = selector({
+    key: 'getCurrentProjectSelector',
+    get: ({ get }) => {
+        return get(atomCurrentProject);
+    },
+    set: ({set, get}, newValue)=>{
+        if (Array.isArray(newValue) && newValue.length === 1) {
+            const [updatedProject] = newValue;
+        const project = get(atomCurrentProject);
+        const newProject = {...project, ...updatedProject};
+        return set(atomCurrentProject, newProject);
+        } 
+    }
+});
+
 
 // Project userPool 변경 
 export const projectUsersPoolSelector = selector({

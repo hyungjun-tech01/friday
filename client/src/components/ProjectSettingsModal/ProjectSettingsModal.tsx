@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Tab } from 'semantic-ui-react';
-import {useRecoilState, useRecoilValue} from 'recoil';
+import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
 import {useQuery} from 'react-query';
+import {useCookies} from "react-cookie";
 
 import {apiGetProjectbyId} from "../../api/project";
-import {  IProject, atomCurrentProject, projectSelector } from '../../atoms/atomsProject';
-
+import {  IProject, atomCurrentProject, projectSelector, 
+        IModifyProject, defaultModifyProject } from '../../atoms/atomsProject';
+import {apiPostProjects} from "../../api/project";
 import ManagersPane from './ManagersPane';
 import BackgroundPane from './BackgroundPane';
 import GeneralPane from './GeneralPane';
@@ -16,6 +18,7 @@ import { defaultBoardUser, IBoardUser } from '../../atoms/atomsBoard';
 
 
 import userEvent from '@testing-library/user-event';
+import { stringify } from 'querystring';
 
 interface  IProjectSettingsModal{
   // name:string;
@@ -50,12 +53,19 @@ const ProjectSettingsModal =
     const [t] = useTranslation();
     //const allUsers = useRecoilValue(allUserSelector);
     //const allUsersTransferToBoardUsers = allUsers.map(user=>({...defaultBoardUser, userId:user.userId, userName:user.userName, userEmail:user.email, avatarUrl:user.avatar}));
+    const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [currentProject, setCurrentProject] = useRecoilState(atomCurrentProject);
+
+
     const currentProject1 = useRecoilValue(projectSelector);
+    const currentSetProject1 = useSetRecoilState(projectSelector);
     const currentProject2 = currentProject1(projectId)[0];
+
     const [projectQuery, setProejctQuery] = useState(false);
     useEffect(()=>{
-      setProejctQuery(true);
+     //setProejctQuery(true);
+      setCurrentProject(currentProject2);
+      console.log('currentProject', currentProject);
     },[projectId, setCurrentProject]);
   
     const {isLoading, data, isSuccess} = useQuery<IProject>(["currentMyProject", projectId], ()=>apiGetProjectbyId(projectId),{
@@ -90,8 +100,34 @@ const ProjectSettingsModal =
     const onProjectDelete  = useCallback(() => {
     },[]); 
 
-    const onProjectUpdate  = useCallback((name:any) => {
+    const onProjectUpdate  = useCallback(async (name:any) => {
       console.log('onProjectUpdate', projectId, name);    
+
+      const moddifyProject:IModifyProject = {...defaultModifyProject, 
+        creatorUserId:cookies.UserId, projectActionType:'UPDATE', 
+        projectName:name.projectName, projectId:projectId};
+        try{
+            const response:any = await apiPostProjects(moddifyProject);
+
+            if(response){
+                if(!response.message){
+                  onClose(false);
+                  //recoil 추가 
+                  const updatedProject = {...currentProject, projectName:name.projectName};
+                  setCurrentProject(updatedProject);
+                 // projectSetUsers([newuser]);
+                 // projectSetUsersPool([newuser]);
+                 console.log("success", response);
+                }else{
+                    console.log("response", response.message);
+                }
+            }
+            
+          }catch(err){
+            console.error(err);
+          }
+
+
     },[]); 
 
     const onHandleClose  = useCallback(() => {
@@ -103,7 +139,7 @@ const ProjectSettingsModal =
         menuItem: t('common.general', {
           context: 'title',
         }),
-        render: () => <GeneralPane name={currentProject2?.projectName} onUpdate={onProjectUpdate} onDelete={onProjectDelete} />,
+        render: () => <GeneralPane name={currentProject?.projectName} onUpdate={onProjectUpdate} onDelete={onProjectDelete} />,
       },
       {
         menuItem: t('common.managers', {
