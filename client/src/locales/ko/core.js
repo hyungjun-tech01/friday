@@ -53,6 +53,7 @@ const core = {
       dangerZone:'Danger Zone',
       deleteAttachment_title: '첨부파일 삭제',
       deleteCard: 'Card 삭제',
+      deleteProject:'프로젝트 삭제',
       deleteTask: '업무 삭제',
       description: '설명',
       dueDate: '완료일',

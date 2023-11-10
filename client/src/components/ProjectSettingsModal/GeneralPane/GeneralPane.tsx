@@ -5,7 +5,7 @@ import usePopup from '../../../lib/hook/use-popup';
 
 import InformationEdit from './InformationEdit';
 import DeleteStep from '../../DeleteStep';
-
+//import DeletePopup from '../../DeletePopup';
 import styles from './GeneralPane.module.scss';
 
 interface IGeneralPane {
@@ -13,10 +13,17 @@ interface IGeneralPane {
   onUpdate: (name:any)=>void;
   onDelete: ()=>void;
 }
-const GeneralPane = ({ name, onUpdate, onDelete }:IGeneralPane) => {
+const GeneralPane = React.memo(({ name, onUpdate, onDelete }:IGeneralPane) => {
   const [t] = useTranslation();
+  console.log('General Pane', name);
   const DeletePopup = usePopup(DeleteStep);
-
+//<Button className={styles.actionButton}>
+///{t('action.deleteProject', {
+//  context: 'title',
+//})}
+//</Button>
+//        </DeletePopup>
+  const onBack = ()=>{};
   return (
     <Tab.Pane attached={false} className={styles.wrapper}>
       <InformationEdit
@@ -24,7 +31,7 @@ const GeneralPane = ({ name, onUpdate, onDelete }:IGeneralPane) => {
           name,
         }}
         onUpdate={(name)=>onUpdate(name)}
-      />
+      />  
       <Divider horizontal section>
         <Header as="h4">
           {t('common.dangerZone', {
@@ -34,21 +41,21 @@ const GeneralPane = ({ name, onUpdate, onDelete }:IGeneralPane) => {
       </Divider>
       <div className={styles.action}>
         <DeletePopup
-          title="common.deleteProject"
-          content="common.areYouSureYouWantToDeleteThisProject"
-          buttonContent="action.deleteProject"
+          title={t("common.deleteProject")} 
+          content={t("common.areYouSureYouWantToDeleteThisProject")}
+          buttonContent={t("action.deleteProject")}
           onConfirm={onDelete}
         >
-          <Button className={styles.actionButton}>
-            {t('action.deleteProject', {
-              context: 'title',
-            })}
-          </Button>
-        </DeletePopup>
+        <Button className={styles.actionButton}>
+        {t('action.deleteProject', {
+        context: 'title',
+        })}
+        </Button>
+        </DeletePopup>        
       </div>
     </Tab.Pane>
   );
-};
+});
 
 
 

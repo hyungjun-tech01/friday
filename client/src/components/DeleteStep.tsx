@@ -1,7 +1,8 @@
 import React, {useCallback} from 'react';
-import { Button , Popup as SemanticUIPopup} from 'semantic-ui-react';
+import { Button , CommentContent, Popup as SemanticUIPopup} from 'semantic-ui-react';
 import {useSetRecoilState, useRecoilValue} from "recoil";
 import {useCookies} from "react-cookie";
+import { useTranslation } from 'react-i18next';
 
 import {IBoardUser, usersPoolSelector, 
   IModifyBoard, defaultModifyBoard, 
@@ -35,6 +36,7 @@ const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
   };
   
 function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent, onConfirm, onBack }:IDeleteStep) {
+  const [t] = useTranslation();
   const user = useRecoilValue(usersDeleter(userId));
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
   const currentBoard = useRecoilValue(atomCurrentMyBoard);
@@ -78,6 +80,8 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
         }
       }
     }else{
+      console.log('Delete Step', buttonContent);
+      if (buttonContent === t('action.removeFromProject')) {
       // server 처리 
       const projectAA : IModifyProject= 
           {...defaultModifyProject, 
@@ -105,16 +109,21 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
         }
       }
     }
+    if (buttonContent === t('action.deleteProject')) {
+      console.log('deleteProejct',buttonContent );
+       //=> 프로젝트 삭제하고 나면 main 화면으로 가야 한다...
+    }
+    }
 },[boardId, boardUser, cookies.UserId, deleteUser, onConfirm, setUsersPool, user, projectId, projectUsers,setProjectUsersPool]);
     return (
         <div className={styles.overlay} > 
             <div className={styles.modal} >
             <SemanticUIPopup.Header className={styles.wrapper}>
                 {onBack && <Button icon="angle left" onClick={onBack} className={styles.backButton} />}
-                <div className={styles.popupcontent}>{title}</div>
+                <div className={styles.popupcontent}>{(title)}</div>
             </SemanticUIPopup.Header>
             <div>
-                    <div className={styles.content}>{content}</div>
+                    <div className={styles.content}>{(content)}</div>
                     <Button fluid positive 
                      style = {{
                         background : '#db570a',
@@ -127,7 +136,7 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
                       }} 
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}                      
-                    content={buttonContent} onClick={()=>handleUserDelete(userId, boardId)} />
+                    content={(buttonContent)} onClick={()=>handleUserDelete(userId, boardId)} />
               </div>
             </div>  
         </div>
