@@ -82,7 +82,7 @@ function Header({setCurrent, projectName, projectId}:any){
         </div>
         {showNotif && <NotiModal setShowNoti={setShowNoti}/>}
         {showUsers && <UsersModal onClose={setShowUsers}/>}
-        {showProjSetting&&<ProjectSettingsModal projectId={projectId} onClose={setShowProjSetting} />}
+        {showProjSetting&&<ProjectSettingsModal projectId={projectId} onClose={setShowProjSetting} setCurrent={setCurrent} projectName={projectName}/>}
         </>
 
     );

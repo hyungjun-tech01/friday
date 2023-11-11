@@ -741,12 +741,12 @@ app.post('/project', async(req, res) => {
         managerId} = req.body;
 
     try{
-        // insert project 
         const response = await pool.query(`call p_modify_project($1, $2, $3, $4, $5, $6)`,
         [creatorUserId,projectActionType, projectName, projectId, managerId, null]);
        
         const outProjectId = response.rows[0].x_project_id;
         res.json({outProjectId:outProjectId, projectId:projectId}); // 결과 리턴을 해 줌 .  
+        console.log('project',projectId );
         res.end();
     }catch(err){
         console.error(err);
@@ -763,7 +763,6 @@ app.post('/board', async(req, res) => {
         boardLabelActionType , labelId , labelName , labelColor , labelPosition 
      } = req.body;
     try{
-        // insert project 
         const response = await pool.query(`call p_modify_board($1, $2, $3, $4, $5, 
              $6, $7, $8, $9, $10, $11, $12, $13,
              $14, $15, $16, $17, $18, $19)`,
@@ -790,7 +789,6 @@ app.post('/board', async(req, res) => {
 app.post('/list', async(req, res) => {
     const {boardId, userId, listActionType, listId,  listName, position} = req.body;
     try{
-        // insert project 
         const response = await pool.query(`call p_modify_list($1, $2, $3, $4, $5, $6,
             $7, $8, $9, $10)`,
         [boardId,userId,listActionType, listId, listName, position,
@@ -848,7 +846,6 @@ app.post('/card', async(req, res) => {
         cardStatusActionType ,
         cardStatusId } = req.body;
     try{
-        // insert project 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
                                            $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48)`,
         [cardId,     //  

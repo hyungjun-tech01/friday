@@ -9,11 +9,12 @@ import DeleteStep from '../../DeleteStep';
 import styles from './GeneralPane.module.scss';
 
 interface IGeneralPane {
+  projectId : string;
   name: string;
   onUpdate: (name:any)=>void;
   onDelete: ()=>void;
 }
-const GeneralPane = React.memo(({ name, onUpdate, onDelete }:IGeneralPane) => {
+const GeneralPane = React.memo(({ projectId, name, onUpdate, onDelete }:IGeneralPane) => {
   const [t] = useTranslation();
   console.log('General Pane', name);
   const DeletePopup = usePopup(DeleteStep);
@@ -41,6 +42,7 @@ const GeneralPane = React.memo(({ name, onUpdate, onDelete }:IGeneralPane) => {
       </Divider>
       <div className={styles.action}>
         <DeletePopup
+          projectId = {projectId}
           title={t("common.deleteProject")} 
           content={t("common.areYouSureYouWantToDeleteThisProject")}
           buttonContent={t("action.deleteProject")}

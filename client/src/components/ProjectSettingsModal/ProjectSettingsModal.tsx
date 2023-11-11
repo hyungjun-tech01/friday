@@ -4,6 +4,7 @@ import { Modal, Tab } from 'semantic-ui-react';
 import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
 import {useQuery} from 'react-query';
 import {useCookies} from "react-cookie";
+import {useHistory} from "react-router-dom";
 
 import {apiGetProjectbyId} from "../../api/project";
 import {  IProject, atomCurrentProject, projectSelector, 
@@ -13,6 +14,7 @@ import ManagersPane from './ManagersPane';
 import BackgroundPane from './BackgroundPane';
 import GeneralPane from './GeneralPane';
 
+import Path from '../../constants/Paths';
 import {IUser, allUserSelector} from "../../atoms/atomsUser";
 import { defaultBoardUser, IBoardUser } from '../../atoms/atomsBoard';
 
@@ -31,6 +33,8 @@ interface  IProjectSettingsModal{
   // onDelete:()=>void;
   // onManagerCreate:()=>void;
   // onManagerDelete:()=>void;
+  setCurrent: (value:boolean) => void;
+  projectName : string;
   projectId:string;
   onClose:(value:boolean)=>void;
 }
@@ -47,6 +51,8 @@ const ProjectSettingsModal =
     // onDelete,
     // onManagerCreate,
     // onManagerDelete,
+    projectName,
+    setCurrent,
     projectId,
     onClose,
   }:IProjectSettingsModal) => {
@@ -60,6 +66,8 @@ const ProjectSettingsModal =
     const currentProject2 = currentProject1(projectId)[0];    // 지금 프로젝트를 가지고 옴.
 
     const [projectQuery, setProejctQuery] = useState(false);
+
+    const history = useHistory();
 
      // atomCurrentProject 세팅 , 이후에 Membership에서 사용
      useEffect(()=>{
@@ -96,6 +104,10 @@ const ProjectSettingsModal =
     },[]); 
 
     const onProjectDelete  = useCallback(() => {
+      // 닫아야 하는데. 
+      onClose(false);
+      setCurrent(false);
+      history.push(Path.ROOT); 
     },[]); 
 
     const onProjectUpdate  = useCallback(async (name:any) => {
@@ -133,7 +145,7 @@ const ProjectSettingsModal =
         menuItem: t('common.general', {
           context: 'title',
         }),
-        render: () => <GeneralPane name={currentProject2?.projectName} onUpdate={onProjectUpdate} onDelete={onProjectDelete} />,
+        render: () => <GeneralPane projectId={projectId} name={currentProject2?.projectName} onUpdate={onProjectUpdate} onDelete={onProjectDelete} />,
       },
       {
         menuItem: t('common.managers', {

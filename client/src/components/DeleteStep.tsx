@@ -3,7 +3,9 @@ import { Button , CommentContent, Popup as SemanticUIPopup} from 'semantic-ui-re
 import {useSetRecoilState, useRecoilValue} from "recoil";
 import {useCookies} from "react-cookie";
 import { useTranslation } from 'react-i18next';
+import {useHistory} from "react-router-dom";
 
+import Path from '../constants/Paths';
 import {IBoardUser, usersPoolSelector, 
   IModifyBoard, defaultModifyBoard, 
   atomCurrentMyBoard, 
@@ -38,6 +40,7 @@ const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
 function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent, onConfirm, onBack }:IDeleteStep) {
   const [t] = useTranslation();
   const user = useRecoilValue(usersDeleter(userId));
+  const history = useHistory();
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
   const currentBoard = useRecoilValue(atomCurrentMyBoard);
   const boardUser = currentBoard.users;
@@ -102,7 +105,7 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
           onConfirm(userId, projectId);
 
         }else if(response.message){
-            console.log('Fail to     delete card', response.message);
+            console.log('Fail to     delete manager', response.message);
             //    setDeleteStep(true);  // 에러 response 표현 해 주어야 하나??
         }else{
             //    setDeleteStep(true);
@@ -110,8 +113,28 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
       }
     }
     if (buttonContent === t('action.deleteProject')) {
-      console.log('deleteProejct',buttonContent );
-       //=> 프로젝트 삭제하고 나면 main 화면으로 가야 한다...
+      console.log('deleteProejct',buttonContent, projectId );
+       //=> 프로젝트 삭제하고 나면 main 화면으로 가야 한다... history.push로 가면 되는건가?? 
+      // server 처리 
+      const projectAA : IModifyProject= 
+          {...defaultModifyProject, 
+            projectActionType:'DELETE', 
+            projectId:projectId, 
+            creatorUserId:cookies.UserId};
+      const response = await apiPostProjects(projectAA);   
+      if(response){
+        if(response.projectId){ 
+
+          onConfirm(userId, projectId);
+          history.push(Path.ROOT); 
+
+        }else if(response.message){
+            console.log('Fail to     delete card', response.message);
+            //    setDeleteStep(true);  // 에러 response 표현 해 주어야 하나??
+        }else{
+            //    setDeleteStep(true);
+        }
+      }
     }
     }
 },[boardId, boardUser, cookies.UserId, deleteUser, onConfirm, setUsersPool, user, projectId, projectUsers,setProjectUsersPool]);
