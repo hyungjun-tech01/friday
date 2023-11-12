@@ -11,13 +11,15 @@ import {IBoardUser} from '../../atoms/atomsBoard';
 
 interface IManagersPane{
   projectId:string;
+  isAdmin:boolean;
+  role:string;
   managers: IBoardUser[];
   allUsers: IBoardUser[];
   onCreate: ()=>void;
   onDelete: ()=>void;
 };
 
-const ManagersPane = ({ projectId, managers, allUsers, onCreate, onDelete }:IManagersPane) => {
+const ManagersPane = ({ projectId, isAdmin, role, managers, allUsers, onCreate, onDelete }:IManagersPane) => {
   const [isMemberLoading, setIsMemberLoading] = useState(true); 
   return (
     <Tab.Pane attached={false} className={styles.wrapper}>

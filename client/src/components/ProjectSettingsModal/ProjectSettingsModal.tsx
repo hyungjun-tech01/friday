@@ -69,6 +69,8 @@ const ProjectSettingsModal =
 
     const history = useHistory();
 
+    console.log('currentProject2', currentProject2);
+
      // atomCurrentProject 세팅 , 이후에 Membership에서 사용
      useEffect(()=>{
       setProejctQuery(true);
@@ -154,6 +156,8 @@ const ProjectSettingsModal =
         render: () => (
           <ManagersPane
             projectId = {projectId}
+            isAdmin={currentProject2.isAdmin}
+            role={currentProject2.role}
             managers={currentProject2?.members}
             allUsers={currentProject2?.userPools}
             onCreate={onManagerCreate}

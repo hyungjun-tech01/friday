@@ -102,7 +102,7 @@ const ActionsStep = ({
 
           return (
             <PermissionsSelectStep
-              defaultData={pick(membership, ['role', 'canComment'])}
+              defaultData={pick(membership, ['userName', 'avatarUrl', 'userEmail', 'role', 'canComment'])}
               title="common.editPermissions"
               buttonContent="action.save"
               onSelect={handleRoleSelect}

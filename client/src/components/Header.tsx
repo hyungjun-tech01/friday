@@ -1,26 +1,44 @@
-import React, {useState, useCallback} from "react";
+import React, {useState, useCallback, useEffect} from "react";
 import {Link, useHistory} from "react-router-dom";
 import { Icon, Menu, Dropdown } from "semantic-ui-react";
 import {useCookies} from "react-cookie";
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
+import {useRecoilState} from 'recoil';
 
 import Paths from "../constants/Paths";
 import styles from "../scss/Header.module.scss";
 import NotiModal from "./NotiModal";
 import UsersModal from "./UsersModal";
+import {atomMyUser, IUser, } from "../atoms/atomsUser";
+import {apiGetUser} from "../api/user";
 
 import Path from '../constants/Paths';
 import ProjectSettingsModal from "./ProjectSettingsModal";
 
 
 function Header({setCurrent, projectName, projectId}:any){
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     //project id로 보드를 쿼리할 것.
     const [cookies, setCookie, removeCookie] = useCookies(['UserId','UserName', 'AuthToken']);
     const history = useHistory();
     const [showUsers, setShowUsers] = useState(false);
 
-    if(cookies.AuthToken === undefined || cookies.AuthToken === ""){
+    // 현재 사용자의 isAdmin을 체크 
+    const [currentUser,setCurrentUser] = useRecoilState<IUser>(atomMyUser);
+    console.log('isAdmin', currentUser.isAdmin);
+    
+    const getUserInfo = async ()=>{
+        const userInfo = await apiGetUser(cookies.UserId);
+        setCurrentUser(userInfo);
+    };
+    useEffect(
+        ()=>{getUserInfo();},
+        []);
+
+    if(cookies.AuthToken === undefined || cookies.AuthToken === "" || cookies.AuthToken === null){
+        removeCookie('UserId');
+        removeCookie('UserName');
+        removeCookie('AuthToken');
         history.push(Path.LOGIN);
     }
     
@@ -30,7 +48,8 @@ function Header({setCurrent, projectName, projectId}:any){
         console.log('setting');
     };
     const handleProjectSettingsClick = useCallback(() => {
-        setShowProjSetting(true);
+       // if(currentUser.isAdmin === true )
+            setShowProjSetting(true);
         //if (canEditProject) {
         //  onProjectSettingsClick();
         //}

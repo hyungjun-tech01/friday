@@ -2,6 +2,8 @@ import { dequal } from 'dequal';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Form,}  from 'semantic-ui-react';
+import {useRecoilValue} from 'recoil';
+import {atomMyUser, IUser} from "../../../atoms/atomsUser";
 
 import { useForm } from 'react-hook-form';
 
@@ -14,6 +16,8 @@ interface IInformation {
 const InformationEdit = React.memo(({ defaultData, onUpdate }:IInformation) => {
   const [t] = useTranslation();
   const {register, handleSubmit,formState:{errors}} = useForm();
+  const currentUser = useRecoilValue<IUser>(atomMyUser);
+
   const onValid = (data:any)=>{
     console.log('Information Edit', data);
    onUpdate(data);
@@ -23,8 +27,10 @@ const InformationEdit = React.memo(({ defaultData, onUpdate }:IInformation) => {
   const [projectName, setProjectName] = useState(defaultData.name );
 
   const handleFieldChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+    if(currentUser.isAdmin === true){
     const {value} = e.target;
     setProjectName(value);
+    }
   };
   
   // const cleanData = useMemo(

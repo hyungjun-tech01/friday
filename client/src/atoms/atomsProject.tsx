@@ -6,6 +6,8 @@ import {IBoardUser} from "./atomsBoard";
 export interface IProject {
     projectId : string;
     projectName : string;
+    isAdmin : boolean;
+    role : string;
     defaultBoardId : string;
     members:IBoardUser[];
     userPools:IBoardUser[];
@@ -31,13 +33,15 @@ export interface IModifyProject{
     projectName : string|null;
     projectId: string|null ;
     managerId : string|null;
+    role :'editor' | 'viewer'|  'manager' | 'normal' | null;
 }
 export const defaultModifyProject:IModifyProject={
     creatorUserId:"",
     projectActionType:"",
     projectName:null,
     projectId:null,
-    managerId:null
+    managerId:null,
+    role:null,
 }
 
 // default value 1, MyProject 1
@@ -99,7 +103,7 @@ export const projectSetter = selector({
 export const atomCurrentProject = atom<IProject>({
     key:"atomCurrentProject",
     default : 
-        { projectId:"" , projectName:"", defaultBoardId:"",members:[], userPools:[] },
+        { projectId:"" , projectName:"", isAdmin:false, role:"", defaultBoardId:"",members:[], userPools:[] },
 });
 
 export const atomCurrentProjectId = atom<string>({
@@ -168,6 +172,33 @@ export const projectUsersSelector = selector({
         if (Array.isArray(newValue)) {
             const updatedUsers = [...newValue];
             const updatedMembers = projects.members.concat(updatedUsers);
+            const newAtomCurrentMyProject = {...projects,   members:updatedMembers,};
+            console.log('newproject', newAtomCurrentMyProject);
+            return set(atomCurrentProject, newAtomCurrentMyProject);
+        }
+    }
+});
+
+// project members 추가 
+export const projectUsersUpdator = selector({
+    key:"projectUsersUpdator",
+    get: ({ get }) => {
+        const projects = get(atomCurrentProject);
+        return projects.members; 
+    },
+    set: ({set, get}, newValue)=>{
+        const projects = get(atomCurrentProject);
+        if (Array.isArray(newValue) && newValue.length === 1) {
+            const updatedUsers = [...newValue];
+
+            const updatedMembers = projects.members.map((member) => {
+                if(member.userId === updatedUsers[0].userId) {
+                    return{...member, ...updatedUsers[0]};
+                 }
+                return member;
+            })
+
+            // const updatedMembers = projects.members.concat(updatedUsers);
             const newAtomCurrentMyProject = {...projects,   members:updatedMembers,};
             console.log('newproject', newAtomCurrentMyProject);
             return set(atomCurrentProject, newAtomCurrentMyProject);

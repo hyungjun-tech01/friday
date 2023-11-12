@@ -9,7 +9,7 @@ import {IBoardUser, usersPoolSelector,
        usersSelector, atomCurrentMyBoard
        } from "../../atoms/atomsBoard";
 import {IModifyProject, defaultModifyProject, atomCurrentProject, 
-    projectUsersPoolSelector, projectUsersSelector} from "../../atoms/atomsProject";
+    projectUsersPoolSelector, projectUsersSelector, projectUsersUpdator} from "../../atoms/atomsProject";
 import styles from "./Membership.module.scss";
 import User from "./User";
 import React, {useCallback, useState} from "react";
@@ -22,6 +22,7 @@ import ActionsStep from "./ActionsStep";
 
 
 import permissionsSelectStep from "../BoardMembershipPermissionsSelectStep";
+import projectPermissionsSelectStep from "../ProjectMembershipPermissionsSelectStep";
 
 interface IMembershipProps {
     boardId: string|null;
@@ -75,6 +76,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     const projectUsers =  useRecoilValue(projectUsersSelector); // selectProject.members; // useRecoilValue(projectUsersPoolSelector);
     const projectSetUsersPool = useSetRecoilState(projectUsersPoolSelector);
     const projectSetUsers = useSetRecoilState(projectUsersSelector);
+    const proejctUsersUpdate = useSetRecoilState(projectUsersUpdator);
 
     const onCreate = async (data:IBoardUser)=>{
       //  setBoardMemberAction(true);
@@ -152,18 +154,57 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
      //   setBoardMemberAction(false);
     };     
 
-    const onProjectUpdate = useCallback( async(boardId:any, userId:any, data:any)=>{}
+    const onProjectUpdate = useCallback( async(boardId:any, userId:any, data:any)=>{
+        // proeject manager 관리 db 처리 실행, 
+        const addProjectMember:IModifyProject = {...defaultModifyProject, 
+            creatorUserId:cookies.UserId, projectActionType:'ADD MANAGER', 
+            managerId:userId, role:data.role, projectId:projectId};
+            try{
+                const response:any = await apiPostProjects(addProjectMember);
+    
+                if(response){
+                    if(!response.message){
+                    // state  추가 
+                    setIsMemberLoading(!isMemberLoading);
+                    // 현재 project atom 추가 변경 
+                    const newuser:IBoardUser = {
+                        boardMembershipId:"",
+                        boardId:"",
+                        userId:userId,
+                        userName:data.userName,
+                        role: data.role, 
+                        avatarUrl: data.avatarUrl,
+                        userEmail: data.userEmail,
+                        canEdit: true,
+                        canComment: data.canComment
+                    }
+                        //recoil 추가 
+                        proejctUsersUpdate([newuser]);
+                        //projectSetUsers([newuser]);
+                        //projectSetUsersPool([newuser]);
+    
+                    }else{
+                        console.log("response", response.message);
+                    }
+                }
+                
+              }catch(err){
+                console.error(err);
+              }            
+    }
     ,[]
     );
 
-    const handleProjectUserDelete = useCallback( async(userId:any, delProjectId:any) => {}
+    const handleProjectUserDelete = useCallback( async(userId:any, delProjectId:any) => {
+
+    }
     ,[]);
 
     const handleProjectUserCreate = useCallback( async(data:IBoardUser) => {
         // proeject manager 관리 db 처리 실행, 
         const addProjectMember:IModifyProject = {...defaultModifyProject, 
         creatorUserId:cookies.UserId, projectActionType:'ADD MANAGER', 
-        managerId:data.userId, projectId:projectId};
+        managerId:data.userId, role:data.role, projectId:projectId};
         try{
             const response:any = await apiPostProjects(addProjectMember);
 
@@ -268,7 +309,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                         boardId={""}
                         projectId={projectId}
                         membership={user}
-                        permissionsSelectStep={null}
+                        permissionsSelectStep={projectPermissionsSelectStep}
                         leaveButtonContent={t('action.leaveProject')}
                         leaveConfirmationTitle={t('common.leaveProject')}
                         leaveConfirmationContent={t('common.areYouSureYouWantToLeaveProject')}
@@ -309,7 +350,7 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
                     <AddPopup
                     users={projectUsersPool}
                     currentUserIds={cookies.UserId}
-                    permissionsSelectStep={null}
+                    permissionsSelectStep={projectPermissionsSelectStep}
                     title={t('common.addMember')}
                     onCreate={handleProjectUserCreate}
                 >

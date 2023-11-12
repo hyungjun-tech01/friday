@@ -120,16 +120,33 @@ app.get('/', (req, res)=>{
 app.get('/projects/:userId', async(req, res)=>{
     const userId = req.params.userId;
     try{
-            const projectResult = await pool.query(`
-            select p.id as "projectId", p.name as "projectName",
-            (select id from board b
-                where b.project_id = p.id
-                order by position 
-                limit 1) as "defaultBoardId"
-            from project p, project_manager pm
-            where p.id = pm.project_id 
-            and pm.user_id = $1`, [userId]);
+            const userIsAdminCheck = await pool.query(`
+            select is_admin as "isAdmin" 
+            from user_account 
+            where id =$1`, [userId]);
 
+            let projectResult;
+            if(userIsAdminCheck.rows[0].isAdmin === true) {
+                projectResult = await pool.query(`
+                select p.id as "projectId", true as "isAdmin", p.name as "projectName",
+                'manager' as "role",
+                (select id from board b
+                    where b.project_id = p.id
+                    order by position 
+                    limit 1) as "defaultBoardId"
+                from project p`, []);
+            }else{
+                projectResult = await pool.query(`
+                select p.id as "projectId", false as "isAdmin", p.name as "projectName",
+                pm.role as "role",
+                (select id from board b
+                    where b.project_id = p.id
+                    order by position 
+                    limit 1) as "defaultBoardId"
+                from project p, project_manager pm
+                where p.id = pm.project_id 
+                and pm.user_id = $1`, [userId]);
+            }
             if( projectResult.rows.length > 0 ) {
                 const projects = projectResult.rows;
                 for(const project of projects){
@@ -138,7 +155,8 @@ app.get('/projects/:userId', async(req, res)=>{
                             t.user_id as "userId", 
                             t1.name as "userName",
                             t1.avatar as "avatarUrl",
-                            t1.email as "userEmail"
+                            t1.email as "userEmail",
+                            t.role as "role"
                         from project_manager t, user_account t1
                         where t.user_id = t1.id
                         and t.project_id = $1`, [project.projectId]);
@@ -164,6 +182,7 @@ app.get('/projects/:userId', async(req, res)=>{
                 }
 
                 res.json(projects);
+                console.log(projects);
                 res.end();
             }
 
@@ -194,7 +213,8 @@ app.get('/project/:projectId', async(req, res)=>{
                             t.user_id as "userId", 
                             t1.name as "userName",
                             t1.avatar as "avatarUrl",
-                            t1.email as "userEmail"
+                            t1.email as "userEmail",
+                            t.role as "role"
                         from project_manager t, user_account t1
                         where t.user_id = t1.id
                         and t.project_id = $1`, [projectId]);
@@ -209,7 +229,7 @@ app.get('/project/:projectId', async(req, res)=>{
                         t1.name as "userName",
                         t1.avatar as "avatarUrl",
                         t1.email as "userEmail",
-                        (select 'Manager' from project_manager t where t.user_id = t1.id and t.project_id = $1) as "role",
+                        (select role from project_manager t where t.user_id = t1.id and t.project_id = $1) as "role",
                         (select true from project_manager t where t.user_id = t1.id and t.project_id = $1) as "canEdit"
                     from user_account t1`, [projectId]);
                     if( userPools.rows.length > 0 ) {
@@ -738,11 +758,11 @@ app.post('/boardAuth', async(req, res) => {
 app.post('/project', async(req, res) => {
     const {creatorUserId, projectActionType, 
         projectName, projectId, 
-        managerId} = req.body;
+        managerId, role} = req.body;
 
     try{
-        const response = await pool.query(`call p_modify_project($1, $2, $3, $4, $5, $6)`,
-        [creatorUserId,projectActionType, projectName, projectId, managerId, null]);
+        const response = await pool.query(`call p_modify_project($1, $2, $3, $4, $5, $6, $7)`,
+        [creatorUserId,projectActionType, projectName, projectId, managerId, role, null]);
        
         const outProjectId = response.rows[0].x_project_id;
         res.json({outProjectId:outProjectId, projectId:projectId}); // 결과 리턴을 해 줌 .  
@@ -947,7 +967,7 @@ app.post('/modifyCard', async(req, res) => {
         cardStatusId } = req.body;
         
     try{
-        // insert project 
+
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
                                            $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48)`,
         [cardId,     //  
@@ -1082,7 +1102,7 @@ app.post('/getuser', async(req, res) => {
             return res.json({detail:'User does not exist'});
 
 
-        res.json(users.rows); // 결과 리턴을 해 줌 .
+        res.json(users.rows[0]); // 결과 리턴을 해 줌 .
         res.end();
 
     }catch(err){

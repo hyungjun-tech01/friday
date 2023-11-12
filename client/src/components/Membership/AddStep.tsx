@@ -59,6 +59,7 @@ const AddStep = ({ users, currentUserIds, permissionsSelectStep, title, onCreate
             setDefaultData({...defaultData, 
               userId:id, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl}); 
         } else if(permissionsSelectStep === null){
+          console.log('permissionsSelectStep', permissionsSelectStep);
           const AddProjectUser = {...defaultBoardUser, userId:id, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl};
           onCreate(AddProjectUser);
           onClose();

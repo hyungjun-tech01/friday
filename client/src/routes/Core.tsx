@@ -21,7 +21,7 @@ function Core(){
   let IsMaster = pathname.includes('projects');
   const {id} = useParams<ICoreParams>();
 
-  const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:"", defaultBoardId:"", members:[], userPools:[]});
+  const [currentProject, setCurrentProject] = useState<IProject>({projectId:"", projectName:"", isAdmin:false, role:"", defaultBoardId:"", members:[], userPools:[]});
   const [current, setCurrent] = useState(false);
   const [currentBoardId, setCurrentBoardId] = useRecoilState(atomCurrentMyBoard);
   //const [currentBoardId, setCurrentBoardId] = useState("");

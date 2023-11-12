@@ -6,6 +6,9 @@ import React, {useState, useEffect} from "react";
 import {Link} from "react-router-dom";
 import {useCookies} from "react-cookie";
 import {atomMyProject,IProject, atomProjectsToLists} from "../atoms/atomsProject";
+import {atomMyUser, IUser} from "../atoms/atomsUser";
+import {useRecoilValue} from 'recoil';
+
 import {apiGetProjects} from "../api/project";
 import styles from "../scss/Projects.module.scss";
 import { ReactComponent as PlusIcon } from '../image/plusicon.svg';
@@ -16,6 +19,9 @@ import { IBoard } from "../atoms/atomsBoard";
 
 function Projects(){
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
+        // 현재 사용자의 isAdmin을 체크 
+    const currentUser = useRecoilValue<IUser>(atomMyUser);
+
     // atom에서 data 가지고 옴 .   
     const [projects, setProjects] = useRecoilState<IProject[]>(atomMyProject); 
     const [showProjectAddModal, setShowProjectAddModal] = useState(false);
@@ -106,7 +112,6 @@ function Projects(){
 
     return(
         <div className={styles.projects}>
-            Project
             <Container className={styles.cardsWrapper}>
                 <Grid className={styles.gridFix}>
                     {projects &&  projects.map( (item) => (
@@ -119,7 +124,7 @@ function Projects(){
                         </Grid.Column>
                     )
                     ) }
-                    <Grid.Column mobile={8} computer={4}>
+                    {currentUser.isAdmin && <Grid.Column mobile={8} computer={4}>
                         <button type="button" className={`${styles.card}, ${styles.add}`} onClick={onAdd}>
                           <div className={styles.addTitleWrapper}>
                             <div className={styles.addTitle}>
@@ -128,7 +133,7 @@ function Projects(){
                             </div>
                           </div>
                         </button>
-                  </Grid.Column>
+                  </Grid.Column>}{}
                 </Grid>
             </Container>    
             {showProjectAddModal&&<ProjectAddModal setShowProjectAddModal={setShowProjectAddModal}/>}

@@ -31,7 +31,7 @@ export interface IModifyBoard{
     boardMembershipActionType: 'ADD'|'UPDATE'|'DELETE'|null;
     boardMembershipId : string|null;
     boardMembershipUserId : string|null;
-    boardMembershipRole : 'editor'|'viewer'|null;
+    boardMembershipRole : 'editor'|'viewer'|'manager'|'normal'| null;
     boardMembershipCanComment : 'true'|'false'|null;
     boardLabelActionType : 'ADD'|'DELETE'|'UPDATE'|null;
     labelId :string|null; 
@@ -90,7 +90,7 @@ export interface IBoardUser{
     boardId:string;
     userId:string;
     userName:string;
-    role: 'editor'|'viewer'|null;
+    role: 'editor'|'viewer'|'manager'|'normal' | null;
     avatarUrl:string;
     userEmail:string;
     canEdit:boolean|null;

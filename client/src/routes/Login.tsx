@@ -87,6 +87,7 @@ function Login(){
           const userInfo = await apiGetUser(response.userId);
           const alluser = await apiGetAllUser();
           if(userInfo && alluser){
+              console.log(userInfo);
               setCurrentUser(userInfo);
               setAllUser(alluser);
               history.push(Path.ROOT); 

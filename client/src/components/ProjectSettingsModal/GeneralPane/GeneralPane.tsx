@@ -2,6 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Divider, Header, Tab } from 'semantic-ui-react';
 import usePopup from '../../../lib/hook/use-popup';
+import {useRecoilValue} from 'recoil';
+import {atomMyUser, IUser} from "../../../atoms/atomsUser";
 
 import InformationEdit from './InformationEdit';
 import DeleteStep from '../../DeleteStep';
@@ -16,6 +18,7 @@ interface IGeneralPane {
 }
 const GeneralPane = React.memo(({ projectId, name, onUpdate, onDelete }:IGeneralPane) => {
   const [t] = useTranslation();
+  const currentUser = useRecoilValue<IUser>(atomMyUser);
   console.log('General Pane', name);
   const DeletePopup = usePopup(DeleteStep);
 //<Button className={styles.actionButton}>
@@ -40,7 +43,7 @@ const GeneralPane = React.memo(({ projectId, name, onUpdate, onDelete }:IGeneral
           })}
         </Header>
       </Divider>
-      <div className={styles.action}>
+      {currentUser.isAdmin && <div className={styles.action}>
         <DeletePopup
           projectId = {projectId}
           title={t("common.deleteProject")} 
@@ -54,7 +57,7 @@ const GeneralPane = React.memo(({ projectId, name, onUpdate, onDelete }:IGeneral
         })}
         </Button>
         </DeletePopup>        
-      </div>
+      </div>}
     </Tab.Pane>
   );
 });
