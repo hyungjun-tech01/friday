@@ -3,11 +3,11 @@ import React from "react";
 
 export interface IList{
     listId : string; 
-    boardId: string;
-    listName: string;
-    position: string;
-    createdAt:string;
-    updatedAt:string;
+    boardId : string;
+    listName : string;
+    position : string;
+    createdAt : string;
+    updatedAt : string;
 }
 
 export interface ICreateList{

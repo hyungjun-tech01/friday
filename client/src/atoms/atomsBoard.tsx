@@ -68,8 +68,8 @@ export interface IQueryBoard{
     userId : string;
 }
 export interface ICheckBoardEditAuth{
-    boardId: string;
-    userId: string;
+    boardId : string;
+    userId : string;
 }
 
 // 보드를 찍었을 때 보드 안에 있는 모든 데이터를 가지고 온다. currentBoard 
@@ -110,14 +110,14 @@ export const defaultBoardUser:IBoardUser = {
     canComment: true,
 }
 export const defaultCurrentMyBoard:ICurrent = {
-    boardId:"", 
-    canEdit:false,
+    boardId : "", 
+    canEdit : false,
     role : "",
-    users:[],
-    usersPool:[],
+    users : [],
+    usersPool : [],
     labels : [],
-    lists: [],
-    cards:[],
+    lists : [],
+    cards : [],
 }
 
 export const atomCurrentMyBoard = atom<ICurrent>({
