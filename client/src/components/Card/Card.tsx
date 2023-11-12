@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useSetRecoilState } from 'recoil';
 import { Link } from 'react-router-dom';
 import { Button, Icon } from 'semantic-ui-react';
-import { Draggable, Droppable, DragDropContext } from 'react-beautiful-dnd';
+import { Draggable } from 'react-beautiful-dnd';
 
 import { apiModifyCard } from '../../api/card';
 import { cardSelectorCardId } from '../../atoms/atomsBoard';
@@ -30,12 +30,13 @@ import classNames from 'classnames';
 import styles from './Card.module.scss';
 
 interface ICardProps {
+  index: number;
   card: ICard;
   canEdit: boolean;
   onDelete: (id: string) => void;
 }
 
-function Card({ card, canEdit, onDelete }: ICardProps) {
+function Card({ index, card, canEdit, onDelete }: ICardProps) {
   const setCard = useSetRecoilState<ICard>(cardSelectorCardId(card.cardId));
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
@@ -152,10 +153,6 @@ function Card({ card, canEdit, onDelete }: ICardProps) {
     onDelete(card.cardId);
   }, [onDelete, card]);
 
-  const handleDragEnd = useCallback(() => {
-    console.log('[Card] handleDragEnd');
-  }, []);
-
   const contentNode = (
     <div className={styles.details}>
       {card && card.labels && card.labels.length > 0 && (
@@ -218,60 +215,49 @@ function Card({ card, canEdit, onDelete }: ICardProps) {
   );
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId={`card:${card.cardId}`}>
-        {(provided) => (
-          <div ref={provided.innerRef} {...provided.droppableProps}>
-            <Draggable
-              draggableId={`card:${card.cardId}`}
-              index={parseInt(card.cardId)}
-              isDragDisabled={!canEdit}
-            >
-              {({ innerRef, draggableProps, dragHandleProps }) => (
-                <div
-                  {...draggableProps}
-                  {...dragHandleProps}
-                  ref={innerRef}
-                  className={styles.wrapper}
+    <Draggable
+      draggableId={`card:${card.cardId}`}
+      index={index}
+      isDragDisabled={!canEdit}
+    >
+      {({ innerRef, draggableProps, dragHandleProps }) => (
+        <div
+          {...draggableProps}
+          {...dragHandleProps}
+          ref={innerRef}
+          className={styles.wrapper}
+        >
+          <NameEdit
+            ref={nameEdit}
+            defaultValue={card.cardName}
+            onUpdate={handleNameUpdate}
+          >
+            <div className={styles.card}>
+              <Link
+                to={Paths.CARDS.replace(':id', card.cardId)}
+                className={styles.content}
+                onClick={handleCardClick}
+              >
+                {contentNode}
+              </Link>
+              {canEdit && (
+                <CardEdit
+                  cardId={card.cardId}
+                  onNameEdit={handleNameEdit}
+                  onDelete={handleCardDelete}
                 >
-                  <NameEdit
-                    ref={nameEdit}
-                    defaultValue={card.cardName}
-                    onUpdate={handleNameUpdate}
+                  <Button
+                    className={classNames(styles.actionsButton, styles.target)}
                   >
-                    <div className={styles.card}>
-                      <Link
-                        to={Paths.CARDS.replace(':id', card.cardId)}
-                        className={styles.content}
-                        onClick={handleCardClick}
-                      >
-                        {contentNode}
-                      </Link>
-                      {canEdit && (
-                        <CardEdit
-                          cardId={card.cardId}
-                          onNameEdit={handleNameEdit}
-                          onDelete={handleCardDelete}
-                        >
-                          <Button
-                            className={classNames(
-                              styles.actionsButton,
-                              styles.target
-                            )}
-                          >
-                            <Icon fitted name="pencil" size="small" />
-                          </Button>
-                        </CardEdit>
-                      )}
-                    </div>
-                  </NameEdit>
-                </div>
+                    <Icon fitted name="pencil" size="small" />
+                  </Button>
+                </CardEdit>
               )}
-            </Draggable>
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+            </div>
+          </NameEdit>
+        </div>
+      )}
+    </Draggable>
   );
 }
 

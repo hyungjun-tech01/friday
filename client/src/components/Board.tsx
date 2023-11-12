@@ -1,11 +1,13 @@
 
-import React, {useEffect, useState, useRef, useCallback} from "react";
-
+import React, {useEffect, useState, useCallback} from "react";
+import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import {IList} from "../atoms/atomsList";
-import {listsSelector, atomCurrentMyBoard} from "../atoms/atomsBoard";
+import {listsSelector, atomCurrentMyBoard, ICurrent} from "../atoms/atomsBoard";
+import { IModifyCard, defaultModifyCard } from "../atoms/atomCard";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {useTranslation} from "react-i18next";
 import {apiGetCurrentBoards} from "../api/board";
+import { apiModifyCard } from "../api/card";
 import List from "./List";
 import styles from "../scss/Board.module.scss";
 import ListAdd from "./ListAdd";
@@ -14,6 +16,7 @@ import { ICard, atomCurrentCard } from "../atoms/atomCard";
 import CardModal from "./CardModal/CardModal";
 import {useCookies} from "react-cookie";
 
+const parseDndId = (dndId:string) => dndId.split(':')[1];
 interface IListProps{
     boardId:string;
 }
@@ -22,7 +25,7 @@ function Board({boardId}:IListProps){
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [t] = useTranslation();
     const [showList, setShowList] = useState(false);
-    const [currentBoard, setCurrentBoard] = useRecoilState(atomCurrentMyBoard);
+    const [currentBoard, setCurrentBoard] = useRecoilState<ICurrent>(atomCurrentMyBoard);
     //board id로 리스트를 가지고 올것.
     const lists: IList[]  = useRecoilValue(listsSelector);
    
@@ -32,6 +35,95 @@ function Board({boardId}:IListProps){
             setCurrentBoard({...currentBoard, ...response});
         }
     };
+    const handleMoveList = useCallback((id:string, toIndex: number) => {
+        const selectedList = lists.filter((list) => list.listId === id)[0];
+        const unselectedLists = lists.filter((list) => list.listId !== id);
+        const updatedLists = [
+            ...unselectedLists.slice(0, toIndex),
+            selectedList,
+            ...unselectedLists.slice(toIndex),
+        ];
+        const updatedBoard = {
+            ...currentBoard,
+            lists: updatedLists
+        };
+        setCurrentBoard(updatedBoard);
+    }, [currentBoard, lists, setCurrentBoard]);
+    const handleMoveCard = useCallback((id:string, toDest: string, toIndex: number) => {
+        console.log("[Board] handleMoveCard - toDest : ", toDest);
+        const modifiedCard : IModifyCard = {
+            ...defaultModifyCard,
+            userId: cookies.UserId,
+            cardId : id,
+            listId : toDest,
+            cardActionType: 'MOVE',
+        };
+        const response = apiModifyCard(modifiedCard);
+        response
+        .then((result) => {
+            if (result.message) {
+                console.log(
+                    'Fail to move card',
+                    result.message
+                );
+            } else {
+                const selectedCard = currentBoard.cards.filter((card) => card.cardId === id)[0];
+                const remainCardsExceptSelected = currentBoard.cards.filter((card) => card.cardId !== id);
+                const updatedCard = {
+                    ...selectedCard,
+                    listId : toDest
+                };
+
+                const targetCard = currentBoard.cards.filter((card) => card.listId === toDest);
+                const destCardId = targetCard[toIndex].cardId;
+                const find_idx = remainCardsExceptSelected.findIndex((card) => card.cardId === destCardId);
+                const updatedCards = [
+                    ...remainCardsExceptSelected.slice(0, find_idx),
+                    updatedCard,
+                    ...remainCardsExceptSelected.slice(find_idx)
+                ];
+
+                const updatedCurrentBoard = {
+                    ...currentBoard,
+                    cards: updatedCards,
+                };
+                setCurrentBoard(updatedCurrentBoard);
+            };
+        })
+        .catch((message) => {
+            console.log('Fail to move card', message);
+        });
+    }, [cookies.UserId, currentBoard, setCurrentBoard]);
+
+    const handleDragStart = useCallback(() => {
+        document.dispatchEvent(new MouseEvent('click'));
+    }, []);
+
+    const handleDragEnd = useCallback((info: DropResult) => {
+        const { draggableId, type, source, destination } = info;
+        if (!destination
+            || (source.droppableId === destination.droppableId
+                && source.index === destination.index)
+        ) {
+            return;
+        }
+        console.log("Board / handleDragEnd : ");
+        console.log("[draggableId] : ", draggableId);
+        console.log("[type] : ", type);
+        console.log("[source] : ", source);
+        console.log("[destination] : ", destination);
+        const id = parseDndId(draggableId);
+  
+        switch (type) {
+            case "list":
+                handleMoveList(id, destination.index);
+                break;
+            case "card":
+                handleMoveCard(id, parseDndId(destination.droppableId), destination.index);
+                break;
+            default:
+        }
+    }, [handleMoveList, handleMoveCard]);
 
     //board id가 바뀔때마다 showList 를 변경 
     useEffect(() => {
@@ -53,32 +145,40 @@ function Board({boardId}:IListProps){
         <div>
             <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`}>
                 <div className={`${styles.lists} ${styles.wrapperFlex}`}>
-                    {currentBoard && lists.length > 0 && lists.map((list:any) => (
-                            <List key={list.listId} id={list.listId} position={list.position} name={list.listName} canEdit={currentBoard.canEdit}/>
-                            ))}
-
-                    <div data-drag-scroller className={styles.list}>
-                    {isListAddOpened ? (
-                    <ListAdd  boardId={boardId} setShowList={setShowList} setIsListAddOpened={setIsListAddOpened} />
-                    ) : (
-                    <button
-                        type="button"
-                        className={styles.addListButton}
-                        onClick={hasEditMembershipforBoard}
-                    >
-                        <PlusMathIcon className={styles.addListButtonIcon} />
-                        <span className={styles.addListButtonText}>
-                        {lists.length > 0
-                            ? t('action.addAnotherList')
-                            : t('action.addList')}
-                        </span>
-                    </button>
-                    )}
-                    </div>
+                    <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                        <Droppable droppableId="board" type="list" direction="horizontal">
+                        {({ innerRef, droppableProps, placeholder }) => (
+                            <div {...droppableProps} data-drag-scroller ref={innerRef} className={styles.lists}>
+                                {currentBoard && lists.length > 0 && lists.map((list:any, index:number) => (
+                                    <List key={list.listId} index={index} id={list.listId} position={list.position} name={list.listName} canEdit={currentBoard.canEdit}/>
+                                ))}
+                                {placeholder}
+                                <div data-drag-scroller className={styles.list}>
+                                {isListAddOpened ? (
+                                <ListAdd  boardId={boardId} setShowList={setShowList} setIsListAddOpened={setIsListAddOpened} />
+                                ) : (
+                                <button
+                                    type="button"
+                                    className={styles.addListButton}
+                                    onClick={hasEditMembershipforBoard}
+                                >
+                                    <PlusMathIcon className={styles.addListButtonIcon} />
+                                    <span className={styles.addListButtonText}>
+                                    {lists.length > 0
+                                        ? t('action.addAnotherList')
+                                        : t('action.addList')}
+                                    </span>
+                                </button>
+                                )}
+                                </div>
+                            </div>
+                        )}
+                        </Droppable>
+                    </DragDropContext>
                 </div>
+                {(currentCard.cardId !== "") && <CardModal canEdit={currentBoard.canEdit}/>}
             </div>
-            {(currentCard.cardId !== "") && <CardModal canEdit={currentBoard.canEdit}/>}
-      </div>
+        </div>
     );
 }
 

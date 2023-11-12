@@ -106,3 +106,7 @@ server > p_modify_card.sql 카피해서 실행
 -- 2023.09.05  
 server > p_modfiy_card.sql 카피해서 실행  
 http://localhost:3003/sample  URL 추가 route>SampleTest.tsx Call   
+
+-- 2023.11.11  
+ALTER TABLE project_manager ADD COLUMN role text;  
+
