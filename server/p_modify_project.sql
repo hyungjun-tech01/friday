@@ -78,7 +78,7 @@ BEGIN
 
         begin
             select 1 into strict c 
-            from projec t_manager
+            from project_manager
             where project_id = i_project_id::bigint
             and user_id = i_manager_id::bigint;
 
