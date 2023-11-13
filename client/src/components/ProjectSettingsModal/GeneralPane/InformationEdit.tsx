@@ -11,9 +11,10 @@ import styles from './InformationEdit.module.scss';
 
 interface IInformation {
   defaultData: any; 
+  canEdit : boolean;
   onUpdate: (name:any)=>void;
 }
-const InformationEdit = React.memo(({ defaultData, onUpdate }:IInformation) => {
+const InformationEdit = React.memo(({ defaultData,canEdit, onUpdate }:IInformation) => {
   const [t] = useTranslation();
   const {register, handleSubmit,formState:{errors}} = useForm();
   const currentUser = useRecoilValue<IUser>(atomMyUser);
@@ -27,7 +28,7 @@ const InformationEdit = React.memo(({ defaultData, onUpdate }:IInformation) => {
   const [projectName, setProjectName] = useState(defaultData.name );
 
   const handleFieldChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-    if(currentUser.isAdmin === true){
+    if(canEdit === true){
     const {value} = e.target;
     setProjectName(value);
     }

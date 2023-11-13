@@ -147,7 +147,12 @@ const ProjectSettingsModal =
         menuItem: t('common.general', {
           context: 'title',
         }),
-        render: () => <GeneralPane projectId={projectId} name={currentProject2?.projectName} onUpdate={onProjectUpdate} onDelete={onProjectDelete} />,
+        render: () => <GeneralPane projectId={projectId} 
+          isAdmin={currentProject2.isAdmin}
+          role={currentProject2.role}
+          name={currentProject2?.projectName} 
+          onUpdate={onProjectUpdate} 
+          onDelete={onProjectDelete} />,
       },
       {
         menuItem: t('common.managers', {

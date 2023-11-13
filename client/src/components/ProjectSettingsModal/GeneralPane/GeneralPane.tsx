@@ -13,14 +13,17 @@ import styles from './GeneralPane.module.scss';
 interface IGeneralPane {
   projectId : string;
   name: string;
+  isAdmin:boolean;
+  role : string;
   onUpdate: (name:any)=>void;
   onDelete: ()=>void;
 }
-const GeneralPane = React.memo(({ projectId, name, onUpdate, onDelete }:IGeneralPane) => {
+const GeneralPane = React.memo(({ projectId, name, isAdmin, role, onUpdate, onDelete }:IGeneralPane) => {
   const [t] = useTranslation();
   const currentUser = useRecoilValue<IUser>(atomMyUser);
   console.log('General Pane', name);
   const DeletePopup = usePopup(DeleteStep);
+  const projectEdit = isAdmin || role === 'manager' ? true:false;
 //<Button className={styles.actionButton}>
 ///{t('action.deleteProject', {
 //  context: 'title',
@@ -34,6 +37,7 @@ const GeneralPane = React.memo(({ projectId, name, onUpdate, onDelete }:IGeneral
         defaultData={{
           name,
         }}
+        canEdit = {projectEdit}
         onUpdate={(name)=>onUpdate(name)}
       />  
       <Divider horizontal section>

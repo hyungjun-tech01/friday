@@ -21,12 +21,13 @@ interface IManagersPane{
 
 const ManagersPane = ({ projectId, isAdmin, role, managers, allUsers, onCreate, onDelete }:IManagersPane) => {
   const [isMemberLoading, setIsMemberLoading] = useState(true); 
+  const projectEdit = isAdmin || role === 'manager' ? true:false;
   return (
     <Tab.Pane attached={false} className={styles.wrapper}>
       <Membership 
          members={managers} 
          allUsers={allUsers} 
-         canEdit={true} 
+         canEdit={projectEdit} 
          boardId={null} 
          isMemberLoading={isMemberLoading} 
          setIsMemberLoading={setIsMemberLoading} 
