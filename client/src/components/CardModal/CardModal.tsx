@@ -45,14 +45,14 @@ import StopwatchEditPopup from '../StopwatchEditPopup';
 import Label from '../Label';
 import LabelsEditPopup from '../LabelsEditPopup';
 import { Attachments, AttachmentAddPopup } from '../Attachment';
+import CardMovePopup from '../CardMovePopup';
 
 import { getDateStringForDB } from '../../utils/date';
 import { usePopup } from '../../lib/hook';
 import classNames from 'classnames';
 import styles from './CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
-import CardMovePopup from '../CardMovePopup';
-import getNextPosition from '../../utils/position';
+import { getNextPosition } from '../../utils/position';
 
 interface ICardPathProps {
   projectId: string | null,
