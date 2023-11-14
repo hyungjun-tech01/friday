@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE p_init_postions()
+CREATE OR REPLACE PROCEDURE p_init_positions()
     LANGUAGE plpgsql
     AS $$
     DECLARE
