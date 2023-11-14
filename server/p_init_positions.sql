@@ -76,5 +76,5 @@ CREATE OR REPLACE PROCEDURE p_init_positions()
     $$;      
 
 
-call p_init_postions();
+call p_init_positions();
 
