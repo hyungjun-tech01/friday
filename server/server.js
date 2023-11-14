@@ -182,7 +182,6 @@ app.get('/projects/:userId', async(req, res)=>{
                 }
 
                 res.json(projects);
-                console.log(projects);
                 res.end();
             }
 
@@ -254,6 +253,7 @@ app.post('/boards', async(req, res)=>{
     try{
             const boards = await pool.query(`
             select b.id as "boardId", b.name as "boardName", 
+            b.position as "position",
 			b.project_id as "projectId", p.name as "projectName", 
             b.created_at as "createdAt",
 			bm.user_id as "userId", bm.role as "role",
@@ -265,6 +265,7 @@ app.post('/boards', async(req, res)=>{
 			and b.project_id = $2
             union 			
             select b.id as "boardId", b.name as "boardName", 
+                   b.position as "position",
                         b.project_id as "projectId", p.name as "projectName", 
                         b.created_at as "createdAt",
                         bm.user_id as "userId", 'editor' as "role",
@@ -276,7 +277,8 @@ app.post('/boards', async(req, res)=>{
             and b.project_id = $2
             and not exists (select 1 from board_membership pm 
                                     where pm.user_id = $1
-                                    and pm.board_id =b.id)`, [userId, projectId]);
+                                    and pm.board_id =b.id)
+            order by position`, [userId, projectId]);
             res.json(boards.rows);
             res.end();
     }catch(err){
@@ -372,7 +374,8 @@ app.post('/currentBoard', async(req, res)=>{
         select id as "listId", board_id as "boardId", name as "listName", 
         position as "position", created_at as "createdAt", 
         updated_at as "updatedAt" from list 
-        where board_id = $1`, [boardId]);
+        where board_id = $1
+        order by position`, [boardId]);
         
         if( lists.rows.length > 0 ) {
             currentBoard.lists = lists.rows;
@@ -395,7 +398,8 @@ app.post('/currentBoard', async(req, res)=>{
             status_id as "statusId",
             '' as "statusName"
             from card
-            where board_id = $1`,[boardId]);
+            where board_id = $1
+            order by position`,[boardId]);
             let cards;
             if( cardsResults.rows.length > 0 ) {
                 cards = cardsResults.rows;
@@ -432,7 +436,8 @@ app.post('/currentBoard', async(req, res)=>{
                     select id as "taskId", card_id as "cardId", name as "taskName", is_completed as "isCompleted" ,
                         created_at as "createdAt", updated_at as "updatedAt", position as "position" 
                     from task
-                    where card_id = $1`, [card.cardId]);    
+                    where card_id = $1
+                    order by position`, [card.cardId]);    
                     if(cardTask.rows.length > 0 )
                         card.tasks = cardTask.rows;
                     else
@@ -493,7 +498,8 @@ app.get('/lists/:boardId', async(req, res)=>{
             select id as "listId", board_id as "boardId", name as "listName", 
             position as "position", created_at as "createdAt", 
             updated_at as "updatedAt" from list 
-            where board_id = $1`, [boardId]);
+            where board_id = $1
+            order by position`, [boardId]);
             res.json(lists.rows);
             res.end();
     }catch(err){
@@ -516,7 +522,7 @@ app.get('/cardbylistId/:listId', async(req, res)=>{
             position as "position" 
             from card 
             where list_id = $1
-            order by position desc`, [listId]);
+            order by position`, [listId]);
 
             if( cardResult.rows.length > 0 ) {
                 const cards = cardResult.rows;
@@ -553,7 +559,8 @@ app.get('/cards/:boardId', async(req, res)=>{
             select id as "listId", board_id as "boardId", name as "listName", 
             position as "position", created_at as "createdAt", 
             updated_at as "updatedAt" from list 
-            where board_id = $1`, [boardId]);
+            where board_id = $1
+            order by position`, [boardId]);
 
             if(result.rows.length > 0 ) {
                 const lists = result.rows;
@@ -565,7 +572,7 @@ app.get('/cards/:boardId', async(req, res)=>{
                     updated_at as "updatedAt",
                     position as "position" from card 
                     where list_id = $1
-                    order by position desc`, [list.listId]);
+                    order by position`, [list.listId]);
 
                     if( cardResult.rows.length > 0 ) {
                         const cards = cardResult.rows;
@@ -646,7 +653,8 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     select id as "taskId", card_id as "cardId", name as "taskName", is_completed as "isCompleted" ,
                        created_at as "createdAt", updated_at as "updatedAt", position as "position" 
                     from task
-                    where card_id = $1`, [card.cardId]);    
+                    where card_id = $1
+                    order by position`, [card.cardId]);    
                     if(cardTask.rows.length > 0 )
                         card.cardTask = cardTask.rows;
                     else
