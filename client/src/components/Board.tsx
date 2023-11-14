@@ -1,20 +1,22 @@
 
 import React, {useEffect, useState, useCallback} from "react";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
-import {IList} from "../atoms/atomsList";
-import {listsSelector, atomCurrentMyBoard, ICurrent} from "../atoms/atomsBoard";
-import { IModifyCard, defaultModifyCard } from "../atoms/atomCard";
-import {useRecoilState, useRecoilValue} from "recoil";
+import {useCookies} from "react-cookie";
 import {useTranslation} from "react-i18next";
+import {useRecoilState, useRecoilValue} from "recoil";
+import { defaultModifyList, IList, IModifyList } from "../atoms/atomsList";
+import {listsSelector, atomCurrentMyBoard, ICurrent} from "../atoms/atomsBoard";
+import { ICard, atomCurrentCard, IModifyCard, defaultModifyCard } from "../atoms/atomCard";
 import {apiGetCurrentBoards} from "../api/board";
 import { apiModifyCard } from "../api/card";
+import { apiModifyList } from "../api/list";
 import List from "./List";
+import CardModal from "./CardModal/CardModal";
 import styles from "../scss/Board.module.scss";
 import ListAdd from "./ListAdd";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
-import { ICard, atomCurrentCard } from "../atoms/atomCard";
-import CardModal from "./CardModal/CardModal";
-import {useCookies} from "react-cookie";
+import { getNextPosition } from "../utils/position";
+import { update } from "lodash";
 
 const parseDndId = (dndId:string) => dndId.split(':')[1];
 interface IListProps{
@@ -38,42 +40,63 @@ function Board({boardId}:IListProps){
     const handleMoveList = useCallback((id:string, toIndex: number) => {
         const selectedList = lists.filter((list) => list.listId === id)[0];
         const unselectedLists = lists.filter((list) => list.listId !== id);
-        const updatedLists = [
-            ...unselectedLists.slice(0, toIndex),
-            selectedList,
-            ...unselectedLists.slice(toIndex),
-        ];
-        const updatedBoard = {
-            ...currentBoard,
-            lists: updatedLists
+        const updatedPosition = getNextPosition(unselectedLists, toIndex);
+        const modifiedList: IModifyList = {
+            ...defaultModifyList,
+            userId: cookies.UserId,
+            listActionType: 'UPDATE',
+            position : updatedPosition,
         };
-        setCurrentBoard(updatedBoard);
-    }, [currentBoard, lists, setCurrentBoard]);
+        const response = apiModifyList(modifiedList);
+        response
+            .then((result) => {
+                if (result.message) {
+                    console.log('Fail to move list', result.message);
+                }
+                else {
+                    const updatedList = {
+                        ...selectedList,
+                        position : updatedPosition
+                    };
+                    const updatedLists = [
+                        ...unselectedLists.slice(0, toIndex),
+                        updatedList,
+                        ...unselectedLists.slice(toIndex),
+                    ];
+                    const updatedBoard = {
+                        ...currentBoard,
+                        lists: updatedLists
+                    };
+                    setCurrentBoard(updatedBoard);
+                };
+            })
+            .catch((message) => {
+                console.log("Fail to update position of List : ", message);
+            });
+    }, [cookies.UserId, currentBoard, lists, setCurrentBoard]);
     const handleMoveCard = useCallback((id:string, toDest: string, toIndex: number) => {
-        console.log("[Board] handleMoveCard - toDest : ", toDest);
+        const selectedCard = currentBoard.cards.filter((card) => card.cardId === id)[0];
+        const remainCardsExceptSelected = currentBoard.cards.filter((card) => card.cardId !== id);
+        const updatedPosition = getNextPosition(remainCardsExceptSelected, toIndex);
         const modifiedCard : IModifyCard = {
             ...defaultModifyCard,
             userId: cookies.UserId,
             cardId : id,
             listId : toDest,
+            position : updatedPosition,
             cardActionType: 'MOVE',
         };
         const response = apiModifyCard(modifiedCard);
         response
         .then((result) => {
             if (result.message) {
-                console.log(
-                    'Fail to move card',
-                    result.message
-                );
+                console.log('Fail to move card', result.message);
             } else {
-                const selectedCard = currentBoard.cards.filter((card) => card.cardId === id)[0];
-                const remainCardsExceptSelected = currentBoard.cards.filter((card) => card.cardId !== id);
                 const updatedCard = {
                     ...selectedCard,
-                    listId : toDest
+                    listId : toDest,
+                    position : updatedPosition,
                 };
-
                 const targetCard = currentBoard.cards.filter((card) => card.listId === toDest);
                 const destCardId = targetCard[toIndex].cardId;
                 const find_idx = remainCardsExceptSelected.findIndex((card) => card.cardId === destCardId);
@@ -82,7 +105,6 @@ function Board({boardId}:IListProps){
                     updatedCard,
                     ...remainCardsExceptSelected.slice(find_idx)
                 ];
-
                 const updatedCurrentBoard = {
                     ...currentBoard,
                     cards: updatedCards,

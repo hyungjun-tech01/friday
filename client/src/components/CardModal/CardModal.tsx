@@ -52,6 +52,7 @@ import classNames from 'classnames';
 import styles from './CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
 import CardMovePopup from '../CardMovePopup';
+import getNextPosition from '../../utils/position';
 
 interface ICardPathProps {
   projectId: string | null,
@@ -653,20 +654,44 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
 
   const handleTaskMove = useCallback((pick:string, idx:number) => {
     console.log('CardModal: handleTaskMove / ', pick, idx);
-    // Need to update positon of dragging card at first
-    const pickingCard = card.tasks.filter((task:ITask) => task.taskId === pick)[0];
-    const remainingCard = card.tasks.filter((task:ITask) => task.taskId !== pick);
-    const updateTasks = [
-      ...remainingCard.slice(0, idx),
-      pickingCard,
-      ...remainingCard.slice(idx)
-    ];
-    const updateCard = {
-      ...card,
-      tasks : updateTasks
+    // Need to update positon of dragging task at first
+    const pickingTask = card.tasks.filter((task:ITask) => task.taskId === pick)[0];
+    const remainingTasks = card.tasks.filter((task:ITask) => task.taskId !== pick);
+    const updatePosition = getNextPosition(remainingTasks, idx);
+    const modifiedCard: IModifyCard = {
+      ...defaultModifyCard,
+      cardId: card.cardId,
+      userId: cookies.UserId,
+      cardTaskPosition: updatePosition,
+      cardTaskActionType: 'UPDATE',
     };
-    setCard(updateCard);
-  }, [card, setCard]);
+    const response = apiModifyCard(modifiedCard);
+      response
+        .then((result) => {
+          if(result.message) {
+            console.log('Fail to move Task : ', result.message);
+          }
+          else {
+            const updateTask = {
+              ...pickingTask,
+              position : updatePosition,
+            };
+            const updateTasks = [
+              ...remainingTasks.slice(0, idx),
+              updateTask,
+              ...remainingTasks.slice(idx)
+            ];
+            const updateCard = {
+              ...card,
+              tasks : updateTasks
+            };
+            setCard(updateCard);
+          };
+        })
+        .catch((message) => {
+          console.log('Fail to update task of card', message);
+        })
+  }, [card, cookies.UserId, setCard]);
 
   const handleTaskDelete = useCallback(
     (id: string) => {
