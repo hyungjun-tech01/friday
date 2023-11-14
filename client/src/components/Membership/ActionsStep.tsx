@@ -164,28 +164,30 @@ const ActionsStep = ({
             onClick={handleEditPermissionsClick}
           />
         )}
-        { membership.userId === cookies.UserId  
-          ? canLeave && (
-              <Button
-                fluid
-                content={t(leaveButtonContent)}
-                style={{
-                  background: 'transparent',
-                  boxShadow: 'none',
-                  color:'#6b808c',
-                  fontWeight: 'normal',
-                  marginTop: '8px',
-                  padding: '6px 11px',
-                  textAlign: 'left',
-                  textDecoration: 'underline',
-                  transition: 'none'
-                }}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}   
-                onClick={handleDeleteClick}
-              />
-            )
-          : canEdit && (
+        { 
+        // membership.userId === cookies.UserId  
+        //   ? canLeave && (
+        //       <Button
+        //         fluid
+        //         content={t(leaveButtonContent)}
+        //         style={{
+        //           background: 'transparent',
+        //           boxShadow: 'none',
+        //           color:'#6b808c',
+        //           fontWeight: 'normal',
+        //           marginTop: '8px',
+        //           padding: '6px 11px',
+        //           textAlign: 'left',
+        //           textDecoration: 'underline',
+        //           transition: 'none'
+        //         }}
+        //         onMouseEnter={handleMouseEnter}
+        //         onMouseLeave={handleMouseLeave}   
+        //         onClick={handleDeleteClick}
+        //       />
+        //     )
+        //   : 
+          canEdit && (
               <Button
                 fluid
                 content={deleteButtonContent}

@@ -1,14 +1,14 @@
 import {useRecoilState, useRecoilValue} from "recoil";
-import {IBoard, IQueryBoard, atomMyBoard, atomCurrentMyBoard} from "../atoms/atomsBoard";
+import {IBoard, IQueryBoard, atomMyBoard, atomCurrentMyBoard} from "../../atoms/atomsBoard";
 import {useQuery} from "react-query";
 import { Button, Icon } from 'semantic-ui-react';
 import {Link} from "react-router-dom";
 import React, {useState, useEffect} from "react";
 import {useCookies} from "react-cookie";
-import {apiGetBoards} from "../api/board";
-import styles from "../scss/Boards.module.scss";
-import Paths from "../constants/Paths";
-import AddBoardModal from "./AddBoardModal";
+import {apiGetBoards} from "../../api/board";
+import styles from "./Boards.module.scss";
+import Paths from "../../constants/Paths";
+import AddBoardModal from "../AddBoardModal";
 import classNames from "classnames";
 
 interface IBoardProps{
@@ -43,13 +43,9 @@ function Boards({projectId}:IBoardProps){
     const [endXPosition, setEndXPostion] = useState(false);
 
     const onCreate = (event:React.MouseEvent<HTMLButtonElement>)=> {
-       // console.log("create board");
-       console.log(event.pageX,  window.innerWidth);
        // 만약 현재 클릭 위치가 window.innerWidth-300 보다 크다면 modal 을 왼쪽으로 띄우고 
        // 그렇지 않다면 오른쪽으로 띄운다.
-       console.log(showCreateModal);
        setShowCreateModal((showCreateModal)=>(!showCreateModal));
-
        (window.innerWidth-300 < event.pageX) ? setEndXPostion(true):  setEndXPostion(false)
     };
     return(

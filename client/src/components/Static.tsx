@@ -1,15 +1,15 @@
 import Projects from "./Projects";
-import Boards from "./Boards";
+import Boards from "./Boards/Boards";
 import Board from "./Board";
 import BoardAction from "./BoardAction";
 import BoardFirstAdd from "./BoardFirstAdd";
 import styles from "../scss/Static.module.scss";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { atomCurrentMyBoard } from "../atoms/atomsBoard";
 import { apiGetCurrentBoards} from "../api/board";
 import { useCookies } from "react-cookie";
 import { IList } from "../atoms/atomsList";
-import { atomProjectsToLists } from "../atoms/atomsProject";
+import { atomProjectsToLists , projectSelector} from "../atoms/atomsProject";
 import React from "react";
 // project 가 선택되어 지면 board 를 표시 
 // project 가 선택이 안되었으면 모든 프로젝트를 표시 
@@ -22,6 +22,14 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [currentBoard, setCurrentBoard] = useRecoilState(atomCurrentMyBoard);
     const [projectsToLists, setProjectsToLists] = useRecoilState(atomProjectsToLists);
+
+    const currentProject = useRecoilValue(projectSelector);
+    const currentProject1 = currentProject(projectId)[0];
+
+    if(currentProject1) {
+    const cadEditBoard = currentProject1.isAdmin || currentProject1.role === 'manager' ? true : false;
+    console.log('static currentProject', currentProject1, cadEditBoard);
+    }
 
     const getCurrentBoard = async (id:string) => {
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
