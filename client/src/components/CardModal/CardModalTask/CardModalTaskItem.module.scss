@@ -56,9 +56,9 @@
   border-radius: 3px;
   color: #17394d;
   display: inline-block;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.5;
-  min-height: 32px;
+  min-height: 30px;
   padding: 0 32px 0 40px;
   width: 100%;
 }
@@ -71,7 +71,7 @@
   border-radius: 3px;
   cursor: auto;
   margin-left: -40px;
-  min-height: 32px;
+  min-height: 30px;
   position: relative;
   width: calc(100% + 40px);
 }
@@ -84,31 +84,4 @@
 .menuItem {
   margin: 0;
   padding-left: 5px;
-}
-
-.popupCloseButton {
-  background: transparent !important;
-  box-shadow: none !important;
-  margin: 0 !important;
-  padding: 10px 12px 10px 8px !important;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 40px;
-  z-index: 2000;
-}
-
-.popupWrapper {
-  border-radius: 5px !important;
-  border-width: 2 !important;
-  box-shadow: 0 8px 16px -4px rgba(9, 45, 66, 0.25),
-    0 0 0 1px rgba(9, 45, 66, 0.08) !important;
-  margin-top: 6px !important;
-  max-height: calc(100% - 70px);
-  padding: 0px 12px 12px !important;
-  width: 304px;
-}
-
-.popupHeader {
-  padding: 10px 12px 12px;
 }

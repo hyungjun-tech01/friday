@@ -574,7 +574,6 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
         cardId: card.cardId,
         userId: cookies.UserId,
         cardTaskName: data,
-        cardTaskPosition: '100000',
         cardTaskActionType: 'ADD',
       };
       const response = apiModifyCard(modifiedCard);

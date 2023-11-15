@@ -66,7 +66,6 @@ const CardModalTaskItem = ({
     <Draggable draggableId={id} index={index} isDragDisabled={!canEdit}>
       {({ innerRef, draggableProps, dragHandleProps }, { isDragging }) => {
         const contentNode = (
-          //eslint-disable-next-line react/jsx-props-no-spreading
           <div
             {...draggableProps}
             {...dragHandleProps}

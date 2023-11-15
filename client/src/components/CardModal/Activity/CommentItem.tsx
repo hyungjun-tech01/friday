@@ -53,11 +53,7 @@ const CommentItem = ({commentId, userName, createdAt, updatedAt=null, avatarUrl=
                 value: formatted_date,
               })}
             </span>
-          </div>
-          <NameEdit ref={commentEdit} defaultValue={data} onUpdate={handleCommentUpdate}>
-            <div className={styles.text}>
-              {data}
-            </div>
+            <span className={styles.action}>
             {canEdit && (
                 <Comment.Actions>
                   <Comment.Action
@@ -72,6 +68,12 @@ const CommentItem = ({commentId, userName, createdAt, updatedAt=null, avatarUrl=
                   />
                 </Comment.Actions>
               )}
+            </span>
+          </div>
+          <NameEdit ref={commentEdit} defaultValue={data} onUpdate={handleCommentUpdate}>
+            <div className={styles.text}>
+              {data}
+            </div>
           </NameEdit>
           {/* <CommentEdit ref={commentEdit} defaultData={data} onUpdate={onUpdate}>
             <>
