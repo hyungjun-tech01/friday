@@ -793,17 +793,19 @@ app.post('/board', async(req, res) => {
     try{
         const response = await pool.query(`call p_modify_board($1, $2, $3, $4, $5, 
              $6, $7, $8, $9, $10, $11, $12, $13,
-             $14, $15, $16, $17, $18, $19)`,
+             $14, $15, $16, $17, $18, $19, $20)`,
         [boardActionType, userId, projectId, boardName, boardPosition,
             boardId, boardMembershipActionType, boardMembershipId, boardMembershipUserId , boardMembershipRole,
-            boardMembershipCanComment,  boardLabelActionType , labelId , labelName , labelColor , labelPosition ,null, null, null]);
+            boardMembershipCanComment,  boardLabelActionType , labelId , labelName , labelColor , labelPosition ,null, null, null, null]);
         
             const outBoardId = response.rows[0].x_board_id;
             const outLableId = response.rows[0].x_label_id;
             const outBoardMembershipId = response.rows[0].x_board_membership_id;
+            const outBoardPosition = response.rows[0].x_position;
+
 
         //add 시에는 outBoardId, outLableId, outBoardMembershipId not null, 나머지 트랜잭션은 boardId not null  
-        res.json({ outBoardId:outBoardId, boardId:boardId, outLableId:outLableId, outBoardMembershipId:outBoardMembershipId}); 
+        res.json({ outBoardId:outBoardId, boardId:boardId, outLableId:outLableId, outBoardMembershipId:outBoardMembershipId, outBoardPosition:outBoardPosition}); 
 
         res.end();
     }catch(err){
@@ -839,7 +841,6 @@ app.post('/list', async(req, res) => {
 });
 
 //create card 
-// create list 
 app.post('/card', async(req, res) => {
     const {cardId,     // number 
         userId ,       // number 

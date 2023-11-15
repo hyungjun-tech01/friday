@@ -20,7 +20,8 @@ i_label_color in text,
 i_label_position in text, 
 x_board_id out text,
 x_board_membership_id out text,
-x_label_id out text)
+x_label_id out text,
+x_position out text)
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -42,10 +43,13 @@ DECLARE
 	v_label_name text;
 	v_label_color text;
 	x_list_id text;
-	x_position text;
+	xx_position text;
 	x_createdAt text;
 	x_updatedAt  text;
 	TARGET_CURSOR record;
+	c_position_increase bigint default 65536;
+	v_position bigint;
+	TARGET_BOARD_CURSOR record;
 BEGIN
    if (i_board_action_type is not null) then
 	   if (i_board_action_type  = 'ADD') then
@@ -55,9 +59,21 @@ BEGIN
 			into v_board_count 
 			from board 
 			where project_id = i_project_id::bigint;
+		
+		v_position := c_position_increase*(v_board_count+1);
+
+		-- 기존 보드는 re position 
+		FOR TARGET_BOARD_CURSOR IN 
+              select (ROW_NUMBER() OVER()) AS ROWNUM, id from board
+               where project_id = i_project_id::bigint
+			   order by position
+              LOOP
+                 update board set position = TARGET_BOARD_CURSOR.rownum*65536
+                 where id =     TARGET_BOARD_CURSOR.id;
+              END LOOP;
 
 	    INSERT INTO board (id, project_id, position, name, created_at)
-	    VALUES (v_board_id, i_project_id::bigint, v_board_count+1, i_board_name, now());
+	    VALUES (v_board_id, i_project_id::bigint, v_position, i_board_name, now());
 
 		-- 처음 만드는 사람은 edit 권한 가짐.
 		insert into board_membership(id, board_id, user_id, role, created_at)
@@ -85,7 +101,7 @@ BEGIN
 				  null,
 				  null,
 				  x_list_id,
-				  x_position,
+				  xx_position,
 				  x_createdAt,
 				  x_updatedAt);
 			END LOOP;	
@@ -178,6 +194,6 @@ BEGIN
    x_board_id  = v_board_id::text;
    x_label_id = v_label_id::text;
    x_board_membership_id = v_board_membership_id::text;
-   
+   x_position = v_position::text;
 END;
 $$;
