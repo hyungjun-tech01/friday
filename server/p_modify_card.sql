@@ -46,6 +46,7 @@ x_comment_updated_at out text,
 x_card_membership_created_at out text,
 x_card_task_created_at out text,
 x_card_task_updated_at out text,
+x_card_task_position out text,
 x_card_attachment_created_at out text,
 x_card_attachment_updatec_at out text
  )
@@ -88,6 +89,11 @@ vv_card_task_updated_at timestamp without time zone default null;
 vv_card_attachment_created_at timestamp without time zone default null;
 vv_card_attachment_updatec_at timestamp without time zone default null;
 v_attach_count int;
+c_position_increase bigint default 65536;
+vv_card_position bigint;
+TARGET_CARD_CURSOR record;
+vv_card_task_position bigint;
+TARGET_TASK_CURSOR record;
 BEGIN
 	if(i_card_action_type is not null) then
 	   if(i_card_action_type = 'ADD') then
@@ -99,10 +105,23 @@ BEGIN
 			from card 
 			where list_id = i_list_id::bigint;
 
+ 		vv_card_position := c_position_increase*(v_card_count+1);
+
+		-- 기존 카드 re position 
+		FOR TARGET_CARD_CURSOR IN 
+		   select (ROW_NUMBER() OVER()) AS ROWNUM, aa.id as id from
+              (select id, position from card
+               where list_id = i_list_id::bigint
+			   order by position) aa
+              LOOP
+                 update card set position = TARGET_CARD_CURSOR.rownum*c_position_increase
+                 where id =     TARGET_CARD_CURSOR.id;
+              END LOOP;			
+
         select now() into vv_card_created_at;
 
 		insert into card(id, board_id, list_id, creator_user_id,name, position, created_at)
-		select v_card_id, board_id, i_list_id::bigint, i_user_id::bigint, i_card_name,v_card_count+1, vv_card_created_at
+		select v_card_id, board_id, i_list_id::bigint, i_user_id::bigint, i_card_name,vv_card_position, vv_card_created_at
         from list where id= i_list_id::bigint ;
 
 	   elseif(i_card_action_type = 'UPDATE') then 
@@ -227,9 +246,22 @@ BEGIN
 			  into v_task_count 
 			   from task 
 			   where card_id = i_card_id::bigint;
+
+ 		vv_card_task_position := c_position_increase*(v_task_count+1);
+
+		-- 기존 타스트 re position 
+		FOR TARGET_TASK_CURSOR IN 
+		   select (ROW_NUMBER() OVER()) AS ROWNUM, aa.id as id from
+              (select id, position from task
+               where card_id = i_card_id::bigint
+			   order by position) aa
+              LOOP
+                 update task set position = TARGET_TASK_CURSOR.rownum*c_position_increase
+                 where id =     TARGET_TASK_CURSOR.id;
+              END LOOP;					   
 			   
 			insert into task(id, card_id, name, is_completed, created_at, updated_at, position)
-			values(vv_task_id, i_card_id::bigint, i_card_task_name, false, vv_card_task_created_at, now(), v_task_count+1) ;
+			values(vv_task_id, i_card_id::bigint, i_card_task_name, false, vv_card_task_created_at, now(), vv_card_task_position) ;
 			
 		elseif (i_card_task_action_type = 'UPDATE') then
 			select now() into vv_card_task_updated_at;
@@ -337,7 +369,7 @@ BEGIN
 	end if;
 
 	x_card_id = v_card_id::text;
-	x_card_position = (v_card_count + 1) :: text;
+	x_card_position = (vv_card_position) :: text;
 	x_card_created_at = vv_card_created_at :: text;
     x_card_membership_id = vv_card_membership_id::text;
     x_card_label_id = vv_card_label_id::text;
@@ -350,6 +382,7 @@ BEGIN
 	x_card_membership_created_at = vv_card_membership_created_at::text;
 	x_card_task_created_at = vv_card_task_created_at::text;
 	x_card_task_updated_at = vv_card_task_updated_at::text;
+	x_card_task_position = vv_card_task_position::text;
 	x_card_attachment_created_at = vv_card_attachment_created_at::text;
 	x_card_attachment_updatec_at = vv_card_attachment_updatec_at::text;
 END;

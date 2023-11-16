@@ -876,7 +876,7 @@ app.post('/card', async(req, res) => {
         cardStatusId } = req.body;
     try{
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
-                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48)`,
+                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49)`,
         [cardId,     //  
         userId ,       //  
         cardActionType ,    // 나머지는 모두 string 
@@ -909,6 +909,7 @@ app.post('/card', async(req, res) => {
         cardCommentText  ,
         cardStatusActionType ,
         cardStatusId,
+        null,
         null,
         null,
         null,
@@ -978,7 +979,7 @@ app.post('/modifyCard', async(req, res) => {
     try{
 
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
-                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48)`,
+                                           $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49)`,
         [cardId,     //  
         userId ,       //  
         cardActionType ,    // 나머지는 모두 string 
@@ -1026,6 +1027,7 @@ app.post('/modifyCard', async(req, res) => {
         null,
         null,
         null,
+        null,
         null       
      ]);
         // out 매개변수의 값을 확인합니다.
@@ -1043,6 +1045,7 @@ app.post('/modifyCard', async(req, res) => {
         const outTaskId = response.rows[0].x_task_id;
         const outTaskCreatedAt = response.rows[0].x_card_task_created_at;
         const outTaskUpdatedAt = response.rows[0].x_card_task_updated_at;
+        const outTaskPosition = response.rows[0].x_card_task_position;
 
         const outAttachmentId = response.rows[0].x_attachment_id;
         const outAttachmentCreatedAt = response.rows[0].x_card_attachment_created_at;
@@ -1053,7 +1056,8 @@ app.post('/modifyCard', async(req, res) => {
             outTaskId:outTaskId, outAttachmentId:outAttachmentId, outCommentId:outCommentId, outCommentCreatedAt:outCommentCreatedAt,
             outCommentUpdatedAt:outCommentUpdatedAt, outMembershipCreatedAt:outMembershipCreatedAt, 
             outTaskCreatedAt:outTaskCreatedAt, outTaskUpdatedAt:outTaskUpdatedAt, outAttachmentCreatedAt:outAttachmentCreatedAt,
-            outAttachmentUpdatedAt:outAttachmentUpdatedAt, outAttachmentUrl:outAttachmentUrl
+            outAttachmentUpdatedAt:outAttachmentUpdatedAt, outAttachmentUrl:outAttachmentUrl,
+            outTaskPosition:outTaskPosition
          }); // 결과 리턴을 해 줌 .  
         res.end();
     }catch(err){
