@@ -24,32 +24,50 @@ DECLARE
    vv_list_id text;
    vv_board_id text;
    TARGET_CURSOR record;
- x_card_id text;                    
- x_card_position text;              
- x_card_created_at text;            
- x_card_membership_id text;         
- x_card_label_id text;              
- x_task_id text;                    
- x_attachment_id text;              
- x_comment_id text;                 
- x_comment_created_at text;         
- x_comment_updated_at text;         
- x_card_membership_created_at text; 
- x_card_task_created_at text;       
- x_card_task_updated_at text;       
- x_card_attachment_created_at text; 
- x_card_attachment_updatec_at text;   
+   x_card_id text;                    
+   x_card_position text;              
+   x_card_created_at text;            
+   x_card_membership_id text;         
+   x_card_label_id text;              
+   x_task_id text;                    
+   x_attachment_id text;              
+   x_comment_id text;                 
+   x_comment_created_at text;         
+   x_comment_updated_at text;         
+   x_card_membership_created_at text; 
+   x_card_task_created_at text;       
+   x_card_task_updated_at text;       
+   x_card_attachment_created_at text; 
+   x_card_attachment_updatec_at text;   
+   c_position_increase bigint default 65536;
+   v_position bigint;
+   TARGET_LIST_CURSOR record;
 BEGIN
    if(i_list_action_type is not null) then
         if(i_list_action_type = 'ADD') then 
             select next_id() into v_list_id;
+
             select count(*) into v_count
             from list t 
             where t.board_id = i_board_id::bigint;
             select now() into v_created_at;
 
+
+ 		    v_position := c_position_increase*(v_count+1);
+
+		-- 기존 리스트는 re position 
+		FOR TARGET_LIST_CURSOR IN 
+		   select (ROW_NUMBER() OVER()) AS ROWNUM, aa.id as id from
+              (select id, position from list
+               where board_id = i_board_id::bigint
+			   order by position) aa
+              LOOP
+                 update list set position = TARGET_LIST_CURSOR.rownum*c_position_increase
+                 where id =     TARGET_LIST_CURSOR.id;
+              END LOOP;
+
             insert into list(id, board_id, name, position, created_at)
-            values(v_list_id, i_board_id::bigint, i_list_name, v_count, v_created_at);
+            values(v_list_id, i_board_id::bigint, i_list_name, v_position, v_created_at);
         elsif(i_list_action_type = 'UPDATE') then
             select now() into v_updated_at;
             update list 
@@ -130,7 +148,7 @@ BEGIN
 		now(), now());    
     end if;
    x_list_id = v_list_id::text;
-   x_position = (v_count + 1)::text;
+   x_position = (v_position)::text;
    x_updatedAt = v_updated_at::text;
    x_createdAt = v_created_at::text;
 END;

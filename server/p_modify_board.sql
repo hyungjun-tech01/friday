@@ -64,11 +64,12 @@ BEGIN
 
 		-- 기존 보드는 re position 
 		FOR TARGET_BOARD_CURSOR IN 
-              select (ROW_NUMBER() OVER()) AS ROWNUM, id from board
+		   select (ROW_NUMBER() OVER()) AS ROWNUM, aa.id as id from
+              (select id, position from board
                where project_id = i_project_id::bigint
-			   order by position
+			   order by position) aa
               LOOP
-                 update board set position = TARGET_BOARD_CURSOR.rownum*65536
+                 update board set position = TARGET_BOARD_CURSOR.rownum*c_position_increase
                  where id =     TARGET_BOARD_CURSOR.id;
               END LOOP;
 

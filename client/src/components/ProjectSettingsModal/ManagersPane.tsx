@@ -37,5 +37,4 @@ const ManagersPane = ({ projectId, isAdmin, role, managers, allUsers, onCreate, 
 }
 
 
-
 export default ManagersPane;
