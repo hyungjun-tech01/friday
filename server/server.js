@@ -1181,7 +1181,7 @@ app.post('/signup', async(req, res) => {
 });
 
 app.get('/getalluser/:userId', async(req, res) => {
-    const userId = req.userId;
+    const userId = req.params.userId;
    
     try{
         const users = await pool.query(`
@@ -1209,6 +1209,31 @@ app.get('/getalluser/:userId', async(req, res) => {
         console.error(err);
         res.json({message:err});        
         res.end();
+    }
+});
+app.get('/getProjectIdBoardIdbyCardId/:cardId', async(req, res) => {
+    const cardId = req.params.cardId;
+    console.log('getProjectIdBoardIdbyCardId', cardId);
+    try{
+        const card = await pool.query(`
+        select p.id as "projectId",
+        b.id as "boardId"
+        from board b, list l, card  c, project p
+        where c.id = $1
+        and c.list_id = l.id
+        and l.board_id = b.id
+        and p.id = b.project_id
+        LIMIT 1
+        `,[cardId]);
+        console.log(card.rows[0]);
+        if(card.rows.length<=0) 
+            return res.json({message:'card, board, project does not exist'}); 
+        res.json({cardId:cardId, boardId:card.rows[0].boardId, projectId:card.rows[0].projectId});
+    }catch(err){
+        console.error(err);
+        res.json({message:err});        
+        res.end();
+
     }
 });
 

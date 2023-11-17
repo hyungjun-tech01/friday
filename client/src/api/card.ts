@@ -76,6 +76,24 @@ export const apiGetInfosByCardId = async (cardId:string) => {
     }
 };
 
+
+export const getProjectIdBoardIdbyCardId = async (cardId:string) => {
+    console.log("getProjectIdBoardIdbyCardId", cardId);
+    if(cardId === null || cardId === ''){
+        return(null);
+    }
+    try{
+        const response = await fetch(`${BASE_PATH}/getProjectIdBoardIdbyCardId/${cardId}`, {
+            method: "GET", 
+        }); 
+        const json = await response.json()
+        return json;
+    }catch(err){
+        console.error(err);
+    }
+
+};
+
 export const apiUploadAttatchment = async (data:FormData) => {
     console.log("modify card", data);
     let userId:string  = "";

@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
  import {ICard, defaultCard, IModifyCard, defaultModifyCard} from "../atoms/atomCard";
  import {IModifyBoard, defaultModifyBoard,cardSelectorCardId } from "../atoms/atomsBoard";
  import {IModifyList, defaultModifyList} from "../atoms/atomsList";
- import {apiModifyCard, apiUploadAttatchment, apiDeleteAttatchment} from "../api/card";
+ import {getProjectIdBoardIdbyCardId, apiModifyCard, apiUploadAttatchment, apiDeleteAttatchment} from "../api/card";
 import {  apiModifyList } from '../api/list';
 import {useRecoilValue} from "recoil";
 import Paths from "../constants/Paths";
@@ -50,6 +50,11 @@ const BASE_PATH = Paths.BASE_PATH;
      console.log('modify response', response);
 
    }    
+   const getPorjectIdBoardIdbyCardId = async()=>{
+    const response = await getProjectIdBoardIdbyCardId('1044698334536664235');
+    console.log(response);
+
+   }
  ///// sample code         stopwatch :{total:'1000', startedAt:'2023.09.01'}
 
 
@@ -133,7 +138,8 @@ const onDelete = async()=>{
 }
 
   useEffect( ()=>{
-    //  cardModifySample();
+      // cardModifySample();
+      getPorjectIdBoardIdbyCardId();
    },[]);
 
     return(
