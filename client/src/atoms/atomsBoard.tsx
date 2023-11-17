@@ -9,6 +9,7 @@ export interface IBoard{
     projectId : string;
     projectName : string;
     boardName : string;
+    position : string;
     createdAt : string;
     role : string;
     userId : string;
@@ -18,7 +19,7 @@ export const atomMyBoard = atom<IBoard[]>({
     key: "myBoard",
     default : [
         { boardId:"" , projectId:"", projectName:"", 
-          boardName:"", createdAt:"", role:"", userId:""},
+          boardName:"", position:"", createdAt:"", role:"", userId:""},
     ]
 });
 export interface IModifyBoard{
