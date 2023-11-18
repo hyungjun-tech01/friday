@@ -16,7 +16,6 @@ import styles from "../scss/Board.module.scss";
 import ListAdd from "./ListAdd";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
 import { getNextPosition } from "../utils/position";
-import { update } from "lodash";
 
 const parseDndId = (dndId:string) => dndId.split(':')[1];
 interface IListProps{
@@ -116,6 +115,35 @@ function Board({boardId}:IListProps){
             console.log('Fail to move card', message);
         });
     }, [cookies.UserId, currentBoard, setCurrentBoard]);
+    const handleDeleteCard = useCallback((cardId: string) => {
+        console.log('delete card : ', cardId);
+        const updateCard: IModifyCard = {
+            ...defaultModifyCard,
+            cardId: cardId,
+            userId: cookies.UserId,
+            cardActionType: 'DELETE',
+        };
+        const response = apiModifyCard(updateCard);
+        response
+            .then((result) => {
+                if (result.message) {
+                    console.log('Fail to delete card', result.message);
+                } else {
+                    console.log('Succeed to delete card', result);
+                    const updatedCards = currentBoard.cards.filter(
+                        (card) => card.cardId !== cardId
+                    );
+                    const updatedBoard = {
+                        ...currentBoard,
+                        cards: updatedCards
+                    };
+                    setCurrentBoard(updatedBoard);
+                }
+            })
+            .catch((message) => {
+            console.log('Fail to update name of card', message);
+            });
+    }, []);
 
     const handleDragStart = useCallback(() => {
         document.dispatchEvent(new MouseEvent('click'));
@@ -198,7 +226,7 @@ function Board({boardId}:IListProps){
                         </Droppable>
                     </DragDropContext>
                 </div>
-                {(currentCard.cardId !== "") && <CardModal canEdit={currentBoard.canEdit}/>}
+                {(currentCard.cardId !== "") && <CardModal canEdit={currentBoard.canEdit} onDelete={handleDeleteCard}/>}
             </div>
         </div>
     );

@@ -53,6 +53,7 @@ import classNames from 'classnames';
 import styles from './CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
 import { getNextPosition } from '../../utils/position';
+import DeletePopup from '../DeletePopup';
 
 interface ICardPathProps {
   projectId: string | null,
@@ -61,10 +62,11 @@ interface ICardPathProps {
 };
 
 interface ICardModalProps {
-  canEdit: boolean;
+  canEdit: boolean,
+  onDelete: (id:string) => void,
 }
 
-const CardModal = ({ canEdit }: ICardModalProps) => {
+const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
   const [t] = useTranslation();
   const [board, setBoard] = useRecoilState<ICurrent>(atomCurrentMyBoard);
   const [card, setCard] = useRecoilState<ICard>(atomCurrentCard);
@@ -86,6 +88,7 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
   const StopwatchEdit = usePopup(StopwatchEditPopup);
   const AttachmentAdd = usePopup(AttachmentAddPopup);
   const CardMove = usePopup(CardMovePopup);
+  const CardDelete = usePopup(DeletePopup);
 
   useEffect(() => {
     if (card.memberships) {
@@ -1072,6 +1075,12 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
       });
   }, [board, card.cardId, cookies.UserId, handleOnCloseCardModal, setBoard]);
 
+  const handleCardDelete = useCallback(() => {
+    console.log('delete card : ', card.cardId);
+    onDelete(card.cardId);
+    setCard(defaultCard);
+  }, [card.cardId, onDelete, setCard]);
+
   const contentNode = (
     <Grid className={styles.grid}>
       <Grid.Row className={styles.headerPadding}>
@@ -1422,17 +1431,23 @@ const CardModal = ({ canEdit }: ICardModalProps) => {
                   {t('action.move')}
                 </Button>
               </CardMove>
-              <Button
-                fluid
-                className={styles.actionButton}
-                //onClick={handleToggleSubscriptionClick}
+              <CardDelete
+                title="common.deleteCard"
+                content="common.areYouSureYouWantToDeleteThisCard"
+                buttonContent="action.deleteCard"
+                onConfirm={handleCardDelete}
               >
-                <Icon
-                  name="share square outline"
-                  className={styles.actionIcon}
-                />
-                {t('action.delete')}
-              </Button>
+                <Button
+                  fluid
+                  className={styles.actionButton}
+                >
+                  <Icon
+                    name="share square outline"
+                    className={styles.actionIcon}
+                  />
+                  {t('action.delete')}
+                </Button>
+              </CardDelete>
             </div>
           </Grid.Column>
         )}
