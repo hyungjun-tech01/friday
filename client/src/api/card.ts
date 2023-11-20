@@ -7,12 +7,11 @@ export const apiGetCards = async (boardId:string) => {
     console.log("getcard", BASE_PATH);
     try{
         const response = await fetch(`${BASE_PATH}/cards/${boardId}`);  // backtik 
-        const json = await response.json()
+        const json = await response.json();
         return json;
     }catch(err){
         console.error(err);
     }
-
 };
 
 export const apiGetCardsbyListId = async (listId:string) => {
@@ -22,7 +21,7 @@ export const apiGetCardsbyListId = async (listId:string) => {
     }
     try{
         const response = await fetch(`${BASE_PATH}/cardbylistId/${listId}`);  // backtik 
-        const json = await response.json()
+        const json = await response.json();
         return json;
     }catch(err){
         console.error(err);

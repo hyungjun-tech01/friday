@@ -31,6 +31,7 @@ import { defaultTask, ITask } from '../../atoms/atomTask';
 import { IStopwatch } from '../../atoms/atomStopwatch';
 import { ILabel } from '../../atoms/atomLabel';
 import { atomProjectsToLists } from '../../atoms/atomsProject';
+import { SubscriptionRepository } from '../../repository/subscriptionRepo';
 import Activities from './Activity/Activities';
 import DescriptionEdit from '../DescriptionEdit';
 import CardModalTasks from './CardModalTask/CardModalTasks';
@@ -54,6 +55,7 @@ import styles from './CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
 import { getNextPosition } from '../../utils/position';
 import DeletePopup from '../DeletePopup';
+import { remove } from 'lodash';
 
 interface ICardPathProps {
   projectId: string | null,
@@ -79,6 +81,8 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
   const [cardPath, setCardPath] = useState<ICardPathProps>({
     projectId: null, boardId: null, listId: null
   });
+  const {addSubscription, removeSubscription, isSubscribed} = useRecoilValue(SubscriptionRepository);
+  const [subscribed, setSubscribed] = useState(false);
 
   const isGalleryOpened = useRef(false);
 
@@ -113,9 +117,18 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
         };
         setCardPath(updateCardPath);
       };
-    }
+    };
+    const resp = isSubscribed(card.cardId);
+    resp.then((res) => {
+      if(res) {
+        setSubscribed(true);
+      } else {
+        setSubscribed(false);
+      }
+    });
+
     console.log('CardModal : tasks - ', card.tasks);
-  }, [card, projectsToLists]);
+  }, [card, isSubscribed, projectsToLists]);
 
   const handleOnCloseCardModal = useCallback(() => {
     updateCard(card);
@@ -1081,6 +1094,16 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
     setCard(defaultCard);
   }, [card.cardId, onDelete, setCard]);
 
+  const handleSubscribeClick = useCallback(() => {
+    console.log('handleSubscribeClick');
+    if(subscribed) {
+      removeSubscription(card.cardId, cookies.UserId);
+    } else {
+      addSubscription(card.cardId, cookies.UserId);
+    };
+    setSubscribed(!subscribed);
+  }, [addSubscription, card.cardId, cookies.UserId, removeSubscription, subscribed])
+
   const contentNode = (
     <Grid className={styles.grid}>
       <Grid.Row className={styles.headerPadding}>
@@ -1416,6 +1439,17 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
             </div>
             <div className={styles.actions}>
               <span className={styles.actionsTitle}>{t('common.actions')}</span>
+              <Button
+                fluid
+                className={styles.actionButton}
+                onClick={handleSubscribeClick}
+              >
+                <Icon
+                  name="share square outline"
+                  className={styles.actionIcon}
+                />
+                {subscribed ? t('action.unsubscribe') : t('action.subscribe')}
+              </Button>
               <CardMove
                 defaultPath={cardPath}
                 onMove={handleCardMove}

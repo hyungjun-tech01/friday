@@ -154,10 +154,13 @@ const core = {
       title: 'Title',
       userActions_title: 'User Actions',
       userAddedThisCardToList: '<0>{{user}}</0><1> added this card to {{list}}</1>',
+      userDeleteThisCommentInCard: '{{user}} deleted a comment in<1>{{card}}</1>',
       userLeftNewCommentToCard: '{{user}} left a new comment «{{comment}}» to <2>{{card}}</2>',
       userMovedCardFromListToList: '{{user}} moved <2>{{card}}</2> from {{fromList}} to {{toList}}',
       userMovedThisCardFromListToList:
         '<0>{{user}}</0><1> moved this card from {{fromList}} to {{toList}}</1>',
+      userUpdateThisCommentInCard:
+        '{{user}} updated comment to «{{comment}}» in <2>{{card}}</2>',
       username: 'Username',
       usernameAlreadyInUse: 'Username already in use',
       users: 'Users',

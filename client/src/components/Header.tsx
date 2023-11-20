@@ -3,17 +3,21 @@ import {Link, useHistory} from "react-router-dom";
 import { Icon, Menu, Dropdown } from "semantic-ui-react";
 import {useCookies} from "react-cookie";
 import { useTranslation } from 'react-i18next';
-import {useRecoilState} from 'recoil';
+import {useRecoilState, useRecoilValue} from 'recoil';
 
 import Paths from "../constants/Paths";
 import styles from "../scss/Header.module.scss";
 import NotiModal from "./NotiModal";
 import UsersModal from "./UsersModal";
 import {atomMyUser, IUser, } from "../atoms/atomsUser";
+import { atomMyNotification } from "../atoms/atomNotification";
 import {apiGetUser} from "../api/user";
+import { SubscriptionRepository } from "../repository/subscriptionRepo";
+import { NotificationRepository } from "../repository/notificationRepo";
 
 import Path from '../constants/Paths';
 import ProjectSettingsModal from "./ProjectSettingsModal";
+import { usePopup } from "../lib/hook";
 
 
 function Header({setCurrent, projectName, projectId}:any){
@@ -26,14 +30,28 @@ function Header({setCurrent, projectName, projectId}:any){
     // 현재 사용자의 isAdmin을 체크 
     const [currentUser,setCurrentUser] = useRecoilState<IUser>(atomMyUser);
     console.log('isAdmin', currentUser.isAdmin);
+
+    // Load subscription
+    const { loadSubscriptions } = useRecoilValue(SubscriptionRepository);
+    // Notification
+    const notifications = useRecoilValue(atomMyNotification);
+    const { loadNotifications, removeNotification } = useRecoilValue(NotificationRepository);
     
     const getUserInfo = async ()=>{
         const userInfo = await apiGetUser(cookies.UserId);
         setCurrentUser(userInfo);
     };
-    useEffect(
-        ()=>{getUserInfo();},
-        []);
+
+    // Notification
+    const NotificationPopup = usePopup(NotiModal,  {
+        position: 'bottom right',
+      });
+
+    useEffect(() => {
+        getUserInfo();
+        loadSubscriptions(cookies.UserId);
+        loadNotifications(cookies.UserId);
+    }, [cookies.UserId, loadSubscriptions, loadNotifications]);
 
     if(cookies.AuthToken === undefined || cookies.AuthToken === "" || cookies.AuthToken === null){
         removeCookie('UserId');
@@ -42,7 +60,6 @@ function Header({setCurrent, projectName, projectId}:any){
         history.push(Path.LOGIN);
     }
     
-    const [showNotif, setShowNoti] = useState(false);
     const [showProjSetting, setShowProjSetting] = useState(false);
     const onSettings = ()=> {
         console.log('setting');
@@ -81,10 +98,17 @@ function Header({setCurrent, projectName, projectId}:any){
                         className={`${styles.item} ${styles.itemHoverable}`}>
                     <Icon fitted name= "users" />
                     </Menu.Item>
-                    <Menu.Item onClick={()=>{setShowNoti(!showNotif)}} className={`${styles.item}  ${styles.itemHoverable}`}>
-                        <Icon fitted name="bell" />
-                        <span className={styles.notification}>3</span>  {/*nofification 있으면 갯수를 표시 */}
-                    </Menu.Item>
+                    <NotificationPopup
+                        items={notifications}
+                        onDelete={removeNotification}
+                    >
+                        <Menu.Item  className={`${styles.item}  ${styles.itemHoverable}`}>
+                            <Icon fitted name="bell" />
+                            {notifications.length > 0 && (
+                            <span className={styles.notification}>{notifications.length}</span>
+                            )}
+                        </Menu.Item>
+                    </NotificationPopup>
                     <Menu.Item className={`${styles.item}, ${styles.itemHoverable}`}>
                     {cookies?.UserName}   {/* 로그인 하면 사용자 정보 표시  -> 로그아웃, 사용자 정보 메뉴화면 나옴. */}
                         <Dropdown item icon='caret down' simple>
@@ -99,7 +123,6 @@ function Header({setCurrent, projectName, projectId}:any){
             <Menu>
            </Menu>
         </div>
-        {showNotif && <NotiModal setShowNoti={setShowNoti}/>}
         {showUsers && <UsersModal onClose={setShowUsers}/>}
         {showProjSetting&&<ProjectSettingsModal projectId={projectId} onClose={setShowProjSetting} setCurrent={setCurrent} projectName={projectName}/>}
         </>
