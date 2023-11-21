@@ -120,14 +120,9 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
     };
     const resp = isSubscribed(card.cardId);
     resp.then((res) => {
-      if(res) {
-        setSubscribed(true);
-      } else {
-        setSubscribed(false);
-      }
+      setSubscribed(res);
     });
 
-    console.log('CardModal : tasks - ', card.tasks);
   }, [card, isSubscribed, projectsToLists]);
 
   const handleOnCloseCardModal = useCallback(() => {

@@ -1240,7 +1240,7 @@ app.get('/getProjectIdBoardIdbyCardId/:cardId', async(req, res) => {
 app.post('/subscription', async(req, res) => {
     const {subscription_action, card_id, user_id, is_permanent} = req.body;
     try{
-        const response = await pool.query(`call p_subscription(
+        const response = await pool.query(`call p_modify_subscription(
             $1, $2, $3, $4)`,
             [subscription_action, card_id, user_id, is_permanent]);
         

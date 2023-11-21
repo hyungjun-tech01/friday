@@ -23,7 +23,7 @@ export const SubscriptionRepository = selector({
                     subscription_action: 'ADD',
                     card_id: cardId,
                     user_id: userId,
-                    is_permaent: true   // use this value after checking how to use this
+                    is_permanent: true   // use this value after checking how to use this
                 };
                 const response = await fetch(`${BASE_PATH}/subscription`, {
                     method: 'POST',
@@ -36,7 +36,7 @@ export const SubscriptionRepository = selector({
                 } else {
                     console.log('addSubscription - succeed :', data.result);
                     const subscription = await snapshot.getPromise(atomMySubscription);
-                    set(atomMySubscription, subscription.concat(cardId));
+                    set(atomMySubscription, subscription.concat({card_id: cardId}));
                 };
             }
             catch(error){
@@ -49,7 +49,7 @@ export const SubscriptionRepository = selector({
                     subscription_action: 'DELETE',
                     card_id: cardId,
                     user_id: userId,
-                    is_permaent: true   // use this value after checking how to use this
+                    is_permanent: true   // use this value after checking how to use this
                 };
                 const response = await fetch(`${BASE_PATH}/subscription`, {
                     method: 'POST',
@@ -62,7 +62,7 @@ export const SubscriptionRepository = selector({
                 } else {
                     console.log('addSubscription - succeed :', data.result);
                     const subscription = await snapshot.getPromise(atomMySubscription);
-                    set(atomMySubscription, subscription.filter((card_id) => card_id !== cardId));
+                    set(atomMySubscription, subscription.filter((data) => data.card_id !== cardId));
                 };
             }
             catch(error){
@@ -71,7 +71,7 @@ export const SubscriptionRepository = selector({
         });
         const isSubscribed = getCallback(({snapshot}) => async(cardId:string) => {
             const subscription = await snapshot.getPromise(atomMySubscription);
-            const foundIdx = subscription.findIndex((card_id) => card_id === cardId);
+            const foundIdx = subscription.findIndex((data) => data.card_id === cardId);
             if(foundIdx >=0) return true;
             else return false;
         });
