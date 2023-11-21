@@ -82,6 +82,7 @@ v_null_udpate_stopwatch jsonb;
 v_null_udpate_due_date text;
 v_card_count int;
 v_card_id bigint;
+vv_card_id text;
 vv_card_created_at timestamp without time zone default null;
 vv_card_membership_created_at timestamp without time zone default null;
 vv_card_task_created_at timestamp without time zone default null;
@@ -180,10 +181,16 @@ BEGIN
 	  -- if name, desc, due_date = null," " 로 대체해서 입력 : data에  
 	 select COALESCE(i_card_name, ' '), COALESCE(regexp_replace(i_description, '[\n\r]+', ' ', 'g' ), ' ') , COALESCE(i_due_date, ' '),COALESCE(i_position, ' ')
 	    into v_card_name, v_description, v_due_date, v_position;
+
+	if(i_card_action_type = 'ADD') then
+	   		vv_card_id := v_card_id::text;
+	else
+	   vv_card_id := i_card_id;
+	end if;
 		
 	  insert into action(id, card_id, user_id, type, data, created_at, updated_at)
-	   values(next_id(), i_card_id::bigint, i_user_id::bigint, 'Card '||i_card_action_type, 
-				  ('{"card_id":"'||i_card_id||'", "name":"'||v_card_name||'", "description":"'||v_description||'", "due_date":"'||v_due_date||'", "position":"'||v_position||  '"}')::text::json,
+	   values(next_id(), vv_card_id::bigint, i_user_id::bigint, 'Card '||i_card_action_type, 
+				  ('{"card_id":"'||vv_card_id||'", "name":"'||v_card_name||'", "description":"'||v_description||'", "due_date":"'||v_due_date||'", "position":"'||v_position||  '"}')::text::json,
 	now(), now());  
 	end if;
 

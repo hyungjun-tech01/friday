@@ -3,13 +3,17 @@ import {IBoard, IQueryBoard, atomMyBoard, atomCurrentMyBoard} from "../../atoms/
 import {useQuery} from "react-query";
 import { Button, Icon } from 'semantic-ui-react';
 import {Link} from "react-router-dom";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {useCookies} from "react-cookie";
 import {apiGetBoards} from "../../api/board";
 import styles from "./Boards.module.scss";
 import Paths from "../../constants/Paths";
 import AddBoardModal from "../AddBoardModal";
 import classNames from "classnames";
+import {projectSelector} from "../../atoms/atomsProject";
+import EditStep from "./EditStep";
+import { usePopup } from '../../lib/hook';
+import pick from 'lodash/pick';
 
 interface IBoardProps{
     projectId:string;
@@ -22,7 +26,14 @@ function Boards({projectId}:IBoardProps){
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isBoardLoading, setIsBoardLoading] = useState(false);
     const currentBoardId = useRecoilValue(atomCurrentMyBoard);
-    // login 하면 가지고 있을 것.  const [user, setUser] = useRecoilState<IUser>(atomUser); 
+
+    // 현재 user 는 이 프로젝트에 어떤 권한을 가지고 있는지.
+    const currentProject = useRecoilValue(projectSelector);
+    const currentProject1 = currentProject(projectId)[0];
+    const isEdit = currentProject1.isAdmin || currentProject1.role === "manager" ? true : false;
+
+    const EditPopup = usePopup(EditStep);
+    //console.log("Board currentProject", currentProject1.projectId, currentProject1.role, currentProject1.isAdmin);
 
     //board id가 바뀔때마다 showList 를 변경 
     useEffect(() => {
@@ -48,6 +59,21 @@ function Boards({projectId}:IBoardProps){
        setShowCreateModal((showCreateModal)=>(!showCreateModal));
        (window.innerWidth-300 < event.pageX) ? setEndXPostion(true):  setEndXPostion(false)
     };
+    const handleUpdate = useCallback(
+        (id:any, data:any) => {
+          console.log(id, data);
+       //   onUpdate(id, data);
+        },
+        [],
+      );
+    
+      const handleDelete = useCallback(
+        (id:any) => {
+            console.log(id);
+        //  onDelete(id);
+        },
+        [],
+      );
     return(
         <>
             <div className={styles.wrapper}>
@@ -64,14 +90,25 @@ function Boards({projectId}:IBoardProps){
                                     >
                                     {item.boardName}
                                     </Link>
-
+                                    {isEdit && (
+                                        <EditPopup
+                                            defaultData={pick(item, 'name')}
+                                            onUpdate={(data:any) => handleUpdate(item.boardId, data)}
+                                            onDelete={() => handleDelete(item.boardId)}
+                                        >
+                                            <Button className={classNames(styles.editButton, styles.target)}>
+                                            <Icon fitted name="pencil" size="small" />
+                                            </Button>
+                                        </EditPopup>
+                )}
                                 </div>
                                 ))}
                         </div>
-                        <div>
+                        {isEdit &&
+                            <div>
                             <Button icon="plus" onClick={onCreate} className={styles.addButton} />
                             {showCreateModal && <AddBoardModal endXPosition = {endXPosition} setShowCreateModal={setShowCreateModal} projectId={projectId} />}             
-                        </div>
+                        </div>}
                         
                     </div>
                 </div>
