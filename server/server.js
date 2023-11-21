@@ -1233,7 +1233,88 @@ app.get('/getProjectIdBoardIdbyCardId/:cardId', async(req, res) => {
         console.error(err);
         res.json({message:err});        
         res.end();
+    }
+});
 
+// subscribe 
+app.post('/subscription', async(req, res) => {
+    const {subscription_action, card_id, user_id, is_permanent} = req.body;
+    try{
+        const response = await pool.query(`call p_modify_subscription(
+            $1, $2, $3, $4)`,
+            [subscription_action, card_id, user_id, is_permanent]);
+        
+        res.json({result:"succeeded"}); // 결과 리턴을 해 줌.
+        res.end();
+    } catch(err){
+        console.error(err);
+        res.json({result:"failed",
+            message:err});
+        res.end();
+    }
+});
+app.get('/subscribe/user/:userId', async(req, res) => {
+    const user_id = req.params.userId;
+    try{
+        const response = await pool.query(`select card_id from card_subscription where user_id = $1`,
+            [user_id]);
+        if(response.rows.length <= 0) {
+            return res.json({message: 'No card_id'});
+        }
+        const data = [...response.rows];
+        res.json(data); // 결과 리턴을 해 줌.
+        res.end();
+    } catch(err){
+        console.error(err);
+        res.json({result:"failed",
+            message:err});
+        res.end();
+    }
+});
+
+// notification 
+app.get('/notification/user/:userId', async(req, res) => {
+    const pUserId = req.params.userId;
+    try{
+        const response = await pool.query(`select notification.id as id, action.type as action_type, action.data as action_data, user_account.name as user_name, user_account.avatar as user_avatar, card.id as card_id, card.name as card_name
+            from action
+                join notification on notification.action_id = action.id
+                join user_account on user_account.id = action.user_id
+                join card on card.id = action.card_id
+            where action.id in (select action_id from notification where user_id = $1 and is_read = false)`,
+                [pUserId]);
+        if(response.rows.length <= 0) {
+            res.json({message: 'Empty'})
+            res.end();
+        } else {
+            const result = response.rows.map((resp) => ({
+                notiId: resp.id,
+                card: {id: resp.card_id, name: resp.card_name},
+                user: {name: resp.user_name, avatarUrl: resp.user_avatar},
+                activity: {type: resp.action_type, data: resp.action_data},
+            }));
+            res.json(result); // 결과 리턴을 해 줌.
+            res.end();
+        }
+    } catch(err){
+        console.error(err);
+        res.json({result:"failed",
+            message:err});
+        res.end();
+    }
+});
+app.get('/notification/read/:notiId', async(req, res) => {
+    const pNotiId = req.params.notiId;
+    try{
+        const response = await pool.query(`update notification set is_read = true where notification.id = $1`,
+            [pNotiId]);
+        res.json({result:"succeeded"}); // 결과 리턴을 해 줌.
+        res.end();
+    } catch(err){
+        console.error(err);
+        res.json({result:"failed",
+            message:err});
+        res.end();
     }
 });
 

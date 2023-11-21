@@ -90,10 +90,12 @@ const core = {
       manager:'관리자',
       managers:'프로젝트 관리자',
       managerMember:'프로젝트 멤버를 추가/삭제하거나 보드를 추가/삭제할 수 있습니다.',
-      normal:'일반',
-      normalMember:'프로젝트 멤버와 보드 멤버를 추가/삭제할 수 없습니다. ',
       noBoards: '보드 없음',
       noLists: '리스트 없음',
+      normal:'일반',
+      normalMember:'프로젝트 멤버와 보드 멤버를 추가/삭제할 수 없습니다. ',
+      notifications: '알림',
+      noUnreadNotifications: '읽지 않음 알림이 없습니다.',
       openBoard:'보드 열기',
       Password: '패스워드',
       pressPasteShortcutToAddAttachmentFromClipboard: 'Ctrl+v로 클립보드로부터 첨부파일을 추가합니다.',
@@ -119,6 +121,16 @@ const core = {
       selectPermission : '권한 선택',
       username : '아이디',
       users : '사용자',
+      userActions_title: 'User Actions',
+      userAddedThisCardToList: '<0>{{user}}</0><1>이/가 카드를 {{list}}</1>에 추가했습니다.',
+      userDeleteThisCommentInCard:
+        '{{user}}이/가 <1>{{card}}</1>에 있는 댓글을 삭제하였습니다',
+      userLeftNewCommentToCard:
+        '{{user}}이/가 <2>{{card}}</2>에 «{{comment}}»라는 댓글을 남겼습니다',
+      userUpdateThisCommentInCard:
+        '{{user}}이/가 <2>{{card}}</2>에 있는 댓글을 «{{comment}}»로 변경하였습니다',
+      userMovedThisCardFromListToList:
+        '<0>{{user}}</0><1>이/가 항목카드를 {{fromList}}에서 {{toList}}(으)로 옮겼습니다.</1>',
       viewer : '뷰어',
       writeComment: '댓글 추가하기',
     },
@@ -168,7 +180,7 @@ const core = {
       showFewerAttachments: '일부 첨부파일만 보기',
       start: '시작',
       stop: '중지',
-      subscribe: '구독',
+      subscribe: '구독 하기',
       unsubscribe: '구독 취소',
       leaveBoardButton: '보드에서 나가기',
 

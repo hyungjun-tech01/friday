@@ -95,103 +95,117 @@ vv_card_position bigint;
 TARGET_CARD_CURSOR record;
 vv_card_task_position bigint;
 TARGET_TASK_CURSOR record;
+v_card_action_id bigint;
+v_subscription_id bigint;
 BEGIN
 	if(i_card_action_type is not null) then
-	   if(i_card_action_type = 'ADD') then
+	   	if(i_card_action_type = 'ADD') then
 
-	      SELECT next_id() INTO v_card_id;
+	      	SELECT next_id() INTO v_card_id;
 		
-		select count(*) 
-			into v_card_count 
-			from card 
-			where list_id = i_list_id::bigint;
+			select count(*) 
+				into v_card_count 
+				from card 
+				where list_id = i_list_id::bigint;
 
- 		vv_card_position := c_position_increase*(v_card_count+1);
+			vv_card_position := c_position_increase*(v_card_count+1);
 
-		-- 기존 카드 re position 
-		FOR TARGET_CARD_CURSOR IN 
-		   select (ROW_NUMBER() OVER()) AS ROWNUM, aa.id as id from
-              (select id, position from card
-               where list_id = i_list_id::bigint
-			   order by position) aa
-              LOOP
-                 update card set position = TARGET_CARD_CURSOR.rownum*c_position_increase
-                 where id =     TARGET_CARD_CURSOR.id;
-              END LOOP;			
+			-- 기존 카드 re position 
+			FOR TARGET_CARD_CURSOR IN 
+			select (ROW_NUMBER() OVER()) AS ROWNUM, aa.id as id from
+				(select id, position from card
+				where list_id = i_list_id::bigint
+				order by position) aa
+				LOOP
+					update card set position = TARGET_CARD_CURSOR.rownum*c_position_increase
+					where id =     TARGET_CARD_CURSOR.id;
+				END LOOP;			
 
-        select now() into vv_card_created_at;
+			select now() into vv_card_created_at;
 
-		insert into card(id, board_id, list_id, creator_user_id,name, position, created_at)
-		select v_card_id, board_id, i_list_id::bigint, i_user_id::bigint, i_card_name,vv_card_position, vv_card_created_at
-        from list where id= i_list_id::bigint ;
+			insert into card(id, board_id, list_id, creator_user_id,name, position, created_at)
+				select v_card_id, board_id, i_list_id::bigint, i_user_id::bigint, i_card_name,vv_card_position, vv_card_created_at
+					from list where id= i_list_id::bigint;
 
-	   elseif(i_card_action_type = 'UPDATE') then 
+			-- add Card Subscription always------
+			insert into card_subscription(id, card_id, user_id, is_permanent, created_at, updated_at)
+				values(next_id(), v_card_id, i_user_id::bigint, true, now(), null);
 
-		if(i_stopwatch->>'total' is null) then
-			select stopwatch into v_null_udpate_stopwatch 
-			from card t where t.id = i_card_id::bigint;
-		elseif(i_stopwatch->>'total' = '-1') then
-		   v_null_udpate_stopwatch := null;
-		else 
-		   v_null_udpate_stopwatch := i_stopwatch;
+		elsif(i_card_action_type = 'UPDATE') then 
+
+			if(i_stopwatch->>'total' is null) then
+				select stopwatch into v_null_udpate_stopwatch 
+				from card t where t.id = i_card_id::bigint;
+			elseif(i_stopwatch->>'total' = '-1') then
+			v_null_udpate_stopwatch := null;
+			else 
+			v_null_udpate_stopwatch := i_stopwatch;
+			end if;
+
+			if(i_due_date is null) then
+				select due_date::text into v_null_udpate_due_date
+				from card t where t.id = i_card_id::bigint;		
+			elseif(i_due_date = '-1') then
+			v_null_udpate_due_date := null;
+			else 
+				v_null_udpate_due_date := i_due_date;
+			end if;
+
+			-- card_name, description, due_date, position, stopwatch 이 null 이면 update 하지 않는다.
+
+			update card
+				set name = COALESCE(i_card_name, name), 
+				description = COALESCE(i_description, description), 
+				due_date = to_timestamp(v_null_udpate_due_date, 'YYYY-MM-DD HH24:MI:SS'),
+				position = COALESCE(i_position::double precision, position) ,
+				stopwatch = v_null_udpate_stopwatch,
+				updated_at = now()
+			where id = i_card_id::bigint;
+			
+		elsif (i_card_action_type = 'DELETE') then
+			delete from card_label t where t.card_id = i_card_id::bigint;
+			delete from card_membership t where t.card_id = i_card_id::bigint;
+			delete from comment  t where t.card_id = i_card_id::bigint;
+			delete from attachment  t where t.card_id =i_card_id::bigint;
+			delete from task t where t.card_id =i_card_id::bigint;
+			delete from card t  where t.id =i_card_id::bigint;
+		elsif (i_card_action_type = 'MOVE') then
+
+			select board_id 
+			into v_new_board_id 
+			from list t
+			where t.id = i_list_id::bigint
+			limit 1;
+
+			update card
+			set list_id = i_list_id::bigint,
+				board_id = v_new_board_id,
+				updated_at = now()
+			where id = i_card_id::bigint;
 		end if;
 
-		if(i_due_date is null) then
-			select due_date::text into v_null_udpate_due_date
-			from card t where t.id = i_card_id::bigint;		
-		elseif(i_due_date = '-1') then
-		   v_null_udpate_due_date := null;
-		else 
-			v_null_udpate_due_date := i_due_date;
+		-- if name, desc, due_date = null," " 로 대체해서 입력 : data에  
+		select COALESCE(i_card_name, ' '), COALESCE(regexp_replace(i_description, '[\n\r]+', ' ', 'g' ), ' ') , COALESCE(i_due_date, ' '),COALESCE(i_position, ' ')
+			into v_card_name, v_description, v_due_date, v_position;
+
+		if(i_card_action_type = 'ADD') then
+			vv_card_id := v_card_id::text;
+		else
+			vv_card_id := i_card_id;
 		end if;
-
-	   	-- card_name, description, due_date, position, stopwatch 이 null 이면 update 하지 않는다.
-
-		update card
-			set name = COALESCE(i_card_name, name), 
-			description = COALESCE(i_description, description), 
-			due_date = to_timestamp(v_null_udpate_due_date, 'YYYY-MM-DD HH24:MI:SS'),
-			position = COALESCE(i_position::double precision, position) ,
-			stopwatch = v_null_udpate_stopwatch,
-			updated_at = now()
-		where id = i_card_id::bigint;
+	
+		select next_id() into v_card_action_id;
+		insert into action(id, card_id, user_id, type, data, created_at, updated_at)
+			values(v_card_action_id, vv_card_id::bigint, i_user_id::bigint, 'Card '||i_card_action_type, 
+				('{"card_id":"'||vv_card_id||'", "name":"'||v_card_name||'", "description":"'||v_description||'", "due_date":"'||v_due_date||'", "position":"'||v_position||'"}')::text::json,
+				now(), now());
 		
-	   elsif (i_card_action_type = 'DELETE') then
-		delete from card_label t where t.card_id = i_card_id::bigint;
-		delete from card_membership t where t.card_id = i_card_id::bigint;
-		delete from comment  t where t.card_id = i_card_id::bigint;
-		delete from attachment  t where t.card_id =i_card_id::bigint;
-		delete from task t where t.card_id =i_card_id::bigint;
-		delete from card t  where t.id =i_card_id::bigint;
-	   elsif (i_card_action_type = 'MOVE') then
-
-		select board_id 
-		into v_new_board_id 
-		from list t
-		where t.id = i_list_id::bigint
-		limit 1;
-
-	    update card
-		set list_id = i_list_id::bigint,
-		    board_id = v_new_board_id,
-			updated_at = now()
-		where id = i_card_id::bigint;
-	   end if;
-
-	  -- if name, desc, due_date = null," " 로 대체해서 입력 : data에  
-	 select COALESCE(i_card_name, ' '), COALESCE(regexp_replace(i_description, '[\n\r]+', ' ', 'g' ), ' ') , COALESCE(i_due_date, ' '),COALESCE(i_position, ' ')
-	    into v_card_name, v_description, v_due_date, v_position;
-
-	if(i_card_action_type = 'ADD') then
-	   		vv_card_id := v_card_id::text;
-	else
-	   vv_card_id := i_card_id;
-	end if;
-		
-	  insert into action(id, card_id, user_id, type, data, created_at, updated_at)
-	   values(next_id(), vv_card_id::bigint, i_user_id::bigint, 'Card '||i_card_action_type, 
-				  ('{"card_id":"'||vv_card_id||'", "name":"'||v_card_name||'", "description":"'||v_description||'", "due_date":"'||v_due_date||'", "position":"'||v_position||  '"}')::text::json,
-	now(), now());  
+		-- Card Subscription
+		select id from card_subscription where card_id = vv_card_id::bigint and user_id = i_user_id::bigint into v_subscription_id;
+		if(v_subscription_id != null and (i_card_action_type = 'ADD' or i_card_action_type = 'MOVE')) then
+			insert into notification(user_id, action_id, card_id, is_read, created_at, updated_at)
+				values(i_user_id::bigint, v_card_action_id, vv_card_id::bigint, false, now(), null);
+		end if;
 	end if;
 
 	-- 카드 멤버쉽 추가 : i_card_membership_action_type = 'ADD', i_card_membership_user_id  /
@@ -356,10 +370,18 @@ BEGIN
 		select COALESCE( regexp_replace(i_card_comment_text, '[\n\r]+', ' ', 'g' ), ' ')
 	    into v_card_comment_text;
 		
+		select next_id() into v_card_action_id;
 		insert into action(id, card_id, user_id, type, data, created_at, updated_at)
-	   values(next_id(), i_card_id::bigint, i_user_id::bigint, 'Card Comment '||i_card_comment_action_type, 
-				  ('{"card_id":"'||i_card_id||'", "card_comment_text":"'||v_card_comment_text|| '"}')::text::json,
-		now(), now());  
+			values(v_card_action_id, i_card_id::bigint, i_user_id::bigint, 'Card Comment'||i_card_comment_action_type, 
+				('{"card_id":"'||i_card_id||'", "card_comment_text":"'||v_card_comment_text|| '"}')::text::json,
+				now(), null);
+
+		select id from card_subscription where card_id = i_card_id::bigint and user_id = i_user_id::bigint into v_subscription_id;
+		if(v_subscription_id != null) then
+			insert into notification(user_id, action_id, card_id, is_read, created_at, updated_at)
+				values(i_user_id::bigint, v_card_action_id, i_card_id::bigint, false, now(), null);
+		end if;
+
 	end if;	
 	-- 카드 상태 변경 
 	if(i_card_status_action_type is not null) then
