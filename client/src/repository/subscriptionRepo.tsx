@@ -10,8 +10,13 @@ export const SubscriptionRepository = selector({
             try{
                 const response = await fetch(`${BASE_PATH}/subscribe/user/${userId}`);
                 const data = await response.json();
-                console.log('loadSubscriptions / data : ', data);
-                set(atomMySubscription, data);
+                if(data.message) {
+                    console.log('No Subscription Data');
+                    set(atomMySubscription, []);
+                }
+                else {
+                    set(atomMySubscription, data);
+                }
             }
             catch(err){
                 console.error(err);
