@@ -39,6 +39,7 @@ DECLARE
    x_card_task_updated_at text;       
    x_card_attachment_created_at text; 
    x_card_attachment_updatec_at text;   
+   x_card_task_position text;
    c_position_increase bigint default 65536;
    v_position bigint;
    TARGET_LIST_CURSOR record;
@@ -129,6 +130,7 @@ BEGIN
                 x_card_membership_created_at , 
                 x_card_task_created_at , 
                 x_card_task_updated_at , 
+                x_card_task_position,
                 x_card_attachment_created_at , 
                 x_card_attachment_updatec_at );
             
