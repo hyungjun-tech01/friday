@@ -92,15 +92,14 @@ function Boards({projectId}:IBoardProps){
                                     </Link>
                                     {isEdit && (
                                         <EditPopup
-                                            defaultData={pick(item, 'name')}
-                                            onUpdate={(data:any) => handleUpdate(item.boardId, data)}
-                                            onDelete={() => handleDelete(item.boardId)}
-                                        >
+                                        defaultData={pick(item, 'boardName')}
+                                        onUpdate={(data:any) => handleUpdate(item.boardId, data)}
+                                        onDelete={() => handleDelete(item.boardId)} >
                                             <Button className={classNames(styles.editButton, styles.target)}>
                                             <Icon fitted name="pencil" size="small" />
                                             </Button>
                                         </EditPopup>
-                )}
+                                       )}
                                 </div>
                                 ))}
                         </div>

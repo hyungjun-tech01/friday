@@ -8,7 +8,33 @@
       background: rgba(34, 36, 38, 0.3);
     }
   }
+  .editButton {
+    box-shadow: none;
+    line-height: 32px;
+    margin-right: 0;
+    opacity: 0;
+    position: absolute;
+    width: 20px !important;
 
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 3px !important;
+    box-sizing: content-box !important;
+    color: #fff!important;
+    display: inline-block !important;
+    margin-top: 4px !important;
+    min-height: auto !important;
+    outline: none !important;
+    padding: 4px !important;
+    position: absolute !important;
+    right: 2px !important;
+    top: 2px !important;
+    transition: background 85ms ease !important;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
   .tabActive {
     background: rgba(0, 0, 0, 0.24);
 
@@ -90,4 +116,22 @@
     text-overflow: ellipsis;
     max-width: 400px;
     overflow: hidden;
+  }
+
+  .button {
+    background: transparent !important;
+    box-shadow: none !important;
+    line-height: 28px !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    opacity: 0;
+    padding: 0 !important;
+    position: absolute !important;
+    right: 2px !important;
+    top: 2px !important;
+    width: 28px !important;
+  
+    &:hover {
+      background: rgba(9, 30, 66, 0.08) !important;
+    }
   }

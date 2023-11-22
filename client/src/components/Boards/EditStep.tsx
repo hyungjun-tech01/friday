@@ -1,11 +1,11 @@
 import { dequal } from 'dequal';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef , useState} from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { Button, Form } from 'semantic-ui-react';
-import { Input, Popup } from '../../lib/custom-ui';
+import { Button, Popup as SemanticUIPopup, Form } from 'semantic-ui-react';
+//import usePopup  from '../../lib/hook/use-popup';
+import {useForm} from "react-hook-form";
 
-import { useForm, useSteps } from '../../hooks';
 import DeletePopup from '../DeletePopup';
 
 import styles from './EditStep.module.scss';
@@ -19,42 +19,58 @@ interface IEditStep{
   onUpdate:  any;
   onDelete:  any;
   onClose:  any;
+  canEdit : boolean;
 }
-const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose }:IEditStep) => {
+const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose, canEdit }:IEditStep) => {
   const [t] = useTranslation();
 
-  const [data, handleFieldChange] = useForm(() => ({
-    name: '',
-    ...defaultData,
-  }));
+  const [boardName, setBoardName] = useState(defaultData.BoardName );
 
-  const [step, openStep, handleBack] = useSteps();
+  const {register, handleSubmit,formState:{errors}} = useForm();
 
+  const onValid = (data:any)=>{
+    console.log('Information Edit', data);
+   onUpdate(data);
+  }
+
+  
+  const [step, setStep] = useState<string | null>(null);
   const nameField = useRef(null);
 
-  const handleSubmit = useCallback(() => {
-    const cleanData = {
-      ...data,
-      name: data.name.trim(),
-    };
+  // const handleSubmit = useCallback(() => {
+  //  const cleanData = {
+  //    ...data,
+  //    name: data.name.trim(),
+  //  };
 
-    if (!cleanData.name) {
-      if(nameField.current)
-        console.log(nameField.current);
-       // nameField.current.select();
-      return;
-    }
+  //  if (!cleanData.name) {
+  //    if(nameField.current)
+  //      console.log(nameField.current);
+  //      nameField.current.select();
+  //    return;
+  //  }
 
-    if (!dequal(cleanData, defaultData)) {
-      onUpdate(cleanData);
-    }
+  //   if (!dequal(cleanData, defaultData)) {
+  //     onUpdate(cleanData);
+  //   }
 
-    onClose();
-  }, [defaultData, onUpdate, onClose, data]);
+  //   onClose();
+  // }, [defaultData, onUpdate, onClose, data]);
 
   const handleDeleteClick = useCallback(() => {
-    openStep(StepTypes.DELETE);
-  }, [openStep]);
+    setStep(StepTypes.DELETE);
+  }, [setStep]);
+
+  const handleBack = useCallback(() => {
+    onClose();
+  }, []);
+
+  const handleFieldChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+    if(canEdit === true){
+    const {value} = e.target;
+    setBoardName(value);
+    }
+  };
 
   useEffect(() => {
     if(nameField.current)
@@ -62,7 +78,7 @@ const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose }:IEditS
     //  nameField.current.select();
   }, []);
 
-  if (step && step.type === StepTypes.DELETE) {
+  if (step && step === StepTypes.DELETE) {
     return (
       <DeletePopup
       title="common.deleteBoard"
@@ -76,30 +92,37 @@ const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose }:IEditS
 
   return (
     <>
-      <Popup.Header>
+      <SemanticUIPopup.Header className={styles.wrapper}>
         {t('common.editBoard', {
           context: 'title',
         })}
-      </Popup.Header>
-      <Popup.Content>
-        <Form onSubmit={handleSubmit}>
+      </SemanticUIPopup.Header>
+      <SemanticUIPopup.Content className={styles.content}>
+        <Form onSubmit={handleSubmit(onValid)}>
           <div className={styles.text}>{t('common.title')}</div>
-          <Input
-            fluid
+          <input
+            {...register("boardName", {
+              required:"board name is required."
+            })}
             ref={nameField}
-            name="name"
-            value={data.name}
-            className={styles.field}
+            name="BoardName"
+            value={boardName}
+            style = {{
+              marginBottom: '8px',
+            }}
             onChange={handleFieldChange}
           />
-          <Button positive content={t('action.save')} />
+          <Button positive 
+            content={t('action.save')} 
+            className={styles.field}
+          />
         </Form>
-        <Button
+        <Button 
           content={t('action.delete')}
           className={styles.deleteButton}
           onClick={handleDeleteClick}
         />
-      </Popup.Content>
+      </SemanticUIPopup.Content>
     </>
   );
 });
