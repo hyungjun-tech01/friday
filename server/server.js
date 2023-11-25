@@ -255,30 +255,14 @@ app.post('/boards', async(req, res)=>{
             const boards = await pool.query(`
             select b.id as "boardId", b.name as "boardName", 
             b.position as "position",
-			b.project_id as "projectId", p.name as "projectName", 
-            b.created_at as "createdAt",
-			bm.user_id as "userId", bm.role as "role",
-			bm.can_comment as "canComment"
-            from board b, board_membership bm, project p
-            where b.id = bm.board_id 
-            and b.project_id = p.id
-            and bm.user_id = $1
-			and b.project_id = $2
-            union 			
-            select b.id as "boardId", b.name as "boardName", 
-                   b.position as "position",
-                        b.project_id as "projectId", p.name as "projectName", 
-                        b.created_at as "createdAt",
-                        bm.user_id as "userId", 'editor' as "role",
-                        true as "canComment"		
-            from board b, project_manager bm, project p		
-            where b.project_id = p.id
-            and p.id = bm.project_id
-            and bm.user_id = $1
-            and b.project_id = $2
-            and not exists (select 1 from board_membership pm 
-                                    where pm.user_id = $1
-                                    and pm.board_id =b.id)
+                 b.project_id as "projectId", p.name as "projectName", 
+                  b.created_at as "createdAt",
+                 $1 as "userId", 
+                 f_get_board_role($1, b.id, p.id) as "role",
+                 f_get_board_cancomment($1, b.id, p.id)  as "canComment"	
+            from board b, project p
+             where b.project_id =$2
+            and p.id = b.project_id
             order by position`, [userId, projectId]);
             res.json(boards.rows);
             res.end();
@@ -295,26 +279,15 @@ app.post('/currentBoard', async(req, res)=>{
     //console.log('currentboard', boardId);
     try{
         const result = await pool.query(`
-        select b.id as "boardId" , bm.role as "role", 
-		case when role = 'editor' then true 
-		     when role = 'viewer' then false 
+        select b.id as "boardId" , 
+        f_get_board_role($2, b.id, p.id) as "role", 
+		case when f_get_board_role($2, b.id, p.id) = 'editor' then true 
+		     when f_get_board_role($2, b.id, p.id) = 'viewer' then false 
 			 else false
 			 end as "canEdit"
-        from board b, board_membership bm, user_account u
-        where b.id = bm.board_id  
-        and bm.user_id = u.id
-        and b.id = $1
-        and u.id = $2
-        union 
-        select b.id as "boardId", 'editor' as "role", true as "canEdit"
-        from board b, project_manager bm, project p		
-        where b.project_id = p.id
-        and p.id = bm.project_id
-        and bm.user_id = $2
-        and b.id  = $1
-        and not exists (select 1 from board_membership pm 
-                                   where pm.user_id = $2
-                                   and pm.board_id =b.id)        
+        from board b, project p
+		where b.project_id = p.id
+		and b.id = $1   
         LIMIT 1`, [boardId, userId]);
 
         let currentBoard;
@@ -342,19 +315,23 @@ app.post('/currentBoard', async(req, res)=>{
          }else {
           currentBoard.users = [];
          }
-         const usersPool = await pool.query(`
-            select 
-                t1.id as "userId", 
-                t1.name as "userName",
-                t1.avatar as "avatarUrl",
-                t1.email as "userEmail",
-                (select role from board_membership t where t.user_id = t1.id and t.board_id = $1) as "role",
-                (select case when role = 'editor' then true 
-                             when role = 'viewer' then false 
-                        else false
-                        end 
-                    from board_membership t where t.user_id = t1.id and t.board_id = $1) as "canEdit"
-            from user_account t1`, [boardId]);
+        const usersPool = await pool.query(`
+        select 
+            ua.id as "userId", 
+            ua.name as "userName",
+            ua.avatar as "avatarUrl",
+            ua.email as "userEmail",
+            (select role from board_membership t where t.user_id = ua.id and t.board_id = $1) as "role",
+            (select case when role = 'editor' then true 
+                        when role = 'viewer' then false 
+                    else false
+                    end 
+                from board_membership t where t.user_id = ua.id and t.board_id = $1) as "canEdit"
+        from project_manager pm, project p, board b, user_account ua
+        where b.project_id = p.id 
+        and p.id = pm.project_id 
+        and pm.user_id = ua.id
+        and b.id = $1;`, [boardId]);
          if( usersPool.rows.length > 0 ) {
                 currentBoard.usersPool = usersPool.rows;
          }
