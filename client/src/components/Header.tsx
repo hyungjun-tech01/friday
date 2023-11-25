@@ -29,7 +29,7 @@ function Header({setCurrent, projectName, projectId}:any){
 
     // 현재 사용자의 isAdmin을 체크 
     const [currentUser,setCurrentUser] = useRecoilState<IUser>(atomMyUser);
-    console.log('isAdmin', currentUser.isAdmin);
+   // console.log('isAdmin', currentUser.isAdmin);
 
     // Load subscription
     const { loadSubscriptions } = useRecoilValue(SubscriptionRepository);

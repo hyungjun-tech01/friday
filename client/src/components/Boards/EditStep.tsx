@@ -24,15 +24,16 @@ interface IEditStep{
 const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose, canEdit }:IEditStep) => {
   const [t] = useTranslation();
 
-  const [boardName, setBoardName] = useState(defaultData.BoardName );
+  const [boardName, setBoardName] = useState(defaultData['boardName']);
 
+  //왜 useForm이 안되는지 모르겠다. 일단 handleSubmit1 함수를 만들어서 처리 
   const {register, handleSubmit,formState:{errors}} = useForm();
 
-  const onValid = (data:any)=>{
-    console.log('Information Edit', data);
-   onUpdate(data);
-  }
 
+  const handleSubmit1  = useCallback(() => {
+    onUpdate(boardName.trim());
+    onClose();
+  },[boardName,onUpdate]);
   
   const [step, setStep] = useState<string | null>(null);
   const nameField = useRef(null);
@@ -65,6 +66,10 @@ const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose, canEdit
     onClose();
   }, []);
 
+  const handleConfirm = useCallback(() => {
+    onDelete();
+    onClose();
+  }, []);
   const handleFieldChange = (e : React.ChangeEvent<HTMLInputElement>) => {
     if(canEdit === true){
     const {value} = e.target;
@@ -72,11 +77,11 @@ const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose, canEdit
     }
   };
 
-  useEffect(() => {
-    if(nameField.current)
-      console.log(nameField.current);
-    //  nameField.current.select();
-  }, []);
+  // useEffect(() => {
+  //   if(nameField.current)
+  //     console.log(nameField.current);
+  //   //  nameField.current.select();
+  // }, []);
 
   if (step && step === StepTypes.DELETE) {
     return (
@@ -84,7 +89,7 @@ const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose, canEdit
       title="common.deleteBoard"
       content="common.areYouSureYouWantToDeleteThisBoard"
       buttonContent="action.deleteBoard"
-      onConfirm={onDelete}
+      onConfirm={handleConfirm}
       onBack={handleBack}
     />
     );
@@ -92,19 +97,21 @@ const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose, canEdit
 
   return (
     <>
-      <SemanticUIPopup.Header className={styles.wrapper}>
+       <SemanticUIPopup.Header style={{margin:'10px -12px -10px'}} className={styles.wrapper}>
         {t('common.editBoard', {
           context: 'title',
         })}
       </SemanticUIPopup.Header>
-      <SemanticUIPopup.Content className={styles.content}>
-        <Form onSubmit={handleSubmit(onValid)}>
+    
+      <SemanticUIPopup.Content className={styles.content}>  
+        <Form onSubmit={handleSubmit1}>
           <div className={styles.text}>{t('common.title')}</div>
           <input
             {...register("boardName", {
               required:"board name is required."
             })}
             ref={nameField}
+            type="text"
             name="BoardName"
             value={boardName}
             style = {{
@@ -122,7 +129,8 @@ const EditStep = React.memo(({ defaultData, onUpdate, onDelete, onClose, canEdit
           className={styles.deleteButton}
           onClick={handleDeleteClick}
         />
-      </SemanticUIPopup.Content>
+    
+       </SemanticUIPopup.Content> 
     </>
   );
 });

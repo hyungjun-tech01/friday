@@ -95,6 +95,7 @@ export const projectSetter = selector({
              }
             return project;
         })
+        console.log('projectSetter',updatedProjects);
         return set(atomMyProject, updatedProjects);
     }
     }

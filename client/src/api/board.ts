@@ -4,6 +4,7 @@ import Paths from "../constants/Paths";
 const BASE_PATH = Paths.BASE_PATH; 
 
 export const apiGetBoards = async (project:IQueryBoard) => {
+    // console.log('api get boards');
     try{
         const response = await fetch(`${BASE_PATH}/boards`,{
             method: "POST", 
@@ -21,9 +22,9 @@ export const apiGetBoards = async (project:IQueryBoard) => {
     //);
 };
 export const apiGetCurrentBoards = async (checkAuth:ICheckBoardEditAuth) => {
-    console.log("apiGetCurrentBoards", checkAuth.boardId);
+   // console.log("apiGetCurrentBoards", checkAuth.boardId);
     if(checkAuth.boardId === null || checkAuth.boardId === ''){
-        console.log("apiGetCurrentBoards null?", checkAuth.boardId);
+   //     console.log("apiGetCurrentBoards null?", checkAuth.boardId);
         return(null);
     }
     try{

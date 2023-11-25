@@ -5,7 +5,7 @@ import BoardAction from "./BoardAction";
 import BoardFirstAdd from "./BoardFirstAdd";
 import styles from "../scss/Static.module.scss";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { atomCurrentMyBoard } from "../atoms/atomsBoard";
+import { atomCurrentMyBoard , defaultCurrentMyBoard} from "../atoms/atomsBoard";
 import { apiGetCurrentBoards} from "../api/board";
 import { useCookies } from "react-cookie";
 import { IList } from "../atoms/atomsList";
@@ -23,17 +23,18 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
     const [currentBoard, setCurrentBoard] = useRecoilState(atomCurrentMyBoard);
     const [projectsToLists, setProjectsToLists] = useRecoilState(atomProjectsToLists);
 
-    const currentProject = useRecoilValue(projectSelector);
-    const currentProject1 = currentProject(projectId)[0];
-
-    if(currentProject1) {
-    const cadEditBoard = currentProject1.isAdmin || currentProject1.role === 'manager' ? true : false;
-    console.log('static currentProject', currentProject1, cadEditBoard);
-    }
+  //  const currentProject = useRecoilValue(projectSelector);
+  //  const currentProject1 = currentProject(projectId)[0];
+   // let defaultBoardId = '';
+ //   if(currentProject1) {
+ //   const cadEditBoard = currentProject1.isAdmin || currentProject1.role === 'manager' ? true : false;
+    //console.log('static currentProject', boardId,',', defaultBoardId,  currentProject1, cadEditBoard);
+    //defaultBoardId =  currentProject1.defaultBoardId;
+ //   }
 
     const getCurrentBoard = async (id:string) => {
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
-        if(response ) {
+        if(!response.message ) {
             setCurrentBoard({...currentBoard, ...response});
             // --------------------------------------------------
             for(let i=0; i < projectsToLists.length; i++) {
@@ -76,7 +77,8 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
     } else {
        // setCurrentBoardId({boardId:defaultBoardId});
        if(defaultBoardId !== "" && boardId ==="") {
-        getCurrentBoard(defaultBoardId);
+         //   console.log('getCurrentBoard',defaultBoardId );
+            getCurrentBoard(defaultBoardId);
        }
         return(
             <div className={`${styles.wrapper}`}>

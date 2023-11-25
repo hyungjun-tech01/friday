@@ -196,6 +196,7 @@ app.get('/projects/:userId', async(req, res)=>{
 // sigle projects by projectId
 app.get('/project/:projectId', async(req, res)=>{
     const projectId = req.params.projectId;
+    console.log('getproject', projectId);
     try{
             const project = await pool.query(`
             select p.id as "projectId", p.name as "projectName"
@@ -319,7 +320,7 @@ app.post('/currentBoard', async(req, res)=>{
         let currentBoard;
         if(result.rows.length > 0 ) {
             currentBoard = result.rows[0];
-        }
+        
         const users = await pool.query(`
             select t.id as "boardMembershipId",
                 t.board_id as "boardId",
@@ -339,7 +340,7 @@ app.post('/currentBoard', async(req, res)=>{
          if( users.rows.length > 0 ) {
                 currentBoard.users = users.rows;
          }else {
-            currentBoard.users = [];
+          currentBoard.users = [];
          }
          const usersPool = await pool.query(`
             select 
@@ -482,6 +483,10 @@ app.post('/currentBoard', async(req, res)=>{
             }
         res.json(currentBoard);
         res.end();
+        }else{
+            res.json({message:'no data'});  
+        }
+
     }catch(err){
     console.log(err);
     res.json({message:err});        

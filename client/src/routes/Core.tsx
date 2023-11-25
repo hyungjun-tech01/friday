@@ -17,7 +17,7 @@ interface ICoreParams {
 function Core(){
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
   const {pathname} = useLocation();
-  const IsDetail = pathname.includes('board');
+  const IsDetail = pathname.includes('boards');
   let IsMaster = pathname.includes('projects');
   const {id} = useParams<ICoreParams>();
 
@@ -36,7 +36,7 @@ function Core(){
       if(currentProjectId !== undefined )
       {
         setCurrentProject(selectProject(id)[0]);
- 
+      //  console.log('Core Master, currentProject', currentProject);
         setCurrentBoardId({...currentBoardId, boardId:""}); 
         setCurrent(true);
 
@@ -45,7 +45,7 @@ function Core(){
       }
     }
     if(IsDetail){
-      console.log('Core Detail getCurrentBoard');
+  //    console.log('Core Detail getCurrentBoard');
       getCurrentBoard(id);
       setCurrent(true);
     }

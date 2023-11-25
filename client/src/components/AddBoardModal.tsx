@@ -8,7 +8,8 @@ import {useCookies} from "react-cookie";
 import React, {useState, useRef, useEffect} from "react";
 import { useHistory } from "react-router-dom"; 
 import Paths from "../constants/Paths";
-
+import { useRecoilValue, useSetRecoilState} from "recoil";
+import {IProject, projectSelector,  projectSetter} from "../atoms/atomsProject";
 
 // notimodal props interface 정의 
 interface IAddBoardModalProp{
@@ -23,6 +24,10 @@ function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardMo
   const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
   const {register, handleSubmit,formState:{errors}} = useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const currentProject2 = useRecoilValue(projectSelector);
+  const currentProject1 = currentProject2(projectId)[0];
+  const currentSetProject = useSetRecoilState(projectSetter);
 
   let wrapperRef = useRef<any>(null); //모달창 가장 바깥쪽 태그를 감싸주는 역할
     useEffect(()=>{
@@ -48,6 +53,11 @@ function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardMo
     console.log('response', response, response.status);
     if(response){
       if(response.outBoardId){
+        // 현재프로젝트에 defaultBoardId가 없다면 update 해줌.
+       if(currentProject1.defaultBoardId === null || currentProject1.defaultBoardId === ''){
+         const updatedProject:IProject = {...currentProject1, defaultBoardId:response.outBoardId};
+         currentSetProject([updatedProject]);
+       }
         setShowCreateModal(false); // insert 성공  out변수 받아야 함. ㅠㅠ 
         history.push(Paths.BOARDS.replace(':id', response.outBoardId));
       }else if(response.message){

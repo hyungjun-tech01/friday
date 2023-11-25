@@ -16,6 +16,7 @@ function BoardAction({boardId}:IBoardActionProp){
     const currentBoard  = useRecoilValue(atomCurrentMyBoard);
     const usersPools = useRecoilValue(usersPoolSelector);
     const [isMemberLoading, setIsMemberLoading] = useState(true);
+   // console.log('BoardAction board id', boardId, currentBoard);
     // const checkEdit = async () => {
     //     const checkAuth:ICheckBoardEditAuth= {"boardId":boardId, "userId":cookies.UserId };
     //     const response = await apiCheckEditBoard(checkAuth);

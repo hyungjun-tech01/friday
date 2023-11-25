@@ -81,11 +81,11 @@ BEGIN
 		values(next_id(), v_board_id, i_user_id::bigint, 'editor', now());
 	
 	   elsif (i_board_action_type  = 'UPDATE') then
-	      update board t
-	      set t.postion = COALESCE(i_board_position::double precision , position),  
-	          t.name= COALESCE(i_board_name , name), 
-		      t.updated_at = now()
-	      where t.id = i_board_id::bigint ; 
+	      update board
+	      set position = COALESCE(i_board_position::double precision , position),  
+	          name= COALESCE(i_board_name , name), 
+		      updated_at = now()
+	      where id = i_board_id::bigint ; 
 	
 	   elsif (i_board_action_type  = 'DELETE') then
 		-- 보드에 속한 리스트 삭제 
