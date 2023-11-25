@@ -200,7 +200,7 @@ function Board({boardId}:IListProps){
                         {({ innerRef, droppableProps, placeholder }) => (
                             <div {...droppableProps} data-drag-scroller ref={innerRef} className={styles.lists}>
                                 {currentBoard && lists.length > 0 && lists.map((list:any, index:number) => (
-                                    <List key={list.listId} index={index} id={list.listId} position={list.position} name={list.listName} canEdit={currentBoard.canEdit}/>
+                                    <List key={list.listId} index={index} id={list.listId} position={list.position} name={list.listName} canEdit={list.createUserId === cookies.UserId ? true: currentBoard.canEdit}/>
                                 ))}
                                 {placeholder}
                                 <div data-drag-scroller className={styles.list}>

@@ -351,7 +351,8 @@ app.post('/currentBoard', async(req, res)=>{
         const lists = await pool.query(`
         select id as "listId", board_id as "boardId", name as "listName", 
         position as "position", created_at as "createdAt", 
-        updated_at as "updatedAt" from list 
+        updated_at as "updatedAt" ,
+        create_user_id as "createUserId" from list 
         where board_id = $1
         order by position`, [boardId]);
         

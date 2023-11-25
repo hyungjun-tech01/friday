@@ -29,7 +29,8 @@ function ListAdd({setShowList, boardId, setIsListAddOpened}:IListAddProp){
             setShowList(false);
         }else{
             // recoil 변경 
-            const newList:IList = {listId:response.outlistId, boardId:boardId, listName:data.listName, position:response.outPosition, createdAt:response.outCreatedAt, updatedAt:"", };
+            const newList:IList = {listId:response.outlistId, boardId:boardId, listName:data.listName, 
+                                  position:response.outPosition, createdAt:response.outCreatedAt, updatedAt:"", createUserId:cookies.UserId};
             setList([response.outlistId, newList]);
             setShowList(true);
             setIsListAddOpened(false);

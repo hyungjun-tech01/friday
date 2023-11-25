@@ -8,6 +8,7 @@ export interface IList{
     position : string;
     createdAt : string;
     updatedAt : string;
+    createUserId : string;
 }
 
 export interface ICreateList{
@@ -21,7 +22,8 @@ export const atomMyList = atom<IList[]>({
     key:"myBoardLists",
     default : [
         { listId:"" , boardId:"", listName:"", 
-        position:"", createdAt:"", updatedAt:""},
+        position:"", createdAt:"", updatedAt:"", 
+        createUserId : ""},
     ]
 });
 

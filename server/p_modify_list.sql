@@ -67,8 +67,8 @@ BEGIN
                  where id =     TARGET_LIST_CURSOR.id;
               END LOOP;
 
-            insert into list(id, board_id, name, position, created_at)
-            values(v_list_id, i_board_id::bigint, i_list_name, v_position, v_created_at);
+            insert into list(id, board_id, name, position, created_at, create_user_id)
+            values(v_list_id, i_board_id::bigint, i_list_name, v_position, v_created_at, i_user_id::bigint);
         elsif(i_list_action_type = 'UPDATE') then
             select now() into v_updated_at;
             update list 
