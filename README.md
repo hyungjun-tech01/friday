@@ -110,7 +110,7 @@ http://localhost:3003/sample  URL 추가 route>SampleTest.tsx Call
 -- 2023.11.11  
 ALTER TABLE project_manager ADD COLUMN role text;  
 
--- 2023.11.25
+-- 2023.11.25  
 ALTER TABLE list ADD COLUMN create_user_id bigint;  
 
 
