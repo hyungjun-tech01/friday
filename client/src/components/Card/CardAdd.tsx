@@ -51,7 +51,7 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
         setIsCardAddOpened(true);
       }else{
         // recoil 변경 
-        const newCard:ICard = {cardId:response.outCardId, listId:listId, 
+        const newCard:ICard = {cardId:response.outCardId, listId:listId, creatorUserId:cookies.UserId,
                cardName:data.cardName, position:response.outCardPosition, createdAt:response.outCardCreatedAt, updatedAt:"", 
                 coverAttachmentId:"", boardId:"", 
                description:"",  labels:[], 

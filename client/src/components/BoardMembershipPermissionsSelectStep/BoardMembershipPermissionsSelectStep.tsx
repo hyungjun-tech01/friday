@@ -79,7 +79,7 @@ const BoardMembershipPermissionsSelectStep = ({ defaultData, title, buttonConten
                 <div className={styles.menuItemDescription}>{t('common.canOnlyViewBoard')}</div>
               </Menu.Item>
             </Menu>
-            {data.role === "viewer" && (
+            {/* data.role === "viewer" && (
               <Segment basic className={styles.settings}>
                 <Radio
                   toggle
@@ -89,7 +89,7 @@ const BoardMembershipPermissionsSelectStep = ({ defaultData, title, buttonConten
                   onChange={handleSettingChange}
                 />
               </Segment>
-            )}
+            ) */}
             <Button positive content={t(buttonContent)} />
           </Form>
         </Popup.Content>

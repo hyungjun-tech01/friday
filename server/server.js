@@ -366,6 +366,7 @@ app.post('/currentBoard', async(req, res)=>{
         select id as "cardId", 
             board_id as "boardId", 
             list_id as "listId", 
+            creator_user_id as "creatorUserId",
             cover_attachment_id as "coverAttachmentId", 
             name as "cardName",
             description as "description",
@@ -498,7 +499,7 @@ app.get('/cardbylistId/:listId', async(req, res)=>{
     const listId = req.params.listId;
     try{
             const cardResult =   await pool.query(`
-            select id as "cardId", board_id as "boardId", list_id as "listId", 
+            select id as "cardId", board_id as "boardId", list_id as "listId", creator_user_id as "creatorUserId",
             cover_attachment_id as "coverUrl", name as "cardName", description as "description",
             created_at as "createdAt", 
             updated_at as "updatedAt" ,
@@ -549,7 +550,7 @@ app.get('/cards/:boardId', async(req, res)=>{
                 const lists = result.rows;
                 for (const list of lists) {
                     const cardResult = await pool.query(`
-                    select id as "cardId", board_id as "boardId", list_id as "listId", 
+                    select id as "cardId", board_id as "boardId", list_id as "listId", creator_user_id as "creatorUserId",
                     cover_attachment_id as "coverUrl", name as "cardName", description as "description",
                     created_at as "createdAt", 
                     updated_at as "updatedAt",
@@ -1052,6 +1053,7 @@ app.post('/modifyCard', async(req, res) => {
 
 //login
 app.post('/login', async(req, res) => {
+
     const {email, password} = req.body;
     try{
         const users = await pool.query('SELECT * FROM user_account WHERE email = $1', [email]);

@@ -176,7 +176,7 @@ function List({ id, index, position, name, canEdit }: IListProps) {
                   key={card.cardId}
                   index={index}
                   card={card}
-                  canEdit={canEdit}
+                  canEdit={card.creatorUserId === cookies.UserId ? true:canEdit}
                   onDelete={handleCardDelete}
                 />
             ))}

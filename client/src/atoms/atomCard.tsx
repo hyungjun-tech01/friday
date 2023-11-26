@@ -9,6 +9,7 @@ export interface ICard{
     cardId: string; 
     boardId: string;
     listId: string;
+    creatorUserId : string;
     coverAttachmentId: string | null;
     cardName: string;
     description: string;
@@ -54,7 +55,7 @@ export interface IAttachment{
 }
 
 export const defaultCard:ICard = {
-    cardId:"" , cardName:"",  coverAttachmentId:"", boardId:"", listId:"",
+    cardId:"" , cardName:"",  coverAttachmentId:"", boardId:"", listId:"", creatorUserId:"",
     description:"",  labels:[], createdAt:"", updatedAt:"" , position:"",
     dueDate:"", statusId:"", statusName:"",
     stopwatch:null, memberships:[], attachments:[], 

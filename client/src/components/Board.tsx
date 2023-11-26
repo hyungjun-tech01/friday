@@ -226,7 +226,7 @@ function Board({boardId}:IListProps){
                         </Droppable>
                     </DragDropContext>
                 </div>
-                {(currentCard.cardId !== "") && <CardModal canEdit={currentBoard.canEdit} onDelete={handleDeleteCard}/>}
+                {(currentCard.cardId !== "") && <CardModal canEdit={currentCard.creatorUserId === cookies.UserId ? true: currentBoard.canEdit} onDelete={handleDeleteCard}/>}
             </div>
         </div>
     );
