@@ -31,7 +31,7 @@ BEGIN
     if(v_project_role = 'manager') then
       v_role := 'editor';
     else
-      v_role := 'viewer';
+      v_role := '';   -- viewer
     end if;
 
     BEGIN
@@ -57,9 +57,9 @@ BEGIN
       v_role := 'editor';
     end if;
 
-    if (v_role is null) then
-       v_role := 'viewer';
-    end if;
+--    if (v_role is null) then
+--       v_role := 'viewer';
+--    end if;
 
  return v_role;
 END;

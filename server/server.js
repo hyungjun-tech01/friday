@@ -141,6 +141,7 @@ app.get('/projects/:userId', async(req, res)=>{
                 pm.role as "role",
                 (select id from board b
                     where b.project_id = p.id
+                    and f_get_board_role($1, b.id,p.id) <> ''
                     order by position 
                     limit 1) as "defaultBoardId"
                 from project p, project_manager pm
@@ -263,6 +264,7 @@ app.post('/boards', async(req, res)=>{
             from board b, project p
              where b.project_id =$2
             and p.id = b.project_id
+            and f_get_board_role($1, b.id, p.id) <> ''
             order by position`, [userId, projectId]);
             res.json(boards.rows);
             res.end();
@@ -276,7 +278,7 @@ app.post('/boards', async(req, res)=>{
 // get current board info by board id 
 app.post('/currentBoard', async(req, res)=>{
     const {boardId, userId} = req.body;
-    //console.log('currentboard', boardId);
+    console.log('currentboard', boardId);
     try{
         const result = await pool.query(`
         select b.id as "boardId" , 
@@ -481,7 +483,8 @@ app.get('/lists/:boardId', async(req, res)=>{
             const lists = await pool.query(`
             select id as "listId", board_id as "boardId", name as "listName", 
             position as "position", created_at as "createdAt", 
-            updated_at as "updatedAt" from list 
+            updated_at as "updatedAt", 
+            create_user_id as "createUserId" from list 
             where board_id = $1
             order by position`, [boardId]);
             res.json(lists.rows);
@@ -758,7 +761,6 @@ app.post('/project', async(req, res) => {
        
         const outProjectId = response.rows[0].x_project_id;
         res.json({outProjectId:outProjectId, projectId:projectId}); // 결과 리턴을 해 줌 .  
-        console.log('project',projectId );
         res.end();
     }catch(err){
         console.error(err);
