@@ -119,6 +119,7 @@ app.get('/', (req, res)=>{
 // get all projects by user 
 app.get('/projects/:userId', async(req, res)=>{
     const userId = req.params.userId;
+    console.log('projects', userId);
     try{
             const userIsAdminCheck = await pool.query(`
             select is_admin as "isAdmin" 
@@ -141,12 +142,12 @@ app.get('/projects/:userId', async(req, res)=>{
                 pm.role as "role",
                 (select id from board b
                     where b.project_id = p.id
-                    and f_get_board_role($1, b.id,p.id) <> ''
+                    and f_get_board_role($1::text, b.id,p.id) <> ''
                     order by position 
                     limit 1) as "defaultBoardId"
                 from project p, project_manager pm
                 where p.id = pm.project_id 
-                and pm.user_id = $1`, [userId]);
+                and pm.user_id = $1::bigint`, [userId]);
             }
             if( projectResult.rows.length > 0 ) {
                 const projects = projectResult.rows;
@@ -251,7 +252,7 @@ app.get('/project/:projectId', async(req, res)=>{
 // get all boards by project id , by user id 
 app.post('/boards', async(req, res)=>{
     const {projectId, userId} = req.body;
-   // console.log(projectId);
+    console.log('all boards', projectId);
     try{
             const boards = await pool.query(`
             select b.id as "boardId", b.name as "boardName", 
@@ -259,12 +260,12 @@ app.post('/boards', async(req, res)=>{
                  b.project_id as "projectId", p.name as "projectName", 
                   b.created_at as "createdAt",
                  $1 as "userId", 
-                 f_get_board_role($1, b.id, p.id) as "role",
-                 f_get_board_cancomment($1, b.id, p.id)  as "canComment"	
+                 f_get_board_role($1::text, b.id, p.id) as "role",
+                 f_get_board_cancomment($1::text, b.id, p.id)  as "canComment"	
             from board b, project p
              where b.project_id =$2
             and p.id = b.project_id
-            and f_get_board_role($1, b.id, p.id) <> ''
+            and f_get_board_role($1::text, b.id, p.id) <> ''
             order by position`, [userId, projectId]);
             res.json(boards.rows);
             res.end();
@@ -1080,6 +1081,7 @@ app.post('/login', async(req, res) => {
 
 //login
 app.post('/getuser', async(req, res) => {
+    console.log('getuser');
     const {userId} = req.body;
     try{
         const users = await pool.query(`

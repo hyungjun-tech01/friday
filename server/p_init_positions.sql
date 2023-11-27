@@ -1,3 +1,5 @@
+drop procedure p_init_positions;
+
 CREATE OR REPLACE PROCEDURE p_init_positions()
     LANGUAGE plpgsql
     AS $$
