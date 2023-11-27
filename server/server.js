@@ -119,7 +119,6 @@ app.get('/', (req, res)=>{
 // get all projects by user 
 app.get('/projects/:userId', async(req, res)=>{
     const userId = req.params.userId;
-    console.log('projects', userId);
     try{
             const userIsAdminCheck = await pool.query(`
             select is_admin as "isAdmin" 
@@ -198,7 +197,6 @@ app.get('/projects/:userId', async(req, res)=>{
 // sigle projects by projectId
 app.get('/project/:projectId', async(req, res)=>{
     const projectId = req.params.projectId;
-    console.log('getproject', projectId);
     try{
             const project = await pool.query(`
             select p.id as "projectId", p.name as "projectName"
@@ -252,7 +250,6 @@ app.get('/project/:projectId', async(req, res)=>{
 // get all boards by project id , by user id 
 app.post('/boards', async(req, res)=>{
     const {projectId, userId} = req.body;
-    console.log('all boards', projectId);
     try{
             const boards = await pool.query(`
             select b.id as "boardId", b.name as "boardName", 
@@ -279,7 +276,6 @@ app.post('/boards', async(req, res)=>{
 // get current board info by board id 
 app.post('/currentBoard', async(req, res)=>{
     const {boardId, userId} = req.body;
-    console.log('currentboard', boardId);
     try{
         const result = await pool.query(`
         select b.id as "boardId" , 
@@ -1081,7 +1077,6 @@ app.post('/login', async(req, res) => {
 
 //login
 app.post('/getuser', async(req, res) => {
-    console.log('getuser');
     const {userId} = req.body;
     try{
         const users = await pool.query(`
@@ -1202,7 +1197,6 @@ app.get('/getalluser/:userId', async(req, res) => {
 });
 app.get('/getProjectIdBoardIdbyCardId/:cardId', async(req, res) => {
     const cardId = req.params.cardId;
-    console.log('getProjectIdBoardIdbyCardId', cardId);
     try{
         const card = await pool.query(`
         select p.id as "projectId",
