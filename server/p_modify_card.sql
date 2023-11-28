@@ -185,7 +185,7 @@ BEGIN
 		end if;
 
 		-- if name, desc, due_date = null," " 로 대체해서 입력 : data에  
-		select COALESCE(i_card_name, ' '), COALESCE(regexp_replace(i_description, '[\n\r]+', ' ', 'g' ), ' ') , COALESCE(i_due_date, ' '),COALESCE(i_position, ' ')
+		select COALESCE(regexp_replace(i_card_name, '[\n\r]+', ' ', 'g' ), ' '), COALESCE(regexp_replace(i_description, '[\n\r]+', ' ', 'g' ), ' ') , COALESCE(i_due_date, ' '),COALESCE(i_position, ' ')
 			into v_card_name, v_description, v_due_date, v_position;
 
 		if(i_card_action_type = 'ADD') then
@@ -201,7 +201,12 @@ BEGIN
 				now(), now());
 		
 		-- Card Subscription
-		select id from card_subscription where card_id = vv_card_id::bigint and user_id = i_user_id::bigint into v_subscription_id;
+		select id 
+		  into v_subscription_id
+		  from card_subscription 
+		  where card_id = vv_card_id::bigint 
+		  and user_id = i_user_id::bigint ;
+
 		if(v_subscription_id != null and (i_card_action_type = 'ADD' or i_card_action_type = 'MOVE')) then
 			insert into notification(user_id, action_id, card_id, is_read, created_at, updated_at)
 				values(i_user_id::bigint, v_card_action_id, vv_card_id::bigint, false, now(), null);
@@ -376,7 +381,12 @@ BEGIN
 				('{"card_id":"'||i_card_id||'", "card_comment_text":"'||v_card_comment_text|| '"}')::text::json,
 				now(), null);
 
-		select id from card_subscription where card_id = i_card_id::bigint and user_id = i_user_id::bigint into v_subscription_id;
+		select id 
+		  into v_subscription_id
+		  from card_subscription 
+		 where card_id = i_card_id::bigint 
+		   and user_id = i_user_id::bigint ;
+		   
 		if(v_subscription_id != null) then
 			insert into notification(user_id, action_id, card_id, is_read, created_at, updated_at)
 				values(i_user_id::bigint, v_card_action_id, i_card_id::bigint, false, now(), null);
