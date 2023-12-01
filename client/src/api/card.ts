@@ -124,7 +124,7 @@ export const apiUploadAttatchment = async (data:FormData) => {
         console.log(key, ":", value);
     }
     try{
-        const cardAttachmentImage = {width:width, height:height, thumbnailsExtension:"."+fileExt};
+        const cardAttachmentImage = {width:width, height:height, thumbnailsExtension: fileExt};
         const response = await fetch(`${BASE_PATH}/upload`,{
             method: "POST", 
             //headers:{'Content-Type':'application/json'},
@@ -137,18 +137,26 @@ export const apiUploadAttatchment = async (data:FormData) => {
               }else{
 
                 // 성공시DB 처리 
-                const card:IModifyCard = {...defaultModifyCard, 
-                             userId:userId, cardAttachmentDirname:responseMessage.filePath, 
-                             cardAttachmentFilename:responseMessage.fileName,
-                             cardAttachmentName:fileName,
-                             cardAttachmentImage:cardAttachmentImage,
-                             cardId:cardId, cardAttachmentActionType:'ADD'};
+                const card:IModifyCard = {
+                    ...defaultModifyCard, 
+                    userId : userId,
+                    cardAttachmentDirname : responseMessage.dirName, 
+                    cardAttachmentFilename : responseMessage.fileName,
+                    cardAttachmentName : fileName,
+                    cardAttachmentImage : cardAttachmentImage,
+                    cardId:cardId, cardAttachmentActionType:'ADD'
+                };
 
                 console.log('api attachment', card);                             
                 const result = await apiModifyCard(card);
-                return({fileName:responseMessage.fileName, filePath:responseMessage.filePath, outAttachmentId:result.outAttachmentId,
-                    outAttachmentCreatedAt:result.outAttachmentCreatedAt, outAttachmentUpdatedAt:result.outAttachmentUpdatedAt,
-                    outAttachmentUrl:result.outAttachmentUrl
+                return({
+                    fileName:responseMessage.fileName,
+                    dirName :responseMessage.dirName,
+                    outAttachmentId:result.outAttachmentId,
+                    outAttachmentCreatedAt:result.outAttachmentCreatedAt,
+                    outAttachmentUpdatedAt:result.outAttachmentUpdatedAt,
+                    outAttachmentUrl:result.outAttachmentUrl,
+                    outAttachmentCoverUrl: result.outAttachmentCoverUrl
                 })
               }
             else

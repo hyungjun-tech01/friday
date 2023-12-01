@@ -65,6 +65,7 @@ function Boards({projectId}:IBoardProps){
        setShowCreateModal((showCreateModal)=>(!showCreateModal));
        (window.innerWidth-300 < event.pageX) ? setEndXPostion(true):  setEndXPostion(false)
     };
+
     const handleUpdate = useCallback(
         //   보드 이름 업데이트 
         async (id:any, data:any) => {
@@ -86,44 +87,44 @@ function Boards({projectId}:IBoardProps){
           }
         },
         [],
-      );
+    );
    
-      const handleDelete = useCallback(
-        
-        async (id:any) => {
-          console.log('boards',boards);
-            // 보드삭제
-            const updateBoard : IModifyBoard ={...defaultModifyBoard, 
-              boardActionType : 'DELETE',
-             boardId:id, 
-             userId : cookies.UserId};
+    const handleDelete = useCallback(
+      async (id:any) => {
+        console.log('boards',boards);
+          // 보드삭제
+          const updateBoard : IModifyBoard ={...defaultModifyBoard, 
+            boardActionType : 'DELETE',
+            boardId:id, 
+            userId : cookies.UserId};
 
-             const response = await apiModifyBoard(updateBoard);
-             if(response){
-                if(response.boardId){
-                    // 지우려는 보드가 defaultboard 면 , default 보드를 변경하는 작업을 해야 함.
-                    if( currentProject1.defaultBoardId === id){
-                        const nextdefaultBoard = boards.filter((board) => board.boardId !== id);
-                       if(nextdefaultBoard.length >= 1){
-                        const updatedProject:IProject = {...currentProject1, defaultBoardId:nextdefaultBoard[0].boardId};
-                        currentSetProject([updatedProject]);
-                       }else{
-                        const updatedProject:IProject = {...currentProject1, defaultBoardId:''};
-                        currentSetProject([updatedProject]);
-                       }
-                    }
-  
-                    setIsBoardLoading(true);    
-                    history.push(Paths.PROJECTS.replace(':id', projectId));   //   project 화면
-                  }else if(response.message){
-                    console.log(response.message);
-                  }else{
-                
+            const response = await apiModifyBoard(updateBoard);
+            if(response){
+              if(response.boardId){
+                  // 지우려는 보드가 defaultboard 면 , default 보드를 변경하는 작업을 해야 함.
+                  if( currentProject1.defaultBoardId === id){
+                      const nextdefaultBoard = boards.filter((board) => board.boardId !== id);
+                      if(nextdefaultBoard.length >= 1){
+                      const updatedProject:IProject = {...currentProject1, defaultBoardId:nextdefaultBoard[0].boardId};
+                      currentSetProject([updatedProject]);
+                      }else{
+                      const updatedProject:IProject = {...currentProject1, defaultBoardId:''};
+                      currentSetProject([updatedProject]);
+                      }
                   }
-              }
-        },
-        [boards],
-      );
+
+                  setIsBoardLoading(true);    
+                  history.push(Paths.PROJECTS.replace(':id', projectId));   //   project 화면
+                }else if(response.message){
+                  console.log(response.message);
+                }else{
+              
+                }
+            }
+      },
+      [boards],
+    );
+
     return(
         <>
             <div className={styles.wrapper}>
@@ -142,10 +143,11 @@ function Boards({projectId}:IBoardProps){
                                     </Link>
                                     {isEdit && (
                                         <EditPopup
-                                        defaultData={pick(item, ['boardName'])}
-                                        onUpdate={(data:any) => handleUpdate(item.boardId, data)}
-                                        onDelete={() => handleDelete(item.boardId)}
-                                        canEdit = {isEdit} >
+                                          defaultData={pick(item, ['boardName'])}
+                                          onUpdate={(data:any) => handleUpdate(item.boardId, data)}
+                                          onDelete={() => handleDelete(item.boardId)}
+                                          canEdit = {isEdit}
+                                        >
                                             <Button className={classNames(styles.editButton, styles.target)}>
                                             <Icon fitted name="pencil" size="small" />
                                             </Button>

@@ -107,7 +107,7 @@ const onClick = async (e:any) => {
           if(response.message)
             console.log('파일 업로드시 에러 발생');
           else
-            console.log(response.fileName, response.filePath, response.outAttachmentId, response.outAttachmentCreatedAt);   
+            console.log(response.fileName, response.dirName, response.outAttachmentId, response.outAttachmentCreatedAt);   
 
       };
     }else{
@@ -118,7 +118,7 @@ const onClick = async (e:any) => {
         if(response.message)
           console.log('파일 업로드시 에러 발생');
         else
-            console.log(response.fileName, response.filePath, response.outAttachmentId, response.outAttachmentCreatedAt);    
+            console.log(response.fileName, response.dirName, response.outAttachmentId, response.outAttachmentCreatedAt);    
     }
 
   }

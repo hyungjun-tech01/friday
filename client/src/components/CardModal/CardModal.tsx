@@ -95,6 +95,7 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
   const CardDelete = usePopup(DeletePopup);
 
   useEffect(() => {
+    console.log('CardModal / attachment : ', card.attachments);
     if (card.memberships) {
       const member_ids = card.memberships.map((member) => member.userId);
       setCardUserIds(member_ids);
@@ -739,11 +740,12 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
     (file: any) => {
       const fileData = file.file;
       const fileName = fileData.name;
-      const fileNameSplitted = fileName.split('.');
-      const fileExt =
-        fileNameSplitted.length > 1
-          ? fileNameSplitted[fileNameSplitted.length - 1]
-          : '';
+      
+      const ext_index = fileName.lastIndexOf('.');
+      const fileExt = ext_index !== -1 ? fileName.slice(ext_index + 1) : "";
+      console.log('File extenstion is : ', fileExt);
+      
+      let imageInfo: IImage | null = null;
 
       const upload = (data: FormData) => {
         const response = apiUploadAttatchment(data);
@@ -754,14 +756,14 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
               cardId: card.cardId,
               creatorUserId: cookies.UserId,
               creatorUserName: cookies.UserName,
-              dirName: result.filePath,
+              dirName: result.dirName,
               fileName: fileName,
               cardAttachmentName: fileName,
               createdAt: result.outAttachmentCreatedAt,
               updatedAt: null,
               image: imageInfo,
               url: result.outAttachmentUrl,
-              coverUrl: '',
+              coverUrl: result.outAttachmentCoverUrl,
               isCover: false,
               isPersisted: false,
             };
@@ -784,7 +786,6 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
       formData.append('userId', cookies.UserId);
       formData.append('file', fileData);
 
-      let imageInfo: IImage | null = null;
       if (fileData.type.startsWith('image/')) {
         const image = new Image();
         image.src = URL.createObjectURL(fileData);
@@ -808,7 +809,7 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
         upload(formData);
       }
     },
-    [card, cookies.UserId, cookies.UserName]
+    [card, cookies.UserId, cookies.UserName, setCard, updateCard]
   );
 
   const handleAttachmentUpdate = useCallback(

@@ -9,23 +9,19 @@ const multer = require('multer');
 const fsUpper = require('fs');
 const path = require('path');
 
-
-
-
 //const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs').promises; // fs.promises를 사용하여 비동기 파일 작업을 수행합니다.
 const util = require('util');
-
 const fsSync = require('fs');
-
+const sharp = require('sharp');
 
 try {
     fsUpper.readdirSync('uploads');
 } catch (error) {
-  console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
-  fsUpper.mkdirSync('uploads');
-}
+    console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
+    fsUpper.mkdirSync('uploads');
+}    
 
 const storage = multer.memoryStorage(); 
 const upload = multer({ storage: storage });
@@ -52,9 +48,11 @@ const options = { etag : false };
 
 app.post('/upload', upload.single('file'),async (req, res) => {
     const cardId = req.body.cardId;
-    const file_ext = req.body.fileExt;
+    const fileExt = req.body.fileExt;
     const fileData = req.file.buffer; // 이미지 데이터가 여기에 들어온다고 가정합니다.
     const fileName = req.body.fileName;
+    const imageWidth = req.body.width ? req.body.width : null;
+    const imageHeight = req.body.height ? req.body.height : null;
 
     // /카드 id 폴더가 없으면 생성 
     try {
@@ -65,19 +63,51 @@ app.post('/upload', upload.single('file'),async (req, res) => {
     }
 
     // 이미지를 저장할 경로 및 파일 이름
-    const filePath = `uploads/${cardId}/${fileName}`;
+    const dirName = `uploads/${cardId}`;
+    const filePath = dirName + `/${fileName}`;
+
     try {
-    // 이미지 데이터를 바이너리로 변환하여 파일에 저장 (동기) -> 앞에 await를 붙히면 프로세스가 안 끝남.
+        // 이미지 데이터를 바이너리로 변환하여 파일에 저장 (동기) -> 앞에 await를 붙히면 프로세스가 안 끝남.
         writeFileAsync(filePath, fileData, 'binary');
         console.log('파일 저장 성공:', filePath); 
-        res.json({fileName:fileName, filePath:filePath});
+        res.json({fileName:fileName, dirName:dirName});
     } catch (err) {
         console.error(err);
         res.status(500).send('파일 업로드 중 오류가 발생했습니다.');
-    }finally{
+    } finally{
         res.end();
-        console.log('final:', filePath); 
-    }
+        console.log('final:', filePath);
+
+        if(imageWidth) {
+            try {
+                fsUpper.readdirSync(`uploads/${cardId}/thumbnail`);
+            } catch (error) {
+                fsUpper.mkdirSync(`uploads/${cardId}/thumbnail`);
+            };
+            
+            // thumbnail 생성
+            const isPortrait = imageHeight > imageWidth;
+            const image = sharp(filePath, {
+                animated: true,
+            });
+
+            try {
+                await image
+                .resize(
+                    256,
+                    isPortrait ? 320 : undefined,
+                    imageWidth < 256 || (isPortrait && imageHeight < 320)
+                    ? {
+                        kernel: sharp.kernel.nearest,
+                        }
+                    : undefined,
+                )
+                .toFile(`uploads/${cardId}/thumbnail/cover-256.${fileExt}`);
+            } catch (error) {
+                console.log(error);
+            };
+        };
+    };
 });
 
 app.post('/deleteFile', async (req, res) => {
@@ -700,7 +730,6 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
     }
 );
 
-
 app.post('/boardAuth', async(req, res) => {
     const {boardId, userId} = req.body;
     try{
@@ -746,6 +775,7 @@ app.post('/boardAuth', async(req, res) => {
         res.end();
     }
 });
+
 // create or Modify project 
 app.post('/project', async(req, res) => {
     const {creatorUserId, projectActionType, 
@@ -960,7 +990,6 @@ app.post('/modifyCard', async(req, res) => {
         cardStatusId } = req.body;
         
     try{
-
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
                                            $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49)`,
         [cardId,     //  
@@ -1017,7 +1046,6 @@ app.post('/modifyCard', async(req, res) => {
 
         const outCardMembershipId = response.rows[0].x_card_membership_id;
         const outCardLabelId = response.rows[0].x_card_label_id;
-        
 
         const outCommentId = response.rows[0].x_comment_id;
         const outCommentCreatedAt = response.rows[0].x_comment_created_at;
@@ -1033,13 +1061,25 @@ app.post('/modifyCard', async(req, res) => {
         const outAttachmentId = response.rows[0].x_attachment_id;
         const outAttachmentCreatedAt = response.rows[0].x_card_attachment_created_at;
         const outAttachmentUpdatedAt = response.rows[0].x_card_attachment_updatec_at;
-        const outAttachmentUrl = MYHOST+'/'+ cardAttachmentDirname;
+        const outAttachmentUrl = MYHOST+'/'+ cardAttachmentDirname + '/' + cardAttachmentFilename;
+        const outAttachmentCoverUrl = MYHOST+'/'+ cardAttachmentDirname + '/thumbnail/cover-256.' + cardAttachmentImage.thumbnailsExtension;
         
-        res.json({ cardId:cardId, outCardMembershipId : outCardMembershipId, outCardLabelId:outCardLabelId,
-            outTaskId:outTaskId, outAttachmentId:outAttachmentId, outCommentId:outCommentId, outCommentCreatedAt:outCommentCreatedAt,
-            outCommentUpdatedAt:outCommentUpdatedAt, outMembershipCreatedAt:outMembershipCreatedAt, 
-            outTaskCreatedAt:outTaskCreatedAt, outTaskUpdatedAt:outTaskUpdatedAt, outAttachmentCreatedAt:outAttachmentCreatedAt,
-            outAttachmentUpdatedAt:outAttachmentUpdatedAt, outAttachmentUrl:outAttachmentUrl,
+        res.json({
+            cardId : cardId,
+            outCardMembershipId : outCardMembershipId,
+            outCardLabelId : outCardLabelId,
+            outTaskId:outTaskId,
+            outAttachmentId:outAttachmentId,
+            outCommentId:outCommentId,
+            outCommentCreatedAt:outCommentCreatedAt,
+            outCommentUpdatedAt:outCommentUpdatedAt,
+            outMembershipCreatedAt:outMembershipCreatedAt, 
+            outTaskCreatedAt:outTaskCreatedAt,
+            outTaskUpdatedAt:outTaskUpdatedAt,
+            outAttachmentCreatedAt:outAttachmentCreatedAt,
+            outAttachmentUpdatedAt:outAttachmentUpdatedAt,
+            outAttachmentUrl:outAttachmentUrl,
+            outAttachmentCoverUrl:outAttachmentCoverUrl,
             outTaskPosition:outTaskPosition
          }); // 결과 리턴을 해 줌 .  
         res.end();
