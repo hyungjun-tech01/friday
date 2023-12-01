@@ -171,6 +171,7 @@ const core = {
       leaveProject:'프로젝트에서 나가기',
       listNameEdit: '리스트 이름 편집',
       listDelete :'리스트 삭제',
+      makeCover_title: '표지 만들기',
       move: '이동',
       moveCard: 'Card 이동',
       pause: '일시정지',

@@ -55,7 +55,6 @@ import styles from './CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
 import { getNextPosition } from '../../utils/position';
 import DeletePopup from '../DeletePopup';
-import { remove } from 'lodash';
 
 interface ICardPathProps {
   projectId: string | null,

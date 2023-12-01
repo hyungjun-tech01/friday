@@ -129,13 +129,12 @@ export const apiUploadAttatchment = async (data:FormData) => {
             method: "POST", 
             //headers:{'Content-Type':'application/json'},
             body:data
-           }); 
-           const responseMessage = await response.json();
-           if(responseMessage)
-              if(responseMessage.status === 500){
+        });
+        const responseMessage = await response.json();
+        if(responseMessage)
+            if(responseMessage.status === 500){
                 return ({message:'파일 업로드 중 오류가 발생했습니다.'});
-              }else{
-
+            } else {
                 // 성공시DB 처리 
                 const card:IModifyCard = {
                     ...defaultModifyCard, 

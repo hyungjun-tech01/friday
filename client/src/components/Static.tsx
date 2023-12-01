@@ -23,15 +23,6 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
     const [currentBoard, setCurrentBoard] = useRecoilState(atomCurrentMyBoard);
     const [projectsToLists, setProjectsToLists] = useRecoilState(atomProjectsToLists);
 
-  //  const currentProject = useRecoilValue(projectSelector);
-  //  const currentProject1 = currentProject(projectId)[0];
-   // let defaultBoardId = '';
- //   if(currentProject1) {
- //   const cadEditBoard = currentProject1.isAdmin || currentProject1.role === 'manager' ? true : false;
-    //console.log('static currentProject', boardId,',', defaultBoardId,  currentProject1, cadEditBoard);
-    //defaultBoardId =  currentProject1.defaultBoardId;
- //   }
-
     const getCurrentBoard = async (id:string) => {
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
         if(!response.message ) {

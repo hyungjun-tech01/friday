@@ -370,11 +370,12 @@ app.post('/currentBoard', async(req, res)=>{
             from board_membership t, user_account t1
             where t.user_id = t1.id
             and t.board_id = $1`, [boardId]);
-         if( users.rows.length > 0 ) {
-                currentBoard.users = users.rows;
-         }else {
-          currentBoard.users = [];
-         }
+
+        if( users.rows.length > 0 ) {
+            currentBoard.users = users.rows;
+        } else {
+            currentBoard.users = [];
+        }
         const usersPool = await pool.query(`
         select 
             ua.id as "userId", 
@@ -460,53 +461,64 @@ app.post('/currentBoard', async(req, res)=>{
 
                     /// card memberships 
                     const cardMembership = await pool.query(`
-                    select a.id as "cardMembershipId", a.card_id as "cardId",
-                       a.user_id as "userId", a.created_at as "createdAt",
-                       a.updated_at as "updatedAt",
-                       b.email as "email", b.name as "userName", b.avatar as "avatarUrl"
-                    from card_membership a, user_account b 
-                    where a.user_id = b.id
-                    and card_id = $1`, [card.cardId]);
+                        select a.id as "cardMembershipId", a.card_id as "cardId",
+                        a.user_id as "userId", a.created_at as "createdAt",
+                        a.updated_at as "updatedAt",
+                        b.email as "email", b.name as "userName", b.avatar as "avatarUrl"
+                        from card_membership a, user_account b 
+                        where a.user_id = b.id
+                        and card_id = $1`, [card.cardId]);
                     if( cardMembership.rows.length > 0 ) 
                         card.memberships = cardMembership.rows;
                     else
                         card.memberships = [];
 
                     const cardTask = await pool.query(`
-                    select id as "taskId", card_id as "cardId", name as "taskName", is_completed as "isCompleted" ,
-                        created_at as "createdAt", updated_at as "updatedAt", position as "position" 
-                    from task
-                    where card_id = $1
-                    order by position`, [card.cardId]);    
+                        select id as "taskId", card_id as "cardId", name as "taskName", is_completed as "isCompleted" ,
+                            created_at as "createdAt", updated_at as "updatedAt", position as "position" 
+                        from task
+                        where card_id = $1
+                        order by position`, [card.cardId]);    
                     if(cardTask.rows.length > 0 )
                         card.tasks = cardTask.rows;
                     else
                         card.tasks = [];
 
                     const cardAttachment = await pool.query(`
-                    select a.id as "cardAttachementId", a.card_id as "cardId", a.creator_user_id as "creatorUserId", b.name as "creatorUserName",
-                        a.dirname as "dirName",
-                        $2||'/'||a.dirname as url, 
-                        a.filename as "fileName", a.name as "cardAttachmentName", 
-                        a.created_at as "createdAt", a.updated_at as "updatedAt", a.image as "image"
-                    from attachment a, user_account b
-                    where a.creator_user_id = b.id 
-                    and a.card_id = $1`, [card.cardId, MYHOST]);
+                        select a.id as "cardAttachementId",
+                            a.card_id as "cardId",
+                            a.creator_user_id as "creatorUserId",
+                            b.name as "creatorUserName",
+                            a.dirname as "dirName",
+                            $2||'/uploads/'||a.dirname||'/'||a.filename as url,
+                            a.filename as "fileName",
+                            a.name as "cardAttachmentName",
+                            a.created_at as "createdAt",
+                            a.updated_at as "updatedAt",
+                            a.image as "image",
+                            $2||'/uploads/'||a.dirname||'/thumbnail/cover-256.'||(a.image->>'thumbnailsExtension') as "coverUrl"
+                        from attachment a, user_account b
+                        where a.creator_user_id = b.id 
+                            and a.card_id = $1`,
+                        [card.cardId, MYHOST]
+                    );
 
-                    if(cardAttachment.rows.length > 0 ){
+                    if(cardAttachment.rows.length > 0 ) {
                         card.attachments = cardAttachment.rows;
                     }
                     else
                         card.attachments = [];
                     
                     const cardComment = await pool.query(`
-                    select a.id as "commentId" , a.card_id as "cardId", 
-                        a.user_id as "userId", b.name as "userName", a.text as "text", 
-                        a.created_at as "createdAt", a.updated_at as "updatedAt", 
-                        b.avatar as "avatarUrl"
-                    from comment a , user_account b
-                    where a.user_id = b.id
-                    and a.card_id = $1`, [card.cardId]);
+                        select a.id as "commentId" , a.card_id as "cardId", 
+                            a.user_id as "userId", b.name as "userName", a.text as "text", 
+                            a.created_at as "createdAt", a.updated_at as "updatedAt", 
+                            b.avatar as "avatarUrl"
+                        from comment a , user_account b
+                        where a.user_id = b.id
+                        and a.card_id = $1`
+                        , [card.cardId]
+                    );
     
                     if(cardComment.rows.length > 0 )
                         card.comments = cardComment.rows;
