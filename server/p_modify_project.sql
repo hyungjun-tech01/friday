@@ -21,6 +21,7 @@ DECLARE
     x_board_id text;
     x_board_membership_id  text;
     x_label_id  text;
+    x_position text;
     TARGET_CURSOR record;
 BEGIN
    if(i_project_action_type is not null) then
@@ -64,7 +65,8 @@ BEGIN
                     null,
                     x_board_id,
                     x_board_membership_id,
-                    x_label_id);
+                    x_label_id,
+                    x_position );
             END LOOP;
        
         delete from project_manager 
