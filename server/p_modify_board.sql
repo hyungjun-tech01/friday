@@ -1,5 +1,5 @@
-drop procedure p_insert_board;
-drop procedure p_modify_board;
+DROP FUNCTION IF EXISTS p_insert_board;
+DROP FUNCTION IF EXISTS p_modify_board;
 
 CREATE OR REPLACE PROCEDURE p_modify_board(
 i_board_action_type in text,   -- ADD, UPDATE, DELETE

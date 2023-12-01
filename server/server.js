@@ -14,6 +14,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs').promises; // fs.promises를 사용하여 비동기 파일 작업을 수행합니다.
 const util = require('util');
 const fsSync = require('fs');
+const { v4: uuid } = require('uuid');
 const sharp = require('sharp');
 
 try {
@@ -53,24 +54,29 @@ app.post('/upload', upload.single('file'),async (req, res) => {
     const fileName = req.body.fileName;
     const imageWidth = req.body.width ? req.body.width : null;
     const imageHeight = req.body.height ? req.body.height : null;
+    const dirname = uuid();
+    let dirName = path.join('uploads', dirname);
 
-    // /카드 id 폴더가 없으면 생성 
+    // /카드 id 폴더가 없으면 생성  --> uuid를 사용하는 것으로 대체
     try {
-        fsUpper.readdirSync(`uploads/${cardId}`);
+        // fsUpper.readdirSync(`uploads/${dirname}`);
+        fsUpper.mkdirSync(dirName);
     } catch (error) {
-        console.error('uploads/cardid  폴더가 없어 cardid 폴더를 생성합니다.');
-        fsUpper.mkdirSync(`uploads/${cardId}`);
+        // console.error('uploads/cardid  폴더가 없어 cardid 폴더를 생성합니다.');
+        console.error('첨부 파일을 위한 폴더 생성에 실패하여 cardid 폴더로 생성합니다.');
+        dirName = path.join('uploads', cardId + "_" + dirname);
+        fsUpper.mkdirSync(dirName);
     }
 
     // 이미지를 저장할 경로 및 파일 이름
-    const dirName = `uploads/${cardId}`;
-    const filePath = dirName + `/${fileName}`;
+    
+    const filePath = path.join(dirName, fileName);
 
     try {
         // 이미지 데이터를 바이너리로 변환하여 파일에 저장 (동기) -> 앞에 await를 붙히면 프로세스가 안 끝남.
         writeFileAsync(filePath, fileData, 'binary');
         console.log('파일 저장 성공:', filePath); 
-        res.json({fileName:fileName, dirName:dirName});
+        res.json({fileName:fileName, dirName:dirname});
     } catch (err) {
         console.error(err);
         res.status(500).send('파일 업로드 중 오류가 발생했습니다.');
@@ -79,10 +85,11 @@ app.post('/upload', upload.single('file'),async (req, res) => {
         console.log('final:', filePath);
 
         if(imageWidth) {
+            const thumbnailPath = path.join(dirName, 'thumbnail');
             try {
-                fsUpper.readdirSync(`uploads/${cardId}/thumbnail`);
+                fsUpper.mkdirSync(thumbnailPath);
             } catch (error) {
-                fsUpper.mkdirSync(`uploads/${cardId}/thumbnail`);
+                console.log('fail to make folder for thumbnail :', error);
             };
             
             // thumbnail 생성
@@ -91,6 +98,8 @@ app.post('/upload', upload.single('file'),async (req, res) => {
                 animated: true,
             });
 
+            console.log('[Check] thumbnail path :', thumbnailPath);
+            console.log('[Check] file ext :', fileExt)
             try {
                 await image
                 .resize(
@@ -102,7 +111,7 @@ app.post('/upload', upload.single('file'),async (req, res) => {
                         }
                     : undefined,
                 )
-                .toFile(`uploads/${cardId}/thumbnail/cover-256.${fileExt}`);
+                .toFile(path.join(thumbnailPath, `cover-256.${fileExt}`));
             } catch (error) {
                 console.log(error);
             };
@@ -111,18 +120,40 @@ app.post('/upload', upload.single('file'),async (req, res) => {
 });
 
 app.post('/deleteFile', async (req, res) => {
-    const {cardId, fileExt, fileName} = req.body;
+    const {fileExt, fileName, dirName} = req.body;
     // 이미지를 삭제할 경로 및 파일 이름
-    const filePath = `uploads/${cardId}/${fileName}`;
+    const fileDir = path.join('uploads', dirName);
+    const filePath = path.join(fileDir, fileName);
     try {
         // 파일이 존재하는지 확인
          const fileStats = await fs.stat(filePath);
-        //const fileStats = await fs.promises.stat(filePath); 
     
         // 파일이 존재할 때만 삭제 수행
         if (fileStats.isFile()) {
             //  unlinkAsync(filePath);   // sync 밖에 안됨. 왜 안되는지 모르겠음 await넣으면 진행 안됨.
             fsUpper.unlinkSync(filePath);
+
+            // thumbnail 확인 및 삭제
+            const thumbnailDir = path.join(fileDir, 'thumbnail');
+            console.log('Thumbnail Dir :', thumbnailDir);
+            fsUpper.stat(thumbnailDir, (err, stats) => {
+                if(err) console.error(err);
+                else {
+                    if(stats.isDirectory()) {
+                        const thumbnailPath = path.join(thumbnailDir, `cover-256.${fileExt}`);
+                        fsUpper.stat(thumbnailPath, (err0, stats0) => {
+                            if(err0) console.error(err0);
+                            else {
+                                if(stats0.isFile()) {
+                                    fsUpper.unlinkSync(thumbnailPath);
+                                }
+                                fsUpper.rmdirSync(thumbnailDir);
+                                fsUpper.rmdirSync(fileDir);
+                            };
+                        });
+                    };
+                };
+            });
             console.log('파일 삭제 성공:', filePath); 
             res.json({fileName:fileName, filePath:filePath});
         }else{
@@ -1061,8 +1092,10 @@ app.post('/modifyCard', async(req, res) => {
         const outAttachmentId = response.rows[0].x_attachment_id;
         const outAttachmentCreatedAt = response.rows[0].x_card_attachment_created_at;
         const outAttachmentUpdatedAt = response.rows[0].x_card_attachment_updatec_at;
-        const outAttachmentUrl = MYHOST+'/'+ cardAttachmentDirname + '/' + cardAttachmentFilename;
-        const outAttachmentCoverUrl = MYHOST+'/'+ cardAttachmentDirname + '/thumbnail/cover-256.' + cardAttachmentImage.thumbnailsExtension;
+        const outAttachmentUrl = MYHOST+'/uploads/'+ cardAttachmentDirname + '/' + cardAttachmentFilename;
+        // const outAttachmentUrl = path.join(MYHOST, 'uploads', cardAttachmentDirname,cardAttachmentFilename);
+        const outAttachmentCoverUrl = MYHOST+'/uploads/'+ cardAttachmentDirname + '/thumbnail/cover-256.' + cardAttachmentImage.thumbnailsExtension;
+        // const outAttachmentCoverUrl = path.join(MYHOST, 'uploads', cardAttachmentDirname, 'thumbnail', 'cover-256.' + cardAttachmentImage.thumbnailsExtension);
         
         res.json({
             cardId : cardId,

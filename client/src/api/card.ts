@@ -169,7 +169,14 @@ export const apiUploadAttatchment = async (data:FormData) => {
 
 export const apiDeleteAttatchment = async (data:any) => {
     console.log("delete attachment", BASE_PATH, data);
-    const deleteFie = {cardAttachmentId:data.cardAttachmentId, userId:data.userId, cardId:data.cardId, fileExt:data.fileExt, fileName:data.fileName};
+    const deleteFie = {
+        cardAttachmentId: data.cardAttachmentId,
+        userId: data.userId,
+        cardId: data.cardId,
+        fileExt: data.fileExt,
+        fileName: data.fileName,
+        dirName: data.dirName,
+    };
     try{
         const response = await fetch(`${BASE_PATH}/deleteFile`,{
             method: "POST", 

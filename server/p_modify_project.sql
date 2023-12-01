@@ -1,5 +1,5 @@
-drop procedure p_create_project;
-drop procedure p_modify_project;
+DROP FUNCTION IF EXISTS p_create_project;
+DROP FUNCTION IF EXISTS p_modify_project;
 
 CREATE OR REPLACE PROCEDURE p_modify_project(i_creator_user_id in text, 
 i_project_action_type in text,

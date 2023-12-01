@@ -867,18 +867,13 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
       );
       if (found_idx !== -1) {
         const found_card = card.attachments[found_idx];
-        const file_name_splitted = found_card.fileName.split('.');
-        const file_name_splitted_length = file_name_splitted.length;
-        const file_ext =
-          file_name_splitted_length > 1
-            ? file_name_splitted[file_name_splitted_length - 1]
-            : '';
         const deleteCard = {
           cardAttachmentId: found_card.cardAttachementId,
           userId: cookies.UserId,
           cardId: card.cardId,
-          fileExt: file_ext,
+          fileExt: found_card.image?.thumbnailsExtension,
           fileName: found_card.fileName,
+          dirName: found_card.dirName
         };
         const response = await apiDeleteAttatchment(deleteCard);
         if (response) {
