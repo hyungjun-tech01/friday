@@ -1,4 +1,4 @@
-drop procedure p_modify_user;
+drop procedure if exists p_modify_user;
 
 
 CREATE OR REPLACE PROCEDURE p_modify_user(i_creater_id in text, 

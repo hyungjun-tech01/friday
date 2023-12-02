@@ -1,5 +1,5 @@
-DROP FUNCTION IF EXISTS p_create_list;
-DROP FUNCTION IF EXISTS p_modify_list;
+DROP PROCEDURE IF EXISTS p_create_list;
+DROP PROCEDURE IF EXISTS p_modify_list;
 
 
 CREATE OR REPLACE PROCEDURE p_modify_list(i_board_id in text, 

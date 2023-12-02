@@ -1106,7 +1106,9 @@ app.post('/modifyCard', async(req, res) => {
         const outAttachmentUpdatedAt = response.rows[0].x_card_attachment_updatec_at;
         const outAttachmentUrl = MYHOST+'/uploads/'+ cardAttachmentDirname + '/' + cardAttachmentFilename;
         // const outAttachmentUrl = path.join(MYHOST, 'uploads', cardAttachmentDirname,cardAttachmentFilename);
-        const outAttachmentCoverUrl = MYHOST+'/uploads/'+ cardAttachmentDirname + '/thumbnail/cover-256.' + cardAttachmentImage.thumbnailsExtension;
+        let  outAttachmentCoverUrl;
+        if(cardAttachmentImage)
+           outAttachmentCoverUrl = MYHOST+'/uploads/'+ cardAttachmentDirname + '/thumbnail/cover-256.' + cardAttachmentImage.thumbnailsExtension;
         // const outAttachmentCoverUrl = path.join(MYHOST, 'uploads', cardAttachmentDirname, 'thumbnail', 'cover-256.' + cardAttachmentImage.thumbnailsExtension);
         
         res.json({

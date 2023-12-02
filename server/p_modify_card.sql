@@ -1,4 +1,4 @@
-drop procedure p_modify_card;
+drop procedure IF EXISTS p_modify_card;
 
 CREATE OR REPLACE PROCEDURE p_modify_card(i_card_id in text, 
 i_user_id in text, 

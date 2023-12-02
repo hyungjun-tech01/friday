@@ -1,4 +1,4 @@
-drop procedure p_modify_subscription;
+drop procedure if exists p_modify_subscription;
 
 CREATE OR REPLACE PROCEDURE p_modify_subscription(
     i_subscription_action in text,
