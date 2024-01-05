@@ -1,6 +1,6 @@
 export const getDateStringForDB = (date : Date | null) => {
     if(date) {
-        const t_M = date.getMonth();
+        const t_M = date.getMonth() + 1;
         const t_d = date.getDate();
         const t_h = date.getHours();
         const t_m = date.getMinutes();
