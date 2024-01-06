@@ -2,12 +2,12 @@ import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Table } from 'semantic-ui-react';
 import { usePopup } from '../../lib/hook';
-import {useRecoilValue, useSetRecoilState} from 'recoil';
+import {useRecoilValue, useSetRecoilState,} from 'recoil';
 
 
 // /import UserAddStepContainer from '../../containers/UserAddStepContainer';
 import Item from './Item';
-import { IUser, allUserSelector} from "../../atoms/atomsUser";
+import { IUser, allUserSelector, atomMyUser} from "../../atoms/atomsUser";
 import {apiGetAllUser} from "../../api/user";
 import userAddStep from "../UserAddStep";
 
@@ -26,6 +26,9 @@ const UsersModal = ({
     onDelete, */
     onClose,
   }:IUserModal) => {
+
+    // 현재 사용자의 isAdmin을 체크 
+    const currentUser= useRecoilValue<IUser>(atomMyUser);
 
     const items = useRecoilValue(allUserSelector);
     const setUsers = useSetRecoilState(allUserSelector);
@@ -159,7 +162,7 @@ const UsersModal = ({
         </Modal.Content>
         <Modal.Actions>
           <UserAddPopup>
-            <Button positive content={t('action.addUser')} />
+            {currentUser.isAdmin && <Button positive content={t('action.addUser')} /> }
           </UserAddPopup>
         </Modal.Actions>
       </Modal>
