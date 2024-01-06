@@ -856,13 +856,13 @@ app.post('/board', async(req, res) => {
             boardMembershipCanComment,  boardLabelActionType , labelId , labelName , labelColor , labelPosition ,null, null, null, null]);
         
             const outBoardId = response.rows[0].x_board_id;
-            const outLableId = response.rows[0].x_label_id;
+            const outLabelId = response.rows[0].x_label_id;
             const outBoardMembershipId = response.rows[0].x_board_membership_id;
             const outBoardPosition = response.rows[0].x_position;
 
 
         //add 시에는 outBoardId, outLableId, outBoardMembershipId not null, 나머지 트랜잭션은 boardId not null  
-        res.json({ outBoardId:outBoardId, boardId:boardId, outLableId:outLableId, outBoardMembershipId:outBoardMembershipId, outBoardPosition:outBoardPosition}); 
+        res.json({ outBoardId:outBoardId, boardId:boardId, outLabelId:outLabelId, outBoardMembershipId:outBoardMembershipId, outBoardPosition:outBoardPosition}); 
 
         res.end();
     }catch(err){
