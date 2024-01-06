@@ -20,7 +20,6 @@ const InformationEdit = React.memo(({ defaultData,canEdit, onUpdate }:IInformati
   const currentUser = useRecoilValue<IUser>(atomMyUser);
 
   const onValid = (data:any)=>{
-    console.log('Information Edit', data);
    onUpdate(data);
   }
   

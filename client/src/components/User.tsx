@@ -56,7 +56,6 @@ function User({userId, userName, userEmail, avatarUrl=null, canEdit, size='mediu
       
       if (avatarUrl === null) avatarUrl = '';
       if(userId && userEmail && (avatarUrl==='' || avatarUrl)&& canEdit && showAnotherPopup) {
-        console.log('user showAnotherPopup', userId)
        showAnotherPopup({userId:userId, userName:userName, userEmail:userEmail, avatarUrl:avatarUrl, canEdit:canEdit, role:"", positionX:event.pageX, positionY:event.pageY});
       }
     };

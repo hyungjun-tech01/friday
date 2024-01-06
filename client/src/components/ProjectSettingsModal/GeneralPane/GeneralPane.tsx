@@ -21,7 +21,6 @@ interface IGeneralPane {
 const GeneralPane = React.memo(({ projectId, name, isAdmin, role, onUpdate, onDelete }:IGeneralPane) => {
   const [t] = useTranslation();
   const currentUser = useRecoilValue<IUser>(atomMyUser);
-  console.log('General Pane', name);
   const DeletePopup = usePopup(DeleteStep);
   const projectEdit = isAdmin || role === 'manager' ? true:false;
 //<Button className={styles.actionButton}>

@@ -24,7 +24,6 @@ function BoardMemeberAdd({members, canEdit,setOnAddPopup, setBoardMemeberPermiss
     const cleanSearch = useMemo(() => search.trim().toLowerCase(), [search]);
     const searchField = useRef(null);
 
-    console.log('board member add', users);
     /* 필터 구현 search 를 받아서 이놈이 userName중에 포함된 놈이 있으며 이놈을 리턴  */
     const filteredUsers = useMemo(
       () =>
@@ -46,17 +45,15 @@ function BoardMemeberAdd({members, canEdit,setOnAddPopup, setBoardMemeberPermiss
       if (wrapperRef && 
           wrapperRef.current &&
           !wrapperRef.current.contains(event.target)) {
-        console.log('close modal');
         setOnAddPopup(false);
       }
     }     
     const handleUserSelect = (userId:string, canEdit:boolean|null) => {
       if(canEdit === null){
-        console.log('add user');
+
         setOnAddPopup(false);
         setBoardMemeberPermissionUserId({userId:userId, userName:"", userEmail:"", avatarUrl:"",  canEdit:canEdit,role:"", positionX:-1, positionY:-1});
       }else{
-        console.log('modify user');
       }
     }
     return(

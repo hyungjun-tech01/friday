@@ -19,7 +19,6 @@ export async function  apiLoginValidate(data:IValidateUser) {
  }
 
  export async function  apiGetUser(userId:string) {
-    console.log('apiGetUser', userId);
     if(userId === "" || userId === undefined) return ;
     try{
         const response = await fetch(`${BASE_PATH}/getuser/`,{
@@ -36,7 +35,6 @@ export async function  apiLoginValidate(data:IValidateUser) {
  }
 
  export async function  apiGetAllUser() {
-    console.log('apiGetAllUser');
     const userId = 1;
     try{
         const response = await fetch(`${BASE_PATH}/getalluser/${userId}`);  // backtik 

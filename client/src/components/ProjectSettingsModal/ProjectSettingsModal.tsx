@@ -69,8 +69,6 @@ const ProjectSettingsModal =
 
     const history = useHistory();
 
-    console.log('currentProject2', currentProject2);
-
      // atomCurrentProject 세팅 , 이후에 Membership에서 사용
      useEffect(()=>{
       setProejctQuery(true);

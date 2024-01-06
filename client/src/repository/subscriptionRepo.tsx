@@ -11,7 +11,6 @@ export const SubscriptionRepository = selector({
                 const response = await fetch(`${BASE_PATH}/subscribe/user/${userId}`);
                 const data = await response.json();
                 if(data.message) {
-                    console.log('No Subscription Data');
                     set(atomMySubscription, []);
                 }
                 else {
@@ -39,7 +38,6 @@ export const SubscriptionRepository = selector({
                 if(data.message) {
                     console.log('addSubscription - fail :', data.message);
                 } else {
-                    console.log('addSubscription - succeed :', data.result);
                     const subscription = await snapshot.getPromise(atomMySubscription);
                     set(atomMySubscription, subscription.concat({card_id: cardId}));
                 };
@@ -65,8 +63,7 @@ export const SubscriptionRepository = selector({
                 if(data.message) {
                     console.log('addSubscription - fail :', data.message);
                 } else {
-                    console.log('addSubscription - succeed :', data.result);
-                    const subscription = await snapshot.getPromise(atomMySubscription);
+                      const subscription = await snapshot.getPromise(atomMySubscription);
                     set(atomMySubscription, subscription.filter((data) => data.card_id !== cardId));
                 };
             }

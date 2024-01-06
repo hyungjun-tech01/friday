@@ -91,7 +91,6 @@ function Boards({projectId}:IBoardProps){
    
     const handleDelete = useCallback(
       async (id:any) => {
-        console.log('boards',boards);
           // 보드삭제
           const updateBoard : IModifyBoard ={...defaultModifyBoard, 
             boardActionType : 'DELETE',

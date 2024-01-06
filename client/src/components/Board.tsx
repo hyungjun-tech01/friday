@@ -116,7 +116,6 @@ function Board({boardId}:IListProps){
         });
     }, [cookies.UserId, currentBoard, setCurrentBoard]);
     const handleDeleteCard = useCallback((cardId: string) => {
-        console.log('delete card : ', cardId);
         const updateCard: IModifyCard = {
             ...defaultModifyCard,
             cardId: cardId,
@@ -129,7 +128,6 @@ function Board({boardId}:IListProps){
                 if (result.message) {
                     console.log('Fail to delete card', result.message);
                 } else {
-                    console.log('Succeed to delete card', result);
                     const updatedCards = currentBoard.cards.filter(
                         (card) => card.cardId !== cardId
                     );
@@ -157,11 +155,11 @@ function Board({boardId}:IListProps){
         ) {
             return;
         }
-        console.log("Board / handleDragEnd : ");
-        console.log("[draggableId] : ", draggableId);
-        console.log("[type] : ", type);
-        console.log("[source] : ", source);
-        console.log("[destination] : ", destination);
+        // console.log("Board / handleDragEnd : ");
+        // console.log("[draggableId] : ", draggableId);
+        // console.log("[type] : ", type);
+        // console.log("[source] : ", source);
+        // console.log("[destination] : ", destination);
         const id = parseDndId(draggableId);
   
         switch (type) {
@@ -184,7 +182,6 @@ function Board({boardId}:IListProps){
     const [isListAddOpened, setIsListAddOpened] = useState(false);
     const hasEditMembershipforBoard = useCallback(() => {
         // useRecoilValue 
-        console.log('hasEditMembership for board function');
         setIsListAddOpened((prev)=>(!prev));
     }, []);
 

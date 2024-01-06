@@ -33,7 +33,6 @@ const CardModalTaskAdd = forwardRef(({ children, onCreate }:ICardModalTaskAddPro
       nameField.current.focus();
       return;
     }
-    console.log("TaskAdd / submit - cleanData : ", cleanData);
     onCreate(cleanData);
     setData('');
     nameField.current.focus();
@@ -81,7 +80,6 @@ const CardModalTaskAdd = forwardRef(({ children, onCreate }:ICardModalTaskAddPro
   }, []);
 
   const handleSubmit = useCallback(() => {
-    console.log("handleSubmit");
     submit();
   }, [submit]);
 

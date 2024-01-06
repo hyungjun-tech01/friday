@@ -50,7 +50,6 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     const [positions, setPositions] = useState({positionX:-1, positionY:-1});
 
     const onAddMemberPopup = (event:React.MouseEvent<HTMLButtonElement>)=>{
-        console.log('onAddMemberPopup');
         setPositions({positionX:event.pageX,  positionY:event.pageY});
         setOnAddPopup(true);
     }
@@ -115,7 +114,6 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
         }        
     }
     const handleUserDelete = useCallback(async (userId:string, delboardId:string) => {
-        console.log('handleUserDelete');
         setDeleteStep(false); 
         
     },[]);
@@ -146,7 +144,6 @@ function Membership({boardId, canEdit, members, allUsers, isMemberLoading, setIs
     },[boardUser, cookies.UserId, setUser]);
 
     const handleClick = useCallback(()=>{
-        console.log("Temporary function");
     }, [])
 
     const onBack = () =>{

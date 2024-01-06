@@ -18,7 +18,6 @@ export const apiGetLists = async (boardId:string) => {
 };
 
 export const apiCreateList = async (list:ICreateList) => {
-    console.log("createlist", BASE_PATH);
     
     try{
         const response = await fetch(`${BASE_PATH}/list`,{
@@ -34,7 +33,6 @@ export const apiCreateList = async (list:ICreateList) => {
 };
 
 export const apiModifyList = async (list:IModifyList) => {
-    console.log("createlist", BASE_PATH);
     
     try{
         const response = await fetch(`${BASE_PATH}/list`,{

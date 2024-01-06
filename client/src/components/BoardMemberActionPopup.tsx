@@ -36,7 +36,6 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
         if (wrapperRef && 
             wrapperRef.current &&
             !wrapperRef.current.contains(event.target)) {
-          console.log('close modal');
           showPopUp({userId:"", userName:"", userEmail:"", avatarUrl:"", canEdit:currentUserCanEdit, role:"", positionX:-1, positionY:-1 });
         }
       }     
@@ -50,7 +49,6 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
     const handleEditPermissionsClick = (event:React.MouseEvent<HTMLButtonElement>)=>{
       setPositions({positionX:event.pageX,  positionY:event.pageY});
       // 권한 설정하는 Modal 띄움. EditPermissionModal 
-      console.log('handleEditPermissionsClick');
       setEditPermissions(true);
     }
 
@@ -67,16 +65,13 @@ function BoardMemberActionPopup({boardId, currentUserCanEdit, currentUserId, use
 
     const handleRoleSelect = useCallback(
       (data:any) => {
-       console.log('role select');
       }
       ,[],
     );
     const handleBack = useCallback(() => {
-      console.log('back select');
     }, []);
 
     const onClose = useCallback(() => {
-      console.log('close');
     }, []);
 
     return (

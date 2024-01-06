@@ -56,7 +56,7 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
   const deleteUserDeleter = useSetRecoilState(projectUsersDeleter(userId));
 
   const handleUserDelete = useCallback(async (userId:string, delboardId:string) => {
-    console.log('delete user : ', userId, boardUser, projectId);
+
  
     if(projectId === ""){
     // server 처리 
@@ -83,7 +83,6 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
         }
       }
     }else{
-      console.log('Delete Step', buttonContent);
       if (buttonContent === t('action.removeFromProject')) {
       // server 처리 
       const projectAA : IModifyProject= 
@@ -113,7 +112,6 @@ function DeleteStep ({ boardId, projectId, userId, title, content, buttonContent
       }
     }
     if (buttonContent === t('action.deleteProject')) {
-      console.log('deleteProejct',buttonContent, projectId );
        //=> 프로젝트 삭제하고 나면 main 화면으로 가야 한다... history.push로 가면 되는건가?? 
       // server 처리 
       const projectAA : IModifyProject= 

@@ -24,14 +24,12 @@ const CommentItem = ({commentId, userName, createdAt, updatedAt=null, avatarUrl=
     const formatted_date = new Date(updatedAt ? updatedAt : createdAt);
 
     const handleEditClick = useCallback(() => {
-      console.log("handleEditClick / Comment");
       if (commentEdit.current) {
         commentEdit.current.open();
       }
     }, []);
 
     const handleDeleteClick = useCallback(() => {
-      console.log("handleDeleteClick / Comment");
       onDelete(commentId);
     }, [onDelete, commentId]);
 

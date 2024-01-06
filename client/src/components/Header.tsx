@@ -62,7 +62,6 @@ function Header({setCurrent, projectName, projectId}:any){
     
     const [showProjSetting, setShowProjSetting] = useState(false);
     const onSettings = ()=> {
-        console.log('setting');
     };
     const handleProjectSettingsClick = useCallback(() => {
        // if(currentUser.isAdmin === true )
@@ -72,7 +71,6 @@ function Header({setCurrent, projectName, projectId}:any){
         //}
       }, [projectId]);
     const onLogout = ()=> {
-        console.log('logout');
         removeCookie('AuthToken');
         removeCookie('UserName');
         removeCookie('UserId');

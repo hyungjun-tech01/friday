@@ -22,7 +22,6 @@ function ProjectAddModal({setShowProjectAddModal}:IProjectAddModalProps){
     const onValid = async (data:any) =>{
       setIsSubmitting(true);
       const project : IModifyProject= {...data, projectActionType:'ADD', creatorUserId:cookies.UserId};
-      console.log('create project', project);
       try{
         const response:any = await apiPostProjects(project);
       //   console.log("response", response);

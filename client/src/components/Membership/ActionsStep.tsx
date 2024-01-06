@@ -88,7 +88,6 @@ const ActionsStep = ({
     const handleRoleSelect = useCallback(
       (data:any) => {
         if (onUpdate) {
-          console.log('onUpdate', data);
           onUpdate(boardId, membership.userId, data);
         }
       },

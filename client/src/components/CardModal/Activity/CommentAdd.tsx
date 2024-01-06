@@ -21,7 +21,6 @@ const CommentAdd = ({ onCreate }:ICommentAddProps) => {
   }, []);
 
   const submit = useCallback(() => {
-    console.log('submit / CommentAdd : ', text);
     if(!text
       && textField.current)
     {
@@ -57,7 +56,6 @@ const CommentAdd = ({ onCreate }:ICommentAddProps) => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    console.log('handleSubmit / CommentAdd');
     submit();
   }, [submit]);
 

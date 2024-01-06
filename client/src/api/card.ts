@@ -4,7 +4,6 @@ const BASE_PATH = Paths.BASE_PATH;
 
 // 보드에 속한 모든 카드를 가지고 온다..
 export const apiGetCards = async (boardId:string) => {
-    console.log("getcard", BASE_PATH);
     try{
         const response = await fetch(`${BASE_PATH}/cards/${boardId}`);  // backtik 
         const json = await response.json();
@@ -15,7 +14,6 @@ export const apiGetCards = async (boardId:string) => {
 };
 
 export const apiGetCardsbyListId = async (listId:string) => {
-    console.log("getcardbyList", listId);
     if(listId === null || listId === ''){
         return(null);
     }
@@ -30,7 +28,6 @@ export const apiGetCardsbyListId = async (listId:string) => {
 };
 
 export const apiCreateCard = async (card:IModifyCard) => {
-    console.log("createcard", BASE_PATH);
     
     try{
         const response = await fetch(`${BASE_PATH}/card`,{
@@ -45,7 +42,6 @@ export const apiCreateCard = async (card:IModifyCard) => {
     }
 };
 export const apiModifyCard = async (card:IModifyCard) => {
-    console.log("modify card", BASE_PATH);
     
     try{
         const response = await fetch(`${BASE_PATH}/modifyCard`,{
@@ -62,7 +58,6 @@ export const apiModifyCard = async (card:IModifyCard) => {
 
 
 export const apiGetInfosByCardId = async (cardId:string) => {
-    console.log("createcard", BASE_PATH);
     
     try{
         const response = await fetch(`${BASE_PATH}/cardbyId/${cardId}`,{
@@ -77,7 +72,6 @@ export const apiGetInfosByCardId = async (cardId:string) => {
 
 
 export const getProjectIdBoardIdbyCardId = async (cardId:string) => {
-    console.log("getProjectIdBoardIdbyCardId", cardId);
     if(cardId === null || cardId === ''){
         return(null);
     }
@@ -94,7 +88,6 @@ export const getProjectIdBoardIdbyCardId = async (cardId:string) => {
 };
 
 export const apiUploadAttatchment = async (data:FormData) => {
-    console.log("modify card", data);
     let userId:string  = "";
     let fileName:string = "";
     let cardId:string = "";
@@ -121,7 +114,6 @@ export const apiUploadAttatchment = async (data:FormData) => {
         if(key === 'height'  && typeof value === 'string'){
             height = parseInt( value, 10);
         }
-        console.log(key, ":", value);
     }
     try{
         const cardAttachmentImage = {width:width, height:height, thumbnailsExtension: fileExt};
@@ -146,7 +138,7 @@ export const apiUploadAttatchment = async (data:FormData) => {
                     cardId:cardId, cardAttachmentActionType:'ADD'
                 };
 
-                console.log('api attachment', card);                             
+                         
                 const result = await apiModifyCard(card);
                 return({
                     fileName:responseMessage.fileName,
@@ -167,7 +159,6 @@ export const apiUploadAttatchment = async (data:FormData) => {
 };
 
 export const apiDeleteAttatchment = async (data:any) => {
-    console.log("delete attachment", BASE_PATH, data);
     const deleteFie = {
         cardAttachmentId: data.cardAttachmentId,
         userId: data.userId,

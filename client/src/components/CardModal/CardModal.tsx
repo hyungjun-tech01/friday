@@ -94,7 +94,6 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
   const CardDelete = usePopup(DeletePopup);
 
   useEffect(() => {
-    console.log('CardModal / attachment : ', card.attachments);
     if (card.memberships) {
       const member_ids = card.memberships.map((member) => member.userId);
       setCardUserIds(member_ids);
@@ -314,7 +313,6 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
           cardLabelActionType: 'ADD',
           labelId: id,
         };
-        console.log("CARDMODAL", id, modifiedCard);
         const response = apiModifyCard(modifiedCard);
         response
           .then((result) => {
@@ -896,16 +894,14 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
   );
 
   const handleCoverUpdate = useCallback(() => {
-    console.log('handleCoverUpdate');
   }, []);
 
   const handleGalleryOpen = useCallback(() => {
-    console.log('handleGalleryOpen');
     isGalleryOpened.current = true;
   }, []);
 
   const handleGalleryClose = useCallback(() => {
-    console.log('handleGalleryClose');
+
     isGalleryOpened.current = false;
   }, []);
 
@@ -1080,13 +1076,11 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
   }, [board, card.cardId, cookies.UserId, handleOnCloseCardModal, setBoard]);
 
   const handleCardDelete = useCallback(() => {
-    console.log('delete card : ', card.cardId);
     onDelete(card.cardId);
     setCard(defaultCard);
   }, [card.cardId, onDelete, setCard]);
 
   const handleSubscribeClick = useCallback(() => {
-    console.log('handleSubscribeClick');
     if(subscribed) {
       removeSubscription(card.cardId, cookies.UserId);
     } else {

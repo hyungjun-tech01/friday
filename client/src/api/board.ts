@@ -42,7 +42,6 @@ export const apiGetCurrentBoards = async (checkAuth:ICheckBoardEditAuth) => {
 };
 
 export const apiModifyBoard = async(board:IModifyBoard) => {
-    console.log('create or modify Board api');
     try{
         const response = await fetch(`${BASE_PATH}/board`,{
             method: "POST", 
@@ -50,7 +49,6 @@ export const apiModifyBoard = async(board:IModifyBoard) => {
             body:JSON.stringify(board)
            }); 
            const responseMessage = await response.json();
-           console.log(responseMessage);
            return(responseMessage);
     }catch(err){
         console.error(err);

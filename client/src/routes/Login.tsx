@@ -15,7 +15,6 @@ const createMessage = (error:IError) => {
   if (!error) {
     return error;
   }
-  console.log("createMessage", error.message);
   switch (error.message) {
     case 'Invalid email or password':
       return {
@@ -87,7 +86,6 @@ function Login(){
           const userInfo = await apiGetUser(response.userId);
           const alluser = await apiGetAllUser();
           if(userInfo && alluser){
-              console.log(userInfo);
               setCurrentUser(userInfo);
               setAllUser(alluser);
               history.push(Path.ROOT); 

@@ -73,7 +73,6 @@ const LabelsEditPopup = ({
     [items, cleanSearch]
   );
 
-  console.log('LabelsEditPopup', filteredItems);
   const searchField = useRef<any>(null);
 
   const handleSearchChange = useCallback((event: any) => {
@@ -82,7 +81,6 @@ const LabelsEditPopup = ({
 
   const handleSelect = useCallback(
     (id: string) => {
-      console.log('LabelEditPopUp', id);
       onSelect(id);
     },
     [onSelect]

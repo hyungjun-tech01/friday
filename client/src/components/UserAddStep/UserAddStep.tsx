@@ -53,7 +53,6 @@ const UserAddStep =
     const setUsers = useSetRecoilState(allUserSelector);
 
     const onValid = async (data:any) =>{
-      console.log('add user');
       const addUser : IModifyUser= {...defaultUser, userActionType:'ADD', createrId:cookies.UserId, userName:data.userName, 
                                     name:data.name, email:data.email, password:data.password};
     

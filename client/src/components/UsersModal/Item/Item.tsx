@@ -45,7 +45,6 @@ const Item = ({
     //const ActionsPopup = usePopup(ActionsStep);
 
     const onClick = ()=>{
-      console.log('userClick');
     }
 
      /*  <Table.Cell textAlign="right">

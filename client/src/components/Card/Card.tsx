@@ -57,7 +57,6 @@ function Card({ index, card, canEdit, onDelete }: ICardProps) {
         }
       }
       if (card) {
-        console.log('Card is clicked : ', card.cardId);
         setCurrentCard(card);
       }
     },
@@ -65,13 +64,11 @@ function Card({ index, card, canEdit, onDelete }: ICardProps) {
   );
 
   const handleNameEdit = useCallback(() => {
-    console.log('Card - handleNameEdit');
     nameEdit.current.open();
   }, []);
 
   const handleNameUpdate = useCallback(
     (data: string) => {
-      console.log('Udate name of card : ', data);
       const modifiedCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: card.cardId,
@@ -84,9 +81,7 @@ function Card({ index, card, canEdit, onDelete }: ICardProps) {
       response
         .then((result) => {
           if (result.message) {
-            console.log('Fail to update name of card', result.message);
           } else {
-            console.log('Succeed to update name of card', result);
             const updatedCard = {
               ...card,
               cardName: data,
@@ -118,7 +113,6 @@ function Card({ index, card, canEdit, onDelete }: ICardProps) {
         cardActionType: 'UPDATE',
         stopwatch: newStopwatch,
       };
-      console.log('check value : ', modifiedCard.stopwatch);
       const response = apiModifyCard(modifiedCard);
       response
         .then((result) => {

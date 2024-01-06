@@ -55,7 +55,6 @@ function List({ id, index, position, name, canEdit }: IListProps) {
   }, [id, isCardRequery, currentCards]);
 
   const handleAddCardClick = () => {
-    console.log('addcard');
     setIsCardAddOpened(true);
   };
 
@@ -67,7 +66,6 @@ function List({ id, index, position, name, canEdit }: IListProps) {
 
   const handleNameUpdate = useCallback(
     (data: string) => {
-      console.log('Update name of list : ', data);
       const modifiedList: IModifyList = {
         ...defaultModifyList,
         listId: list.listId,
@@ -102,7 +100,6 @@ function List({ id, index, position, name, canEdit }: IListProps) {
 
   const handleListDelete = useCallback(
     (data: string) => {
-      console.log('delete list : ', data);
       const modifiedList: IModifyList = {
         ...defaultModifyList,
         listId: list.listId,
@@ -115,26 +112,22 @@ function List({ id, index, position, name, canEdit }: IListProps) {
           if (result.message) {
             console.log('Fail to delete list', result.message);
           } else {
-            console.log('Succeed to delete list', result);
             deleteList(list);
           }
         })
         .catch((message) => {
           console.log('Fail to update name of card', message);
         });
-      console.log('delete');
     },
     [list, cookies, deleteList]
   );
 
   const handleCardAdd = useCallback(() => {
-    console.log('card add');
     handleAddCardClick();
   }, []);
 
   const handleCardDelete = useCallback(
     (cardId: string) => {
-      console.log('delete card : ', cardId);
       const updateCard: IModifyCard = {
         ...defaultModifyCard,
         cardId: cardId,
@@ -147,7 +140,6 @@ function List({ id, index, position, name, canEdit }: IListProps) {
           if (result.message) {
             console.log('Fail to delete card', result.message);
           } else {
-            console.log('Succeed to delete card', result);
             setIsCardLoading(true);
 
             const updatedCurrentCards = currentCards.filter(

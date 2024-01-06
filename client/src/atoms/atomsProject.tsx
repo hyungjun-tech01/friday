@@ -70,9 +70,7 @@ export const projectSelector = selector({
              }
             return project;
         })
-        console.log('upated project ', updatedProjects);
         const newAtomCurrentMyProject = {...projects_,   ...updatedProjects};
-        console.log('newproject', newAtomCurrentMyProject);
         return set(atomMyProject, newAtomCurrentMyProject);
     }
     }
@@ -95,7 +93,6 @@ export const projectSetter = selector({
              }
             return project;
         })
-        console.log('projectSetter',updatedProjects);
         return set(atomMyProject, updatedProjects);
     }
     }
@@ -174,7 +171,6 @@ export const projectUsersSelector = selector({
             const updatedUsers = [...newValue];
             const updatedMembers = projects.members.concat(updatedUsers);
             const newAtomCurrentMyProject = {...projects,   members:updatedMembers,};
-            console.log('newproject', newAtomCurrentMyProject);
             return set(atomCurrentProject, newAtomCurrentMyProject);
         }
     }
@@ -201,7 +197,6 @@ export const projectUsersUpdator = selector({
 
             // const updatedMembers = projects.members.concat(updatedUsers);
             const newAtomCurrentMyProject = {...projects,   members:updatedMembers,};
-            console.log('newproject', newAtomCurrentMyProject);
             return set(atomCurrentProject, newAtomCurrentMyProject);
         }
     }
@@ -219,7 +214,6 @@ export const projectUsersDeleter = selectorFamily({
         const deleteMember = projects.members.filter( (user:any) => user.userId !== userId);
 
         const newAtomCurrentMyProject = {...projects,   members:deleteMember,};
-        console.log('projectUsersDeleter', newAtomCurrentMyProject);
         return set(atomCurrentProject, newAtomCurrentMyProject);
     }
 });

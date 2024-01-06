@@ -83,7 +83,6 @@ const DueDateEditPopup = ({
 
   const handleSubmit = useCallback(() => {
     if (!nullableDate) {
-      console.log("DueDateEdit / handleSubmit - nullableDate is null");
       dateField.current.select();
       return;
     }
@@ -93,16 +92,13 @@ const DueDateEditPopup = ({
         value: `${data.date} ${data.time}`,
       })
     );
-    console.log("DueDateEdit / handleSubmit - value ", value);
 
     if (Number.isNaN(value.getTime())) {
       timeField.current.select();
-      console.log("DueDateEdit / handleSubmit - parsed value is null");
       return;
     }
 
     if (!defaultValue || value.getTime() !== defaultValue.getTime()) {
-      console.log("DueDateEdit / handleSubmit - update value : ", value);
       onUpdate(value);
     }
 

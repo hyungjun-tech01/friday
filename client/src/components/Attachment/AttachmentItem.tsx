@@ -44,7 +44,6 @@ const AttachmentItem = forwardRef(
 
     const handleClick = useCallback(() => {
       if (onClick) {
-        console.log("Attachment Open");
         onClick();
       } else {
         window.open(url, '_blank');

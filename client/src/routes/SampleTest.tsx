@@ -42,7 +42,6 @@ const BASE_PATH = Paths.BASE_PATH;
       listId : '1077538116836787739'
            //
     };
-     console.log(list); 
      const response = await apiModifyCard(card);
      // const response = await apiModifyBoard(board);
     // const response = await apiModifyList(list);

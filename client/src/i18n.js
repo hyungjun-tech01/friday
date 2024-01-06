@@ -106,7 +106,6 @@ i18n.detectLanguage = () => {
 
   i18n.resolvedLanguage = undefined;
   i18n.setResolvedLanguage(i18n.language);
-  console.log("Detected Language : ", i18n.resolvedLanguage);
 };
 
 export default i18n;

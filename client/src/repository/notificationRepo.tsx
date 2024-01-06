@@ -11,11 +11,9 @@ export const NotificationRepository = selector({
                 const response = await fetch(`${BASE_PATH}/notification/user/${userId}`);
                 const data = await response.json();
                 if(data.message){
-                    console.log('loadNotification message:', data.message)
                     set(atomMyNotification, []);
                     return;
                 }
-                console.log('loadNotification : ', data);
                 set(atomMyNotification, data);
             }
             catch(err){

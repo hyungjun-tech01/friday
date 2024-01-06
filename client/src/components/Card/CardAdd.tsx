@@ -35,16 +35,13 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
     if (wrapperRef && 
         wrapperRef.current &&
         !wrapperRef.current.contains(event.target)) {
-      console.log('close modal');
       setIsCardAddOpened(false);
     }
   }     
    
   const onValid = async(data:any) => {
     const card : IModifyCard = {...defaultModifyCard, ...data, cardActionType:'ADD', listId:listId, userId:cookies.UserId };
-    console.log('create card', card);
     const response = await apiCreateCard(card);
-    console.log(response);
     if(response)
     {
       if(response.message){
@@ -58,7 +55,6 @@ function CardAdd({listId, setIsCardAddOpened,isCardRequery, setIsCardRequery}:IC
                dueDate:"", statusId:"", statusName:"",
                stopwatch:null, memberships:[], attachments:[], 
                tasks:[], comments:[], };
-        console.log(newCard);
         const updateCards = [...cards, newCard];
         setCards(updateCards);
         setIsCardAddOpened(false);

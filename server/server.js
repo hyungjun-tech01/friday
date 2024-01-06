@@ -1148,7 +1148,6 @@ app.post('/login', async(req, res) => {
         const success = await bcrypt.compare(password, users.rows[0].password);
         const token = jwt.sign({email}, 'secret', {expiresIn:'1hr'});
         if(success){
-            console.log("success");
             res.json({'userId' : users.rows[0].id,'userName' : users.rows[0].username, token});
         }else{
             console.log("fail");
@@ -1295,7 +1294,6 @@ app.get('/getProjectIdBoardIdbyCardId/:cardId', async(req, res) => {
         and p.id = b.project_id
         LIMIT 1
         `,[cardId]);
-        console.log(card.rows[0]);
         if(card.rows.length<=0) 
             return res.json({message:'card, board, project does not exist'}); 
         res.json({cardId:cardId, boardId:card.rows[0].boardId, projectId:card.rows[0].projectId});

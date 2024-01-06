@@ -38,7 +38,6 @@ function Projects(){
       }
     );
     const onAdd = ()=>{
-        console.log("add project");
         setShowProjectAddModal(true);
     }
 

@@ -34,7 +34,6 @@ const CardModalTaskItem = ({
   const [t] = useTranslation();
 
   const handleClick = useCallback(() => {
-    console.log('handleClick / Item');
     if (/*isPersisted &&*/ canEdit && nameEdit.current) {
       nameEdit.current.open();
     }
@@ -56,7 +55,6 @@ const CardModalTaskItem = ({
   }, [isCompleted, onUpdate]);
 
   const handleNameEdit = useCallback(() => {
-    console.log('handleNameEdit');
     nameEdit.current.open();
   }, []);
 

@@ -23,7 +23,6 @@ function ListAdd({setShowList, boardId, setIsListAddOpened}:IListAddProp){
 
     const onValid = async(data:any) => {
         const list : IModifyList= {...defaultModifyList, ...data, listActionType:'ADD', boardId:boardId, userId:cookies.UserId};
-        console.log('create list', data);
         const response = await apiModifyList(list);
         if(response.message){
             setShowList(false);
@@ -50,7 +49,6 @@ function ListAdd({setShowList, boardId, setIsListAddOpened}:IListAddProp){
       if (wrapperRef && 
           wrapperRef.current &&
           !wrapperRef.current.contains(event.target)) {
-        console.log('close modal');
         setIsListAddOpened(false);
       }
     }    

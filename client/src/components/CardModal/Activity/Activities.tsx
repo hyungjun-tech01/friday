@@ -28,7 +28,6 @@ const Activities = ({items, /*isDetailsVisible,*/ canEdit, onCreate, onUpdate, o
   }, [onCreate]);
 
   const handleCommentUpdate = useCallback((id:string, data:string) => {
-      console.log("Update comment / id, data : ", id, data);
       onUpdate(id, data);
     }, [onUpdate]);
 

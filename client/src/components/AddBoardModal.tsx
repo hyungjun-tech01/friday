@@ -41,7 +41,6 @@ function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardMo
       if (wrapperRef && 
           wrapperRef.current &&
           !wrapperRef.current.contains(event.target)) {
-        console.log('close modal');
         setShowCreateModal(false);
       }
     }     
@@ -50,7 +49,6 @@ function AddBoardModal({endXPosition, projectId, setShowCreateModal}:IAddBoardMo
     const board : IModifyBoard= {...defaultModifyBoard, ...data, boardActionType:'ADD', projectId:projectId, userId:cookies.UserId};
     
     const response = await apiModifyBoard(board);
-    console.log('response', response, response.status);
     if(response){
       if(response.outBoardId){
         // 현재프로젝트에 defaultBoardId가 없다면 update 해줌.

@@ -26,9 +26,7 @@ const FilePicker = ({ children, accept, onSelect }: FilePickerProps) => {
     //   [onSelect],
     // );
     ({ target }: any) => {
-      console.log('FilePicker / handleFieldchange / target : ', target );
       if (target.files[0]) {
-        console.log('FilePicker / handleFieldchange / target : ', target.files[0] );
         onSelect(target.files[0]);
 
         target.value = null; // eslint-disable-line no-param-reassign

@@ -130,7 +130,6 @@ const CardMovePopup = ({
   }, [cardPath.projectId, projectsToLists, selectedProject, setProjectsToLists]);
 
   const handleListIdChange = useCallback((event: any, data: any) => {
-    console.log('handleListIdChange :', event, data);
     setCardPath((prev) => ({
       ...prev,
       listId: data.value,
@@ -156,7 +155,6 @@ const CardMovePopup = ({
           if(result.message) {
             console.log("CardMovePopup / apiGetLists :", result.message);
           } else {
-            console.log("CardMovePopup / apiGetLists :", result);
             const updateLists = result.map((list: IList) => ({id: list.listId, name: list.listName}));
             const found_project_idx = projectsToLists.findIndex((project) => project.id === cardPath.projectId);
             if(found_project_idx !== -1) {
