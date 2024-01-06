@@ -314,6 +314,7 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
           cardLabelActionType: 'ADD',
           labelId: id,
         };
+        console.log("CARDMODAL", id, modifiedCard);
         const response = apiModifyCard(modifiedCard);
         response
           .then((result) => {

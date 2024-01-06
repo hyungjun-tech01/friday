@@ -180,80 +180,81 @@ app.get('/', (req, res)=>{
 // get all projects by user 
 app.get('/projects/:userId', async(req, res)=>{
     const userId = req.params.userId;
-    try{
-            const userIsAdminCheck = await pool.query(`
-            select is_admin as "isAdmin" 
-            from user_account 
-            where id =$1`, [userId]);
+    if( userId !== 'undefined') {
+        try{
+                const userIsAdminCheck = await pool.query(`
+                select is_admin as "isAdmin" 
+                from user_account 
+                where id =$1`, [userId]);
 
-            let projectResult;
-            if(userIsAdminCheck.rows[0].isAdmin === true) {
-                projectResult = await pool.query(`
-                select p.id as "projectId", true as "isAdmin", p.name as "projectName",
-                'manager' as "role",
-                (select id from board b
-                    where b.project_id = p.id
-                    order by position 
-                    limit 1) as "defaultBoardId"
-                from project p`, []);
-            }else{
-                projectResult = await pool.query(`
-                select p.id as "projectId", false as "isAdmin", p.name as "projectName",
-                pm.role as "role",
-                (select id from board b
-                    where b.project_id = p.id
-                    and f_get_board_role($1::text, b.id,p.id) <> ''
-                    order by position 
-                    limit 1) as "defaultBoardId"
-                from project p, project_manager pm
-                where p.id = pm.project_id 
-                and pm.user_id = $1::bigint`, [userId]);
-            }
-            if( projectResult.rows.length > 0 ) {
-                const projects = projectResult.rows;
-                for(const project of projects){
-                    const members = await pool.query(`
+                let projectResult;
+                if(userIsAdminCheck.rows[0].isAdmin === true) {
+                    projectResult = await pool.query(`
+                    select p.id as "projectId", true as "isAdmin", p.name as "projectName",
+                    'manager' as "role",
+                    (select id from board b
+                        where b.project_id = p.id
+                        order by position 
+                        limit 1) as "defaultBoardId"
+                    from project p`, []);
+                }else{
+                    projectResult = await pool.query(`
+                    select p.id as "projectId", false as "isAdmin", p.name as "projectName",
+                    pm.role as "role",
+                    (select id from board b
+                        where b.project_id = p.id
+                        and f_get_board_role($1::text, b.id,p.id) <> ''
+                        order by position 
+                        limit 1) as "defaultBoardId"
+                    from project p, project_manager pm
+                    where p.id = pm.project_id 
+                    and pm.user_id = $1::bigint`, [userId]);
+                }
+                if( projectResult.rows.length > 0 ) {
+                    const projects = projectResult.rows;
+                    for(const project of projects){
+                        const members = await pool.query(`
+                            select 
+                                t.user_id as "userId", 
+                                t1.name as "userName",
+                                t1.avatar as "avatarUrl",
+                                t1.email as "userEmail",
+                                t.role as "role"
+                            from project_manager t, user_account t1
+                            where t.user_id = t1.id
+                            and t.project_id = $1`, [project.projectId]);
+                        if( members.rows.length > 0 ) {
+                            project.members = members.rows;
+                        }else{
+                            project.members = [];
+                        }
+                        const userPools = await pool.query(`
                         select 
-                            t.user_id as "userId", 
+                            t1.id as "userId", 
                             t1.name as "userName",
                             t1.avatar as "avatarUrl",
                             t1.email as "userEmail",
-                            t.role as "role"
-                        from project_manager t, user_account t1
-                        where t.user_id = t1.id
-                        and t.project_id = $1`, [project.projectId]);
-                    if( members.rows.length > 0 ) {
-                        project.members = members.rows;
-                    }else{
-                        project.members = [];
+                            (select 'Manager' from project_manager t where t.user_id = t1.id and t.project_id = $1) as "role",
+                            (select true from project_manager t where t.user_id = t1.id and t.project_id = $1) as "canEdit"
+                        from user_account t1`, [project.projectId]);
+                        if( userPools.rows.length > 0 ) {
+                            project.userPools = userPools.rows;
+                        }else{
+                            project.userPools = [];
+                        }
                     }
-                    const userPools = await pool.query(`
-                    select 
-                        t1.id as "userId", 
-                        t1.name as "userName",
-                        t1.avatar as "avatarUrl",
-                        t1.email as "userEmail",
-                        (select 'Manager' from project_manager t where t.user_id = t1.id and t.project_id = $1) as "role",
-                        (select true from project_manager t where t.user_id = t1.id and t.project_id = $1) as "canEdit"
-                    from user_account t1`, [project.projectId]);
-                    if( userPools.rows.length > 0 ) {
-                        project.userPools = userPools.rows;
-                    }else{
-                        project.userPools = [];
-                    }
+
+                    res.json(projects);
+                    res.end();
                 }
 
-                res.json(projects);
-                res.end();
-            }
-
-    }catch(err){
-        console.log(err);
-        res.json({message:err});        
-        res.end();
+        }catch(err){
+            console.log(err);
+            res.json({message:err});        
+            res.end();
+        }
     }
-    }
-);
+});
 
 // sigle projects by projectId
 app.get('/project/:projectId', async(req, res)=>{
@@ -691,7 +692,7 @@ app.get('/cardbyId/:cardId', async(req, res)=>{
                     select (select a.id from card_label a 
                             where a.label_id = b.id 
                             and a.card_id = $1) as "cardLabelId", 
-                            b.id as "lableId" , 
+                            b.id as "labelId" , 
                             b.board_id as "boardId",
                             $1 as "cardId", 
                             b.name as "labelName", b.color as "color"
@@ -1031,7 +1032,6 @@ app.post('/modifyCard', async(req, res) => {
         cardCommentText  ,
         cardStatusActionType ,
         cardStatusId } = req.body;
-        
     try{
         const response = await pool.query(`call p_modify_card($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 
                                            $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49)`,
@@ -1325,52 +1325,56 @@ app.post('/subscription', async(req, res) => {
 });
 app.get('/subscribe/user/:userId', async(req, res) => {
     const user_id = req.params.userId;
-    try{
-        const response = await pool.query(`select card_id from card_subscription where user_id = $1`,
-            [user_id]);
-        if(response.rows.length <= 0) {
-            return res.json({message: 'No card_id'});
+    if (user_id !== 'undefined') {
+        try{
+            const response = await pool.query(`select card_id from card_subscription where user_id = $1`,
+                [user_id]);
+            if(response.rows.length <= 0) {
+                return res.json({message: 'No card_id'});
+            }
+            const data = [...response.rows];
+            res.json(data); // 결과 리턴을 해 줌.
+            res.end();
+        } catch(err){
+            console.error(err);
+            res.json({result:"failed",
+                message:err});
+            res.end();
         }
-        const data = [...response.rows];
-        res.json(data); // 결과 리턴을 해 줌.
-        res.end();
-    } catch(err){
-        console.error(err);
-        res.json({result:"failed",
-            message:err});
-        res.end();
     }
 });
 
 // notification 
 app.get('/notification/user/:userId', async(req, res) => {
     const pUserId = req.params.userId;
-    try{
-        const response = await pool.query(`select notification.id as id, action.type as action_type, action.data as action_data, user_account.name as user_name, user_account.avatar as user_avatar, card.id as card_id, card.name as card_name
-            from action
-                join notification on notification.action_id = action.id
-                join user_account on user_account.id = action.user_id
-                join card on card.id = action.card_id
-            where action.id in (select action_id from notification where user_id = $1 and is_read = false)`,
-                [pUserId]);
-        if(response.rows.length <= 0) {
-            res.json({message: 'Empty'})
-            res.end();
-        } else {
-            const result = response.rows.map((resp) => ({
-                notiId: resp.id,
-                card: {id: resp.card_id, name: resp.card_name},
-                user: {name: resp.user_name, avatarUrl: resp.user_avatar},
-                activity: {type: resp.action_type, data: resp.action_data},
-            }));
-            res.json(result); // 결과 리턴을 해 줌.
+    if (pUserId !== 'undefined') {
+        try{
+            const response = await pool.query(`select notification.id as id, action.type as action_type, action.data as action_data, user_account.name as user_name, user_account.avatar as user_avatar, card.id as card_id, card.name as card_name
+                from action
+                    join notification on notification.action_id = action.id
+                    join user_account on user_account.id = action.user_id
+                    join card on card.id = action.card_id
+                where action.id in (select action_id from notification where user_id = $1 and is_read = false)`,
+                    [pUserId]);
+            if(response.rows.length <= 0) {
+                res.json({message: 'Empty'})
+                res.end();
+            } else {
+                const result = response.rows.map((resp) => ({
+                    notiId: resp.id,
+                    card: {id: resp.card_id, name: resp.card_name},
+                    user: {name: resp.user_name, avatarUrl: resp.user_avatar},
+                    activity: {type: resp.action_type, data: resp.action_data},
+                }));
+                res.json(result); // 결과 리턴을 해 줌.
+                res.end();
+            }
+        } catch(err){
+            console.error(err);
+            res.json({result:"failed",
+                message:err});
             res.end();
         }
-    } catch(err){
-        console.error(err);
-        res.json({result:"failed",
-            message:err});
-        res.end();
     }
 });
 app.get('/notification/read/:notiId', async(req, res) => {

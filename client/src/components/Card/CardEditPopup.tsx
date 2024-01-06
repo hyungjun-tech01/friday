@@ -300,6 +300,7 @@ const CardEditPopup = ({
           cardLabelActionType: 'ADD',
           labelId: id,
         };
+        console.log("CardEditPopPopUp", id, modifiedCard);
         const response = apiModifyCard(modifiedCard);
         response
           .then((result) => {
