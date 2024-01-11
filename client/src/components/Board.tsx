@@ -60,7 +60,7 @@ function Board({boardId}:IListProps){
                     const updatedLists = [
                         ...unselectedLists.slice(0, toIndex),
                         updatedList,
-                        ...unselectedLists.slice(toIndex),
+                        ...unselectedLists.slice(toIndex, ),
                     ];
                     const updatedBoard = {
                         ...currentBoard,
@@ -96,14 +96,22 @@ function Board({boardId}:IListProps){
                     listId : toDest,
                     position : updatedPosition,
                 };
-                const targetCard = currentBoard.cards.filter((card) => card.listId === toDest);
-                const destCardId = targetCard[toIndex].cardId;
-                const find_idx = remainCardsExceptSelected.findIndex((card) => card.cardId === destCardId);
+                const targetCard = currentBoard.cards.filter((card) => (card.listId === toDest && card.cardId !== id));
+                const insert_before = targetCard.length > toIndex;
+                let destCardId: string = "";
+                if(insert_before) {
+                    destCardId = targetCard[toIndex].cardId;
+                } else {
+                    destCardId = targetCard[toIndex - 1].cardId;
+                }
+                const find_idx = insert_before
+                    ? remainCardsExceptSelected.findIndex((card) => card.cardId === destCardId)
+                    : (remainCardsExceptSelected.findIndex((card) => card.cardId === destCardId) + 1);
                 const updatedCards = [
                     ...remainCardsExceptSelected.slice(0, find_idx),
                     updatedCard,
-                    ...remainCardsExceptSelected.slice(find_idx)
-                ];
+                    ...remainCardsExceptSelected.slice(find_idx, )
+                    ];
                 const updatedCurrentBoard = {
                     ...currentBoard,
                     cards: updatedCards,
