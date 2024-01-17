@@ -74,8 +74,12 @@ function Board({boardId}:IListProps){
             });
     }, [cookies.UserId, currentBoard, lists, setCurrentBoard]);
     const handleMoveCard = useCallback((id:string, toDest: string, toIndex: number) => {
-        const selectedCard = currentBoard.cards.filter((card) => card.cardId === id)[0];
-        const remainCardsExceptSelected = currentBoard.cards.filter((card) => card.cardId !== id);
+        const current_idx = currentBoard.cards.findIndex(card => card.cardId === id);
+        const selectedCard = currentBoard.cards[current_idx];
+        const remainCardsExceptSelected = [
+            ...currentBoard.cards.slice(0, current_idx),
+            ...currentBoard.cards.slice(current_idx + 1,)
+        ];
         const updatedPosition = getNextPosition(remainCardsExceptSelected, toIndex);
         const modifiedCard : IModifyCard = {
             ...defaultModifyCard,
@@ -91,27 +95,37 @@ function Board({boardId}:IListProps){
             if (result.message) {
                 console.log('Fail to move card', result.message);
             } else {
+                console.log(`Move info - Target list: ${toDest} / Target index: ${toIndex}`);
                 const updatedCard = {
                     ...selectedCard,
                     listId : toDest,
                     position : updatedPosition,
                 };
-                const targetCard = currentBoard.cards.filter((card) => (card.listId === toDest && card.cardId !== id));
-                const insert_before = targetCard.length > toIndex;
-                let destCardId: string = "";
-                if(insert_before) {
-                    destCardId = targetCard[toIndex].cardId;
-                } else {
-                    destCardId = targetCard[toIndex - 1].cardId;
-                }
-                const find_idx = insert_before
-                    ? remainCardsExceptSelected.findIndex((card) => card.cardId === destCardId)
-                    : (remainCardsExceptSelected.findIndex((card) => card.cardId === destCardId) + 1);
-                const updatedCards = [
-                    ...remainCardsExceptSelected.slice(0, find_idx),
-                    updatedCard,
-                    ...remainCardsExceptSelected.slice(find_idx, )
+                const targetCards = currentBoard.cards.filter((card) => (card.listId === toDest && card.cardId !== id));
+                let updatedCards: ICard[] = [];
+                if(targetCards.length === 0){
+                    updatedCards = [
+                        ...remainCardsExceptSelected.slice(0, current_idx),
+                        updatedCard,
+                        ...remainCardsExceptSelected.slice(current_idx,)
                     ];
+                } else {
+                    if(toIndex !== targetCards.length) {
+                        const target_idx = remainCardsExceptSelected.findIndex(card => card.cardId === targetCards[toIndex].cardId);
+                        updatedCards = [
+                            ...remainCardsExceptSelected.slice(0, target_idx),
+                            updatedCard,
+                            ...remainCardsExceptSelected.slice(target_idx,)
+                        ];
+                    } else {
+                        const target_idx = remainCardsExceptSelected.findIndex(card => card.cardId === targetCards[toIndex - 1].cardId);
+                        updatedCards = [
+                            ...remainCardsExceptSelected.slice(0, target_idx + 1),
+                            updatedCard,
+                            ...remainCardsExceptSelected.slice(target_idx + 1, )
+                        ];
+                    }
+                }
                 const updatedCurrentBoard = {
                     ...currentBoard,
                     cards: updatedCards,
