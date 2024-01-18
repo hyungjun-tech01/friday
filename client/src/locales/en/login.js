@@ -8,7 +8,7 @@ const login = {
       noInternetConnection: 'No internet connection',
       pageNotFound_title: 'Page Not Found',
       password: 'Password',
-      projectManagement: 'Project management',
+      projectManagement: 'CRM & PMS',
       serverConnectionFailed: 'Server connection failed',
       unknownError: 'Unknown error, try again later',
     },

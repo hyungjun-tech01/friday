@@ -129,7 +129,7 @@ const core = {
       preferences: 'Preferences',
       pressPasteShortcutToAddAttachmentFromClipboard:
         'Tip: press Ctrl-V (Cmd-V on Mac) to add an attachment from the clipboard',
-      productName: 'My Planner',
+      productName: 'MyLation',
       project: 'Project',
       projectManagement: 'Project Manager',
       projectNotFound_title: 'Project Not Found',

@@ -8,7 +8,7 @@ const login = {
       noInternetConnection: '인터넷에 연결되지 않음',
       pageNotFound_title: '페이지를 찾을수 없습니다.',
       password: '패스워드',
-      projectManagement: '프로젝트 관리',
+      projectManagement: 'CRM & PMS',
       serverConnectionFailed: '서버 연결 실패',
       unknownError: '알 수 없는 오류가 발생하였습니다, 나중에 다시 시도하세요.',
     },

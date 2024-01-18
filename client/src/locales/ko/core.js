@@ -102,7 +102,7 @@ const core = {
       openBoard:'보드 열기',
       Password: '패스워드',
       pressPasteShortcutToAddAttachmentFromClipboard: 'Ctrl+v로 클립보드로부터 첨부파일을 추가합니다.',
-      productName: '마이플래너',
+      productName: '마일레이션',
       project: '프로젝트',
       projectManagement: '프로젝트 매니지먼트',
       removeMember:'보드에서 제거',
