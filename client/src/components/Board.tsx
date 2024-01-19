@@ -281,7 +281,7 @@ function Board({boardId}:IListProps){
 
     return (
         <div>
-            <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`} >
+            <div className={` ${styles.wrapper} ${styles.tabsWrapper} ${styles.scroll}`} >
                 <div className={`${styles.lists} ${styles.wrapperFlex}`}>
                     <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                         <Droppable droppableId="board" type="list" direction="horizontal">
