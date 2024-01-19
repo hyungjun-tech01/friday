@@ -70,14 +70,32 @@
       flex: 0 0 auto;
       overflow-x: auto;
       overflow-y: hidden;
+      scrollbar-width: thin;
 
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
+      &:hover {
+        height: 38px;
+      }
+  
+      &::-webkit-scrollbar {
+        height: 5px;
+      }
+  
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+  
+      &::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+      }
+
+
+/*      -ms-overflow-style: none;  IE and Edge */
+/*      scrollbar-width: none;  Firefox */
    }
     /* ( 크롬, 사파리, 오페라, 엣지 ) 동작 */
-  .scroll::-webkit-scrollbar {
+/*  .scroll::-webkit-scrollbar {
     display: none;
-  }
+  } */
   
 /*   }  */
   

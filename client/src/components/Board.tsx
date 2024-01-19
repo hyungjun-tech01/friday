@@ -16,6 +16,7 @@ import styles from "../scss/Board.module.scss";
 import ListAdd from "./ListAdd";
 import { ReactComponent as PlusMathIcon } from '../image/plus-math-icon.svg';
 import { getNextPosition } from "../utils/position";
+import {useRef} from "react";
 
 const parseDndId = (dndId:string) => dndId.split(':')[1];
 interface IListProps{
@@ -23,6 +24,9 @@ interface IListProps{
 }
 
 function Board({boardId}:IListProps){
+    const prevPosition = useRef(null);
+    const wrapper = useRef(null);
+
     const [cookies] = useCookies(['UserId', 'UserName','AuthToken']);
     const [t] = useTranslation();
     const [showList, setShowList] = useState(false);
@@ -201,6 +205,9 @@ function Board({boardId}:IListProps){
         setShowList(true);
     }, [boardId]);
 
+
+
+    
     const [isListAddOpened, setIsListAddOpened] = useState(false);
     const hasEditMembershipforBoard = useCallback(() => {
         // useRecoilValue 
@@ -210,9 +217,71 @@ function Board({boardId}:IListProps){
     // Card ------------------------
     const currentCard = useRecoilValue<ICard>(atomCurrentCard);
 
+    const handleMouseDown = useCallback(
+        (event:any) => {
+          // If button is defined and not equal to 0 (left click)
+          if (event.button) {
+            return;
+          }
+  
+          if (event.target !== wrapper.current && !event.target.dataset.dragScroller) {
+            return;
+          }
+  
+          prevPosition.current = event.clientX;
+        },
+        [wrapper],
+      );
+  
+
+    const handleWindowMouseMove = useCallback(
+        (event:any) => {
+          if (!prevPosition.current) {
+            return;
+          }
+  
+          event.preventDefault();
+  
+          window.scrollBy({
+            left: prevPosition.current - event.clientX,
+          });
+  
+          prevPosition.current = event.clientX;
+        },
+        [prevPosition],
+      );
+
+      const handleWindowMouseUp = useCallback(() => {
+        prevPosition.current = null;
+      }, [prevPosition]);
+
+    useEffect(() => {
+        if (isListAddOpened) {
+          window.scroll(document.body.scrollWidth, 0);
+        }
+      }, [boardId, isListAddOpened]);
+
+    useEffect(() => {
+    document.body.style.overflowX = 'auto';
+
+    return () => {
+        document.body.style.overflowX = '';
+    };
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener('mouseup', handleWindowMouseUp);
+        window.addEventListener('mousemove', handleWindowMouseMove);
+  
+        return () => {
+          window.removeEventListener('mouseup', handleWindowMouseUp);
+          window.removeEventListener('mousemove', handleWindowMouseMove);
+        };
+      }, [handleWindowMouseUp, handleWindowMouseMove]);   
+
     return (
         <div>
-            <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`}>
+            <div className={`${styles.wrapper} ${styles.tabsWrapper}  ${styles.scroll}`} >
                 <div className={`${styles.lists} ${styles.wrapperFlex}`}>
                     <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                         <Droppable droppableId="board" type="list" direction="horizontal">
