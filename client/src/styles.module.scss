@@ -443,12 +443,13 @@
   ::-webkit-scrollbar {
     height: 10px;
     width: 10px;
-    -webkit-appearance: none;
+    -webkit-appearance: none; 
   }
   
   ::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
-    border-radius: 0px;
+    border-radius: 0px; 
+    background: transparent;
   }
   
   ::-webkit-scrollbar-thumb {
