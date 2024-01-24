@@ -10,7 +10,7 @@
     height: 100%;
     background-color: #22252a; 
 
-    overflow-x: scroll;
+    overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: thin;
     
