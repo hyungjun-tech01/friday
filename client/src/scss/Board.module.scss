@@ -71,13 +71,13 @@
       overflow-x: auto;
       overflow-y: hidden;
 
-      -ms-overflow-style: none;  /* IE and Edge */ 
-      scrollbar-width: none;  /* Firefox */
+/*      -ms-overflow-style: none;  IE and Edge */ 
+/*       scrollbar-width: none;   Firefox */
     }
     /* ( 크롬, 사파리, 오페라, 엣지 ) 동작 */
-  .scroll::-webkit-scrollbar {
+/*   .scroll::-webkit-scrollbar {
     display: none;
-  } 
+  }  */ 
   
 /*   }  */
   

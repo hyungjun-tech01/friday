@@ -10,12 +10,9 @@
     height: 100%;
     background-color: #22252a; 
 
-    overflow-x: auto;
+    overflow-x: scroll;
     overflow-y: hidden;
     scrollbar-width: thin;
     
-}
-::-webkit-scrollbar{
-  width:5px;
 }
 
