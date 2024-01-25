@@ -4,6 +4,7 @@ import Board from "./Board";
 import BoardAction from "./BoardAction";
 import BoardFirstAdd from "./BoardFirstAdd";
 import styles from "../scss/Static.module.scss";
+import classnames from "classnames";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { atomCurrentMyBoard , defaultCurrentMyBoard} from "../atoms/atomsBoard";
 import { apiGetCurrentBoards} from "../api/board";
@@ -60,7 +61,7 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
       
     if(defaultBoardId === null ){  //project 를 선택했는데 보드가 해당 프로젝트에 보드가 없을 때 
         return (
-            <div className={`${styles.wrapper}`}>
+            <div className={classnames(styles.wrapper, styles.wrapperLoader, styles.wrapperBoard)}>
                 <Boards projectId={projectId}/> 
                 <BoardFirstAdd />
             </div>
@@ -72,7 +73,7 @@ function Static({projectId, boardId, defaultBoardId}:IStaticProps){
             getCurrentBoard(defaultBoardId);
        }
         return(
-            <div className={`${styles.wrapper}`}>
+            <div className={classnames(styles.wrapper, styles.wrapperLoader, styles.wrapperBoard)}>
                 {projectId ==="" ?  <Projects /> : <Boards projectId={projectId}/> } 
                 {defaultBoardId === "" ?  "" : (
                 boardId === "" ?  <BoardAction boardId={defaultBoardId}/> : <BoardAction boardId={boardId}/> 

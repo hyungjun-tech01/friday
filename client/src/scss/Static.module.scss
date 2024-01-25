@@ -27,14 +27,14 @@
   
     .wrapper {
       height: 100%;
-      margin-top: 0px;
-      overflow-x: auto;
+      margin-top: 40px;
+   /*   overflow-x: auto;
       overflow-y: hidden;
-      scrollbar-width: thin; 
+       scrollbar-width: thin;*/
     }
   
     .wrapperBoard {
-      margin-top: 174px;
+      margin-top: 134px;
     }
   
     .wrapperFlex {
@@ -42,7 +42,8 @@
     }
   
     .wrapperLoader {
-      position: relative;
+       position: relative; 
+      /* position: fixed;  */
     }
   
     .wrapperProject {
