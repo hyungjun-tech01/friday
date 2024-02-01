@@ -3,13 +3,11 @@ import { useCookies } from 'react-cookie';
 import { useTranslation } from 'react-i18next';
 import { Button, Grid, Icon, Modal } from 'semantic-ui-react';
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
-import { apiModifyBoard } from '../../api/board';
 import {
   apiDeleteAttatchment,
   apiModifyCard,
   apiUploadAttatchment,
 } from '../../api/card';
-import { defaultComment } from '../../atoms/atomAction';
 import {
   ICard,
   atomCurrentCard,
@@ -27,7 +25,6 @@ import {
   defaultModifyBoard,
   cardSelectorCardId,
 } from '../../atoms/atomsBoard';
-import { defaultTask, ITask } from '../../atoms/atomTask';
 import { IStopwatch } from '../../atoms/atomStopwatch';
 import { atomProjectsToLists } from '../../atoms/atomsProject';
 import { CardRepository } from '../../repository/cardRepo';
@@ -52,7 +49,6 @@ import { usePopup } from '../../lib/hook';
 import classNames from 'classnames';
 import styles from './CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
-import { getNextPosition } from '../../utils/position';
 import DeletePopup from '../DeletePopup';
 import { BoardRepository } from '../../repository/boardRepo';
 
@@ -187,7 +183,6 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
   //------------------Name Functions------------------
   const handleNameUpdate = useCallback(
     (data: string) => {
-      console.log('[CardModal] handleNameUpdate');
       updateCardName(card.cardId, cookies.UserId, data);
     },
     [card]
