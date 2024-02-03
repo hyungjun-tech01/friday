@@ -27,6 +27,7 @@ import {
 } from '../../atoms/atomsBoard';
 import { IStopwatch } from '../../atoms/atomStopwatch';
 import { atomProjectsToLists } from '../../atoms/atomsProject';
+import { BoardRepository } from '../../repository/boardRepo';
 import { CardRepository } from '../../repository/cardRepo';
 import { SubscriptionRepository } from '../../repository/subscriptionRepo';
 import Activities from './Activity/Activities';
@@ -50,7 +51,6 @@ import classNames from 'classnames';
 import styles from './CardModal.module.scss';
 import { startStopwatch, stopStopwatch } from '../../utils/stopwatch';
 import DeletePopup from '../DeletePopup';
-import { BoardRepository } from '../../repository/boardRepo';
 
 interface ICardPathProps {
   projectId: string | null;
@@ -60,14 +60,13 @@ interface ICardPathProps {
 
 interface ICardModalProps {
   canEdit: boolean;
-  onDelete: (id: string) => void;
 }
 
-const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
+const CardModal = ({ canEdit }: ICardModalProps) => {
   const [t] = useTranslation();
   const [board, setBoard] = useRecoilState<ICurrent>(atomCurrentMyBoard);
   const [card, setCard] = useRecoilState<ICard>(atomCurrentCard);
-  const [cardMembershipIds, setCardMembershipIds] = useState<string[]>([]);
+  const [cardMembershipUserIds, setCardMembershipUserIds] = useState<string[]>([]);
   const [selectedLabelIds, setSeletedLabelIds] = useState<string[]>([]);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
   const updateCard = useSetRecoilState(cardSelectorCardId(card.cardId));
@@ -97,6 +96,8 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
     createComment,
     updateComment,
     deleteComment,
+    moveCard,
+    deleteCard,
   } = useRecoilValue(CardRepository);
   const { createLabel, updateLabel, deleteLabel } =
     useRecoilValue(BoardRepository);
@@ -118,7 +119,7 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
   useEffect(() => {
     if (card.memberships) {
       const member_ids = card.memberships.map((member) => member.userId);
-      setCardMembershipIds(member_ids);
+      setCardMembershipUserIds(member_ids);
     }
     if (card.labels) {
       const label_ids = card.labels.map((label) => label.labelId);
@@ -157,27 +158,27 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
     (id: string) => {
       addMembershipIntoCard(cookies.UserId, card.cardId, id).then((result) => {
         if (result) {
-          const updatedMemberUserIds = [...cardMembershipIds, id];
-          setCardMembershipIds(updatedMemberUserIds);
+          const updatedMemberUserIds = [...cardMembershipUserIds, id];
+          setCardMembershipUserIds(updatedMemberUserIds);
         }
       });
     },
-    [board.users, card, cookies.UserId, cardMembershipIds]
+    [board.users, card, cookies.UserId, cardMembershipUserIds]
   );
   const handleUserRemove = useCallback(
     (id: string) => {
       removeMembershipFromCard(cookies.UserId, card.cardId, id).then(
         (result) => {
           if (result) {
-            const updatedMemberUserIds = cardMembershipIds.filter(
+            const updatedMemberUserIds = cardMembershipUserIds.filter(
               (userId) => userId !== id
             );
-            setCardMembershipIds(updatedMemberUserIds);
+            setCardMembershipUserIds(updatedMemberUserIds);
           }
         }
       );
     },
-    [card, cookies.UserId, cardMembershipIds]
+    [card, cookies.UserId, cardMembershipUserIds]
   );
 
   //------------------Name Functions------------------
@@ -326,71 +327,18 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
   //------------------Card Functions------------------
   const handleCardMove = useCallback(
     (newlistId: string) => {
-      const modifiedCard: IModifyCard = {
-        ...defaultModifyCard,
-        userId: cookies.UserId,
-        cardId: card.cardId,
-        listId: newlistId,
-        cardActionType: 'MOVE',
-      };
-      const response = apiModifyCard(modifiedCard);
-      response
+      moveCard(cookies.UserId, card.cardId, newlistId)
         .then((result) => {
-          if (result.message) {
-            console.log('Fail to move card', result.message);
-          } else {
-            const found_list_idx = board.lists.findIndex(
-              (list) => list.listId === newlistId
-            );
-            if (found_list_idx === -1) {
-              const found_card_idx = board.cards.findIndex(
-                (cardInBoard) => cardInBoard.cardId === card.cardId
-              );
-              if (found_card_idx !== -1) {
-                const updateCards = [
-                  ...board.cards.slice(0, found_card_idx),
-                  ...board.cards.slice(found_card_idx + 1),
-                ];
-                const updateCurrentBoard = {
-                  ...board,
-                  cards: updateCards,
-                };
-                setBoard(updateCurrentBoard);
-              }
-            } else {
-              const found_card_idx = board.cards.findIndex(
-                (cardInBoard) => cardInBoard.cardId === card.cardId
-              );
-              if (found_card_idx !== -1) {
-                const updateCard = {
-                  ...board.cards[found_card_idx],
-                  listId: newlistId,
-                };
-                const updateCards = [
-                  ...board.cards.slice(0, found_card_idx),
-                  updateCard,
-                  ...board.cards.slice(found_card_idx + 1),
-                ];
-                const updateCurrentBoard = {
-                  ...board,
-                  cards: updateCards,
-                };
-                setBoard(updateCurrentBoard);
-              }
-            }
-          }
-          handleOnCloseCardModal();
+          if (result) {
+            handleOnCloseCardModal();
+          } 
         })
-        .catch((message) => {
-          console.log('Fail to move card', message);
-        });
     },
-    [board, card.cardId, cookies.UserId, handleOnCloseCardModal, setBoard]
+    [card, handleOnCloseCardModal]
   );
   const handleCardDelete = useCallback(() => {
-    onDelete(card.cardId);
-    setCard(defaultCard);
-  }, [card.cardId, onDelete, setCard]);
+    deleteCard(cookies.UserId, card.cardId);
+  }, [card]);
   const handleSubscribeClick = useCallback(() => {
     if (subscribed) {
       removeSubscription(card.cardId, cookies.UserId);
@@ -451,7 +399,7 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
                       {canEdit ? (
                         <CardMembershipEdit
                           items={board.users}
-                          currentUserIds={cardMembershipIds}
+                          currentUserIds={cardMembershipUserIds}
                           onUserSelect={handleUserAdd}
                           onUserDeselect={handleUserRemove}
                         >
@@ -471,7 +419,7 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
                   {canEdit && (
                     <CardMembershipEdit
                       items={board.users}
-                      currentUserIds={cardMembershipIds}
+                      currentUserIds={cardMembershipUserIds}
                       onUserSelect={handleUserAdd}
                       onUserDeselect={handleUserRemove}
                     >
@@ -684,7 +632,7 @@ const CardModal = ({ canEdit, onDelete }: ICardModalProps) => {
               <span className={styles.actionsTitle}>{t('action.addCard')}</span>
               <CardMembershipEdit
                 items={board.users}
-                currentUserIds={cardMembershipIds}
+                currentUserIds={cardMembershipUserIds}
                 onUserSelect={handleUserAdd}
                 onUserDeselect={handleUserRemove}
               >

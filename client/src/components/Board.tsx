@@ -40,6 +40,7 @@ function Board({boardId}:IListProps){
             setCurrentBoard({...currentBoard, ...response});
         }
     };
+    
     const handleMoveList = useCallback((id:string, toIndex: number) => {
         const selectedList = lists.filter((list) => list.listId === id)[0];
         const unselectedLists = lists.filter((list) => list.listId !== id);
@@ -77,6 +78,7 @@ function Board({boardId}:IListProps){
                 console.log("Fail to update position of List : ", message);
             });
     }, [cookies.UserId, currentBoard, lists, setCurrentBoard]);
+
     const handleMoveCard = useCallback((id:string, toDest: string, toIndex: number) => {
         const current_idx = currentBoard.cards.findIndex(card => card.cardId === id);
         const selectedCard = currentBoard.cards[current_idx];
@@ -141,33 +143,6 @@ function Board({boardId}:IListProps){
             console.log('Fail to move card', message);
         });
     }, [cookies.UserId, currentBoard, setCurrentBoard]);
-    const handleDeleteCard = useCallback((cardId: string) => {
-        const updateCard: IModifyCard = {
-            ...defaultModifyCard,
-            cardId: cardId,
-            userId: cookies.UserId,
-            cardActionType: 'DELETE',
-        };
-        const response = apiModifyCard(updateCard);
-        response
-            .then((result) => {
-                if (result.message) {
-                    console.log('Fail to delete card', result.message);
-                } else {
-                    const updatedCards = currentBoard.cards.filter(
-                        (card) => card.cardId !== cardId
-                    );
-                    const updatedBoard = {
-                        ...currentBoard,
-                        cards: updatedCards
-                    };
-                    setCurrentBoard(updatedBoard);
-                }
-            })
-            .catch((message) => {
-            console.log('Fail to update name of card', message);
-            });
-    }, []);
 
     const handleDragStart = useCallback(() => {
         document.dispatchEvent(new MouseEvent('click'));
@@ -314,7 +289,7 @@ function Board({boardId}:IListProps){
                         </Droppable>
                     </DragDropContext>
                 </div>
-                {(currentCard.cardId !== "") && <CardModal canEdit={currentCard.creatorUserId === cookies.UserId ? true: currentBoard.canEdit} onDelete={handleDeleteCard}/>}
+                {(currentCard.cardId !== "") && <CardModal canEdit={currentCard.creatorUserId === cookies.UserId ? true: currentBoard.canEdit} />}
             </div>
         </div>
     );

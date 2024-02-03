@@ -33,10 +33,9 @@ interface ICardProps {
   index: number;
   card: ICard;
   canEdit: boolean;
-  onDelete: (id: string) => void;
 }
 
-function Card({ index, card, canEdit, onDelete }: ICardProps) {
+function Card({ index, card, canEdit }: ICardProps) {
   const setCard = useSetRecoilState<ICard>(cardSelectorCardId(card.cardId));
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
@@ -47,6 +46,7 @@ function Card({ index, card, canEdit, onDelete }: ICardProps) {
   const {
     updateCardName,
     updateCardStopwatch,
+    deleteCard,
   } = useRecoilValue(CardRepository);
 
   const handleCardClick = useCallback(
@@ -95,8 +95,8 @@ function Card({ index, card, canEdit, onDelete }: ICardProps) {
   }, [card, handleStopwatchUpdate]);
 
   const handleCardDelete = useCallback(() => {
-    onDelete(card.cardId);
-  }, [onDelete, card]);
+    deleteCard(cookies.UserId, card.cardId);
+  }, [card]);
 
   const contentNode = (
     <div className={styles.details}>

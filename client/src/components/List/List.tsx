@@ -126,35 +126,6 @@ function List({ id, index, position, name, canEdit }: IListProps) {
     handleAddCardClick();
   }, []);
 
-  const handleCardDelete = useCallback(
-    (cardId: string) => {
-      const updateCard: IModifyCard = {
-        ...defaultModifyCard,
-        cardId: cardId,
-        userId: cookies.UserId,
-        cardActionType: 'DELETE',
-      };
-      const response = apiModifyCard(updateCard);
-      response
-        .then((result) => {
-          if (result.message) {
-            console.log('Fail to delete card', result.message);
-          } else {
-            setIsCardLoading(true);
-
-            const updatedCurrentCards = currentCards.filter(
-              (card) => card.cardId !== cardId
-            );
-            setCurrentCards(updatedCurrentCards);
-          }
-        })
-        .catch((message) => {
-          console.log('Fail to update name of card', message);
-        });
-    },
-    [cookies.UserId, currentCards, setCurrentCards]
-  );
-
   const cardNode = (
     <Droppable droppableId={`list:${id}`} type="card" isDropDisabled={false}>
       {({ innerRef, droppableProps, placeholder }) => (
@@ -169,7 +140,6 @@ function List({ id, index, position, name, canEdit }: IListProps) {
                   index={index}
                   card={card}
                   canEdit={card.creatorUserId === cookies.UserId ? true:canEdit}
-                  onDelete={handleCardDelete}
                 />
             ))}
             {placeholder}

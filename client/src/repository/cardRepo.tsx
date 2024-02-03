@@ -1360,6 +1360,127 @@ export const CardRepository = selector({
           // Update atomCurrentCard --------------------
         }
     );
+    //------------------Card Functions---------------------
+    const moveCard = getCallback(
+      ({ set, snapshot }) =>
+        async (userId: string, cardId: string, newlistId: string) => {
+          const currentBoard = await snapshot.getPromise(atomCurrentMyBoard);
+          if (currentBoard === defaultCurrentMyBoard) {
+            console.log("Current Board doesn't have data");
+            return false;
+          }
+          const found_card_idx = currentBoard.cards.findIndex(
+            (card) => card.cardId === cardId
+          );
+          if (found_card_idx === -1) {
+            console.log('selected card is not in board');
+            return false;
+          }
+          const found_card = currentBoard.cards[found_card_idx];
+          const currentCard = await snapshot.getPromise(atomCurrentCard);
+
+          // Update atomCurrentMyBoard -----------------
+          const modifiedCard: IModifyCard = {
+            ...defaultModifyCard,
+            userId: userId,
+            cardId: cardId,
+            listId: newlistId,
+            cardActionType: 'MOVE',
+          };
+          const response = apiModifyCard(modifiedCard);
+          response
+            .then((result) => {
+              if (result.message) {
+                console.log('Fail to move card', result.message);
+                return false;
+              }
+              const found_list_idx = currentBoard.lists.findIndex(
+                (list) => list.listId === newlistId
+              );
+              if (found_list_idx === -1) {
+                const updateCards = [
+                  ...currentBoard.cards.slice(0, found_card_idx),
+                  ...currentBoard.cards.slice(found_card_idx + 1),
+                ];
+                const updatedBoard = {
+                  ...currentBoard,
+                  cards: updateCards,
+                };
+                set(atomCurrentMyBoard, updatedBoard);
+              } else {
+                const updateCard = {
+                  ...currentBoard.cards[found_card_idx],
+                  listId: newlistId,
+                };
+                const updateCards = [
+                  ...currentBoard.cards.slice(0, found_card_idx),
+                  updateCard,
+                  ...currentBoard.cards.slice(found_card_idx + 1),
+                ];
+                const updatedBoard = {
+                  ...currentBoard,
+                  cards: updateCards,
+                };
+                set(atomCurrentMyBoard, updatedBoard);
+              }
+            })
+            .catch((message) => {
+              console.log('Fail to get response', message);
+              return false;
+            });
+        }
+    );
+    const deleteCard = getCallback(
+      ({ set, snapshot }) =>
+        async (userId: string, cardId: string) => {
+          const currentBoard = await snapshot.getPromise(atomCurrentMyBoard);
+          if (currentBoard === defaultCurrentMyBoard) {
+            console.log("Current Board doesn't have data");
+          }
+          const found_card_idx = currentBoard.cards.findIndex(
+            (card) => card.cardId === cardId
+          );
+          if (found_card_idx === -1) {
+            console.log('selected card is not in board');
+          }
+          const found_card = currentBoard.cards[found_card_idx];
+          const currentCard = await snapshot.getPromise(atomCurrentCard);
+
+          // Update atomCurrentMyBoard -----------------
+          const updateCard: IModifyCard = {
+            ...defaultModifyCard,
+            cardId: cardId,
+            userId: userId,
+            cardActionType: 'DELETE',
+          };
+          const response = apiModifyCard(updateCard);
+          response
+            .then((result) => {
+              if (result.message) {
+                console.log('Fail to delete card', result.message);
+                return;
+              }
+              const updatedCards = currentBoard.cards.filter(
+                (card) => card.cardId !== cardId
+              );
+              const updatedBoard = {
+                ...currentBoard,
+                cards: updatedCards,
+              };
+              set(atomCurrentMyBoard, updatedBoard);
+              // Update atomCurrentCard -----------------
+              if (
+                currentCard !== defaultCard &&
+                currentCard.cardId === cardId
+              ) {
+                set(atomCurrentCard, defaultCard);
+              }
+            })
+            .catch((message) => {
+              console.log('Fail to get response', message);
+            });
+        }
+    );
     return {
       addMembershipIntoCard,
       removeMembershipFromCard,
@@ -1379,6 +1500,8 @@ export const CardRepository = selector({
       createComment,
       updateComment,
       deleteComment,
+      moveCard,
+      deleteCard,
     };
   },
 });
