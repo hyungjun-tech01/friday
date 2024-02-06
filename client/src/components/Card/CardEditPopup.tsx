@@ -26,6 +26,8 @@ import {
 import { IStopwatch } from '../../atoms/atomStopwatch';
 import { ILabel } from '../../atoms/atomLabel';
 import { atomProjectsToLists } from '../../atoms/atomsProject';
+import { BoardRepository } from '../../repository/boardRepo';
+import { CardRepository } from '../../repository/cardRepo';
 import { apiModifyBoard } from '../../api/board';
 import { apiModifyCard } from '../../api/card';
 import { getDateStringForDB } from '../../utils/date';
@@ -64,13 +66,37 @@ const CardEditPopup = ({
   const [currentBoard, setCurrentBoard] = useRecoilState<ICurrent>(atomCurrentMyBoard);
   const [card, setCard] = useRecoilState<ICard>(cardSelectorCardId(cardId));
   const [step, setStep] = useState<string | null>(null);
-  const [cardUserIds, setCardUserIds] = useState<string[]>([]);
+  const [cardMembershipUserIds, setCardMembershipUserIds] = useState<string[]>([]);
   const [cardLabelsIds, setCardLabelsIds] = useState<string[]>([]);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
   const projectsToLists = useRecoilValue(atomProjectsToLists);
   const [cardPath, setCardPath] = useState<ICardPathProps>({
     projectId: null, boardId: null, listId: null
   });
+  const { createLabel, updateLabel, deleteLabel } =
+    useRecoilValue(BoardRepository);
+  const {
+    addMembershipIntoCard,
+    removeMembershipFromCard,
+    updateCardName,
+    updateCardDescription,
+    addLabelIntoCard,
+    removeLabelFromCard,
+    updateCardDueDate,
+    updateCardStopwatch,
+    createCardTask,
+    updateCardTask,
+    moveCardTask,
+    deleteCardTask,
+    createAttachment,
+    updateAttachment,
+    deleteAttachment,
+    createComment,
+    updateComment,
+    deleteComment,
+    moveCard,
+    deleteCard,
+  } = useRecoilValue(CardRepository);
 
   const handleBack = useCallback(() => {
     setStep(null);
@@ -113,433 +139,92 @@ const CardEditPopup = ({
   //------------------Membership Functions------------------
   const handleUserAdd = useCallback(
     (id: string) => {
-      const addUser = currentBoard.users.filter((user) => user.userId === id).at(0);
-      if (addUser) {
-        const modifiedCard: IModifyCard = {
-          ...defaultModifyCard,
-          cardId: card.cardId,
-          userId: cookies.UserId,
-          cardMembershipActionType: 'ADD',
-          cardMembershipUserId: id,
-        };
-        const response = apiModifyCard(modifiedCard);
-        response
-          .then((result) => {
-            if (result.message) {
-              console.log(
-                'Fail to update add membership of card',
-                result.message
-              );
-            } else {
-              const newMembership: ICardUser = {
-                cardMembershipId: result.outCardMembershipId,
-                cardId: card.cardId,
-                userId: addUser.userId,
-                createdAt: result.outCreatedAt ? result.outCreatedAt : null,
-                updatedAt: null,
-                email: addUser.userEmail,
-                userName: addUser.userName,
-                avatarUrl: addUser.avatarUrl,
-              };
-              const newCardMembership = card.memberships.concat(newMembership);
-              const newCardUserIds = cardUserIds.concat(id);
-              setCardUserIds(newCardUserIds);
-
-              const updateCard = {
-                ...card,
-                memberships: newCardMembership,
-              };
-              setCard(updateCard);
-            }
-          })
-          .catch((message) => {
-            console.log('Fail to update name of card', message);
-          });
-      }
+      addMembershipIntoCard(cookies.UserId, card.cardId, id).then((result) => {
+        if (result) {
+          const updatedMemberUserIds = [...cardMembershipUserIds, id];
+          setCardMembershipUserIds(updatedMemberUserIds);
+        }
+      });
     },
-    [currentBoard.users, card, cookies.UserId, cardUserIds, setCard]
+    [currentBoard.users, card, cookies.UserId, cardMembershipUserIds, setCard]
   );
-
   const handleUserRemove = useCallback(
     (id: string) => {
-      const deleteMember = card.memberships
-        .filter((user) => user.userId === id)
-        .at(0);
-      if (deleteMember) {
-        const modifiedCard: IModifyCard = {
-          ...defaultModifyCard,
-          cardId: card.cardId,
-          userId: cookies.UserId,
-          cardMembershipActionType: 'DELETE',
-          cardMembershipId: deleteMember.cardMembershipId,
-          cardMembershipUserId: deleteMember.userId,
-        };
-        const response = apiModifyCard(modifiedCard);
-        response
-          .then((result) => {
-            if (result.message) {
-              console.log(
-                'Fail to update delete membership of card',
-                result.message
-              );
-            } else {
-              const member_index = card.memberships.findIndex(
-                (membership) => membership.userId === id
-              );
-              const newCardMembership = [
-                ...card.memberships.slice(0, member_index),
-                ...card.memberships.slice(member_index + 1),
-              ];
-              const userId_index = cardUserIds.findIndex(
-                (userId) => userId === id
-              );
-              const newCardUserIds = [
-                ...cardUserIds.slice(0, userId_index),
-                ...cardUserIds.slice(userId_index + 1),
-              ];
-              setCardUserIds(newCardUserIds);
-
-              const updateCard = {
-                ...card,
-                memberships: newCardMembership,
-              };
-              setCard(updateCard);
-            }
-          })
-          .catch((message) => {
-            console.log('Fail to update name of card', message);
-          });
-      }
+      removeMembershipFromCard(cookies.UserId, card.cardId, id).then(
+        (result) => {
+          if (result) {
+            const updatedMemberUserIds = cardMembershipUserIds.filter(
+              (userId) => userId !== id
+            );
+            setCardMembershipUserIds(updatedMemberUserIds);
+          }
+        }
+      );
     },
-    [card, cookies.UserId, cardUserIds, setCard]
+    [card, cookies.UserId, cardMembershipUserIds]
   );
 
   //------------------Due Date Functions------------------
   const handleDueDateUpdate = useCallback(
     (date: Date | null) => {
-      const date_string = getDateStringForDB(date);
-
-      const modifiedCard: IModifyCard = {
-        ...defaultModifyCard,
-        cardId: card.cardId,
-        userId: cookies.UserId,
-        cardActionType: 'UPDATE',
-        dueDate: date_string,
-      };
-
-      const response = apiModifyCard(modifiedCard);
-      response
-        .then((result) => {
-          if (result.message) {
-            console.log('Fail to update due date of card', result.message);
-          } else {
-            const updatedCard = {
-              ...card,
-              dueDate: date ? date_string : null,
-            };
-            setCard(updatedCard);
-          }
-        })
-        .catch((message) => {
-          console.log('Fail to update due date of card', message);
-        });
+      updateCardDueDate(card.cardId, cookies.UserId, date);
     },
-    [card, cookies.UserId, setCard]
+    [card]
   );
 
   //------------------Stopwatch Functions------------------
   const handleStopwatchUpdate = useCallback(
     (stopwatch: IStopwatch | null) => {
-      const newStopwatch: IStopwatch = {
-        total: stopwatch ? stopwatch.total : -1,
-        startedAt: stopwatch
-          ? stopwatch.startedAt
-            ? stopwatch.startedAt
-            : null
-          : null,
-      };
-      const modifiedCard: IModifyCard = {
-        ...defaultModifyCard,
-        cardId: card.cardId,
-        userId: cookies.UserId,
-        cardActionType: 'UPDATE',
-        stopwatch: newStopwatch,
-      };
-      const response = apiModifyCard(modifiedCard);
-      response
-        .then((result) => {
-          if (result.message) {
-            console.log('Fail to update stopwatch of card', result.message);
-          } else {
-            const updatedCard = {
-              ...card,
-              stopwatch: stopwatch ? newStopwatch : null,
-            };
-            setCard(updatedCard);
-          }
-        })
-        .catch((message) => {
-          console.log('Fail to update stopwatch of card', message);
-        });
+      updateCardStopwatch(card.cardId, cookies.UserId, stopwatch);
     },
-    [card, cookies.UserId, setCard]
+    [card]
   );
 
   //------------------Label Functions------------------
   const handleLabelSelect = useCallback(
     (id: string) => {
-      const found_label = currentBoard.labels
-        .filter((label) => label.labelId === id)
-        .at(0);
-      if (found_label) {
-        const modifiedCard: IModifyCard = {
-          ...defaultModifyCard,
-          cardId: card.cardId,
-          userId: cookies.UserId,
-          cardLabelActionType: 'ADD',
-          labelId: id,
-        };
-        const response = apiModifyCard(modifiedCard);
-        response
-          .then((result) => {
-            if (result.message) {
-              console.log('Fail to update label selection', result.message);
-            } else {
-              const newLabels = card.labels.concat(found_label);
-              const updatedCard: ICard = {
-                ...card,
-                labels: newLabels,
-              };
-              setCard(updatedCard);
-            }
-          })
-          .catch((message) => {
-            console.log('Fail to update name of card', message);
-          });
-      }
+      addLabelIntoCard(card.cardId, cookies.UserId, id);
     },
-    [card, cookies.UserId, currentBoard.labels, setCard]
+    [card]
   );
 
   const handleLabelUnselect = useCallback(
     (id: string) => {
-      const found_index = card.labels.findIndex(
-        (label) => label.labelId === id
-      );
-      if (found_index !== -1) {
-        const modifiedCard: IModifyCard = {
-          ...defaultModifyCard,
-          cardId: card.cardId,
-          userId: cookies.UserId,
-          cardLabelActionType: 'DELETE',
-          labelId: id,
-        };
-        const response = apiModifyCard(modifiedCard);
-        response
-          .then((result) => {
-            if (result.message) {
-              console.log('Fail to update label selection', result.message);
-            } else {
-              const newLabels = [
-                ...card.labels.slice(0, found_index),
-                ...card.labels.slice(found_index + 1),
-              ];
-              const updatedCard: ICard = {
-                ...card,
-                labels: newLabels,
-              };
-              setCard(updatedCard);
-            }
-          })
-          .catch((message) => {
-            console.log('Fail to update name of card', message);
-          });
-      }
+      removeLabelFromCard(card.cardId, cookies.UserId, id);
     },
-    [card, cookies.UserId, setCard]
+    [card]
   );
 
   const handleLabelCreate = useCallback(
     (data: { name: string | null; color: string }) => {
-      const modifiedBoard: IModifyBoard = {
-        ...defaultModifyBoard,
-        boardId: currentBoard.boardId,
-        userId: cookies.UserId,
-        boardLabelActionType: 'ADD',
-        labelName: data.name,
-        labelColor: data.color,
-      };
-      const response = apiModifyBoard(modifiedBoard);
-      response
-        .then((result) => {
-          if (result.message) {
-            console.log('Fail to add label', result.message);
-          } else {
-            const newLabel: ILabel = {
-              boardId: currentBoard.boardId,
-              labelId: result.outLabelId,
-              labelName: data.name ? data.name : '',
-              color: data.color,
-              position: '',
-            };
-            const newLabels = currentBoard.labels.concat(newLabel);
-            const updateCurrentBoard = {
-              ...currentBoard,
-              labels: newLabels
-            };
-            setCurrentBoard(updateCurrentBoard);
-          }
-        })
-        .catch((message) => {
-          console.log('Fail to add label', message);
-        });
+      createLabel(data, cookies.UserId);
     },
-    [currentBoard.boardId, card, cookies.UserId, setCard]
+    []
   );
 
   const handleLabelUpdate = useCallback(
     (data: { id: string; name?: string; color?: string }) => {
-      const found_index = card.labels.findIndex(
-        (label) => label.labelId === data.id
-      );
-      if (found_index !== -1) {
-        const modifiedBoard: IModifyBoard = {
-          ...defaultModifyBoard,
-          boardId: currentBoard.boardId,
-          userId: cookies.UserId,
-          boardLabelActionType: 'UPDATE',
-          labelId: data.id,
-          labelName: data.name ? data.name : null,
-          labelColor: data.color ? data.color : null,
-        };
-        const response = apiModifyBoard(modifiedBoard);
-        response
-          .then((result) => {
-            if (result.message) {
-              console.log('Fail to update label', result.message);
-            } else {
-              let newLabel = card.labels[found_index];
-              if (data.name) newLabel.labelName = data.name;
-              if (data.color) newLabel.color = data.color;
-              const newLabels = [
-                ...card.labels.slice(0, found_index),
-                newLabel,
-                ...card.labels.slice(found_index + 1),
-              ];
-              const updatedCard = {
-                ...card,
-                labels: newLabels,
-              };
-              setCard(updatedCard);
-            }
-          })
-          .catch((message) => {
-            console.log('Fail to update label', message);
-          });
-      }
+      updateLabel(data, cookies.UserId);
     },
-    [currentBoard.boardId, card, cookies.UserId, setCard]
+    []
   );
 
   const handleLabelDelete = useCallback(
     (id: string) => {
-      const modifiedBoard: IModifyBoard = {
-        ...defaultModifyBoard,
-        boardId: currentBoard.boardId,
-        userId: cookies.UserId,
-        boardLabelActionType: 'DELETE',
-        labelId: id,
-      };
-      const response = apiModifyBoard(modifiedBoard);
-      response
-        .then((result) => {
-          if (result.message) {
-            console.log('Fail to delete label', result.message);
-          } else {
-            const found_index = card.labels.findIndex(
-              (label) => label.labelId === id
-            );
-            const newLabels = [
-              ...card.labels.slice(0, found_index),
-              ...card.labels.slice(found_index + 1),
-            ];
-            const updatedCard = {
-              ...card,
-              labels: newLabels,
-            };
-            setCard(updatedCard);
-          }
-        })
-        .catch((message) => {
-          console.log('Fail to delete label', message);
-        });
+      deleteLabel(id, cookies.UserId);
     },
-    [currentBoard.boardId, card, cookies.UserId, setCard]
+    [card]
   );
 
   //------------------Card Functions------------------
   const handleCardMove = useCallback((newlistId: string) => {
-    const modifiedCard : IModifyCard = {
-      ...defaultModifyCard,
-      userId: cookies.UserId,
-      cardId : cardId,
-      listId : newlistId,
-      cardActionType: 'MOVE',
-    };
-    const response = apiModifyCard(modifiedCard);
-    response
-      .then((result) => {
-        if (result.message) {
-          console.log(
-            'Fail to move card',
-            result.message
-          );
-        } else {
-          const found_list_idx = currentBoard.lists.findIndex((list) => list.listId === newlistId);
-          if(found_list_idx === -1) {
-            const found_card_idx = currentBoard.cards.findIndex((card) => card.cardId === cardId);
-            if(found_card_idx !== -1) {
-              const updateCards = [
-                ...currentBoard.cards.slice(0, found_card_idx),
-                ...currentBoard.cards.slice(found_card_idx + 1)
-              ];
-              const updateCurrentBoard = {
-                ...currentBoard,
-                cards : updateCards
-              };
-              setCurrentBoard(updateCurrentBoard);
-            }
-          }
-          else {
-            const found_card_idx = currentBoard.cards.findIndex((card) => card.cardId === cardId);
-            if(found_card_idx !== -1) {
-              const updateCard = {
-                ...currentBoard.cards[found_card_idx],
-                listId: newlistId
-              };
-              const updateCards = [
-                ...currentBoard.cards.slice(0, found_card_idx),
-                updateCard,
-                ...currentBoard.cards.slice(found_card_idx + 1)
-              ];
-              const updateCurrentBoard = {
-                ...currentBoard,
-                cards: updateCards
-              };
-              setCurrentBoard(updateCurrentBoard);
-            };
-          };
-        };
-      })
-      .catch((message) => {
-        console.log('Fail to move card', message);
-      });
+    moveCard(cookies.UserId, card.cardId, newlistId);
   }, [currentBoard]);
 
   useEffect(() => {
     if (card.memberships) {
       const member_ids = card.memberships.map((member) => member.userId);
-      setCardUserIds(member_ids);
+      setCardMembershipUserIds(member_ids);
     }
     if (card.labels) {
       const label_ids = card.labels.map((label) => label.labelId);
@@ -568,7 +253,7 @@ const CardEditPopup = ({
         return (
           <CardMembershipEditPopup
             items={currentBoard.users}
-            currentUserIds={cardUserIds}
+            currentUserIds={cardMembershipUserIds}
             onUserSelect={handleUserAdd}
             onUserDeselect={handleUserRemove}
             onBack={handleBack}
@@ -627,7 +312,7 @@ const CardEditPopup = ({
           />
         );
     }
-  }
+  };
 
   return (
     <>

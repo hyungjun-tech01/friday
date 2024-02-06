@@ -7,6 +7,7 @@ import {useRecoilState, useRecoilValue} from "recoil";
 import { defaultModifyList, IList, IModifyList } from "../atoms/atomsList";
 import {listsSelector, atomCurrentMyBoard, ICurrent} from "../atoms/atomsBoard";
 import { ICard, atomCurrentCard, IModifyCard, defaultModifyCard } from "../atoms/atomCard";
+import { CardRepository } from "../repository/cardRepo";
 import {apiGetCurrentBoards} from "../api/board";
 import { apiModifyCard } from "../api/card";
 import { apiModifyList } from "../api/list";
@@ -33,6 +34,7 @@ function Board({boardId}:IListProps){
     const [currentBoard, setCurrentBoard] = useRecoilState<ICurrent>(atomCurrentMyBoard);
     //board id로 리스트를 가지고 올것.
     const lists: IList[]  = useRecoilValue(listsSelector);
+    const { moveCard } = useRecoilValue(CardRepository);
    
     const getCurrentBoard = async (id:string) => {
         const response = await apiGetCurrentBoards({boardId:id, userId:cookies.UserId});
@@ -40,6 +42,7 @@ function Board({boardId}:IListProps){
             setCurrentBoard({...currentBoard, ...response});
         }
     };
+
     const handleMoveList = useCallback((id:string, toIndex: number) => {
         const selectedList = lists.filter((list) => list.listId === id)[0];
         const unselectedLists = lists.filter((list) => list.listId !== id);
@@ -77,97 +80,10 @@ function Board({boardId}:IListProps){
                 console.log("Fail to update position of List : ", message);
             });
     }, [cookies.UserId, currentBoard, lists, setCurrentBoard]);
-    const handleMoveCard = useCallback((id:string, toDest: string, toIndex: number) => {
-        const current_idx = currentBoard.cards.findIndex(card => card.cardId === id);
-        const selectedCard = currentBoard.cards[current_idx];
-        const remainCardsExceptSelected = [
-            ...currentBoard.cards.slice(0, current_idx),
-            ...currentBoard.cards.slice(current_idx + 1,)
-        ];
-        const updatedPosition = getNextPosition(remainCardsExceptSelected, toIndex);
-        const modifiedCard : IModifyCard = {
-            ...defaultModifyCard,
-            userId: cookies.UserId,
-            cardId : id,
-            listId : toDest,
-            position : updatedPosition,
-            cardActionType: 'MOVE',
-        };
-        const response = apiModifyCard(modifiedCard);
-        response
-        .then((result) => {
-            if (result.message) {
-                console.log('Fail to move card', result.message);
-            } else {
-                console.log(`Move info - Target list: ${toDest} / Target index: ${toIndex}`);
-                const updatedCard = {
-                    ...selectedCard,
-                    listId : toDest,
-                    position : updatedPosition,
-                };
-                const targetCards = currentBoard.cards.filter((card) => (card.listId === toDest && card.cardId !== id));
-                let updatedCards: ICard[] = [];
-                if(targetCards.length === 0){
-                    updatedCards = [
-                        ...remainCardsExceptSelected.slice(0, current_idx),
-                        updatedCard,
-                        ...remainCardsExceptSelected.slice(current_idx,)
-                    ];
-                } else {
-                    if(toIndex !== targetCards.length) {
-                        const target_idx = remainCardsExceptSelected.findIndex(card => card.cardId === targetCards[toIndex].cardId);
-                        updatedCards = [
-                            ...remainCardsExceptSelected.slice(0, target_idx),
-                            updatedCard,
-                            ...remainCardsExceptSelected.slice(target_idx,)
-                        ];
-                    } else {
-                        const target_idx = remainCardsExceptSelected.findIndex(card => card.cardId === targetCards[toIndex - 1].cardId);
-                        updatedCards = [
-                            ...remainCardsExceptSelected.slice(0, target_idx + 1),
-                            updatedCard,
-                            ...remainCardsExceptSelected.slice(target_idx + 1, )
-                        ];
-                    }
-                }
-                const updatedCurrentBoard = {
-                    ...currentBoard,
-                    cards: updatedCards,
-                };
-                setCurrentBoard(updatedCurrentBoard);
-            };
-        })
-        .catch((message) => {
-            console.log('Fail to move card', message);
-        });
-    }, [cookies.UserId, currentBoard, setCurrentBoard]);
-    const handleDeleteCard = useCallback((cardId: string) => {
-        const updateCard: IModifyCard = {
-            ...defaultModifyCard,
-            cardId: cardId,
-            userId: cookies.UserId,
-            cardActionType: 'DELETE',
-        };
-        const response = apiModifyCard(updateCard);
-        response
-            .then((result) => {
-                if (result.message) {
-                    console.log('Fail to delete card', result.message);
-                } else {
-                    const updatedCards = currentBoard.cards.filter(
-                        (card) => card.cardId !== cardId
-                    );
-                    const updatedBoard = {
-                        ...currentBoard,
-                        cards: updatedCards
-                    };
-                    setCurrentBoard(updatedBoard);
-                }
-            })
-            .catch((message) => {
-            console.log('Fail to update name of card', message);
-            });
-    }, []);
+
+    const handleMoveCard = useCallback((cardId:string, toDest: string, toIndex: number) => {
+        moveCard(cookies.UserId, cardId, toDest, toIndex)
+    }, [cookies.UserId]);
 
     const handleDragStart = useCallback(() => {
         document.dispatchEvent(new MouseEvent('click'));
@@ -314,7 +230,7 @@ function Board({boardId}:IListProps){
                         </Droppable>
                     </DragDropContext>
                 </div>
-                {(currentCard.cardId !== "") && <CardModal canEdit={currentCard.creatorUserId === cookies.UserId ? true: currentBoard.canEdit} onDelete={handleDeleteCard}/>}
+                {(currentCard.cardId !== "") && <CardModal canEdit={currentCard.creatorUserId === cookies.UserId ? true: currentBoard.canEdit} />}
             </div>
         </div>
     );

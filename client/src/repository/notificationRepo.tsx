@@ -32,10 +32,10 @@ export const NotificationRepository = selector({
             catch(err){
                 console.log(err);
             }
-        })
+        });
         return {
             loadNotifications,
             removeNotification
-        }
+        };
     }
 });

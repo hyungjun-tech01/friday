@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { useCookies } from 'react-cookie';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { Link } from 'react-router-dom';
 import { Button, Icon } from 'semantic-ui-react';
 import { Draggable } from 'react-beautiful-dnd';
@@ -14,7 +14,7 @@ import {
   IModifyCard,
 } from '../../atoms/atomCard';
 import { IStopwatch } from '../../atoms/atomStopwatch';
-
+import { CardRepository } from '../../repository/cardRepo';
 import NameEdit from '../NameEdit';
 import Label from '../Label';
 import CardTasks from './CardTasks';
@@ -33,16 +33,21 @@ interface ICardProps {
   index: number;
   card: ICard;
   canEdit: boolean;
-  onDelete: (id: string) => void;
 }
 
-function Card({ index, card, canEdit, onDelete }: ICardProps) {
+function Card({ index, card, canEdit }: ICardProps) {
   const setCard = useSetRecoilState<ICard>(cardSelectorCardId(card.cardId));
   const setCurrentCard = useSetRecoilState<ICard>(atomCurrentCard);
   const [cookies] = useCookies(['UserId', 'UserName', 'AuthToken']);
 
   const nameEdit = useRef<any>(null);
   const CardEdit = usePopup(CardEditPopup);
+
+  const {
+    updateCardName,
+    updateCardStopwatch,
+    deleteCard,
+  } = useRecoilValue(CardRepository);
 
   const handleCardClick = useCallback(
     (event: any) => {
@@ -69,70 +74,16 @@ function Card({ index, card, canEdit, onDelete }: ICardProps) {
 
   const handleNameUpdate = useCallback(
     (data: string) => {
-      const modifiedCard: IModifyCard = {
-        ...defaultModifyCard,
-        cardId: card.cardId,
-        userId: cookies.UserId,
-        cardName: data,
-        cardActionType: 'UPDATE',
-      };
-
-      const response = apiModifyCard(modifiedCard);
-      response
-        .then((result) => {
-          if (result.message) {
-          } else {
-            const updatedCard = {
-              ...card,
-              cardName: data,
-            };
-            setCard(updatedCard);
-          }
-        })
-        .catch((message) => {
-          console.log('Fail to update name of card', message);
-        });
+      updateCardName(card.cardId, cookies.UserId, data);
     },
-    [card, cookies.UserId, setCard]
+    [card]
   );
 
   const handleStopwatchUpdate = useCallback(
     (stopwatch: IStopwatch | null) => {
-      const newStopwatch: IStopwatch = {
-        total: stopwatch ? stopwatch.total : -1,
-        startedAt: stopwatch
-          ? stopwatch.startedAt
-            ? stopwatch.startedAt
-            : null
-          : null,
-      };
-      const modifiedCard: IModifyCard = {
-        ...defaultModifyCard,
-        cardId: card.cardId,
-        userId: cookies.UserId,
-        cardActionType: 'UPDATE',
-        stopwatch: newStopwatch,
-      };
-      const response = apiModifyCard(modifiedCard);
-      response
-        .then((result) => {
-          if (result.message) {
-            console.log('Fail to update stopwatch of card', result.message);
-          } else {
-            console.log('Succeed to update stopwatch of card', result);
-
-            const updatedCard = {
-              ...card,
-              stopwatch: stopwatch ? newStopwatch : null,
-            };
-            setCard(updatedCard);
-          }
-        })
-        .catch((message) => {
-          console.log('Fail to update stopwatch of card', message);
-        });
+      updateCardStopwatch(card.cardId, cookies.UserId, stopwatch);
     },
-    [card, cookies.UserId, setCard]
+    [card]
   );
 
   const handleToggleStopwatchClick = useCallback(() => {
@@ -144,8 +95,8 @@ function Card({ index, card, canEdit, onDelete }: ICardProps) {
   }, [card, handleStopwatchUpdate]);
 
   const handleCardDelete = useCallback(() => {
-    onDelete(card.cardId);
-  }, [onDelete, card]);
+    deleteCard(cookies.UserId, card.cardId);
+  }, [card]);
 
   const contentNode = (
     <div className={styles.details}>
