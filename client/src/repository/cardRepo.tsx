@@ -5,6 +5,7 @@ import {
   defaultCard,
   defaultModifyCard,
   IAttachment,
+  ICard,
   ICardUser,
   IImage,
   IModifyCard,
@@ -1363,7 +1364,7 @@ export const CardRepository = selector({
     //------------------Card Functions---------------------
     const moveCard = getCallback(
       ({ set, snapshot }) =>
-        async (userId: string, cardId: string, newlistId: string) => {
+        async (userId: string, cardId: string, newlistId: string, toIndex?: number) => {
           const currentBoard = await snapshot.getPromise(atomCurrentMyBoard);
           if (currentBoard === defaultCurrentMyBoard) {
             console.log("Current Board doesn't have data");
@@ -1377,6 +1378,11 @@ export const CardRepository = selector({
             return false;
           }
           const found_card = currentBoard.cards[found_card_idx];
+          const remain_cards = [
+            ...currentBoard.cards.slice(0, found_card_idx),
+            ...currentBoard.cards.slice(found_card_idx + 1,),
+          ];
+          const updatedPosition = getNextPosition(remain_cards, toIndex);
           const currentCard = await snapshot.getPromise(atomCurrentCard);
 
           // Update atomCurrentMyBoard -----------------
@@ -1385,6 +1391,7 @@ export const CardRepository = selector({
             userId: userId,
             cardId: cardId,
             listId: newlistId,
+            position: updatedPosition,
             cardActionType: 'MOVE',
           };
           const response = apiModifyCard(modifiedCard);
@@ -1393,33 +1400,56 @@ export const CardRepository = selector({
               if (result.message) {
                 console.log('Fail to move card', result.message);
                 return false;
-              }
+              };
               const found_list_idx = currentBoard.lists.findIndex(
                 (list) => list.listId === newlistId
               );
               if (found_list_idx === -1) {
-                const updateCards = [
-                  ...currentBoard.cards.slice(0, found_card_idx),
-                  ...currentBoard.cards.slice(found_card_idx + 1),
-                ];
                 const updatedBoard = {
                   ...currentBoard,
-                  cards: updateCards,
+                  cards: remain_cards,
                 };
                 set(atomCurrentMyBoard, updatedBoard);
               } else {
-                const updateCard = {
-                  ...currentBoard.cards[found_card_idx],
+                const updatedCard = {
+                  ...found_card,
                   listId: newlistId,
                 };
-                const updateCards = [
-                  ...currentBoard.cards.slice(0, found_card_idx),
-                  updateCard,
-                  ...currentBoard.cards.slice(found_card_idx + 1),
-                ];
+                const targetCards = currentBoard.cards.filter((card) => (card.listId === newlistId && card.cardId !== cardId));
+                let updatedCards: ICard[] = [];
+                if(targetCards.length === 0){
+                    updatedCards = [
+                        ...remain_cards.slice(0, found_card_idx),
+                        updatedCard,
+                        ...remain_cards.slice(found_card_idx,)
+                    ];
+                } else {
+                    if(toIndex === undefined) {
+                        updatedCards = [
+                            ...remain_cards,
+                            updatedCard,
+                        ];
+                    } else {
+                        if(toIndex !== targetCards.length) {
+                            const target_idx = remain_cards.findIndex(card => card.cardId === targetCards[toIndex].cardId);
+                            updatedCards = [
+                                ...remain_cards.slice(0, target_idx),
+                                updatedCard,
+                                ...remain_cards.slice(target_idx,)
+                            ];
+                        } else {
+                            const target_idx = remain_cards.findIndex(card => card.cardId === targetCards[toIndex - 1].cardId);
+                            updatedCards = [
+                                ...remain_cards.slice(0, target_idx + 1),
+                                updatedCard,
+                                ...remain_cards.slice(target_idx + 1, )
+                            ];
+                        }
+                    }
+                }
                 const updatedBoard = {
                   ...currentBoard,
-                  cards: updateCards,
+                  cards: updatedCards,
                 };
                 set(atomCurrentMyBoard, updatedBoard);
               }
